@@ -1,1 +1,66 @@
-<p>login works!</p>
+<!-- Start: Login Page  -->
+<div class="d-flex row h-100">
+    <div class="col-4">
+        <div class="h-100 bg-info"></div>
+    </div>
+
+    <!-- Start: Login Container  -->
+    <div class="col-8">
+        <div class="h-100 d-flex flex-column justify-content-between p-5">
+
+            <!-- Logo Title  -->
+            <h1> <span class="text-primary">1</span>CHAT</h1>
+
+            <!-- Login Form  -->
+            <div class="d-flex justify-content-center">
+                <div class="login-container">
+                    <h1> Welcome Back </h1>
+                    <div class="py-4">
+                        <span class="text-info"> Welcome Back! Please enter your credentials </span>
+                    </div>
+                    <form [formGroup]="loginGroup" (ngSubmit)="onSubmit()">
+
+                        <!-- Email  -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="email" class="form-label"> Email </label>
+                                <span class="text-danger fw-bold"
+                                    *ngIf="getControls['email']?.errors?.['required'] && getControls['email'].touched">
+                                    This feild is required </span>
+                                <span class="text-danger fw-bold"
+                                    *ngIf="getControls['email']?.errors?.['maxLength'] && getControls['email'].touched">
+                                    Max 25 Characters </span>
+                            </div>
+                            <input type="email" class="form-control" name="email" id="email" formControlName="email"
+                                [ngClass]="{'border-danger' : getControls['email'].invalid && getControls['email'].touched}">
+                        </div>
+
+                        <!-- Password  -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="password" class="form-label"> Password </label>
+                                <span class="text-danger fw-bold"
+                                *ngIf="getControls['password']?.errors?.['required'] && getControls['password'].touched"> This field is required </span>
+                            </div>
+                            <div class="position-relative">
+                                <input [type]="inputType" class="form-control" name="password" id="password"
+                                    formControlName="password"
+                                    [ngClass]="{'border-danger' : getControls['password'].invalid && getControls['password'].touched}">
+                                <div id="icon-eye" class="position-absolute" role="button" (mousedown)="showPassword()"
+                                    (mouseup)="showPassword()">
+                                    <i class='bx bxs-bullseye text-info fs-5'></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit"> Sign in </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- CopyRight  -->
+            <span class="text-info"> 1Chat © 2023 </span>
+        </div>
+    </div>
+    <!-- End: Login Container  -->
+</div>
+<!-- End: Login Page  -->
