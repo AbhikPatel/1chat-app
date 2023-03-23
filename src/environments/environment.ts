@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseURL: 'https://anonychat.onrender.com/api/v1'
+  baseURL: 'https://anonychat.onrender.com/api/v1/'
 };
 
 /*
