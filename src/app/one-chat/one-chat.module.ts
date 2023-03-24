@@ -6,6 +6,10 @@ import { OneChatContainerComponent } from './one-chat-container/one-chat-contain
 import { OneChatPresentationComponent } from './one-chat-container/one-chat-presentation/one-chat-presentation.component';
 import { ChatListPresentationComponent } from './one-chat-container/one-chat-presentation/chat-list/chat-list-presentation/chat-list-presentation.component';
 import { ChatMessagePresentationComponent } from './one-chat-container/one-chat-presentation/chat-message/chat-message-presentation/chat-message-presentation.component';
+import { OneChatService } from './one-chat.service';
+import { allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SearchPipe } from './pipe/search.pipe';
 
 
 @NgModule({
@@ -13,11 +17,18 @@ import { ChatMessagePresentationComponent } from './one-chat-container/one-chat-
     OneChatContainerComponent,
     OneChatPresentationComponent,
     ChatListPresentationComponent,
-    ChatMessagePresentationComponent
+    ChatMessagePresentationComponent,
+    SearchPipe
   ],
   imports: [
     CommonModule,
-    OneChatRoutingModule
+    OneChatRoutingModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
+  providers:[
+    OneChatService,
+    allUserAdaptor
   ]
 })
 export class OneChatModule { }

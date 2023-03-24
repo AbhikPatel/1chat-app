@@ -1,25 +1,25 @@
-// ::-webkit-scrollbar {
-//     width: 2px;
-//     height: 2px;
+::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
 
-//     &-thumb {
-//         background-color: $primary;
-//         border-radius: 12px;
-//     }
+    &-thumb {
+        background-color: $info;
+        border-radius: 12px;
+    }
 
-//     &-button {
-//         visibility: hidden;
-//         height: 2px;
-//         width: 2px;
+    &-button {
+        visibility: hidden;
+        height: 2px;
+        width: 2px;
 
-//         &:vertical:start:increment,
-//         &:vertical:end:decrement,
-//         &:horizontal:start:increment,
-//         &:horizontal:end:decrement {
-//             display: none;
-//         }
-//     }
-// }
+        &:vertical:start:increment,
+        &:vertical:end:decrement,
+        &:horizontal:start:increment,
+        &:horizontal:end:decrement {
+            display: none;
+        }
+    }
+}
 
 // // Small devices (landscape phones, less than 768px)
 // // @media (max-width: $tablet-view) {

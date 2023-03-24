@@ -1,1 +1,5 @@
-<p>one-chat-container works!</p>
+<app-one-chat-presentation
+    [getListenData]="listen$ | async"
+    (emitEventName)="getEventName($event)"
+    [getAllUser$]="allUser$"
+></app-one-chat-presentation>

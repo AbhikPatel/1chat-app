@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
   public onSubmit() {
     if (this.loginGroup.valid) {
       this._service.loginUser(this.loginGroup.value).pipe(takeUntil(this.destroy)).subscribe((data) => {
-        this._commonService.user$.next(data)
+        this._commonService.user$.next(data);
         this._route.navigate(['/home'])
       })
     }

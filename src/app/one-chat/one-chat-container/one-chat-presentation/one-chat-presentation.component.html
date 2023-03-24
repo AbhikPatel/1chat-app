@@ -1,1 +1,18 @@
-<p>one-chat-presentation works!</p>
+<!-- Start: Chat Container  -->
+<div class="d-flex h-100">
+
+    <!-- Start: User List  -->
+    <div id="sidebar" class="border border-end bg-white">
+        <app-chat-list-presentation
+            [getAllUser]="getAllUser$ | async"
+        ></app-chat-list-presentation>
+    </div>
+    <!-- End: User List  -->
+
+    <!-- Start: Chat Screen  -->
+    <div class="flex-grow-1">
+        <app-chat-message-presentation></app-chat-message-presentation>
+    </div>
+    <!-- End: Chat Screen  -->
+</div>
+<!-- End: Chat Container  -->
