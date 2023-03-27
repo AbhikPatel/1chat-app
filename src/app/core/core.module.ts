@@ -8,6 +8,7 @@ import { AuthService } from './services/auth/auth.service';
 import { AuthGuard } from './guards/auth.guard';
 import { HttpService } from './services/http/http.service';
 import { userAdaptor } from '../shared/adaptor/user.adaptor';
+import { RouterModule } from '@angular/router';
 
 
 
@@ -19,7 +20,8 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    RouterModule
   ],
   providers:[
     AuthService,

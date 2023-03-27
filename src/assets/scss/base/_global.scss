@@ -19,3 +19,34 @@ html,body{
 .login-container{
     min-width: 500px; 
 }
+
+.bx{
+    color: #7e7e7e;
+}
+
+.fs-7{
+    font-size: 0.8rem;
+}
+
+.user-container{
+    background-color: $white;
+    &:hover{
+        background-color: $user-hover-bg;
+    }
+}
+
+#user{
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    transition: 0.6s all;
+    transform: translateX(-100%);
+}
+
+#toggle-user{
+
+    &:checked ~ #user{
+        transform: translateX(0px);
+    }
+}
