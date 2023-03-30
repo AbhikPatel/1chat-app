@@ -1,5 +1,9 @@
 <app-one-chat-presentation
-    [getListenData]="listen$ | async"
-    (emitEventName)="getEventName($event)"
-    [getAllUser$]="allUser$"
+    [getWelcomeData]="listen$ | async"
+    [getAllUser]="allUser$ | async"
+    [getConversationUsers]="conversationUser$ | async"
+    (emitConversationId)="getConversationId($event)"
+    [getChatArray]="getMessages$ | async"
+    (emitChatData)="getChatObject($event)"
+    [newChat]="newMessage$ | async"
 ></app-one-chat-presentation>

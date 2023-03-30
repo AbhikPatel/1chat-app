@@ -28,6 +28,10 @@ html,body{
     font-size: 0.8rem;
 }
 
+.fs-8{
+    font-size: 0.7rem;
+}
+
 .user-container{
     background-color: $white;
     &:hover{
@@ -49,4 +53,8 @@ html,body{
     &:checked ~ #user{
         transform: translateX(0px);
     }
+}
+
+.bg-theme{
+    background-color: #e7e7e7;
 }

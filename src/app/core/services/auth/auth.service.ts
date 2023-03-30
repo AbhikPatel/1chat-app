@@ -32,6 +32,7 @@ export class AuthService {
     return this._http.httpPostRequest(url, credentials).pipe(
       map((res) => {
         localStorage.setItem('token', res.token)
+        localStorage.setItem('userId', res.data.doc._id)
         return this._adapt.toResponse(res.data.doc)
       })
     )

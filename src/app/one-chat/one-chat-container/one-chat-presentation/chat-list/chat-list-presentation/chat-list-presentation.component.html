@@ -19,14 +19,14 @@
 
         <!-- Start: Search User  -->
         <div id="user" class="position-absolute overflow-auto border-end bg-white">
-            <form class="p-3 bg-info">
+            <form class="p-3 bg-theme">
                 <input type="text" class="form-control" name="search" [(ngModel)]="searchText" autocomplete="off"
                     placeholder="Search a User..">
             </form>
             <div class="user-container d-flex align-items-center p-2 border-bottom"
                 *ngFor="let data of getAllUser | search:searchText" role="button">
                 <div class="px-3 me-1">
-                    <img src="../../../../../../assets/images/avatar.png" class="rounded-circle user-img" alt="profile">
+                    <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
                 </div>
                 <div class="ms-2">
                     <span class="fw-semibold"> {{data.first_name}} </span>
@@ -36,13 +36,14 @@
         <!-- End: Search User  -->
 
         <!-- Start: Chat User  -->
-        <div class="user-container d-flex align-items-center" role="button">
+        <div class="user-container d-flex align-items-center" role="button" *ngFor="let data of getConversationUser" (click)="onUser(data)"
+            [ngClass]="{'bg-theme' : data.chatId === chatId}">
             <div class="px-3 me-1">
-                <img src="../../../../../../assets/images/avatar.png" class="rounded-circle user-img" alt="profile">
+                <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
             </div>
             <div class="py-3 border-bottom flex-grow-1 h-100 flex-column d-flex pe-3">
                 <div class="d-flex justify-content-between">
-                    <span class="fw-semibold"> Abhishek Patel </span>
+                    <span class="fw-semibold"> {{data.first_name}} </span>
                     <span class="text-chat fs-7"> 8:10 </span>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -50,61 +51,8 @@
                 </div>
             </div>
         </div>
-        <div class="user-container d-flex align-items-center" role="button">
-            <div class="px-3 me-1">
-                <img src="../../../../../../assets/images/avatar.png" class="rounded-circle user-img" alt="profile">
-            </div>
-            <div class="py-3 border-bottom flex-grow-1 h-100 flex-column d-flex pe-3">
-                <div class="d-flex justify-content-between">
-                    <span class="fw-semibold"> Abhishek Patel </span>
-                    <span class="text-chat fs-7"> 8:10 </span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fs-7"> Offline </span>
-                </div>
-            </div>
-        </div>
-        <div class="user-container d-flex align-items-center" role="button">
-            <div class="px-3 me-1">
-                <img src="../../../../../../assets/images/avatar.png" class="rounded-circle user-img" alt="profile">
-            </div>
-            <div class="py-3 border-bottom flex-grow-1 h-100 flex-column d-flex pe-3">
-                <div class="d-flex justify-content-between">
-                    <span class="fw-semibold"> Abhishek Patel </span>
-                    <span class="text-chat fs-7"> 8:10 </span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fs-7"> Offline </span>
-                </div>
-            </div>
-        </div>
-        <div class="user-container d-flex align-items-center" role="button">
-            <div class="px-3 me-1">
-                <img src="../../../../../../assets/images/avatar.png" class="rounded-circle user-img" alt="profile">
-            </div>
-            <div class="py-3 border-bottom flex-grow-1 h-100 flex-column d-flex pe-3">
-                <div class="d-flex justify-content-between">
-                    <span class="fw-semibold"> Mrunal Patel </span>
-                    <span class="text-chat fs-7"> 8:10 </span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fs-7"> Offline </span>
-                </div>
-            </div>
-        </div>
-        <div class="user-container d-flex align-items-center" role="button">
-            <div class="px-3 me-1">
-                <img src="../../../../../../assets/images/avatar.png" class="rounded-circle user-img" alt="profile">
-            </div>
-            <div class="py-3 border-bottom flex-grow-1 h-100 flex-column d-flex pe-3">
-                <div class="d-flex justify-content-between">
-                    <span class="fw-semibold"> Abhishek Patel </span>
-                    <span class="text-chat fs-7"> 8:10 </span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="fs-7"> Offline </span>
-                </div>
-            </div>
+        <div class="d-flex justify-content-center align-items-center h-100" *ngIf="getConversationUser?.length === 0">
+            <span class="text-info"> No Conversation started </span>
         </div>
         <!-- End: Chat User  -->
     </div>

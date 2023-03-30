@@ -3,7 +3,6 @@ import { Adapter } from "src/app/core/adaptor/adaptor";
 import { NewUser, User } from "src/app/shared/models/user.model";
 
 @Injectable()
-
 export class allUserAdaptor implements Adapter<NewUser[]>{
 
     public toResponse(item: User[]): any[] {
@@ -22,7 +21,8 @@ export class allUserAdaptor implements Adapter<NewUser[]>{
                 data.language,
                 data.chats,
                 data.passwordChangedAt,
-                data._v
+                data._v,
+                data.photo
             )
             data = user
             return data
@@ -30,3 +30,16 @@ export class allUserAdaptor implements Adapter<NewUser[]>{
         return item
     }
 }
+
+// @Injectable()
+// export class MessageAdaptor implements Adapter<Message[]>{
+     
+//     public toResponse(item: Message[]): Message[] {
+//         item.map((data:Message) => {
+//             console.log(data);
+            
+//         })
+        
+//         return item
+//     }
+// }
