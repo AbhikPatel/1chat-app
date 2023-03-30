@@ -1,1 +1,15 @@
-<router-outlet></router-outlet>
+<div class="h-100 position-relative">
+
+    <!-- Start: Loader Section  -->
+    <ng-container *ngIf="showLoader">
+        <div id="loader" class="position-absolute d-flex align-items-center justify-content-center">
+            
+            <!-- Loader  -->
+            <figure>
+                <img src="../assets/icons/105-loader-1.gif" alt="loader">
+            </figure>
+        </div>
+    </ng-container>
+    <!-- End: Loader Section  -->
+    <router-outlet></router-outlet> 
+</div>
