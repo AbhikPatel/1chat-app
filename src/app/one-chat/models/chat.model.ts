@@ -27,30 +27,27 @@ export class Message{
 
 }
 export class NewMessage{
-    _id:string
     is_read:boolean
     chat:string
     sender:string
     receiver:string
-    time:string
+    time:Date
     type:string
     content:Text
     convertedTime:string
     is_sender:boolean
     
     constructor(
-        _id:string,
         is_read:boolean,
         chat:string,
         sender:string,
         receiver:string,
-        time:string,
+        time:Date,
         type:string,
         content:Text,
         convertedTime:string,
         is_sender:boolean,
     ){
-        this._id = _id
         this.is_read = is_read
         this.chat = chat
         this.sender = sender
@@ -70,5 +67,27 @@ export class Text{
         text:string
     ){
         this.text= text
+    }
+}
+
+export class CreateChat{
+    owner:string
+    chat_type:string
+    title:string
+    members:string[]
+    _id?:string
+
+    constructor(
+        owner:string,
+        chat_type:string,
+        title:string,
+        members:string[],
+        _id?:string
+    ){
+        this.owner = owner
+        this.chat_type = chat_type
+        this.title = title
+        this.members = members
+        this._id = _id
     }
 }

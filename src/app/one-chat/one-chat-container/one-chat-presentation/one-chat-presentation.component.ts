@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Chat, Member, NewUser } from 'src/app/shared/models/user.model';
-import { Message } from '../../models/chat.model';
+import { CreateChat, Message, NewMessage } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 
 @Component({
@@ -12,13 +12,26 @@ import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presente
 })
 export class OneChatPresentationComponent implements OnInit {
 
-  @Input() public set getChatArray(v: Message[] | null) {
+  // This property is used to get new chat Object
+  @Input() public set getNewChatId(v: CreateChat | null) {
+    if (v) {
+      this._getNewChatId = v;
+      this.getChatId(v._id)
+      this._service.updatedChatObj();
+    }
+  }
+  public get getNewChatId(): CreateChat | null {
+    return this._getNewChatId;
+  }
+  
+  // This property is used to get chat array
+  @Input() public set getChatArray(v: NewMessage[] | null) {
     if (v) {
       this._getChatArray = v;
       this._service.getChatArray(v)
     }
   }
-  public get getChatArray(): Message[] | null {
+  public get getChatArray(): NewMessage[] | null {
     return this._getChatArray;
   }
 
@@ -54,21 +67,23 @@ export class OneChatPresentationComponent implements OnInit {
   }
 
 
-  @Input() public set newChat(v: Message | null) {
+  @Input() public set newChat(v: NewMessage | null) {
     if (v) {
       this._newChat = v;
       this._service.addNewChat(v);
     }
   }
-  public get newChat(): Message | null {
+  public get newChat(): NewMessage | null {
     return this._newChat;
   }
 
-  private _newChat: Message | null;
 
   @Output() public emitConversationId: EventEmitter<string>;
   @Output() public emitChatData: EventEmitter<Message>;
+  @Output() public emitNewConversation: EventEmitter<CreateChat>;
 
+  private _newChat: NewMessage | null;
+  private _getNewChatId: CreateChat | null
   private _getWelcomeData: any;
   private _getAllUser: NewUser[] | null;
   private _getConversationUsers: Chat[] | null;
@@ -76,23 +91,27 @@ export class OneChatPresentationComponent implements OnInit {
   public transferAllUser$: Observable<NewUser[]>;
   public receiverData$: Observable<NewUser>;
   public transferConversationUser$: Observable<Member[]>;
-  private _getChatArray: Message[] | null;
-  public updatedChatArray:Message[]
+  private _getChatArray: NewMessage[] | null;
+  public updatedChatArray$: Observable<NewMessage[]>;
+  public newConversationUser:Observable<Member>;
 
   constructor(
     private _service: OneChatPresenterService
   ) {
     this.destroy = new Subject();
     this.emitConversationId = new EventEmitter();
+    this.emitNewConversation = new EventEmitter();
     this.emitChatData = new EventEmitter();
     this._getConversationUsers = [];
     this.transferAllUser$ = new Observable();
     this.transferConversationUser$ = new Observable();
     this.receiverData$ = new Observable();
-    this.updatedChatArray = []
+    this.updatedChatArray$ = new Observable();
+    this.newConversationUser = new Observable();
     this._getAllUser = [];
     this._getChatArray = [];
     this._newChat = null;
+    this._getNewChatId = {} as CreateChat
   }
 
   ngOnInit(): void {
@@ -107,8 +126,10 @@ export class OneChatPresentationComponent implements OnInit {
     this.transferAllUser$ = this._service.allUsers$;
     this.transferConversationUser$ = this._service.onlyConversationUsers$;
     this._service.chatData$.pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.emitChatData.emit(chat))
-    this._service.chatArray$.pipe(takeUntil(this.destroy)).subscribe((data) => this.updatedChatArray = data)
+    this.updatedChatArray$ = this._service.chatArray$
     this.receiverData$ = this._service.receiverData$
+    this._service.startNewChat$.pipe(takeUntil(this.destroy)).subscribe((chat: CreateChat) => this.emitNewConversation.emit(chat))
+    this.newConversationUser = this._service.newConversationUser$
   }
 
   ngOnDestroy() {
@@ -116,9 +137,11 @@ export class OneChatPresentationComponent implements OnInit {
     this.destroy.complete();
   }
 
-  public getChatId(chatId: string) {
-    this.emitConversationId.emit(chatId);
-    this._service.chatId = chatId
+  public getChatId(chatId?: string) {
+    if (chatId) {
+      this.emitConversationId.emit(chatId);
+      this._service.chatId = chatId
+    }
   }
 
   public getReceiverId(id: string) {
@@ -127,5 +150,9 @@ export class OneChatPresentationComponent implements OnInit {
 
   public getChat(chat: string) {
     this._service.getMessage(chat)
+  }
+
+  public getNewChatState() {
+    this._service.newChatState = true;
   }
 }

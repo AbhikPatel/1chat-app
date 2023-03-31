@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Chat, Member, NewUser } from 'src/app/shared/models/user.model';
-import { Message } from '../../models/chat.model';
+import { CreateChat, Message, NewMessage } from '../../models/chat.model';
 
 @Injectable()
 
 export class OneChatPresenterService {
-
-  public userId: string | null;
 
   private allUsers: Subject<NewUser[]>;
   public allUsers$: Observable<NewUser[]>;
@@ -18,19 +16,29 @@ export class OneChatPresenterService {
   private chatData: Subject<Message>;
   public chatData$: Observable<Message>;
 
-  private chatArray: Subject<Message[]>;
-  public chatArray$: Observable<Message[]>;
+  private chatArray: Subject<NewMessage[]>;
+  public chatArray$: Observable<NewMessage[]>;
 
   private receiverData: Subject<NewUser>;
   public receiverData$: Observable<NewUser>;
 
+  private startNewChat: Subject<CreateChat>;
+  public startNewChat$: Observable<CreateChat>;
+
+  private newConversationUser: Subject<Member>;
+  public newConversationUser$: Observable<Member>;
+
+  public users: NewUser[];
+  public chats: NewMessage[];
+  public newChatState: boolean;
+  public userId: string | null;
   public receiverId: string;
   public chatId: string;
-  public chats: Message[];
-  public users: NewUser[];
+  public updatedChat: string;
+  public allChatIds: string[];
+  public userDetails: NewUser | undefined;
 
   constructor() {
-
     this.allUsers = new Subject();
     this.allUsers$ = new Observable();
     this.allUsers$ = this.allUsers.asObservable();
@@ -51,22 +59,38 @@ export class OneChatPresenterService {
     this.receiverData$ = new Observable();
     this.receiverData$ = this.receiverData.asObservable();
 
+    this.startNewChat = new Subject();
+    this.startNewChat$ = new Observable();
+    this.startNewChat$ = this.startNewChat.asObservable();
+
+    this.newConversationUser = new Subject();
+    this.newConversationUser$ = new Observable();
+    this.newConversationUser$ = this.newConversationUser.asObservable();
+
     this.userId = localStorage.getItem('userId')
 
     this.receiverId = '';
     this.chatId = '';
+    this.updatedChat = '';
     this.chats = [];
     this.users = [];
+    this.allChatIds = [];
+    this.newChatState = false;
+    this.userDetails = {} as NewUser;
+
   }
 
-  public removeUserData(chat: Chat[]) {
-    let filteredData = chat.map(data => {
+
+  public removeUserData(chat: Chat[]): void {
+    let filteredData = chat.map((data: Chat) => {
       let item = [];
+      this.allChatIds.push(data._id)
       let user = data.members.filter(user => user._id !== this.userId)
       item.push(
         Object.assign(user[0],
           {
             chatId: data._id,
+            full_name: user[0].first_name + ' ' + user[0].last_name
           })
       )
       return item
@@ -74,46 +98,93 @@ export class OneChatPresenterService {
     this.onlyConversationUsers.next(filteredData)
   }
 
-  public removeOwner(user: NewUser[]) {
+  public removeOwner(user: NewUser[]): void {
     let data = user.filter((items: NewUser) => items._id !== this.userId)
     this.allUsers.next(data)
     this.users = data;
+    this.userDetails = user.find((item: NewUser) => item._id === this.userId)
   }
 
-  public getMessage(message: string) {
+  public getMessage(message: string): void {
     if (this.userId) {
-      let chatObj = {
-        is_read: false,
-        chat: this.chatId,
-        sender: this.userId,
-        receiver: this.receiverId,
-        time: new Date(),
-        type: 'text',
-        content: {
-          text: message
+      if (this.newChatState) {
+        let newChat: CreateChat = {
+          owner: this.userId,
+          chat_type: 'dm',
+          title: 'dm',
+          members: [
+            this.userId,
+            this.receiverId
+          ]
         }
+        this.startNewChat.next(newChat)
+        this.chats = [];
+        this.newChatState = false;
+        this.updatedChat = message;
+
+      } else {
+        let chatObj: NewMessage = {
+          is_read: false,
+          chat: this.chatId,
+          sender: this.userId,
+          receiver: this.receiverId,
+          time: new Date(),
+          type: 'text',
+          is_sender: true,
+          convertedTime: `${new Date().getHours()}:${new Date().getMinutes()}`,
+          content: {
+            text: message
+          }
+        }
+        this.chatData.next(chatObj);
+        this.chats.push(chatObj)
+        this.getChatArray(this.chats);
       }
 
-      this.chatData.next(chatObj);
-      this.chats.push(chatObj);
-      this.getChatArray(this.chats)
     }
   }
 
-  public getChatArray(chat: Message[]): void {
+  public getChatArray(chat: NewMessage[]): void {
     this.chats = chat;
     this.chatArray.next(chat);
   }
 
-  public addNewChat(newChat: Message): void {
-    this.chats.push(newChat)
-    this.getChatArray(this.chats)
+  public addNewChat(newChat: NewMessage): void {
+    let isChatId = this.allChatIds.filter((id: string) => id === newChat.chat)
+    if (newChat.receiver === this.userId) {
+      this.chats.push(newChat)
+      this.getChatArray(this.chats)
+    }
+    // debugger
+    if (isChatId.length === 0) {
+      // debugger
+      if (this.userDetails) {
+        let obj: Member = {
+          _id: this.userDetails._id,
+          first_name: this.userDetails.first_name,
+          last_name: this.userDetails.last_name,
+          photo: this.userDetails.photo,
+          full_name: this.userDetails.full_name,
+          chatId: newChat.chat,
+        }
+        this.newConversationUser.next(obj)
+        // debugger
+      }
+    }
   }
 
-  public getReceiverId(id: string) {
+  public getReceiverId(id: string): void {
     this.receiverId = id;
     let receiver: NewUser | undefined = this.users.find((items: NewUser) => items._id === this.receiverId)
     if (receiver)
       this.receiverData.next(receiver)
+
+    if (this.newChatState)
+      this.chatArray.next([])
+  }
+
+  public updatedChatObj(): void {
+    this.getMessage(this.updatedChat);
+    this.updatedChat = '';
   }
 }

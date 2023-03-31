@@ -5,5 +5,7 @@
     (emitConversationId)="getConversationId($event)"
     [getChatArray]="getMessages$ | async"
     (emitChatData)="getChatObject($event)"
-    [newChat]="newMessage$ | async"
+    [newChat]="newMessage | async"
+    (emitNewConversation)="getNewConservation($event)"
+    [getNewChatId]="newChatId$ | async"
 ></app-one-chat-presentation>

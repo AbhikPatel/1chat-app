@@ -118,18 +118,21 @@ export class Member{
     last_name:string
     chatId:string
     photo:string
+    full_name:string
 
     constructor(
         _id:string,
         first_name:string,
         last_name:string,
         chatId:string,
-        photo:string
+        photo:string,
+        full_name:string
     ){
         this._id = _id
         this.first_name = first_name
         this.last_name = last_name
         this.chatId = chatId
         this.photo = photo
+        this.full_name = full_name
     }
 }

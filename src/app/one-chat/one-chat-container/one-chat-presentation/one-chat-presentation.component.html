@@ -8,6 +8,8 @@
             [getConversationUser]="transferConversationUser$ | async" 
             (emitChatId)="getChatId($event)"
             (emitReceiverId)="getReceiverId($event)"
+            (emitNewChatState)="getNewChatState()"
+            [newConversationUser]="newConversationUser | async"
         ></app-chat-list-presentation>
     </div>
     <!-- End: User List  -->
@@ -15,7 +17,7 @@
     <!-- Start: Chat Screen  -->
     <div class="flex-grow-1">
         <app-chat-message-presentation 
-            [getChat]="updatedChatArray" 
+            [getChat]="updatedChatArray$ | async" 
             (emitChat)="getChat($event)"
             [getReceiverData]="receiverData$ | async"
         ></app-chat-message-presentation>

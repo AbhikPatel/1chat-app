@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
-import { allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
+import { allUserAdaptor, MessageAdaptor, NewChatAdaptor } from './one-chat-adaptor/one-chat.adaptor';
 import { OneChatContainerComponent } from './one-chat-container/one-chat-container.component';
 import { ChatListPresentationComponent } from './one-chat-container/one-chat-presentation/chat-list/chat-list-presentation/chat-list-presentation.component';
 import { ChatMessagePresentationComponent } from './one-chat-container/one-chat-presentation/chat-message/chat-message-presentation/chat-message-presentation.component';
@@ -31,6 +31,8 @@ import { SearchPipe } from './pipe/search.pipe';
   providers:[
     OneChatService,
     allUserAdaptor,
+    MessageAdaptor,
+    NewChatAdaptor
   ]
 })
 export class OneChatModule { }
