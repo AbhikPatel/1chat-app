@@ -12,12 +12,11 @@ import { allUserAdaptor, MessageAdaptor } from './one-chat-adaptor/one-chat.adap
 
 export class OneChatService {
 
-  // socket = io('wss://anonychat.onrender.com');
-  socket = io('http://172.16.3.107:21321');
+  socket = io('wss://anonychat.onrender.com');
+  // socket = io('http://172.16.3.107:21321');
   public api:string;
   public userId:string | null;
-  public role:string | null;
-
+  
   constructor(
     private _http:HttpService,
     private _allUserAdaptor:allUserAdaptor,
@@ -25,7 +24,6 @@ export class OneChatService {
   ) { 
     this.api = environment.baseURL;
     this.userId = localStorage.getItem('userId');
-    this.role = localStorage.getItem('role');
     this.setMap();
   }
 
@@ -61,7 +59,19 @@ export class OneChatService {
    * @description This api is called to get all the users data
    */
   public getAllUserData():Observable<NewUser[]>{
-    const url:string = this.role === 'lead' ? this.api + 'users/' : this.api + 'users/?role=lead';
+    const url:string = this.api + 'users/';
+    return this._http.httpGetRequest(url).pipe(
+      map((res:any) => this._allUserAdaptor.toResponse(res.data.doc))
+    )
+  }
+
+  /**
+   * @name getAllUserData
+   * @returns 
+   * @description This api is called to get all the users data
+   */
+  public getOnlyLeads():Observable<NewUser[]>{
+    const url:string = this.api + 'users/?role=lead';
     return this._http.httpGetRequest(url).pipe(
       map((res:any) => this._allUserAdaptor.toResponse(res.data.doc))
     )
@@ -86,7 +96,7 @@ export class OneChatService {
    * @description This will get the data of all the messages as per the chatId
    */
   public getChatMessages(chatId:string):Observable<NewMessage[]>{
-    const url:string = this.api + `messages?chat=` + chatId
+    const url:string = this.api + `messages?chat=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res:any) => this._messageAdaptor.toResponse(res.data.doc))
     )

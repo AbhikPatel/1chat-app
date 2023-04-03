@@ -22,10 +22,11 @@ export class OneChatContainerComponent implements OnInit {
   public newMessage: Subject<NewMessage>;
   // This observable will pass all the users data
   public allUser$: Observable<NewUser[]>;
+  public onlyLeads$: Observable<NewUser[]>;
   // This observable will pass all the users which has conversation with the sender
   public conversationUser$: Observable<Chat[]>;
   // This observable will pass all the Messages data
-  public getMessages$: Observable<NewMessage[]>;
+  public getAllMessages: NewMessage[];
 
   constructor(
     private _service: OneChatService,
@@ -34,9 +35,9 @@ export class OneChatContainerComponent implements OnInit {
     this.destroy = new Subject();
     this.listen$ = new Observable();
     this.newMessage = new Subject();
+    this.onlyLeads$ = new Observable();
     this.allUser$ = new Observable();
     this.conversationUser$ = new Observable();
-    this.getMessages$ = new Observable();
     this.newChatId$ = new Subject();
   }
 
@@ -49,6 +50,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is used to call on OnInit
    */
   public props() {
+    this.onlyLeads$ = this._service.getOnlyLeads();
     this.allUser$ = this._service.getAllUserData();
     this.conversationUser$ = this._service.getConversationUser();
     this.listen$ = this._service.listen('welcome');
@@ -71,7 +73,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called to get conversation Id to pass the messages Data
    */
   public getConversationId(chatId: string) {
-    this.getMessages$ = this._service.getChatMessages(chatId)
+    this._service.getChatMessages(chatId).subscribe((messages: NewMessage[]) => this.getAllMessages = messages)
   }
 
   /**
@@ -79,8 +81,8 @@ export class OneChatContainerComponent implements OnInit {
    * @param chat 
    * @description This method is called to get chat object to emit on chat event
    */
-  public getChatObject(chat: Message) {
-    this._service.emit('chat', chat)
+  public getChatObject(chat: NewMessage) {
+    this._service.emit('chat', this._newChatAdaptor.toRequest(chat))
   }
 
   /**

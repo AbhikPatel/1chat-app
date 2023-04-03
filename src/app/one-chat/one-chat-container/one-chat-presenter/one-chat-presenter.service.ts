@@ -13,8 +13,8 @@ export class OneChatPresenterService {
   private onlyConversationUsers: Subject<Member[]>;
   public onlyConversationUsers$: Observable<Member[]>;
 
-  private chatData: Subject<Message>;
-  public chatData$: Observable<Message>;
+  private chatData: Subject<NewMessage>;
+  public chatData$: Observable<NewMessage>;
 
   private chatArray: Subject<NewMessage[]>;
   public chatArray$: Observable<NewMessage[]>;
@@ -32,11 +32,13 @@ export class OneChatPresenterService {
   public chats: NewMessage[];
   public newChatState: boolean;
   public userId: string | null;
+  public role: string | null;
   public receiverId: string;
   public chatId: string;
   public updatedChat: string;
   public allChatIds: string[];
   public userDetails: NewUser | undefined;
+  public onlyLeads: NewUser[];
 
   constructor() {
     this.allUsers = new Subject();
@@ -67,7 +69,8 @@ export class OneChatPresenterService {
     this.newConversationUser$ = new Observable();
     this.newConversationUser$ = this.newConversationUser.asObservable();
 
-    this.userId = localStorage.getItem('userId')
+    this.userId = localStorage.getItem('userId');
+    this.role = localStorage.getItem('role');
 
     this.receiverId = '';
     this.chatId = '';
@@ -75,9 +78,9 @@ export class OneChatPresenterService {
     this.chats = [];
     this.users = [];
     this.allChatIds = [];
+    this.onlyLeads = [];
     this.newChatState = false;
     this.userDetails = {} as NewUser;
-
   }
 
 
@@ -99,10 +102,9 @@ export class OneChatPresenterService {
   }
 
   public removeOwner(user: NewUser[]): void {
-    let data = user.filter((items: NewUser) => items._id !== this.userId)
-    this.allUsers.next(data)
-    this.users = data;
-    this.userDetails = user.find((item: NewUser) => item._id === this.userId)
+    this.users = user;
+    let filteredUsers = this.users.filter((items: NewUser) => items._id !== this.userId)
+    this.role === 'intern' ? this.allUsers.next(this.onlyLeads) : this.allUsers.next(filteredUsers)
   }
 
   public getMessage(message: string): void {
@@ -155,9 +157,8 @@ export class OneChatPresenterService {
       this.chats.push(newChat)
       this.getChatArray(this.chats)
     }
-    // debugger
     if (isChatId.length === 0) {
-      // debugger
+
       if (this.userDetails) {
         let obj: Member = {
           _id: this.userDetails._id,
@@ -168,7 +169,6 @@ export class OneChatPresenterService {
           chatId: newChat.chat,
         }
         this.newConversationUser.next(obj)
-        // debugger
       }
     }
   }
@@ -181,6 +181,8 @@ export class OneChatPresenterService {
 
     if (this.newChatState)
       this.chatArray.next([])
+
+    
   }
 
   public updatedChatObj(): void {

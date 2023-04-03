@@ -7,15 +7,17 @@ import { AuthService } from '../services/auth/auth.service';
 
 export class AuthGuard implements CanActivate {
 
+  public userToken:string | null;
   constructor(
-    private _service: AuthService,
     private _route: Router
-  ) {}
+  ) {
+    this.userToken = localStorage.getItem('token')
+  }
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (this._service.userToken) {
+    if (this.userToken) {
       return true
     } else {
       this._route.navigateByUrl('/login')

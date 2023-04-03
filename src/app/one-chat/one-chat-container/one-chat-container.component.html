@@ -3,9 +3,10 @@
     [getAllUser]="allUser$ | async"
     [getConversationUsers]="conversationUser$ | async"
     (emitConversationId)="getConversationId($event)"
-    [getChatArray]="getMessages$ | async"
+    [getChatArray]="getAllMessages"
     (emitChatData)="getChatObject($event)"
     [newChat]="newMessage | async"
     (emitNewConversation)="getNewConservation($event)"
     [getNewChatId]="newChatId$ | async"
+    [getOnlyLeads]="onlyLeads$|async"
 ></app-one-chat-presentation>

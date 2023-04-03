@@ -64,7 +64,8 @@ export class ChatMessagePresentationComponent implements OnInit {
   }
 
   public convertPhoto(profileImg?: string) {
-    let converter = 'http://172.16.3.107:21321/img/users/' + profileImg
+    // let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
+    let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
     return profileImg ? converter : '../../../../../../assets/images/avatar.png'
   }
 

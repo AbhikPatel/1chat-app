@@ -112,4 +112,18 @@ export class NewChatAdaptor implements Adapter<NewMessage>{
         )
         return newChat
     }
+
+    public toRequest(item: NewMessage) {
+        const data:Message = new Message(
+            item.is_read,
+            item.chat,
+            item.sender,
+            item.receiver,
+            item.time,
+            item.type,
+            item.content,
+        );
+
+        return data
+    }
 }
