@@ -68,6 +68,6 @@ export class LoginComponent implements OnInit {
    */
   public ngOnDestroy(): void {
     this.destroy.next();
-    this.destroy.complete();
+    this.destroy.unsubscribe();
   }
 }

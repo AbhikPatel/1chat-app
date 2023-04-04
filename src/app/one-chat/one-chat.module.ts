@@ -11,6 +11,7 @@ import { OneChatPresentationComponent } from './one-chat-container/one-chat-pres
 import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { SearchPipe } from './pipe/search.pipe';
+import { CommonService } from '../shared/services/common.service';
 
 
 @NgModule({
@@ -32,7 +33,7 @@ import { SearchPipe } from './pipe/search.pipe';
     OneChatService,
     allUserAdaptor,
     MessageAdaptor,
-    NewChatAdaptor
+    NewChatAdaptor,
   ]
 })
 export class OneChatModule { }

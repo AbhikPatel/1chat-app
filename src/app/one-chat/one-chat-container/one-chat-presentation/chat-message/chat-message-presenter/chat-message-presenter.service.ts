@@ -9,6 +9,11 @@ export class ChatMessagePresenterService {
     private _fb:FormBuilder
   ) { }
 
+  /**
+   * @name getGroup
+   * @returns formGroup
+   * @description This method is use to create form Group
+   */
   public getGroup(){
     return this._fb.group({
       message:['',[Validators.required]]

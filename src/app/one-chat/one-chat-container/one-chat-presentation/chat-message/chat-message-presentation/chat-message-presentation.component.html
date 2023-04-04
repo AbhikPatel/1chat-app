@@ -17,7 +17,7 @@
     <!-- End: Header Section  -->
 
     <!-- Start: Chat Screen  -->
-    <div class="flex-grow-1 overflow-auto px-5" style="background-color: #f6fdff;">
+    <div class="flex-grow-1 overflow-auto px-5" style="background-color: #f6fdff;" #scroll>
         <!-- Chat  -->
         <div class="d-flex py-2" *ngFor="let data of getChat"
             [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
@@ -42,7 +42,7 @@
     <!-- Start: Message Typer -->
     <div id="typer" class="bg-theme d-flex align-items-center p-3">
         <form class="w-100 pe-3" (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
-            <input type="text" class="form-control" name="message" id="message" formControlName="message">
+            <input type="text" class="form-control" name="message" id="message" formControlName="message" autocomplete="off">
         </form>
         <button class="fs-4 border-0" type="submit">
             <i class='bx bxs-send'></i>

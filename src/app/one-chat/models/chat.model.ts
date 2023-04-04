@@ -91,3 +91,16 @@ export class CreateChat{
         this._id = _id
     }
 }
+
+export class Typing{
+    receiver:string
+    sender:string
+
+    constructor(
+        receiver:string,
+        sender:string
+    ){
+        this.receiver = receiver
+        this.sender = sender
+    }
+}

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { Message, NewMessage } from 'src/app/one-chat/models/chat.model';
+import { NewMessage } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 
@@ -14,35 +14,51 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
 })
 export class ChatMessagePresentationComponent implements OnInit {
 
-  @Input() public set getChat(v: NewMessage[] | null) {
-    this._getChat = v;
+  @ViewChild('scroll') public scrollDown: ElementRef;
+
+  // This property is use to get the array of chats
+  @Input() public set getChat(v: NewMessage[]) {
+    if (v) {
+      this._getChat = v;
+    }
   }
-  public get getChat(): NewMessage[] | null {
+  public get getChat(): NewMessage[] {
     return this._getChat;
   }
 
-  @Input() public set getReceiverData(v: NewUser | null) {
-    if (v){
+  // This property is use to get the details of the recevier
+  @Input() public set getReceiverData(v: NewUser) {
+    if (v) {
       this._getReceiverData = v;
     }
   }
-  public get getReceiverData(): NewUser | null {
+  public get getReceiverData(): NewUser {
     return this._getReceiverData;
   }
 
+  // This property is use to emit the chat
   @Output() public emitChat: EventEmitter<string>;
+  // This property is use to emit the sender Id
+  @Output() public emitSenderId: EventEmitter<string>;
+  // This property is use to emit the chat
   public destroy: Subject<void>;
+  // This property is to create a FormGroup
   public chatGroup: FormGroup;
+  // This property is to store the sender ID
   public senderId: string | null;
+  // This property is to store array of chats
   private _getChat: NewMessage[] | null;
+  // This property is to store the details of the receiver
   private _getReceiverData: NewUser;
 
   constructor(
     private _service: ChatMessagePresenterService,
-    private _route:Router
+    private _route: Router,
+    private _cdr: ChangeDetectorRef,
   ) {
     this.destroy = new Subject();
     this.emitChat = new EventEmitter();
+    this.emitSenderId = new EventEmitter();
     this.chatGroup = this._service.getGroup();
     this._getChat = [];
     this.senderId = localStorage.getItem('userId');
@@ -50,27 +66,58 @@ export class ChatMessagePresentationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.scrollDown)
+      this.scrollToBottom()
 
+    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId))
   }
 
-  ngOnDestroy() {
-    this.destroy.next();
-    this.destroy.complete();
+  public scrollToBottom(): void {
+    try {
+      this.scrollDown.nativeElement.scrollTop = this.scrollDown.nativeElement.scrollHeight;
+    } catch (err) {
+      console.log(err)
+    }
   }
 
+  /**
+   * @name onSubmit
+   * @description This method is use to submit the form
+   */
   public onSubmit() {
-    this.emitChat.emit(this.chatGroup.value.message);
-    this.chatGroup.reset();
+    if (this.chatGroup.valid) {
+      this.emitChat.emit(this.chatGroup.value.message);
+      this.chatGroup.reset();
+    }
   }
 
+  /**
+   * @name convertPhoto
+   * @param profileImg 
+   * @returns image url
+   * @description This method is use to convert the link into soucre link
+   */
   public convertPhoto(profileImg?: string) {
-    // let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
-    let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
+    let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
+    // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
     return profileImg ? converter : '../../../../../../assets/images/avatar.png'
   }
 
-  public onLogOut(){
+  /**
+   * @name onLogOut
+   * @description This method is use to logout the user
+   */
+  public onLogOut() {
     this._route.navigateByUrl('/login');
     localStorage.clear();
+  }
+
+  /**
+   * @name ngOnDestroy
+   * @description This method is called the component is destoryed
+   */
+  public ngOnDestroy() {
+    this.destroy.next();
+    this.destroy.unsubscribe();
   }
 }

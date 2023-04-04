@@ -15,9 +15,8 @@ export class AuthService {
 
   constructor(
     private _http: HttpService,
-    private _adapt:userAdaptor
+    private _adapt: userAdaptor
   ) {
-    this.userToken = localStorage.getItem('token')
     this.api = environment.baseURL
   }
 
@@ -34,8 +33,14 @@ export class AuthService {
         localStorage.setItem('token', res.token)
         localStorage.setItem('role', res.data.doc.role)
         localStorage.setItem('userId', res.data.doc._id)
+
         return this._adapt.toResponse(res.data.doc)
       })
     )
+  }
+
+  public getToken() {
+    this.userToken = localStorage.getItem('token') ?? '';
+    return this.userToken
   }
 }

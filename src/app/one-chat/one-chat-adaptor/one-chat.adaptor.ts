@@ -123,7 +123,6 @@ export class NewChatAdaptor implements Adapter<NewMessage>{
             item.type,
             item.content,
         );
-
         return data
     }
 }

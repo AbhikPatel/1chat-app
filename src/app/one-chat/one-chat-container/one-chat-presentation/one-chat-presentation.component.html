@@ -10,6 +10,8 @@
             (emitReceiverId)="getReceiverId($event)"
             (emitNewChatState)="getNewChatState()"
             [newConversationUser]="newConversationUser | async"
+            [getSenderDetails]="senderDetails$  | async"
+            [getTypingData]="typingData |async"
         ></app-chat-list-presentation>
     </div>
     <!-- End: User List  -->
@@ -20,6 +22,7 @@
             [getChat]="updatedChatArray$ | async" 
             (emitChat)="getChat($event)"
             [getReceiverData]="receiverData$ | async"
+            (emitSenderId)="getSenderId($event)"
         ></app-chat-message-presentation>
     </div>
     <!-- End: Chat Screen  -->
