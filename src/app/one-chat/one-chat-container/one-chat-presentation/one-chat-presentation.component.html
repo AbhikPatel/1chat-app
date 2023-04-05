@@ -1,17 +1,30 @@
 <!-- Start: Chat Container  -->
-<div class="d-flex h-100">
+<div class="d-flex h-100" #onScreen>
 
     <!-- Start: User List  -->
     <div id="sidebar" class="border border-end bg-white">
-        <app-chat-list-presentation
-            [getAllUser]="getAllUser$ | async"
+        <app-chat-list-presentation 
+            [getAllUser]="transferAllUser$ | async"
+            [getConversationUser]="transferConversationUser$ | async" 
+            (emitChatId)="getChatId($event)"
+            (emitReceiverId)="getReceiverId($event)"
+            (emitNewChatState)="getNewChatState()"
+            [newConversationUser]="newConversationUser | async"
+            [getSenderDetails]="senderDetails$  | async"
+            [getTypingData]="typingData |async"
         ></app-chat-list-presentation>
     </div>
     <!-- End: User List  -->
 
     <!-- Start: Chat Screen  -->
     <div class="flex-grow-1">
-        <app-chat-message-presentation></app-chat-message-presentation>
+        <app-chat-message-presentation 
+            [getChat]="updatedChatArray$ | async" 
+            (emitChat)="getChat($event)"
+            [getReceiverData]="receiverData$ | async"
+            (emitSenderId)="getSenderId($event)"
+            [getTypingData]="typingData |async"
+        ></app-chat-message-presentation>
     </div>
     <!-- End: Chat Screen  -->
 </div>

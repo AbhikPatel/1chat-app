@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
   ) {
     this.inputType = 'password'
     this.loginGroup = this._fb.group({
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(25)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
       password: ['', [Validators.required, Validators.maxLength(10)]]
     })
     this.destroy = new Subject();
@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
     if (this.loginGroup.valid) {
       this._service.loginUser(this.loginGroup.value).pipe(takeUntil(this.destroy)).subscribe((data) => {
         this._commonService.user$.next(data);
-        this._route.navigate(['/home'])
+        this._route.navigateByUrl('/home')
       })
     }
   }
@@ -68,6 +68,6 @@ export class LoginComponent implements OnInit {
    */
   public ngOnDestroy(): void {
     this.destroy.next();
-    this.destroy.complete();
+    this.destroy.unsubscribe();
   }
 }

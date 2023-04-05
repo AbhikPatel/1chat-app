@@ -1,15 +1,13 @@
-<div class="h-100 position-relative">
+<div class="h-100 position-relative user-select-none">
 
     <!-- Start: Loader Section  -->
-    <ng-container *ngIf="showLoader">
-        <div id="loader" class="position-absolute d-flex align-items-center justify-content-center">
-            
-            <!-- Loader  -->
-            <figure>
-                <img src="../assets/icons/105-loader-1.gif" alt="loader">
-            </figure>
-        </div>
-    </ng-container>
+    <div id="loader" *ngIf="showLoader" class="position-absolute d-flex align-items-center justify-content-center">
+
+        <!-- Loader -->
+        <figure>
+            <img src="../assets/icons/105-loader-1.gif" alt="loader">
+        </figure>
+    </div>
     <!-- End: Loader Section  -->
-    <router-outlet></router-outlet> 
+    <router-outlet></router-outlet>
 </div>

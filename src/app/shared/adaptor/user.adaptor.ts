@@ -20,6 +20,8 @@ export class userAdaptor implements Adapter<NewUser>{
             item.chats,
             item.passwordChangedAt,
             item._v,
+            item.photo,
+            item.role,
         )
         return user
     }

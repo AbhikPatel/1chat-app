@@ -14,7 +14,7 @@ export class AppComponent {
   constructor(
     private _service:LoaderService
   ){
-    this.showLoader = false
-    this._service.loader.subscribe((data:any) => this.showLoader = data)
+    this.showLoader = false;
+    this._service.loader.subscribe((data:Boolean) => this.showLoader = data)
   }
 }

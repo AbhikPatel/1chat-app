@@ -1,5 +1,13 @@
 <app-one-chat-presentation
-    [getListenData]="listen$ | async"
-    (emitEventName)="getEventName($event)"
-    [getAllUser$]="allUser$"
+    [getOnlyLeads]="onlyLeads$|async"   
+    [getAllUser]="allUser$ | async"
+    [getConversationUsers]="conversationUser$ | async"
+    (emitConversationId)="getConversationId($event)"
+    [getChatArray]="getAllMessages$ | async"
+    (emitChatData)="getChatObject($event)"
+    [newChat]="newMessage | async"
+    (emitNewConversation)="getNewConservation($event)"
+    [getNewChatId]="newChatId$ | async"
+    (emitTypingData)="getTypingId($event)"
+    [typingData]="getTypingData$"
 ></app-one-chat-presentation>
