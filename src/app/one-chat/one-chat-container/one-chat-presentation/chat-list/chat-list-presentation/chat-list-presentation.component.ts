@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
+import { Typing } from 'src/app/one-chat/models/chat.model';
 import { Member, NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
-import { Typing } from 'src/app/one-chat/models/chat.model';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -12,12 +12,11 @@ import { Typing } from 'src/app/one-chat/models/chat.model';
 })
 export class ChatListPresentationComponent implements OnInit {
 
-  // This property is used to get sender Details
+  // This property is used to get Typing details
   @Input() public set getTypingData(v: Typing) {
     if (v) {
       this._getTypingData = v;
-      console.log(v);
-      
+      this.receivingTyping(v.sender)
     }
   }
   public get getTypingData(): Typing {
@@ -71,6 +70,7 @@ export class ChatListPresentationComponent implements OnInit {
   @Output() public emitReceiverId: EventEmitter<string>;
   // This property is used to emit the state of new chat
   @Output() public emitNewChatState: EventEmitter<void>;
+  // This property is used for toggle feature to search user
   @ViewChild('toggle') public toggle: any;
   private _newConversationUser: Member;
   private _getConversationUser: Member[];
@@ -78,25 +78,32 @@ export class ChatListPresentationComponent implements OnInit {
   private _getTypingData:Typing;
   private _getSenderDetails:NewUser;
   public destroy: Subject<void>;
+  // This property is use to store the text for search
   public searchText: string;
   // This property is use to store the chat ID
   public chatId: string;
   // This property is use to store the user ID
   public userId: string;
+  // This property is use to store typing data as per subject
+  public showTyping: Subject<boolean>;
+  // This property is use to store ID of typing
+  public typingId: string;
 
   constructor(
     private _service: ChatListPresenterService
   ) {
-    this.destroy = new Subject();
-    this._getAllUser = [];
-    this.searchText = '';
-    this._getConversationUser = [];
-    this.chatId = '';
-    this.userId = '';
-    this._newConversationUser = {} as Member;
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
     this.emitNewChatState = new EventEmitter();
+    this.destroy = new Subject();
+    this.showTyping = new Subject();
+    this._newConversationUser = {} as Member;
+    this._getAllUser = [];
+    this._getConversationUser = [];
+    this.typingId = '';
+    this.searchText = '';
+    this.chatId = '';
+    this.userId = '';
   }
 
   ngOnInit(): void {
@@ -107,7 +114,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @name props
    * @description This method is use to call in ngOnInit
    */
-  public props() {
+  public props(): void {
     this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: Member) => this._getConversationUser?.push(user))
   }
 
@@ -116,7 +123,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @param user 
    * @description This method is use when the user tru to create chat with a new user
    */
-  public onNewChat(user: NewUser) {
+  public onNewChat(user: NewUser): void {
     let isUser = this.getConversationUser?.find((item: Member) => user._id === item._id)
     if (isUser) {
       this.toggle.nativeElement.checked = false;
@@ -135,7 +142,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @param data 
    * @description This method is use to get the details of the user on click
    */
-  public onUser(data: Member) {
+  public onUser(data: Member): void {
     this.chatId = data.chatId;
     this.emitChatId.emit(data.chatId)
     this.emitReceiverId.emit(data._id)
@@ -148,17 +155,31 @@ export class ChatListPresentationComponent implements OnInit {
    * @returns image url
    * @description This method is use to convert the link into soucre link
    */
-  public convertPhoto(profileImg: string) {
+  public convertPhoto(profileImg: string): string {
     let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
     return profileImg ? converter : '../../../../../../assets/images/avatar.png';
   }
 
   /**
+   * @name receivingTyping
+   * @param sender gets the sender Id
+   * @description This method is used for the displaying the typing feature
+   */
+  public receivingTyping(sender:string): void{
+    this.showTyping.next(true)
+    this.typingId = sender
+    setTimeout(() => {
+      this.showTyping.next(false)
+      this.typingId = ''
+    }, 2000)
+  }
+
+  /**
    * @name ngOnDestroy
    * @description This method is called the component is destoryed
    */
-  public ngOnDestroy() {
+  public ngOnDestroy():void {
     this.destroy.next();
     this.destroy.unsubscribe();
   }

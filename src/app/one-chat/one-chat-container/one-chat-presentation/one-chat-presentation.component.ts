@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil, timer } from 'rxjs';
 import { Chat, Member, NewUser } from 'src/app/shared/models/user.model';
 import { CreateChat, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
@@ -13,7 +13,7 @@ import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presente
 export class OneChatPresentationComponent implements OnInit {
 
   // This property is used to get the details og the Typing event
-  @Input() public typingData:Observable<Typing>
+  @Input() public typingData: Observable<Typing>
 
   // This property is used to get the details of all the leads
   @Input() public set getOnlyLeads(v: NewUser[]) {
@@ -44,7 +44,6 @@ export class OneChatPresentationComponent implements OnInit {
       this._getNewChatId = v;
       this.getChatId(v._id)
       this._service.updatedChatObj();
-      // debugger
     }
   }
   public get getNewChatId(): CreateChat {
@@ -57,12 +56,12 @@ export class OneChatPresentationComponent implements OnInit {
       this._getChatArray = v;
       this._service.getChatArray(v)
     }
-    
+
   }
   public get getChatArray(): NewMessage[] {
     return this._getChatArray;
   }
-  
+
   // This property is used to get the details of conversation users
   @Input() public set getConversationUsers(v: Chat[]) {
     if (v) {
@@ -75,7 +74,7 @@ export class OneChatPresentationComponent implements OnInit {
     return this._getConversationUsers;
   }
 
-  
+
   // This property is used to get the object of the new chat
   @Input() public set newChat(v: NewMessage) {
     if (v) {
@@ -105,8 +104,8 @@ export class OneChatPresentationComponent implements OnInit {
   public updatedChatArray$: Observable<NewMessage[]>;
   public senderDetails$: Observable<NewUser>;
   public newConversationUser: Observable<Member>;
-  public _getChatArray:NewMessage[];
-  private _getTypingObj:Typing;
+  public _getChatArray: NewMessage[];
+  private _getTypingObj: Typing;
   // public typingId:string;
 
   constructor(
@@ -148,7 +147,7 @@ export class OneChatPresentationComponent implements OnInit {
     this.receiverData$ = this._service.receiverData$
     this._service.startNewChat$.pipe(takeUntil(this.destroy)).subscribe((chat: CreateChat) => this.emitNewConversation.emit(chat))
     this.newConversationUser = this._service.newConversationUser$;
-    this._service.typingData$.pipe(takeUntil(this.destroy)).subscribe((data:Typing) => this.emitTypingData.emit(data))
+    this._service.typingData$.pipe(takeUntil(this.destroy)).subscribe((data: Typing) => this.emitTypingData.emit(data))
   }
 
   /**
@@ -156,11 +155,10 @@ export class OneChatPresentationComponent implements OnInit {
    * @param chatId 
    * @description This method is use to get chat Id
    */
-  public getChatId(chatId?: string) {
+  public getChatId(chatId?: string): void {
     if (chatId) {
       this.emitConversationId.emit(chatId);
       this._service.chatId = chatId
-      // debugger
     }
   }
 
@@ -169,7 +167,7 @@ export class OneChatPresentationComponent implements OnInit {
    * @param id 
    * @description This method is use to get receiver ID
    */
-  public getReceiverId(id: string) {
+  public getReceiverId(id: string): void {
     this._service.getReceiverId(id)
   }
 
@@ -178,7 +176,7 @@ export class OneChatPresentationComponent implements OnInit {
    * @param chat 
    * @description This method is use to get the new message test
    */
-  public getChat(chat: string) {
+  public getChat(chat: string): void {
     this._service.getMessage(chat)
   }
 
@@ -186,7 +184,7 @@ export class OneChatPresentationComponent implements OnInit {
    * @name getNewChatState
    * @description This method is use to get the new chat state
    */
-  public getNewChatState() {
+  public getNewChatState(): void {
     this._service.newChatState = true;
   }
 
@@ -195,7 +193,7 @@ export class OneChatPresentationComponent implements OnInit {
    * @param id 
    * @description This method will get the sender id for typing event
    */
-  public getSenderId(id:string){
+  public getSenderId(id: string): void {
     this._service.createTypingData(id)
   }
 
@@ -203,7 +201,7 @@ export class OneChatPresentationComponent implements OnInit {
    * @name ngOnDestroy
    * @description This method is called the component is destoryed
    */
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
   }

@@ -23,6 +23,7 @@
             (emitChat)="getChat($event)"
             [getReceiverData]="receiverData$ | async"
             (emitSenderId)="getSenderId($event)"
+            [getTypingData]="typingData |async"
         ></app-chat-message-presentation>
     </div>
     <!-- End: Chat Screen  -->

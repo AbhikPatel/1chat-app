@@ -23,11 +23,6 @@ export class OneChatService {
     private _messageAdaptor: MessageAdaptor,
   ) {
     this.api = environment.baseURL;
-
-    this.socket.on('typing', (res) => {
-      console.log(res);
-
-    })
   }
 
   /**
@@ -120,11 +115,10 @@ export class OneChatService {
    * @name setMap
    * @description This method will setMapper for the socket
    */
-  public setMap() {
+  public setMap(): void {
     this.userId = localStorage.getItem('userId')
     this.socket.on('connect', () => {
       this.socket.emit('setMapper', { userId: this.userId, socketId: this.socket.id })
     })
-    // debugger
   }
 }

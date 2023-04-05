@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { NewMessage } from 'src/app/one-chat/models/chat.model';
+import { NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 
@@ -15,6 +15,17 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
 export class ChatMessagePresentationComponent implements OnInit {
 
   @ViewChild('scroll') public scrollDown: ElementRef;
+
+  // This property is used to get sender Details
+  @Input() public set getTypingData(v: Typing) {
+    if (v) {
+      this._getTypingData = v;
+      this.receivingTyping(v.sender);
+    }
+  }
+  public get getTypingData(): Typing {
+    return this._getTypingData;
+  }
 
   // This property is use to get the array of chats
   @Input() public set getChat(v: NewMessage[]) {
@@ -50,19 +61,21 @@ export class ChatMessagePresentationComponent implements OnInit {
   private _getChat: NewMessage[] | null;
   // This property is to store the details of the receiver
   private _getReceiverData: NewUser;
+  public _getTypingData: Typing;
+  public showTyping: boolean;
 
   constructor(
     private _service: ChatMessagePresenterService,
     private _route: Router,
-    private _cdr: ChangeDetectorRef,
   ) {
-    this.destroy = new Subject();
+    this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
     this.emitSenderId = new EventEmitter();
-    this.chatGroup = this._service.getGroup();
-    this._getChat = [];
-    this.senderId = localStorage.getItem('userId');
+    this.destroy = new Subject();
     this._getReceiverData = {} as NewUser;
+    this._getChat = [];
+    this.showTyping = false
+    this.senderId = localStorage.getItem('userId');
   }
 
   ngOnInit(): void {
@@ -84,7 +97,7 @@ export class ChatMessagePresentationComponent implements OnInit {
    * @name onSubmit
    * @description This method is use to submit the form
    */
-  public onSubmit() {
+  public onSubmit(): void {
     if (this.chatGroup.valid) {
       this.emitChat.emit(this.chatGroup.value.message);
       this.chatGroup.reset();
@@ -97,7 +110,7 @@ export class ChatMessagePresentationComponent implements OnInit {
    * @returns image url
    * @description This method is use to convert the link into soucre link
    */
-  public convertPhoto(profileImg?: string) {
+  public convertPhoto(profileImg?: string): string {
     let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
     return profileImg ? converter : '../../../../../../assets/images/avatar.png'
@@ -113,10 +126,24 @@ export class ChatMessagePresentationComponent implements OnInit {
   }
 
   /**
+   * @name receivingTyping
+   * @param sender gets the sender Id
+   * @description This method is used for the displaying the typing feature
+   */
+  public receivingTyping(sender: string): void {
+    if (sender === this.getReceiverData._id) {
+      this.showTyping = true
+      setTimeout(() => {
+        this.showTyping = false
+      }, 2000);
+    }
+  }
+
+  /**
    * @name ngOnDestroy
    * @description This method is called the component is destoryed
    */
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
   }

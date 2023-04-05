@@ -6,8 +6,9 @@
             <figure class="m-0">
                 <img [src]="convertPhoto(getReceiverData?.photo)" class="rounded-circle profile-img" alt="profile">
             </figure>
-            <div class="ms-3">
+            <div class="ms-3 d-flex flex-column">
                 <span class="fw-semibold"> {{getReceiverData?.full_name}} </span>
+                <span [ngClass]="showTyping ? 'visible' : 'invisible'" class="fs-8"> Typing... </span>
             </div>
         </div>
         <div class="fs-4" role="button" (click)="onLogOut()">
@@ -29,8 +30,7 @@
                     [ngClass]="data.sender === senderId ? 'bg-secondary' : 'bg-white'">
                     {{data.content.text}}
                 </p>
-                <p class="fs-8 text-info me-1"
-                    [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
+                <p class="fs-8 text-info me-1" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
                     {{data.convertedTime}}
                     <span [ngClass]="{'text-read' : data.is_read}">✔</span>
                 </p>
@@ -41,12 +41,13 @@
 
     <!-- Start: Message Typer -->
     <div id="typer" class="bg-theme d-flex align-items-center p-3">
-        <form class="w-100 pe-3" (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
-            <input type="text" class="form-control" name="message" id="message" formControlName="message" autocomplete="off">
+        <form class="w-100 pe-3 d-flex" (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
+            <input type="text" class="form-control" name="message" id="message" formControlName="message"
+                autocomplete="off">
+            <button class="fs-4 border-0 ms-3 bg-transparent" type="submit">
+                <i class='bx bxs-send'></i>
+            </button>
         </form>
-        <button class="fs-4 border-0" type="submit">
-            <i class='bx bxs-send'></i>
-        </button>
     </div>
     <!-- End: Message Typer -->
 </div>

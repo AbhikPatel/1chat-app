@@ -154,6 +154,7 @@ export class OneChatPresenterService {
     this.role === 'intern' ? this.allUsers.next(this.onlyLeads) : this.allUsers.next(filteredUsers)
     let sender = this.users.find((items: NewUser) => items._id === this.userId)
     this.senderDetails.next(sender)
+    debugger
   }
 
   /**
@@ -192,7 +193,7 @@ export class OneChatPresenterService {
             text: message
           }
         }
-        // debugger
+
         this.chatData.next(chatObj);
         this.chats.push(chatObj)
         this.getChatArray(this.chats);
@@ -274,10 +275,10 @@ export class OneChatPresenterService {
    * @param id 
    * @description This method is use to create obj for typing event
    */
-  public createTypingData(id:string){
-    let obj:Typing = {
-      receiver:this.receiverId,
-      sender:id
+  public createTypingData(id: string): void {
+    let obj: Typing = {
+      receiver: this.receiverId,
+      sender: id
     }
     this.typingData.next(obj)
   }

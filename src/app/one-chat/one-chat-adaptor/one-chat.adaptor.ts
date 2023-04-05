@@ -6,7 +6,7 @@ import { Message, NewMessage } from "../models/chat.model";
 @Injectable()
 export class allUserAdaptor implements Adapter<NewUser[]>{
 
-    public toResponse(item: User[]): any[] {
+    public toResponse(item: User[]): NewUser[] {
         const items: any = item.map((data: User) => {
             const fullName: string = data.first_name + ' ' + data.last_name
 
@@ -23,7 +23,8 @@ export class allUserAdaptor implements Adapter<NewUser[]>{
                 data.chats,
                 data.passwordChangedAt,
                 data._v,
-                data.photo
+                data.photo,
+                data.role,
             )
             data = user
             return data

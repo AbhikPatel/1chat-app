@@ -12,6 +12,7 @@ export class NewUser{
     passwordChangedAt:string
     _v:number
     photo:string
+    role:string
     
     constructor(
         _id:string,
@@ -26,7 +27,8 @@ export class NewUser{
         chats:Chat[],
         passwordChangedAt:string,
         _v:number,
-        photo:string
+        photo:string,
+        role:string
     ){
         this._id = _id
         this.first_name = first_name
@@ -41,6 +43,7 @@ export class NewUser{
         this.passwordChangedAt = passwordChangedAt
         this._v = _v
         this.photo = photo
+        this.role = role
     }
 }
 
@@ -57,6 +60,7 @@ export class User{
     passwordChangedAt:string
     _v:number
     photo:string
+    role:string
     
     constructor(
         _id:string,
@@ -70,7 +74,8 @@ export class User{
         chats:Chat[],
         passwordChangedAt:string,
         _v:number,
-        photo:string
+        photo:string,
+        role:string
     ){
         this._id = _id
         this.first_name = first_name
@@ -84,6 +89,7 @@ export class User{
         this.passwordChangedAt = passwordChangedAt
         this._v = _v
         this.photo = photo
+        this.role = role
     }
 }
 

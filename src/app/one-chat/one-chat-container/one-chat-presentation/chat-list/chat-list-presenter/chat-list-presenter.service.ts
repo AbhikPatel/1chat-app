@@ -15,7 +15,7 @@ export class ChatListPresenterService {
     this.newConversationUser$ = this.newConversationUser.asObservable();
   }
 
-  public getNewConversationUser(user: NewUser) {
+  public getNewConversationUser(user: NewUser): void {
     let obj: Member = {
       _id: user._id,
       first_name: user.first_name,

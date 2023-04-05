@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Injectable()
 
@@ -14,7 +14,7 @@ export class ChatMessagePresenterService {
    * @returns formGroup
    * @description This method is use to create form Group
    */
-  public getGroup(){
+  public getGroup(): FormGroup{
     return this._fb.group({
       message:['',[Validators.required]]
     })

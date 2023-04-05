@@ -35,14 +35,17 @@
                 </div>
                 <div class="ms-2">
                     <span class="fw-semibold"> {{data.full_name}} </span>
+                    <span class="fw-semibold"
+                        [ngClass]="{'text-danger' : data.role === 'lead', 'text-warning' : data.role === 'mentor', 'text-info' : data.role === 'intern'}">
+                        ({{data.role}}) </span>
                 </div>
             </div>
         </div>
         <!-- End: Search User  -->
 
         <!-- Start: Chat User  -->
-        <div class="user-container d-flex align-items-center" role="button" *ngFor="let data of getConversationUser" (click)="onUser(data)"
-            [ngClass]="{'bg-theme' : data._id === userId}">
+        <div class="user-container d-flex align-items-center" role="button" *ngFor="let data of getConversationUser"
+            (click)="onUser(data)" [ngClass]="{'bg-theme' : data._id === userId}">
             <div class="px-3 me-1">
                 <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
             </div>
@@ -52,8 +55,10 @@
                     <span class="text-chat fs-7"> 8:10 </span>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <span class="fs-7"> Offline </span>
-                    <!-- <span class="fs-7 text-success fw-semibold"> Typing... </span> -->
+                    <span *ngIf="data._id !== typingId" class="fs-7"> Offline </span>
+                    <ng-container *ngIf="showTyping | async">
+                        <span *ngIf="data._id === typingId" class="fs-7 text-success fw-semibold"> Typing... </span>
+                    </ng-container>
                 </div>
             </div>
         </div>

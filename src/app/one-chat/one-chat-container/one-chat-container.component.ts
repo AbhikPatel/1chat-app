@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Chat, NewUser } from 'src/app/shared/models/user.model';
 import { CreateChat, Message, NewMessage, Typing } from '../models/chat.model';
@@ -53,15 +53,14 @@ export class OneChatContainerComponent implements OnInit {
    * @name props
    * @description This method is used to call on OnInit
    */
-  public props() {
+  public props(): void {
     this._service.setMap();
     this.onlyLeads$ = this._service.getOnlyLeads();
     this.allUser$ = this._service.getAllUserData();
     this.conversationUser$ = this._service.getConversationUser();
     this._service.listen('chat').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)))
     this._service.listen('welcome').subscribe((data) => console.log(data))
-    // this.getTypingData$ = this._service.listen('typing')
-    this._service.listen('typing').subscribe((data) => console.log(data))
+    this.getTypingData$ = this._service.listen('typing')
   }
 
   /**
@@ -69,7 +68,7 @@ export class OneChatContainerComponent implements OnInit {
    * @param chatId 
    * @description This method is called to get conversation Id to pass the messages Data
    */
-  public getConversationId(chatId: string) {
+  public getConversationId(chatId: string): void {
     this.getAllMessages$ = this._service.getChatMessages(chatId)
   }
 
@@ -78,7 +77,7 @@ export class OneChatContainerComponent implements OnInit {
    * @param chat 
    * @description This method is called to get chat object to emit on chat event
    */
-  public getChatObject(chat: NewMessage) {
+  public getChatObject(chat: NewMessage): void {
     const data: Message = this._newChatAdaptor.toRequest(chat);
     this._service.emit('chat', data);
   }
@@ -88,7 +87,7 @@ export class OneChatContainerComponent implements OnInit {
    * @param newChat 
    * @description This method is called to post new chat data
    */
-  public getNewConservation(newChat: CreateChat) {
+  public getNewConservation(newChat: CreateChat): void {
     this._service.postNewChat(newChat).subscribe((data: CreateChat) => this.newChatId$.next(data))
   }
 
@@ -97,7 +96,7 @@ export class OneChatContainerComponent implements OnInit {
    * @param data
    * @description This method is called to emit typing event
    */
-  public getTypingId(data:Typing){
+  public getTypingId(data: Typing): void {
     this._service.emit('typing', data)
   }
 
@@ -105,7 +104,7 @@ export class OneChatContainerComponent implements OnInit {
    * @name ngOnDestroy
    * @description This method is called the component is destoryed
    */
-  ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
   }
