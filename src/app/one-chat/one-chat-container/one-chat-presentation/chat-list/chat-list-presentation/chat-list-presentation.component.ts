@@ -48,7 +48,7 @@ export class ChatListPresentationComponent implements OnInit {
   @Input() public set newConversationUser(v: Member) {
     if (v) {
       this._newConversationUser = v;
-      this._getConversationUser?.push(v)
+      this._getConversationUser?.unshift(v)
     }
   }
   public get newConversationUser(): Member {
@@ -115,7 +115,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is use to call in ngOnInit
    */
   public props(): void {
-    this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: Member) => this._getConversationUser?.push(user))
+    this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: Member) => this._getConversationUser?.unshift(user))
   }
 
   /**

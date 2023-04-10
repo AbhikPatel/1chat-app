@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Chat, Member, NewUser } from 'src/app/shared/models/user.model';
 import { CreateChat, Message, NewMessage, Typing } from '../../models/chat.model';
+import { FormatTime } from 'src/app/core/utilities/formatTime';
 
 @Injectable()
 
@@ -67,7 +68,9 @@ export class OneChatPresenterService {
   public onlyLeads: NewUser[];
   public isConversationUser: boolean;
 
-  constructor() {
+  constructor(
+    private _formatter:FormatTime
+  ) {
     this.allUsers = new Subject();
     this.allUsers$ = new Observable();
     this.allUsers$ = this.allUsers.asObservable();
@@ -150,11 +153,11 @@ export class OneChatPresenterService {
    */
   public removeOwner(user: NewUser[]): void {
     this.users = user;
+    this.onlyLeads = user.filter((items:NewUser) => items.role === 'lead' || items.role === 'mentor')
     let filteredUsers = this.users.filter((items: NewUser) => items._id !== this.userId)
     this.role === 'intern' ? this.allUsers.next(this.onlyLeads) : this.allUsers.next(filteredUsers)
     let sender = this.users.find((items: NewUser) => items._id === this.userId)
     this.senderDetails.next(sender)
-    debugger
   }
 
   /**
@@ -180,15 +183,16 @@ export class OneChatPresenterService {
         this.updatedChat = message;
 
       } else {
+        let currentTime = new Date()
         let chatObj: NewMessage = {
           is_read: false,
           chat: this.chatId,
           sender: this.userId,
           receiver: this.receiverId,
-          time: new Date(),
+          time: currentTime,
           type: 'text',
           is_sender: true,
-          convertedTime: `${new Date().getHours()}:${new Date().getMinutes()}`,
+          convertedTime: this._formatter.Formatter(currentTime), 
           content: {
             text: message
           }

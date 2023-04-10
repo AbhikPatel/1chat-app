@@ -46,20 +46,15 @@ export class OneChatService {
    * @description This method will emit the data as per the eventname
    */
   public emit(eventname: string, data: any) {
-    this.socket.emit(eventname, data);
+    if (eventname === 'chat') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
+      })
+    } else {
+      this.socket.emit(eventname, data);
+    }
   }
 
-  /**
- * @name getOnlyLeads
- * @returns 
- * @description This api is called to get all the users data
- */
-  public getOnlyLeads(): Observable<NewUser[]> {
-    const url: string = this.api + 'users/?role=mentor&role=lead';
-    return this._http.httpGetRequest(url).pipe(
-      map((res: any) => this._allUserAdaptor.toResponse(res.data.doc))
-    )
-  }
   /**
    * @name getAllUserData
    * @returns 

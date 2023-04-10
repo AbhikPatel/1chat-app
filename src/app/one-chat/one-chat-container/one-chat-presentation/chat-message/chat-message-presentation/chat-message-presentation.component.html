@@ -43,7 +43,7 @@
     <div id="typer" class="bg-theme d-flex align-items-center p-3">
         <form class="w-100 pe-3 d-flex" (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
             <input type="text" class="form-control" name="message" id="message" formControlName="message"
-                autocomplete="off">
+                autocomplete="off" autofocus>
             <button class="fs-4 border-0 ms-3 bg-transparent" type="submit">
                 <i class='bx bxs-send'></i>
             </button>
