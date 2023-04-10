@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Observable, Subject, takeUntil, timer } from 'rxjs';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Chat, Member, NewUser } from 'src/app/shared/models/user.model';
 import { CreateChat, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
@@ -14,17 +14,6 @@ export class OneChatPresentationComponent implements OnInit {
 
   // This property is used to get the details og the Typing event
   @Input() public typingData: Observable<Typing>
-
-  // This property is used to get the details of all the leads
-  @Input() public set getOnlyLeads(v: NewUser[]) {
-    if (v) {
-      this._getOnlyLeads = v;
-      this._service.onlyLeads = v;
-    }
-  }
-  public get getOnlyLeads(): NewUser[] {
-    return this._getOnlyLeads;
-  }
 
   // This property is used to get the details of all the users
   @Input() public set getAllUser(v: NewUser[]) {
@@ -95,7 +84,6 @@ export class OneChatPresentationComponent implements OnInit {
   private _newChat: NewMessage;
   private _getNewChatId: CreateChat;
   private _getAllUser: NewUser[];
-  private _getOnlyLeads: NewUser[];
   private _getConversationUsers: Chat[];
   public destroy: Subject<void>;
   public transferAllUser$: Observable<NewUser[]>;
@@ -105,12 +93,9 @@ export class OneChatPresentationComponent implements OnInit {
   public senderDetails$: Observable<NewUser>;
   public newConversationUser: Observable<Member>;
   public _getChatArray: NewMessage[];
-  private _getTypingObj: Typing;
-  // public typingId:string;
 
   constructor(
     private _service: OneChatPresenterService,
-    private _cdr: ChangeDetectorRef
   ) {
     this.destroy = new Subject();
     this.emitConversationId = new EventEmitter();
@@ -125,7 +110,6 @@ export class OneChatPresentationComponent implements OnInit {
     this.senderDetails$ = new Observable();
     this.newConversationUser = new Observable();
     this._getAllUser = [];
-    this._getOnlyLeads = [];
     this._getNewChatId = {} as CreateChat;
     this.onScreen = {} as ElementRef;
   }

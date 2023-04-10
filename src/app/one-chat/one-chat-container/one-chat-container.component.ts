@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Chat, NewUser } from 'src/app/shared/models/user.model';
 import { CreateChat, Message, NewMessage, Typing } from '../models/chat.model';
@@ -21,7 +21,6 @@ export class OneChatContainerComponent implements OnInit {
   public newMessage: Subject<NewMessage>;
   // This observable will pass all the users data
   public allUser$: Observable<NewUser[]>;
-  public onlyLeads$: Observable<NewUser[]>;
   // This observable will pass all the users which has conversation with the sender
   public conversationUser$: Observable<Chat[]>;
   // This observable will pass all the Messages data
@@ -32,12 +31,10 @@ export class OneChatContainerComponent implements OnInit {
   constructor(
     private _service: OneChatService,
     private _newChatAdaptor: NewChatAdaptor,
-    private _cdr: ChangeDetectorRef
   ) {
     this.destroy = new Subject();
     this.listen$ = new Observable();
     this.newMessage = new Subject();
-    this.onlyLeads$ = new Observable();
     this.allUser$ = new Observable();
     this.getAllMessages$ = new Observable();
     this.getTypingData$ = new Observable();
@@ -55,7 +52,6 @@ export class OneChatContainerComponent implements OnInit {
    */
   public props(): void {
     this._service.setMap();
-    this.onlyLeads$ = this._service.getOnlyLeads();
     this.allUser$ = this._service.getAllUserData();
     this.conversationUser$ = this._service.getConversationUser();
     this._service.listen('chat').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)))

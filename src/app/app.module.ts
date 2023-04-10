@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
+import { FormatTime } from './core/utilities/formatTime';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,7 @@ import { TokenInterceptor } from './core/services/interceptor/token.interceptor'
       multi:true,
       useClass:TokenInterceptor,
       provide:HTTP_INTERCEPTORS
-    }
+    },
   ],
   bootstrap: [AppComponent]
 })
