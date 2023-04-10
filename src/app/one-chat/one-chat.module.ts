@@ -12,6 +12,7 @@ import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { SearchPipe } from './pipe/search.pipe';
 import { CommonService } from '../shared/services/common.service';
+import { FormatTime } from '../core/utilities/formatTime';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { CommonService } from '../shared/services/common.service';
     allUserAdaptor,
     MessageAdaptor,
     NewChatAdaptor,
+    FormatTime
   ]
 })
 export class OneChatModule { }

@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Adapter } from "src/app/core/adaptor/adaptor";
 import { NewUser, User } from "src/app/shared/models/user.model";
 import { Message, NewMessage } from "../models/chat.model";
+import { FormatTime } from "src/app/core/utilities/formatTime";
 
 @Injectable()
 export class allUserAdaptor implements Adapter<NewUser[]>{
@@ -36,13 +37,15 @@ export class allUserAdaptor implements Adapter<NewUser[]>{
 @Injectable()
 export class MessageAdaptor implements Adapter<NewMessage[]>{
     public userID: string | null
-    constructor() {
+    constructor(
+        private _formatter:FormatTime
+    ) {
         this.userID = localStorage.getItem('userId')
     }
     public toResponse(item: Message[]): NewMessage[] {
         const items: any = item.map((data: Message) => {
             const converter: Date = new Date(data.time)
-            const allTIme: string = `${converter.getHours()}:${converter.getMinutes()}`
+            const allTIme: string = this._formatter.Formatter(converter)
             const newItem: NewMessage = new NewMessage(
                 data.is_read,
                 data.chat,
@@ -64,13 +67,15 @@ export class MessageAdaptor implements Adapter<NewMessage[]>{
 @Injectable()
 export class ConversationUserAdaptor implements Adapter<NewMessage[]>{
     public userID: string | null
-    constructor() {
+    constructor(
+        private _formatter:FormatTime
+    ) {
         this.userID = localStorage.getItem('userId')
     }
     public toResponse(item: Message[]): NewMessage[] {
         const items: any = item.map((data: Message) => {
             const converter: Date = new Date(data.time)
-            const allTIme: string = `${converter.getHours()}:${converter.getMinutes()}`
+            const allTIme: string = this._formatter.Formatter(converter)
             const newItem: NewMessage = new NewMessage(
                 data.is_read,
                 data.chat,
@@ -93,13 +98,15 @@ export class ConversationUserAdaptor implements Adapter<NewMessage[]>{
 export class NewChatAdaptor implements Adapter<NewMessage>{
 
     public userID: string | null
-    constructor() {
+    constructor(
+        private _formatter:FormatTime 
+    ) {
         this.userID = localStorage.getItem('userId')
     }
 
     public toResponse(item: Message): NewMessage {
         const converter: Date = new Date(item.time)
-        const allTIme: string = `${converter.getHours()}:${converter.getMinutes()}`
+        const allTIme: string = this._formatter.Formatter(converter)
         const newChat: NewMessage = new NewMessage(
             item.is_read,
             item.chat,
