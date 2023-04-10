@@ -75,8 +75,8 @@ export class ChatListPresentationComponent implements OnInit {
   private _newConversationUser: Member;
   private _getConversationUser: Member[];
   private _getAllUser: NewUser[];
-  private _getTypingData:Typing;
-  private _getSenderDetails:NewUser;
+  private _getTypingData: Typing;
+  private _getSenderDetails: NewUser;
   public destroy: Subject<void>;
   // This property is use to store the text for search
   public searchText: string;
@@ -86,6 +86,8 @@ export class ChatListPresentationComponent implements OnInit {
   public userId: string;
   // This property is use to store typing data as per subject
   public showTyping: Subject<boolean>;
+  // This property is use to store the new message
+  public showNewMessage: Subject<boolean>;
   // This property is use to store ID of typing
   public typingId: string;
 
@@ -97,6 +99,7 @@ export class ChatListPresentationComponent implements OnInit {
     this.emitNewChatState = new EventEmitter();
     this.destroy = new Subject();
     this.showTyping = new Subject();
+    this.showNewMessage = new Subject();
     this._newConversationUser = {} as Member;
     this._getAllUser = [];
     this._getConversationUser = [];
@@ -166,20 +169,20 @@ export class ChatListPresentationComponent implements OnInit {
    * @param sender gets the sender Id
    * @description This method is used for the displaying the typing feature
    */
-  public receivingTyping(sender:string): void{
+  public receivingTyping(sender: string): void {
     this.showTyping.next(true)
     this.typingId = sender
     setTimeout(() => {
       this.showTyping.next(false)
       this.typingId = ''
-    }, 2000)
+    }, 3000)
   }
 
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destoryed
    */
-  public ngOnDestroy():void {
+  public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
   }

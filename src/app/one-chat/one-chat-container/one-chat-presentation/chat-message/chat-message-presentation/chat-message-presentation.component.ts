@@ -135,7 +135,7 @@ export class ChatMessagePresentationComponent implements OnInit {
       this.showTyping = true
       setTimeout(() => {
         this.showTyping = false
-      }, 2000);
+      }, 3000);
     }
   }
 

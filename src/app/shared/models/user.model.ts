@@ -125,6 +125,9 @@ export class Member{
     chatId:string
     photo:string
     full_name:string
+    time?:string
+    message?:string
+    count?:number
 
     constructor(
         _id:string,
@@ -132,7 +135,10 @@ export class Member{
         last_name:string,
         chatId:string,
         photo:string,
-        full_name:string
+        full_name:string,
+        time?:string,
+        message?:string,
+        count?:number
     ){
         this._id = _id
         this.first_name = first_name
@@ -140,5 +146,8 @@ export class Member{
         this.chatId = chatId
         this.photo = photo
         this.full_name = full_name
+        this.time = time
+        this.message = message
+        this.count = count
     }
 }

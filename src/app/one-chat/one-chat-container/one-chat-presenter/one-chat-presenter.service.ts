@@ -65,7 +65,7 @@ export class OneChatPresenterService {
   public userDetails: NewUser | undefined;
   // This property is used to store the details of all the leads
   public onlyLeads: NewUser[];
-  public isConversationUser: boolean;
+  public conversationUser: Member[];
 
   constructor() {
     this.allUsers = new Subject();
@@ -114,7 +114,7 @@ export class OneChatPresenterService {
     this.users = [];
     this.allChatIds = [];
     this.onlyLeads = [];
-    this.isConversationUser = false;
+    this.conversationUser = [];
     this.newChatState = false;
     this.userDetails = {} as NewUser;
   }
@@ -125,7 +125,7 @@ export class OneChatPresenterService {
    * @description This method is use to filter the data and get only conversation user and also only chat Ids
    */
   public removeUserData(chat: Chat[]): void {
-    let filteredData = chat.map((data: Chat) => {
+    this.conversationUser = chat.map((data: Chat) => {
       let item = [];
       this.allChatIds.push(data._id)
       let user = data.members.filter(user => user._id !== this.userId)
@@ -138,9 +138,7 @@ export class OneChatPresenterService {
       )
       return item
     }).flat();
-    this.onlyConversationUsers.next(filteredData)
-    if (filteredData.length === 0)
-      this.isConversationUser = true
+    this.onlyConversationUsers.next(this.conversationUser)
   }
 
   /**
@@ -154,7 +152,6 @@ export class OneChatPresenterService {
     this.role === 'intern' ? this.allUsers.next(this.onlyLeads) : this.allUsers.next(filteredUsers)
     let sender = this.users.find((items: NewUser) => items._id === this.userId)
     this.senderDetails.next(sender)
-    debugger
   }
 
   /**
@@ -219,7 +216,7 @@ export class OneChatPresenterService {
    */
   public addNewChat(newChat: NewMessage): void {
     let isChatId = this.allChatIds.filter((id: string) => id === newChat.chat)
-    if (newChat.receiver === this.userId) {
+    if (this.receiverId === newChat.sender) {
       this.chats.push(newChat)
       this.getChatArray(this.chats)
     }
@@ -236,12 +233,17 @@ export class OneChatPresenterService {
           chatId: newChat.chat,
         }
 
-        if (this.isConversationUser)
+        if (this.conversationUser.length === 0)
           this.chatId = newChat.chat
 
         this.newConversationUser.next(obj)
         this.allChatIds.push(newChat.chat)
       }
+    } else {
+      let userId: number = this.conversationUser.findIndex((items: Member) => items.chatId === newChat.chat)
+      this.conversationUser[userId].message = newChat.content.text
+      this.conversationUser[userId].time = newChat.convertedTime
+      this.onlyConversationUsers.next(this.conversationUser)
     }
 
   }

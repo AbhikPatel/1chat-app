@@ -33,7 +33,7 @@ export class OneChatService {
    */
   public listen(eventname: string): Observable<any> {
     return new Observable((subscriber) => {
-      this.socket.on(eventname, (data: any) => {
+      this.socket.on(eventname, (data: any, fn: any) => {
         subscriber.next(data);
       })
     })
@@ -46,7 +46,13 @@ export class OneChatService {
    * @description This method will emit the data as per the eventname
    */
   public emit(eventname: string, data: any) {
-    this.socket.emit(eventname, data);
+    if (eventname === 'chat') {
+      this.socket.emit(eventname, data, (con: any) => {
+        console.log(con);
+      });
+    } else {
+      this.socket.emit(eventname, data);
+    }
   }
 
   /**
