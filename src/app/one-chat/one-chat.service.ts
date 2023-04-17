@@ -4,9 +4,9 @@ import { Observable } from 'rxjs/internal/Observable';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { HttpService } from '../core/services/http/http.service';
-import { Chat, NewUser } from '../shared/models/user.model';
-import { CreateChat, NewMessage } from './models/chat.model';
-import { MessageAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
+import { NewUser } from '../shared/models/user.model';
+import { ConversationUser, CreateChat, NewMessage } from './models/chat.model';
+import { ConversationUserAdaptor, MessageAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
 
 @Injectable()
 
@@ -21,6 +21,7 @@ export class OneChatService {
     private _http: HttpService,
     private _allUserAdaptor: allUserAdaptor,
     private _messageAdaptor: MessageAdaptor,
+    private _conversationUser: ConversationUserAdaptor,
   ) {
     this.api = environment.baseURL;
   }
@@ -45,7 +46,7 @@ export class OneChatService {
    * @param data 
    * @description This method will emit the data as per the eventname
    */
-  public emit(eventname: string, data: any) {
+  public emit(eventname: string, data: any): void {
     if (eventname === 'chat') {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response);
@@ -73,11 +74,11 @@ export class OneChatService {
    * @returns obsverable
    * @description This will return all the users who have started conversation with the sender
   */
-  public getConversationUser(): Observable<Chat[]> {
+  public getConversationUser(): Observable<ConversationUser[]> {
     this.userId = localStorage.getItem('userId')
     const url: string = this.api + `users/` + this.userId;
     return this._http.httpGetRequest(url).pipe(
-      map((res: any) => res.data.doc.chats)
+      map((res: any) => this._conversationUser.toResponse(res.data.doc))
     )
   }
 

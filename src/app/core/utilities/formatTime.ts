@@ -7,13 +7,17 @@ export class FormatTime {
      * @returns the formatted time in string
      */
     public Formatter(date: Date): string {
-        var hours = date.getHours();
-        var minutes:string | number = date.getMinutes();
-        var ampm = hours >= 12 ? 'PM' : 'AM';
+        const currentTime = new Date();
+        let hours = date.getHours();
+        let minutes: string | number = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12;
         minutes = minutes < 10 ? '0' + minutes : minutes;
         const result = hours + ':' + minutes + ' ' + ampm
-        return result
+        if (currentTime.getDate() > date.getDate())
+            return date.getDate() + '/' + date.getMonth() + ' ' + result
+        else
+            return result
     }
 }

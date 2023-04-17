@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Member, NewUser } from 'src/app/shared/models/user.model';
+import { ConversationUser } from 'src/app/one-chat/models/chat.model';
+import { NewUser } from 'src/app/shared/models/user.model';
 
 @Injectable()
 
 export class ChatListPresenterService {
 
-  private newConversationUser: Subject<Member>;
-  public newConversationUser$: Observable<Member>;
+  private newConversationUser: Subject<ConversationUser>;
+  public newConversationUser$: Observable<ConversationUser>;
 
   constructor() {
     this.newConversationUser = new Subject();
@@ -16,13 +17,16 @@ export class ChatListPresenterService {
   }
 
   public getNewConversationUser(user: NewUser): void {
-    let obj: Member = {
+    let obj: ConversationUser = {
       _id: user._id,
       first_name: user.first_name,
       last_name: user.last_name,
       photo: user.photo,
       full_name: user.full_name,
-      chatId: ''
+      chatId: '',
+      time:null,
+      message:null,
+      notificationCount:0,
     }
     this.newConversationUser.next(obj)
   }

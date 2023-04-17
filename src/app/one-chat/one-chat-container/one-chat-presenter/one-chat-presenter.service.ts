@@ -1,75 +1,75 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Chat, Member, NewUser } from 'src/app/shared/models/user.model';
-import { CreateChat, Message, NewMessage, Typing } from '../../models/chat.model';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
+import { NewUser } from 'src/app/shared/models/user.model';
+import { ConversationUser, CreateChat, NewMessage, Typing } from '../../models/chat.model';
 
 @Injectable()
 
 export class OneChatPresenterService {
 
-  // This property is used to transfer the details of all the users
+  /** This property is used to transfer the details of all the users */
   private allUsers: Subject<NewUser[]>;
   public allUsers$: Observable<NewUser[]>;
 
-  // This property is used to transfer the details of only the conversation users
-  private onlyConversationUsers: Subject<Member[]>;
-  public onlyConversationUsers$: Observable<Member[]>;
+  /** This property is used to transfer the details of only the conversation users */
+  private onlyConversationUsers: Subject<ConversationUser[]>;
+  public onlyConversationUsers$: Observable<ConversationUser[]>;
 
-  // This property is used to transfer the data of the new chat
+  /** This property is used to transfer the data of the new chat */
   private chatData: Subject<NewMessage>;
   public chatData$: Observable<NewMessage>;
 
-  // This property is used to transfer the array of chats
+  /** This property is used to transfer the array of chats */
   private chatArray: Subject<NewMessage[]>;
   public chatArray$: Observable<NewMessage[]>;
 
-  // This property is used to transfer the details of the receiver
+  /** This property is used to transfer the details of the receiver */
   private receiverData: Subject<NewUser>;
   public receiverData$: Observable<NewUser>;
 
-  // This property is used to transfer the object of new chat
+  /** This property is used to transfer the object of new chat */
   private startNewChat: Subject<CreateChat>;
   public startNewChat$: Observable<CreateChat>;
 
-  // This property is used to transfer the details of the new conversation user
-  private newConversationUser: Subject<Member>;
-  public newConversationUser$: Observable<Member>;
+  /** This property is used to transfer the details of the new conversation user */
+  private newConversationUser: Subject<ConversationUser>;
+  public newConversationUser$: Observable<ConversationUser>;
 
-  // This property is used to transfer the details of the sender
+  /** This property is used to transfer the details of the sender */
   private senderDetails: Subject<NewUser>;
   public senderDetails$: Observable<NewUser>;
 
-  // This property is used to create typing event
+  /** This property is used to create typing event */
   private typingData: Subject<Typing>;
   public typingData$: Observable<Typing>;
 
-  // This property is used to store all the users
+  /** This property is used to store all the users */
   public users: NewUser[];
-  // This property is used to store array of chats
+  /** This property is used to store array of chats */
   public chats: NewMessage[];
-  // This property is used to store the state of new chat
+  /** This property is used to store the state of new chat */
   public newChatState: boolean;
-  // This property is used to store the user ID
+  /** This property is used to store the user ID */
   public userId: string | null;
-  // This property is used to store role of the user
+  /** This property is used to store role of the user */
   public role: string | null;
-  // This property is used to store receiver ID
+  /** This property is used to store receiver ID */
   public receiverId: string;
-  // This property is used to store chat ID
+  /** This property is used to store chat ID */
   public chatId: string;
-  // This property is used to store the updated chat
+  /** This property is used to store the updated chat */
   public updatedChat: string;
-  // This property is used to store the all the chat Id in an array
+  /** This property is used to store the all the chat Id in an array */
   public allChatIds: string[];
-  // This property is used to store the details of the user
+  /** This property is used to store the details of the user */
   public userDetails: NewUser | undefined;
-  // This property is used to store the details of all the leads
+  /** This property is used to store the details of all the leads */
   public onlyLeads: NewUser[];
-  public conversationUser: Member[];
+  public conversationUser: ConversationUser[];
 
   constructor(
-    private _formatter:FormatTime
+    private _formatter: FormatTime
   ) {
     this.allUsers = new Subject();
     this.allUsers$ = new Observable();
@@ -127,20 +127,9 @@ export class OneChatPresenterService {
    * @param chat 
    * @description This method is use to filter the data and get only conversation user and also only chat Ids
    */
-  public removeUserData(chat: Chat[]): void {
-    this.conversationUser = chat.map((data: Chat) => {
-      let item = [];
-      this.allChatIds.push(data._id)
-      let user = data.members.filter(user => user._id !== this.userId)
-      item.push(
-        Object.assign(user[0],
-          {
-            chatId: data._id,
-            full_name: user[0].first_name + ' ' + user[0].last_name
-          })
-      )
-      return item
-    }).flat();
+  public removeUserData(users: ConversationUser[]): void {
+    this.conversationUser = users
+    this.allChatIds = this.conversationUser.map((user: ConversationUser) => user.chatId)
     this.onlyConversationUsers.next(this.conversationUser)
   }
 
@@ -151,7 +140,7 @@ export class OneChatPresenterService {
    */
   public removeOwner(user: NewUser[]): void {
     this.users = user;
-    this.onlyLeads = user.filter((items:NewUser) => items.role === 'lead' || items.role === 'mentor')
+    this.onlyLeads = user.filter((items: NewUser) => items.role === 'lead' || items.role === 'mentor')
     let filteredUsers = this.users.filter((items: NewUser) => items._id !== this.userId)
     this.role === 'intern' ? this.allUsers.next(this.onlyLeads) : this.allUsers.next(filteredUsers)
     let sender = this.users.find((items: NewUser) => items._id === this.userId)
@@ -190,15 +179,19 @@ export class OneChatPresenterService {
           time: currentTime,
           type: 'text',
           is_sender: true,
-          convertedTime: this._formatter.Formatter(currentTime), 
+          convertedTime: this._formatter.Formatter(currentTime),
           content: {
             text: message
           }
         }
-
         this.chatData.next(chatObj);
         this.chats.push(chatObj)
         this.getChatArray(this.chats);
+        let id = this.conversationUser.findIndex((user:ConversationUser) => user.chatId === this.chatId)
+        this.conversationUser[id].message = message
+        this.conversationUser[id].time = this._formatter.Formatter(currentTime)
+        this.conversationUser.unshift(this.conversationUser.splice(id, 1)[0])
+        this.onlyConversationUsers.next(this.conversationUser)
       }
 
     }
@@ -210,7 +203,7 @@ export class OneChatPresenterService {
    * @description This method will store the chat in chats variable and pass it
    */
   public getChatArray(chat: NewMessage[]): void {
-    this.chats = chat;
+    this.chats = chat
     this.chatArray.next(chat);
   }
 
@@ -229,13 +222,16 @@ export class OneChatPresenterService {
       this.userDetails = this.users.find((items: NewUser) => items._id === newChat.sender)
 
       if (this.userDetails) {
-        let obj: Member = {
+        let obj: ConversationUser = {
           _id: this.userDetails._id,
           first_name: this.userDetails.first_name,
           last_name: this.userDetails.last_name,
           photo: this.userDetails.photo,
           full_name: this.userDetails.full_name,
           chatId: newChat.chat,
+          time: null,
+          message: newChat.content.text,
+          notificationCount: 1,
         }
 
         if (this.conversationUser.length === 0)
@@ -245,10 +241,13 @@ export class OneChatPresenterService {
         this.allChatIds.push(newChat.chat)
       }
     } else {
-      let userId: number = this.conversationUser.findIndex((items: Member) => items.chatId === newChat.chat)
+      let userId: number = this.conversationUser.findIndex((items: ConversationUser) => items.chatId === newChat.chat)
       this.conversationUser[userId].message = newChat.content.text
       this.conversationUser[userId].time = newChat.convertedTime
-      this.onlyConversationUsers.next(this.conversationUser)
+      if (newChat.sender !== this.receiverId)
+        this.conversationUser[userId].notificationCount === 0 ? this.conversationUser[userId].notificationCount = 1 : this.conversationUser[userId].notificationCount++;
+      this.conversationUser.unshift(this.conversationUser.splice(userId, 1)[0])
+      /** this.onlyConversationUsers.next(this.conversationUser) */
     }
 
   }

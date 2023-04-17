@@ -39,7 +39,11 @@ export class AuthService {
     )
   }
 
-  public getToken() {
+  /**
+   * @name getToken
+   * @returns token
+   */
+  public getToken(): string {
     this.userToken = localStorage.getItem('token') ?? '';
     return this.userToken
   }

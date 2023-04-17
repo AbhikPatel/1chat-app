@@ -1,15 +1,22 @@
-#typer{
+#typer {
     flex: 0 0 60px;
 }
 
-.chat-container{
-    max-width: 1200px;
+.chat-container {
+    background-color: #f6fdff;
 
-    .chat{
-        max-width: 300px;
+    .chat {
+        &-text {
+            max-width: 500px;
+            word-wrap: break-word;
+        }
     }
 }
 
-.text-read{
+.text-read {
     color: #00cbfd;
+}
+
+.last-chat {
+    width: 250px;
 }

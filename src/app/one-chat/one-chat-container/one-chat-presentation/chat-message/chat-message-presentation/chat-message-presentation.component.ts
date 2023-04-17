@@ -31,6 +31,7 @@ export class ChatMessagePresentationComponent implements OnInit {
   @Input() public set getChat(v: NewMessage[]) {
     if (v) {
       this._getChat = v;
+      this.chatGroup.setValue({message:''})
     }
   }
   public get getChat(): NewMessage[] {

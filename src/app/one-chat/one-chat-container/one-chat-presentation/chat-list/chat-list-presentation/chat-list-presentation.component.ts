@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { Typing } from 'src/app/one-chat/models/chat.model';
-import { Member, NewUser } from 'src/app/shared/models/user.model';
+import { ConversationUser, Typing } from 'src/app/one-chat/models/chat.model';
+import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 
 @Component({
@@ -34,24 +34,24 @@ export class ChatListPresentationComponent implements OnInit {
   }
 
   // This property is used to get conversation user
-  @Input() public set getConversationUser(v: Member[]) {
+  @Input() public set getConversationUser(v: ConversationUser[]) {
     if (v) {
       this._getConversationUser = v;
       this.onUser(v[0])
     }
   }
-  public get getConversationUser(): Member[] {
+  public get getConversationUser(): ConversationUser[] {
     return this._getConversationUser;
   }
 
   // This property is used to get new conversation user
-  @Input() public set newConversationUser(v: Member) {
+  @Input() public set newConversationUser(v: ConversationUser) {
     if (v) {
       this._newConversationUser = v;
       this._getConversationUser?.unshift(v)
     }
   }
-  public get newConversationUser(): Member {
+  public get newConversationUser(): ConversationUser {
     return this._newConversationUser;
   }
 
@@ -72,8 +72,8 @@ export class ChatListPresentationComponent implements OnInit {
   @Output() public emitNewChatState: EventEmitter<void>;
   // This property is used for toggle feature to search user
   @ViewChild('toggle') public toggle: any;
-  private _newConversationUser: Member;
-  private _getConversationUser: Member[];
+  private _newConversationUser: ConversationUser;
+  private _getConversationUser: ConversationUser[];
   private _getAllUser: NewUser[];
   private _getTypingData: Typing;
   private _getSenderDetails: NewUser;
@@ -92,7 +92,8 @@ export class ChatListPresentationComponent implements OnInit {
   public typingId: string;
 
   constructor(
-    private _service: ChatListPresenterService
+    private _service: ChatListPresenterService,
+    private _cdr:ChangeDetectorRef
   ) {
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
@@ -100,7 +101,7 @@ export class ChatListPresentationComponent implements OnInit {
     this.destroy = new Subject();
     this.showTyping = new Subject();
     this.showNewMessage = new Subject();
-    this._newConversationUser = {} as Member;
+    this._newConversationUser = {} as ConversationUser;
     this._getAllUser = [];
     this._getConversationUser = [];
     this.typingId = '';
@@ -118,7 +119,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is use to call in ngOnInit
    */
   public props(): void {
-    this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: Member) => this._getConversationUser?.unshift(user))
+    this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this._getConversationUser?.unshift(user))
   }
 
   /**
@@ -127,7 +128,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is use when the user tru to create chat with a new user
    */
   public onNewChat(user: NewUser): void {
-    let isUser = this.getConversationUser?.find((item: Member) => user._id === item._id)
+    let isUser = this.getConversationUser?.find((item: ConversationUser) => user._id === item._id)
     if (isUser) {
       this.toggle.nativeElement.checked = false;
       this.onUser(isUser);
@@ -145,11 +146,14 @@ export class ChatListPresentationComponent implements OnInit {
    * @param data 
    * @description This method is use to get the details of the user on click
    */
-  public onUser(data: Member): void {
+  public onUser(data: ConversationUser): void {
     this.chatId = data.chatId;
     this.emitChatId.emit(data.chatId)
     this.emitReceiverId.emit(data._id)
     this.userId = data._id
+    let id = this.getConversationUser.findIndex((user:ConversationUser) => user === data)
+    this.getConversationUser[id].notificationCount = 0
+    // this._cdr.detectChanges();
   }
 
   /**

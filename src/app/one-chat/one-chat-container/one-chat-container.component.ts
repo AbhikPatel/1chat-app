@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
-import { Chat, NewUser } from 'src/app/shared/models/user.model';
-import { CreateChat, Message, NewMessage, Typing } from '../models/chat.model';
+import { NewUser } from 'src/app/shared/models/user.model';
+import { ConversationUser, CreateChat, Message, NewMessage, Typing } from '../models/chat.model';
 import { NewChatAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
 import { OneChatService } from '../one-chat.service';
 
@@ -11,21 +11,21 @@ import { OneChatService } from '../one-chat.service';
 })
 export class OneChatContainerComponent implements OnInit {
 
-  // This Subject is used to unsubcribe all the rxjs on destroy
+  /** This Subject is used to unsubcribe all the rxjs on destroy */
   public destroy: Subject<void>;
-  // This Subject is used to pass the new chatID 
+  /** This Subject is used to pass the new chatID  */
   public newChatId$: Subject<CreateChat>;
-  // This observable will pass the socket listen data
+  /** This observable will pass the socket listen data */
   public listen$: Observable<any>;
-  // This Subject will pass the new Message Object
+  /** This Subject will pass the new Message Object */
   public newMessage: Subject<NewMessage>;
-  // This observable will pass all the users data
+  /** This observable will pass all the users data */
   public allUser$: Observable<NewUser[]>;
-  // This observable will pass all the users which has conversation with the sender
-  public conversationUser$: Observable<Chat[]>;
-  // This observable will pass all the Messages data
+  /** This observable will pass all the users which has conversation with the sender */
+  public conversationUser$: Observable<ConversationUser[]>;
+  /** This observable will pass all the Messages data */
   public getAllMessages$: Observable<NewMessage[]>;
-  // This observable will pass all the Messages data
+  /** This observable will pass all the Messages data */
   public getTypingData$: Observable<Typing>;
 
   constructor(
@@ -55,7 +55,6 @@ export class OneChatContainerComponent implements OnInit {
     this.allUser$ = this._service.getAllUserData();
     this.conversationUser$ = this._service.getConversationUser();
     this._service.listen('chat').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)))
-    this._service.listen('welcome').subscribe((data) => console.log(data))
     this.getTypingData$ = this._service.listen('typing')
   }
 
