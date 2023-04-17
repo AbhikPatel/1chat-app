@@ -104,3 +104,105 @@ export class Typing{
         this.sender = sender
     }
 }
+
+export class Conversation{
+    _id:string
+    owner:string
+    chat_type:string
+    title:string
+    members:Member[]
+    lastMessage:Message
+
+    constructor(
+        _id:string,
+        owner:string,
+        chat_type:string,
+        title:string,
+        members:Member[],
+        lastMessage:Message
+    ){
+        this._id = _id
+        this.owner = owner
+        this.chat_type = chat_type
+        this.title = title
+        this.members = members
+        this.lastMessage = lastMessage
+    }
+}
+export class Chat{
+    _id:string
+    owner:string
+    chat_type:string
+    title:string
+    members:Member[]
+    _v:number
+
+    constructor(
+        _id:string,
+        owner:string,
+        chat_type:string,
+        title:string,
+        members:Member[],
+        _v:number
+    ){
+        this._id = _id
+        this.owner = owner
+        this.chat_type = chat_type
+        this.title = title
+        this.members = members
+        this._v = _v
+    }
+}
+
+export class Member{
+    _id:string
+    first_name:string
+    last_name:string
+    photo:string
+
+    constructor(
+        _id:string,
+        first_name:string,
+        last_name:string,
+        photo:string,
+    ){
+        this._id = _id
+        this.first_name = first_name
+        this.last_name = last_name
+        this.photo = photo
+    }
+}
+
+export class ConversationUser{
+    _id:string
+    first_name:string
+    last_name:string
+    chatId:string
+    photo:string
+    full_name:string
+    time:string
+    message:string
+    notificationCount:number
+
+    constructor(
+        _id:string,
+        first_name:string,
+        last_name:string,
+        chatId:string,
+        photo:string,
+        full_name:string,
+        time:string,
+        message:string,
+        notificationCount:number
+    ){
+        this._id = _id
+        this.first_name = first_name
+        this.last_name = last_name
+        this.chatId = chatId
+        this.photo = photo
+        this.full_name = full_name
+        this.time = time
+        this.message = message
+        this.notificationCount = notificationCount
+    }
+}

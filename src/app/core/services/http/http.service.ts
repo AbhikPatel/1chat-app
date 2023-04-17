@@ -17,7 +17,7 @@ export class HttpService {
    * @returns Creates header if there is need of interception
    */
   public createHeader(data: any) {
-    const header = new HttpHeaders({
+    const header:HttpHeaders = new HttpHeaders({
       'api-verison': data
     })
     return header

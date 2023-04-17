@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
-import { Chat, Member, NewUser } from 'src/app/shared/models/user.model';
-import { CreateChat, NewMessage, Typing } from '../../models/chat.model';
+import { NewUser } from 'src/app/shared/models/user.model';
+import { ConversationUser, CreateChat, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 
 @Component({
@@ -12,10 +12,10 @@ import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presente
 })
 export class OneChatPresentationComponent implements OnInit {
 
-  // This property is used to get the details og the Typing event
+  /** This property is used to get the details og the Typing event */
   @Input() public typingData: Observable<Typing>
 
-  // This property is used to get the details of all the users
+  /** This property is used to get the details of all the users */
   @Input() public set getAllUser(v: NewUser[]) {
     if (v) {
       this._getAllUser = v;
@@ -27,7 +27,7 @@ export class OneChatPresentationComponent implements OnInit {
     return this._getAllUser;
   }
 
-  // This property is used to get new chat Object
+  /** This property is used to get new chat Object */
   @Input() public set getNewChatId(v: CreateChat) {
     if (v) {
       this._getNewChatId = v;
@@ -39,7 +39,7 @@ export class OneChatPresentationComponent implements OnInit {
     return this._getNewChatId;
   }
 
-  // This property is used to get chat array
+  /** This property is used to get chat array */
   @Input() public set getChatArray(v: NewMessage[]) {
     if (v) {
       this._getChatArray = v;
@@ -51,20 +51,20 @@ export class OneChatPresentationComponent implements OnInit {
     return this._getChatArray;
   }
 
-  // This property is used to get the details of conversation users
-  @Input() public set getConversationUsers(v: Chat[]) {
+  /** This property is used to get the details of conversation users */
+  @Input() public set getConversationUsers(v: ConversationUser[]) {
     if (v) {
       this._getConversationUsers = v;
       this._service.removeUserData(v);
     }
   }
 
-  public get getConversationUsers(): Chat[] {
+  public get getConversationUsers(): ConversationUser[] {
     return this._getConversationUsers;
   }
 
 
-  // This property is used to get the object of the new chat
+  /** This property is used to get the object of the new chat */
   @Input() public set newChat(v: NewMessage) {
     if (v) {
       this._newChat = v;
@@ -84,14 +84,14 @@ export class OneChatPresentationComponent implements OnInit {
   private _newChat: NewMessage;
   private _getNewChatId: CreateChat;
   private _getAllUser: NewUser[];
-  private _getConversationUsers: Chat[];
+  private _getConversationUsers: ConversationUser[];
   public destroy: Subject<void>;
   public transferAllUser$: Observable<NewUser[]>;
   public receiverData$: Observable<NewUser>;
-  public transferConversationUser$: Observable<Member[]>;
+  public transferConversationUser$: Observable<ConversationUser[]>;
   public updatedChatArray$: Observable<NewMessage[]>;
   public senderDetails$: Observable<NewUser>;
-  public newConversationUser: Observable<Member>;
+  public newConversationUser: Observable<ConversationUser>;
   public _getChatArray: NewMessage[];
 
   constructor(
