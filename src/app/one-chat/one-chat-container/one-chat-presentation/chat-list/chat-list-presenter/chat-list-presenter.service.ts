@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { ConversationUser } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
@@ -10,7 +11,7 @@ export class ChatListPresenterService {
   private newConversationUser: Subject<ConversationUser>;
   public newConversationUser$: Observable<ConversationUser>;
 
-  constructor() {
+  constructor(private _fb:FormBuilder) {
     this.newConversationUser = new Subject();
     this.newConversationUser$ = new Observable();
     this.newConversationUser$ = this.newConversationUser.asObservable();
@@ -29,5 +30,15 @@ export class ChatListPresenterService {
       notificationCount:0,
     }
     this.newConversationUser.next(obj)
+  }
+  /**
+   * @name getGroup
+   * @returns formGroup
+   * @description This method is use to reset search box
+   */
+  public getGroup(): FormGroup{
+    return this._fb.group({
+      search:['']
+    })
   }
 }

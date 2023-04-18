@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -12,16 +12,16 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   viewProviders: [ChatMessagePresenterService],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatMessagePresentationComponent implements OnInit {
+export class ChatMessagePresentationComponent implements OnInit,AfterViewChecked{
 
   @ViewChild('scroll') public scrollDown: ElementRef;
-
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
     if (v) {
       this._getTypingData = v;
       this.receivingTyping(v.sender);
     }
+
   }
   public get getTypingData(): Typing {
     return this._getTypingData;
@@ -78,20 +78,21 @@ export class ChatMessagePresentationComponent implements OnInit {
     this.showTyping = false
     this.senderId = localStorage.getItem('userId');
   }
+ 
+  
+  ngAfterViewChecked(): void {
+    if (this.scrollDown){
+      this.scrollDown.nativeElement.scrollTop = this.scrollDown.nativeElement.scrollHeight;
+    }
+    }
+
+   
 
   ngOnInit(): void {
-    if (this.scrollDown)
-      this.scrollToBottom()
-
-    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId))
-  }
-
-  public scrollToBottom(): void {
-    try {
+    if (this.scrollDown){
       this.scrollDown.nativeElement.scrollTop = this.scrollDown.nativeElement.scrollHeight;
-    } catch (err) {
-      console.log(err)
     }
+    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId))
   }
 
   /**

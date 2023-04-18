@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ConversationUser, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
+import {  FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -58,7 +59,7 @@ export class ChatListPresentationComponent implements OnInit {
   // This property is used to get all the users
   @Input() public set getAllUser(v: NewUser[]) {
     if (v)
-      this._getAllUser = v;
+      this._getAllUser = v;     
   }
   public get getAllUser(): NewUser[] {
     return this._getAllUser;
@@ -89,10 +90,12 @@ export class ChatListPresentationComponent implements OnInit {
   // This property is use to store ID of typing
   public typingId: string[];
   public typingStatus: boolean;
+  // This property is used to reset form
+  public resetSearch:FormGroup;
 
   constructor(
     private _service: ChatListPresenterService,
-    private _cdr:ChangeDetectorRef
+    private _cdr:ChangeDetectorRef,
   ) {
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
@@ -106,7 +109,8 @@ export class ChatListPresentationComponent implements OnInit {
     this.searchText = '';
     this.chatId = '';
     this.userId = '';
-
+    this.resetSearch=this._service.getGroup();
+    
   }
 
   ngOnInit(): void {
@@ -119,6 +123,7 @@ export class ChatListPresentationComponent implements OnInit {
    */
   public props(): void {
     this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this._getConversationUser?.unshift(user))
+     
   }
 
   /**
@@ -185,7 +190,13 @@ export class ChatListPresentationComponent implements OnInit {
     }, 5000);
 
   }
-
+/**
+ * Reset SearchFrom
+ */
+  public resetSearchForm():void{
+    this.resetSearch.reset();
+    this.searchText=''  
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destoryed

@@ -35,7 +35,8 @@ import { SearchPipe } from './pipe/search.pipe';
     MessageAdaptor,
     NewChatAdaptor,
     FormatTime,
-    ConversationUserAdaptor
+    ConversationUserAdaptor,
+    ReactiveFormsModule
   ]
 })
 export class OneChatModule { }
