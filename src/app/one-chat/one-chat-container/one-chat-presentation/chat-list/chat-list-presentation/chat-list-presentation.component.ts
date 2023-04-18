@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { ConversationUser, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
@@ -84,12 +84,11 @@ export class ChatListPresentationComponent implements OnInit {
   public chatId: string;
   // This property is use to store the user ID
   public userId: string;
-  // This property is use to store typing data as per subject
-  public showTyping: Subject<boolean>;
   // This property is use to store the new message
   public showNewMessage: Subject<boolean>;
   // This property is use to store ID of typing
-  public typingId: string;
+  public typingId: string[];
+  public typingStatus: boolean;
 
   constructor(
     private _service: ChatListPresenterService,
@@ -99,15 +98,15 @@ export class ChatListPresentationComponent implements OnInit {
     this.emitReceiverId = new EventEmitter();
     this.emitNewChatState = new EventEmitter();
     this.destroy = new Subject();
-    this.showTyping = new Subject();
     this.showNewMessage = new Subject();
     this._newConversationUser = {} as ConversationUser;
     this._getAllUser = [];
     this._getConversationUser = [];
-    this.typingId = '';
+    this.typingId = [];
     this.searchText = '';
     this.chatId = '';
     this.userId = '';
+
   }
 
   ngOnInit(): void {
@@ -174,12 +173,17 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is used for the displaying the typing feature
    */
   public receivingTyping(sender: string): void {
-    this.showTyping.next(true)
-    this.typingId = sender
+    if(!this.typingId.includes(sender)){
+      this.typingId.push(sender)
+    }
+    this.typingStatus = true;
+    console.log(this.typingId);
     setTimeout(() => {
-      this.showTyping.next(false)
-      this.typingId = ''
-    }, 3000)
+      this.typingId = [];
+      this.typingStatus = false;
+      this._cdr.detectChanges();
+    }, 5000);
+
   }
 
   /**

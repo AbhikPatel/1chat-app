@@ -81,7 +81,7 @@ export class ConversationUserAdaptor implements Adapter<ConversationUser[]>{
                 let id: string = chatData._id
                 let member: Member = chatData.members.find((user: Member) => user._id !== this.userId)
                 let obj = {
-                    message: chatData.lastMessage ? chatData.lastMessage.content.text : '',
+                    message: chatData.lastMessage ? chatData.lastMessage.content.text : 'No Messages',
                     time: this._formatter.Formatter(chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date()),
                     timestamp: chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date(),
                     notificationCount: 0,
