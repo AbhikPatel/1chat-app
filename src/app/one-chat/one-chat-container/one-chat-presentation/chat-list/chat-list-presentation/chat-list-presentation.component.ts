@@ -3,6 +3,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ConversationUser, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
+import {  FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -58,7 +59,7 @@ export class ChatListPresentationComponent implements OnInit {
   // This property is used to get all the users
   @Input() public set getAllUser(v: NewUser[]) {
     if (v)
-      this._getAllUser = v;
+      this._getAllUser = v;     
   }
   public get getAllUser(): NewUser[] {
     return this._getAllUser;
@@ -84,30 +85,32 @@ export class ChatListPresentationComponent implements OnInit {
   public chatId: string;
   // This property is use to store the user ID
   public userId: string;
-  // This property is use to store typing data as per subject
-  public showTyping: Subject<boolean>;
   // This property is use to store the new message
   public showNewMessage: Subject<boolean>;
   // This property is use to store ID of typing
-  public typingId: string;
+  public typingId: string[];
+  public typingStatus: boolean;
+  // This property is used to reset form
+  public resetSearch:FormGroup;
 
   constructor(
     private _service: ChatListPresenterService,
-    private _cdr:ChangeDetectorRef
+    private _cdr:ChangeDetectorRef,
   ) {
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
     this.emitNewChatState = new EventEmitter();
     this.destroy = new Subject();
-    this.showTyping = new Subject();
     this.showNewMessage = new Subject();
     this._newConversationUser = {} as ConversationUser;
     this._getAllUser = [];
     this._getConversationUser = [];
-    this.typingId = '';
+    this.typingId = [];
     this.searchText = '';
     this.chatId = '';
     this.userId = '';
+    this.resetSearch=this._service.getGroup();
+    
   }
 
   ngOnInit(): void {
@@ -120,6 +123,7 @@ export class ChatListPresentationComponent implements OnInit {
    */
   public props(): void {
     this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this._getConversationUser?.unshift(user))
+     
   }
 
   /**
@@ -174,14 +178,25 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is used for the displaying the typing feature
    */
   public receivingTyping(sender: string): void {
-    this.showTyping.next(true)
-    this.typingId = sender
+    if(!this.typingId.includes(sender)){
+      this.typingId.push(sender)
+    }
+    this.typingStatus = true;
+    console.log(this.typingId);
     setTimeout(() => {
-      this.showTyping.next(false)
-      this.typingId = ''
-    }, 3000)
-  }
+      this.typingId = [];
+      this.typingStatus = false;
+      this._cdr.detectChanges();
+    }, 5000);
 
+  }
+/**
+ * Reset SearchFrom
+ */
+  public resetSearchForm():void{
+    this.resetSearch.reset();
+    this.searchText=''  
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destoryed

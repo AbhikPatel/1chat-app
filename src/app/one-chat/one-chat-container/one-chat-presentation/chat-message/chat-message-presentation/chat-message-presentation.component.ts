@@ -1,4 +1,14 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -12,10 +22,10 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   viewProviders: [ChatMessagePresenterService],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatMessagePresentationComponent implements OnInit {
-
-  @ViewChild('scroll') public scrollDown: ElementRef;
-
+export class ChatMessagePresentationComponent
+  implements OnInit, AfterViewChecked
+{
+  @ViewChild('scroll', { static: true }) scrolls: any;
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
     if (v) {
@@ -31,7 +41,7 @@ export class ChatMessagePresentationComponent implements OnInit {
   @Input() public set getChat(v: NewMessage[]) {
     if (v) {
       this._getChat = v;
-      this.chatGroup.setValue({message:''})
+      this.chatGroup.setValue({ message: '' });
     }
   }
   public get getChat(): NewMessage[] {
@@ -64,10 +74,12 @@ export class ChatMessagePresentationComponent implements OnInit {
   private _getReceiverData: NewUser;
   public _getTypingData: Typing;
   public showTyping: boolean;
+   public scrollTop: number;
+   public scrollHeight: number;
 
   constructor(
     private _service: ChatMessagePresenterService,
-    private _route: Router,
+    private _route: Router
   ) {
     this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
@@ -75,23 +87,21 @@ export class ChatMessagePresentationComponent implements OnInit {
     this.destroy = new Subject();
     this._getReceiverData = {} as NewUser;
     this._getChat = [];
-    this.showTyping = false
+    this.showTyping = false;
     this.senderId = localStorage.getItem('userId');
   }
+  ngAfterViewChecked(): void {
+    //    if (this.scrolls) {
+    //   this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
+    // }
+  }
+  
+ 
 
   ngOnInit(): void {
-    if (this.scrollDown)
-      this.scrollToBottom()
-
-    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId))
-  }
-
-  public scrollToBottom(): void {
-    try {
-      this.scrollDown.nativeElement.scrollTop = this.scrollDown.nativeElement.scrollHeight;
-    } catch (err) {
-      console.log(err)
-    }
+    this.chatGroup.valueChanges.subscribe((data: string) =>
+      this.emitSenderId.emit(this.senderId)
+    );
   }
 
   /**
@@ -102,19 +112,22 @@ export class ChatMessagePresentationComponent implements OnInit {
     if (this.chatGroup.valid) {
       this.emitChat.emit(this.chatGroup.value.message);
       this.chatGroup.reset();
+      
     }
   }
 
   /**
    * @name convertPhoto
-   * @param profileImg 
+   * @param profileImg
    * @returns image url
    * @description This method is use to convert the link into soucre link
    */
   public convertPhoto(profileImg?: string): string {
     let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
-    return profileImg ? converter : '../../../../../../assets/images/avatar.png'
+    return profileImg
+      ? converter
+      : '../../../../../../assets/images/avatar.png';
   }
 
   /**
@@ -133,11 +146,18 @@ export class ChatMessagePresentationComponent implements OnInit {
    */
   public receivingTyping(sender: string): void {
     if (sender === this.getReceiverData._id) {
-      this.showTyping = true
+      this.showTyping = true;
       setTimeout(() => {
-        this.showTyping = false
+        this.showTyping = false;
       }, 3000);
     }
+  }
+  /**
+   * message up
+   */
+  public scrollUp(): void {
+    this.scrolls.nativeElement.scrollTop =
+      this.scrolls.nativeElement.scrollHeight;
   }
 
   /**

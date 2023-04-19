@@ -3,6 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ConversationUser, CreateChat, NewMessage, Typing } from '../../models/chat.model';
+import { Login } from 'src/app/core/models/login.model';
 
 @Injectable()
 
@@ -141,7 +142,7 @@ export class OneChatPresenterService {
   public removeOwner(user: NewUser[]): void {
     this.users = user;
     this.onlyLeads = user.filter((items: NewUser) => items.role === 'lead' || items.role === 'mentor')
-    let filteredUsers = this.users.filter((items: NewUser) => items._id !== this.userId)
+    let filteredUsers = this.users.filter((items: NewUser) =>items._id !== this.userId) 
     this.role === 'intern' ? this.allUsers.next(this.onlyLeads) : this.allUsers.next(filteredUsers)
     let sender = this.users.find((items: NewUser) => items._id === this.userId)
     this.senderDetails.next(sender)
