@@ -1,21 +1,21 @@
-export class Message{
-    is_read:boolean
-    chat:string
-    sender:string
-    receiver:string
-    time:Date
-    type:string
-    content:Text
+export class Message {
+    is_read: boolean
+    chat: string
+    sender: string
+    receiver: string
+    time: Date
+    type: string
+    content: Text
 
     constructor(
-        is_read:boolean,
-        chat:string,
-        sender:string,
-        receiver:string,
-        time:Date,
-        type:string,
-        content:Text,
-    ){
+        is_read: boolean,
+        chat: string,
+        sender: string,
+        receiver: string,
+        time: Date,
+        type: string,
+        content: Text,
+    ) {
         this.is_read = is_read
         this.chat = chat
         this.sender = sender
@@ -26,28 +26,28 @@ export class Message{
     }
 
 }
-export class NewMessage{
-    is_read:boolean
-    chat:string
-    sender:string
-    receiver:string
-    time:Date
-    type:string
-    content:Text
-    convertedTime:string
-    is_sender:boolean
-    
+export class NewMessage {
+    is_read: boolean
+    chat: string
+    sender: string
+    receiver: string
+    time: Date
+    type: string
+    content: Text
+    convertedTime: string
+    is_sender: boolean
+
     constructor(
-        is_read:boolean,
-        chat:string,
-        sender:string,
-        receiver:string,
-        time:Date,
-        type:string,
-        content:Text,
-        convertedTime:string,
-        is_sender:boolean,
-    ){
+        is_read: boolean,
+        chat: string,
+        sender: string,
+        receiver: string,
+        time: Date,
+        type: string,
+        content: Text,
+        convertedTime: string,
+        is_sender: boolean,
+    ) {
         this.is_read = is_read
         this.chat = chat
         this.sender = sender
@@ -60,30 +60,30 @@ export class NewMessage{
     }
 }
 
-export class Text{
-    text:string
+export class Text {
+    text: string
 
     constructor(
-        text:string
-    ){
-        this.text= text
+        text: string
+    ) {
+        this.text = text
     }
 }
 
-export class CreateChat{
-    owner:string
-    chat_type:string
-    title:string
-    members:string[]
-    _id?:string
+export class CreateChat {
+    owner: string
+    chat_type: string
+    title: string
+    members: string[]
+    _id?: string
 
     constructor(
-        owner:string,
-        chat_type:string,
-        title:string,
-        members:string[],
-        _id?:string
-    ){
+        owner: string,
+        chat_type: string,
+        title: string,
+        members: string[],
+        _id?: string
+    ) {
         this.owner = owner
         this.chat_type = chat_type
         this.title = title
@@ -92,35 +92,35 @@ export class CreateChat{
     }
 }
 
-export class Typing{
-    receiver:string
-    sender:string
+export class Typing {
+    receiver: string
+    sender: string
 
     constructor(
-        receiver:string,
-        sender:string
-    ){
+        receiver: string,
+        sender: string
+    ) {
         this.receiver = receiver
         this.sender = sender
     }
 }
 
-export class Conversation{
-    _id:string
-    owner:string
-    chat_type:string
-    title:string
-    members:Member[]
-    lastMessage:Message
+export class Conversation {
+    _id: string
+    owner: string
+    chat_type: string
+    title: string
+    members: Member[]
+    lastMessage: Message
 
     constructor(
-        _id:string,
-        owner:string,
-        chat_type:string,
-        title:string,
-        members:Member[],
-        lastMessage:Message
-    ){
+        _id: string,
+        owner: string,
+        chat_type: string,
+        title: string,
+        members: Member[],
+        lastMessage: Message
+    ) {
         this._id = _id
         this.owner = owner
         this.chat_type = chat_type
@@ -129,22 +129,22 @@ export class Conversation{
         this.lastMessage = lastMessage
     }
 }
-export class Chat{
-    _id:string
-    owner:string
-    chat_type:string
-    title:string
-    members:Member[]
-    _v:number
+export class Chat {
+    _id: string
+    owner: string
+    chat_type: string
+    title: string
+    members: Member[]
+    _v: number
 
     constructor(
-        _id:string,
-        owner:string,
-        chat_type:string,
-        title:string,
-        members:Member[],
-        _v:number
-    ){
+        _id: string,
+        owner: string,
+        chat_type: string,
+        title: string,
+        members: Member[],
+        _v: number
+    ) {
         this._id = _id
         this.owner = owner
         this.chat_type = chat_type
@@ -154,18 +154,18 @@ export class Chat{
     }
 }
 
-export class Member{
-    _id:string
-    first_name:string
-    last_name:string
-    photo:string
+export class Member {
+    _id: string
+    first_name: string
+    last_name: string
+    photo: string
 
     constructor(
-        _id:string,
-        first_name:string,
-        last_name:string,
-        photo:string,
-    ){
+        _id: string,
+        first_name: string,
+        last_name: string,
+        photo: string,
+    ) {
         this._id = _id
         this.first_name = first_name
         this.last_name = last_name
@@ -173,28 +173,28 @@ export class Member{
     }
 }
 
-export class ConversationUser{
-    _id:string
-    first_name:string
-    last_name:string
-    chatId:string
-    photo:string
-    full_name:string
-    time:string
-    message:string
-    notificationCount:number
+export class ConversationUser {
+    _id: string
+    first_name: string
+    last_name: string
+    chatId: string
+    photo: string
+    full_name: string
+    time: string
+    message: string
+    notificationCount: number
 
     constructor(
-        _id:string,
-        first_name:string,
-        last_name:string,
-        chatId:string,
-        photo:string,
-        full_name:string,
-        time:string,
-        message:string,
-        notificationCount:number
-    ){
+        _id: string,
+        first_name: string,
+        last_name: string,
+        chatId: string,
+        photo: string,
+        full_name: string,
+        time: string,
+        message: string,
+        notificationCount: number
+    ) {
         this._id = _id
         this.first_name = first_name
         this.last_name = last_name
@@ -204,5 +204,24 @@ export class ConversationUser{
         this.time = time
         this.message = message
         this.notificationCount = notificationCount
+    }
+}
+
+export class MessageRead {
+    chatId: string
+    sender: string
+    receiver: string
+    count: number
+
+    constructor(
+        chatId: string,
+        sender: string,
+        receiver: string,
+        count: number
+    ) {
+        this.chatId = chatId
+        this.sender = sender
+        this.receiver = receiver
+        this.count = count
     }
 }

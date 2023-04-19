@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { ConversationUser, CreateChat, Message, NewMessage, Typing } from '../models/chat.model';
+import { ConversationUser, CreateChat, Message, MessageRead, NewMessage, Typing } from '../models/chat.model';
 import { NewChatAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
 import { OneChatService } from '../one-chat.service';
 
@@ -11,7 +11,7 @@ import { OneChatService } from '../one-chat.service';
 })
 export class OneChatContainerComponent implements OnInit {
 
-  /** This Subject is used to unsubcribe all the rxjs on destroy */
+  /** This Subject is used to unsubscribe all the rxjs on destroy */
   public destroy: Subject<void>;
   /** This Subject is used to pass the new chatID  */
   public newChatId$: Subject<CreateChat>;
@@ -27,6 +27,8 @@ export class OneChatContainerComponent implements OnInit {
   public getAllMessages$: Observable<NewMessage[]>;
   /** This observable will pass all the Messages data */
   public getTypingData$: Observable<Typing>;
+  /** This observable will pass all the is_read data */
+  public getIsReadData$: Observable<MessageRead>;
 
   constructor(
     private _service: OneChatService,
@@ -54,8 +56,9 @@ export class OneChatContainerComponent implements OnInit {
     this._service.setMap();
     this.allUser$ = this._service.getAllUserData();
     this.conversationUser$ = this._service.getConversationUser();
-    this._service.listen('chat').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)))
-    this.getTypingData$ = this._service.listen('typing')
+    this._service.listen('chat').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
+    this.getTypingData$ = this._service.listen('typing');
+    this.getIsReadData$ = this._service.listen('read_ack')
   }
 
   /**
@@ -64,7 +67,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called to get conversation Id to pass the messages Data
    */
   public getConversationId(chatId: string): void {
-    this.getAllMessages$ = this._service.getChatMessages(chatId)
+    this.getAllMessages$ = this._service.getChatMessages(chatId);
   }
 
   /**
@@ -83,7 +86,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called to post new chat data
    */
   public getNewConservation(newChat: CreateChat): void {
-    this._service.postNewChat(newChat).subscribe((data: CreateChat) => this.newChatId$.next(data))
+    this._service.postNewChat(newChat).subscribe((data: CreateChat) => this.newChatId$.next(data));
   }
 
   /**
@@ -92,12 +95,21 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called to emit typing event
    */
   public getTypingId(data: Typing): void {
-    this._service.emit('typing', data)
+    this._service.emit('typing', data);
+  }
+
+  /**
+   * @name getReadMessagesData
+   * @param data 
+   * @description This method will emit the message read data into socket
+   */
+  public getReadMessagesData(data:MessageRead){
+    this._service.emit('read_ack', data)    
   }
 
   /**
    * @name ngOnDestroy
-   * @description This method is called the component is destoryed
+   * @description This method is called the component is destroyed
    */
   public ngOnDestroy(): void {
     this.destroy.next();

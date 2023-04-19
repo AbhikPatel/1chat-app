@@ -34,9 +34,16 @@ export class OneChatService {
    */
   public listen(eventname: string): Observable<any> {
     return new Observable((subscriber) => {
-      this.socket.on(eventname, (data: any, fn: any) => {
-        subscriber.next(data);
-      })
+      if(eventname === 'chat'){
+        this.socket.on(eventname, (data: any, fn: any) => {
+          fn("received")
+          subscriber.next(data);
+        })
+      }else{
+        this.socket.on(eventname, (data: any, fn: any) => {
+          subscriber.next(data);
+        })
+      }
     })
   }
 

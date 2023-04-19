@@ -8,7 +8,7 @@
             </figure>
             <div class="ms-3 d-flex flex-column">
                 <span class="fw-semibold"> {{getReceiverData?.full_name}} </span>
-                <span [ngClass]="showTyping ? 'visible' : 'invisible'" class="fs-8"> Typing... </span>
+                <span [ngClass]="(showTyping | async) ? 'visible' : 'invisible'" class="fs-8"> Typing... </span>
             </div>
         </div>
         <div class="fs-4" role="button" (click)="onLogOut()">
