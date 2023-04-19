@@ -8,6 +8,7 @@ import { FormatTime } from "src/app/core/utilities/formatTime";
 export class allUserAdaptor implements Adapter<NewUser[]>{
 
     public toResponse(item: User[]): NewUser[] {
+
         const items: any = item.map((data: User) => {
             const fullName: string = data.first_name + ' ' + data.last_name
 

@@ -18,7 +18,7 @@
     <!-- End: Header Section  -->
 
     <!-- Start: Chat Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto px-5 py-4" #scroll>
+    <div class="chat-container flex-grow-1 overflow-auto px-5 py-4 " #scroll appScrollDistance >
         <!-- Chat  -->
         <div class="d-flex" *ngFor="let data of getChat"
             [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'" >
@@ -53,6 +53,9 @@
                     </ng-container>
                 </p>
             </div>
+        </div>
+        <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-4 position-relative" id="icon" (click)="scrollUp()" > 
+            <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black">1</span>
         </div>
     </div>
     <!-- End: Chat Screen  -->

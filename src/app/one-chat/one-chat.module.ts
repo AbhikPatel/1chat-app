@@ -12,6 +12,7 @@ import { OneChatPresentationComponent } from './one-chat-container/one-chat-pres
 import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { SearchPipe } from './pipe/search.pipe';
+import { ScrollDistanceDirective } from './pipe/directive/scroll-distance.directive';
 
 
 @NgModule({
@@ -20,7 +21,9 @@ import { SearchPipe } from './pipe/search.pipe';
     OneChatPresentationComponent,
     ChatListPresentationComponent,
     ChatMessagePresentationComponent,
-    SearchPipe
+    SearchPipe,
+    ScrollDistanceDirective,
+    
   ],
   imports: [
     CommonModule,
