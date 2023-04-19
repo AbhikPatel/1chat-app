@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { ConversationUser, MessageRead } from 'src/app/one-chat/models/chat.model';
@@ -14,10 +15,11 @@ export class ChatListPresenterService {
   private isReadData: Subject<MessageRead>;
   public isReadData$: Observable<MessageRead>;
 
-  public userId:string = localStorage.getItem('userId')
+  public userId: string = localStorage.getItem('userId')
 
   constructor(
-    private _formatter:FormatTime
+    private _formatter: FormatTime,
+    private _fb:FormBuilder
   ) {
     this.newConversationUser = new Subject();
     this.newConversationUser$ = new Observable();
@@ -41,9 +43,9 @@ export class ChatListPresenterService {
       photo: user.photo,
       full_name: user.full_name,
       chatId: '',
-      time:this._formatter.Formatter(new Date()),
-      message:'New Conversation Created',
-      notificationCount:0,
+      time: this._formatter.Formatter(new Date()),
+      message: 'New Conversation Created',
+      notificationCount: 0,
     }
     this.newConversationUser.next(obj)
   }
@@ -53,13 +55,23 @@ export class ChatListPresenterService {
    * @param data 
    * @description This method will create the message Read object
    */
-  public getIsReadData(data:ConversationUser): void{
+  public getIsReadData(data: ConversationUser): void {
     let obj: MessageRead = {
-      chatId:data.chatId,
+      chatId: data.chatId,
       sender: data._id,
       receiver: this.userId,
       count: data.notificationCount
     }
     this.isReadData.next(obj)
+  }
+  /**
+   * @name getGroup
+   * @returns formGroup
+   * @description This method is use to reset search box
+   */
+  public getGroup(): FormGroup {
+    return this._fb.group({
+      search: ['']
+    })
   }
 }

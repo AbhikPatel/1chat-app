@@ -3,6 +3,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ConversationUser, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -87,6 +88,8 @@ export class ChatListPresentationComponent implements OnInit {
   public typingId: string[];
   /** This property is used to store boolean data for */
   public typingStatus: boolean;
+  // This property is used to reset form
+  public resetSearch: FormGroup;
   @ViewChild('toggle') public toggle: any;
   private _newConversationUser: ConversationUser;
   private _getConversationUser: ConversationUser[];
@@ -97,14 +100,13 @@ export class ChatListPresentationComponent implements OnInit {
 
   constructor(
     private _service: ChatListPresenterService,
-    private _cdr: ChangeDetectorRef
+    private _cdr: ChangeDetectorRef,
   ) {
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
     this.emitNewChatState = new EventEmitter();
     this.emitIsReadData = new EventEmitter();
     this.destroy = new Subject();
-    this.showTyping = new Subject();
     this.showNewMessage = new Subject();
     this._newConversationUser = {} as ConversationUser;
     this._getAllUser = [];
@@ -114,6 +116,8 @@ export class ChatListPresentationComponent implements OnInit {
     this.searchText = '';
     this.chatId = '';
     this.userId = '';
+    this.resetSearch = this._service.getGroup();
+
   }
 
   ngOnInit(): void {
@@ -206,6 +210,14 @@ export class ChatListPresentationComponent implements OnInit {
 
   }
 
+
+  /**
+   * Reset SearchFrom
+   */
+  public resetSearchForm(): void {
+    this.resetSearch.reset();
+    this.searchText = ''
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

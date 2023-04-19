@@ -3,7 +3,7 @@
     <!-- Start: Header Section  -->
     <div id="header" class="d-flex align-items-center justify-content-between px-5">
         <div class="d-flex align-items-center">
-            <figure class="m-0">
+            <figure class="m-0" *ngIf="getReceiverData.photo">
                 <img [src]="convertPhoto(getReceiverData?.photo)" class="rounded-circle profile-img" alt="profile">
             </figure>
             <div class="ms-3 d-flex flex-column">
@@ -11,18 +11,18 @@
                 <span [ngClass]="(showTyping | async) ? 'visible' : 'invisible'" class="fs-8"> Typing... </span>
             </div>
         </div>
-        <div class="fs-4" role="button" (click)="onLogOut()">
-            <i class='bx bx-exit'></i>
+        <div class="fs-4" role="button" (click)="onLogOut()" title="logout">
+            <i class='icon-bx-log-out  text-info'></i>
         </div>
     </div>
     <!-- End: Header Section  -->
 
     <!-- Start: Chat Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto px-5 py-4" #scroll>
+    <div class="chat-container flex-grow-1 overflow-auto px-5 py-4 " #scroll appScrollDistance >
         <!-- Chat  -->
         <div class="d-flex" *ngFor="let data of getChat"
-            [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-            <div class="chat">
+            [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'" >
+            <div class="chat" >
 
                 <!-- Sender Name  -->
                 <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
@@ -54,19 +54,31 @@
                 </p>
             </div>
         </div>
+        <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-4 position-relative" id="icon" (click)="scrollUp()" > 
+            <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black">1</span>
+        </div>
     </div>
     <!-- End: Chat Screen  -->
 
-    <!-- Start: Message Typer -->
-    <div id="typer" class="bg-theme d-flex align-items-center p-3">
-        <form class="w-100 pe-3 d-flex" (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
-            <input type="text" class="form-control" name="message" id="message" formControlName="message"
-                autocomplete="off" autofocus>
-            <button class="fs-4 border-0 ms-3 bg-transparent" type="submit">
-                <i class='bx bxs-send'></i>
-            </button>
+    <!-- Start: Message  -->
+    <div id="typer" class="d-flex align-items-center bg-theme px-5 pt-0">
+        <form class="w-100  d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
+            <input type="text" class="form-control py-2 rounded-1 " name="message" id="message" formControlName="message"
+                autocomplete="off" placeholder="Type a new message" >
+                <div class="d-flex align-items-center justify-content-between px-1 py-1">
+                    <div class="file-attach">
+                        <label for="file" >
+                            <i class="icon-paperclip fs-5 text-info cursor-pointer " id="icon"></i>
+                        </label>
+                        <i id="icon" class="icon-emoji-smile fs-5 ms-2 text-info cursor-pointer"></i>
+                    </div>
+                    <button class="fs-4 border-0 ms-3 bg-transparent" type="submit">
+                           <i class='icon-bxs-send text-info'  id="icon" ></i>
+                    </button>
+                </div>
+                 <input type="file" id="file" class="d-none">
         </form>
     </div>
-    <!-- End: Message Typer -->
+    <!-- End: Message  -->
 </div>
 <!-- End: User Message  -->
