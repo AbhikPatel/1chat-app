@@ -1,15 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
 import { ConversationUser, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 import { FormGroup } from '@angular/forms';
+import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Component({
   selector: 'app-chat-list-presentation',
   templateUrl: './chat-list-presentation.component.html',
   viewProviders: [ChatListPresenterService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatListPresentationComponent implements OnInit {
 
@@ -38,7 +39,6 @@ export class ChatListPresentationComponent implements OnInit {
   @Input() public set getConversationUser(v: ConversationUser[]) {
     if (v) {
       this._getConversationUser = v;
-      // this.onUser(v[0])
     }
   }
   public get getConversationUser(): ConversationUser[] {
@@ -131,6 +131,7 @@ export class ChatListPresentationComponent implements OnInit {
   public props(): void {
     this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this._getConversationUser?.unshift(user))
     this._service.isReadData$.pipe(takeUntil(this.destroy)).subscribe((data: MessageRead) => this.emitIsReadData.emit(data))
+    this.resetSearch.valueChanges.subscribe((data) => this.searchText = data.search)
   }
 
   /**
@@ -169,13 +170,10 @@ export class ChatListPresentationComponent implements OnInit {
     let removeUser = this.getConversationUser.filter((user: ConversationUser) => user.chatId === '')
     if (removeUser) {
       /** To remove the users which has not started the conversations  */
-      setTimeout(() => {
-        removeUser.forEach((user: ConversationUser) => {
-          let id = this.getConversationUser.findIndex((data: ConversationUser) => data === user)
-          this.getConversationUser.splice(id, 1)
-        })
-        this._cdr.detectChanges()
-      }, 2000);
+      removeUser.forEach((user: ConversationUser) => {
+        let id = this.getConversationUser.findIndex((data: ConversationUser) => data === user)
+        this.getConversationUser.splice(id, 1)
+      })
     }
     localStorage.setItem('conversation', JSON.stringify(this.getConversationUser))
   }
@@ -187,7 +185,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is use to convert the link into source link
    */
   public convertPhoto(profileImg: string): string {
-    let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
+    let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
     return profileImg ? converter : '../../../../../../assets/images/avatar.png';
   }
@@ -215,8 +213,10 @@ export class ChatListPresentationComponent implements OnInit {
    * Reset SearchFrom
    */
   public resetSearchForm(): void {
-    this.resetSearch.reset();
-    this.searchText = ''
+    setTimeout(() => {
+      this.resetSearch.reset();
+      this.searchText = ''
+    }, 1000);
   }
   /**
    * @name ngOnDestroy

@@ -56,9 +56,12 @@ export class OneChatContainerComponent implements OnInit {
     this._service.setMap();
     this.allUser$ = this._service.getAllUserData();
     this.conversationUser$ = this._service.getConversationUser();
-    this._service.listen('chat').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
+    this._service.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
     this.getTypingData$ = this._service.listen('typing');
-    this.getIsReadData$ = this._service.listen('read_ack')
+    // this.getIsReadData$ = this._service.listen('read_ack');
+    this._service.listen('dm:messageRead').subscribe((data) => console.log(data))
+    this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
+    this._service.listen('alive').subscribe((data) => console.log(data))
   }
 
   /**
@@ -77,7 +80,7 @@ export class OneChatContainerComponent implements OnInit {
    */
   public getChatObject(chat: NewMessage): void {
     const data: Message = this._newChatAdaptor.toRequest(chat);
-    this._service.emit('chat', data);
+    this._service.emit('dm:message', data);
   }
 
   /**
@@ -104,7 +107,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method will emit the message read data into socket
    */
   public getReadMessagesData(data:MessageRead){
-    this._service.emit('read_ack', data)    
+    this._service.emit('dm:messageRead', data)    
   }
 
   /**

@@ -28,7 +28,6 @@ import { ScrollDistanceDirective } from './pipe/directive/scroll-distance.direct
   imports: [
     CommonModule,
     OneChatRoutingModule,
-    FormsModule,
     ReactiveFormsModule,
     SharedModule
   ],

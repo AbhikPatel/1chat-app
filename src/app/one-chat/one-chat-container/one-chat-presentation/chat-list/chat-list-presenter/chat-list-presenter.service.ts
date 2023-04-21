@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs/internal/Subject';
+import { Observable} from 'rxjs/internal/Observable';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { ConversationUser, MessageRead } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
@@ -64,6 +65,7 @@ export class ChatListPresenterService {
     }
     this.isReadData.next(obj)
   }
+
   /**
    * @name getGroup
    * @returns formGroup

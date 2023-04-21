@@ -13,7 +13,7 @@ import { ConversationUserAdaptor, MessageAdaptor, allUserAdaptor } from './one-c
 export class OneChatService {
 
   // socket = io('wss://anonychat.onrender.com');
-  socket = io('http://172.16.3.107:21321');
+  socket = io('http://172.16.3.107:2132');
   public api: string;
   public userId: string;
 
@@ -34,7 +34,7 @@ export class OneChatService {
    */
   public listen(eventname: string): Observable<any> {
     return new Observable((subscriber) => {
-      if(eventname === 'chat'){
+      if(eventname === 'dm:messageRead'){
         this.socket.on(eventname, (data: any, fn: any) => {
           fn("received")
           subscriber.next(data);
@@ -54,7 +54,7 @@ export class OneChatService {
    * @description This method will emit the data as per the eventname
    */
   public emit(eventname: string, data: any): void {
-    if (eventname === 'chat') {
+    if (eventname === 'dm:message') {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response);
       })
@@ -69,21 +69,21 @@ export class OneChatService {
    * @description This api is called to get all the users data
   */
   public getAllUserData(): Observable<NewUser[]> {
-    const url: string = this.api + 'users/';
+    const url: string = this.api + 'user/';
     return this._http.httpGetRequest(url).pipe(
-      map((res: any) => this._allUserAdaptor.toResponse(res.data.doc))
+      map((res: any) => this._allUserAdaptor.toResponse(res.data.data))
     )
   }
 
 
   /**
    * @name getConversationUser
-   * @returns obsverable
+   * @returns observable
    * @description This will return all the users who have started conversation with the sender
   */
   public getConversationUser(): Observable<ConversationUser[]> {
     this.userId = localStorage.getItem('userId')
-    const url: string = this.api + `users/` + this.userId;
+    const url: string = this.api + `user/` + this.userId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => this._conversationUser.toResponse(res.data.doc))
     )
@@ -96,9 +96,9 @@ export class OneChatService {
    * @description This will get the data of all the messages as per the chatId
    */
   public getChatMessages(chatId: string): Observable<NewMessage[]> {
-    const url: string = this.api + `messages?chat=` + chatId;
+    const url: string = this.api + `message?chat=` + chatId;
     return this._http.httpGetRequest(url).pipe(
-      map((res: any) => this._messageAdaptor.toResponse(res.data.doc))
+      map((res: any) => this._messageAdaptor.toResponse(res.data.data))
     )
   }
 
@@ -108,7 +108,7 @@ export class OneChatService {
    * @returns This method will post the data when the user will start the conversation with another new user
    */
   public postNewChat(newChat: CreateChat): Observable<CreateChat> {
-    const url: string = this.api + `chats`
+    const url: string = this.api + `chat`
     return this._http.httpPostRequest(url, newChat).pipe(
       map((res: any) => res.data.doc)
     )
@@ -121,7 +121,7 @@ export class OneChatService {
   public setMap(): void {
     this.userId = localStorage.getItem('userId')
     this.socket.on('connect', () => {
-      this.socket.emit('setMapper', { userId: this.userId, socketId: this.socket.id })
+      this.socket.emit('dm:mapper', { userId: this.userId, socketId: this.socket.id })
     })
   }
 }

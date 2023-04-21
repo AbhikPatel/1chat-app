@@ -275,11 +275,12 @@ export class OneChatPresenterService {
    */
   public updatedChatObj(id: string): void {
     this.chatId = id;
-    this.getMessage(this.updatedChat);
-    this.updatedChat = '';
     let index = this.conversationUser.findIndex((user: ConversationUser) => user.chatId === '');
     this.conversationUser[index].chatId = id;
     this.allChatIds.push(id);
+    this.getMessage(this.updatedChat);
+    this.updatedChat = '';
+    
   }
 
   /**

@@ -211,6 +211,5 @@ export class OneChatPresentationComponent implements OnInit {
   ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
-    this._service.conversationUser = [];
   }
 }

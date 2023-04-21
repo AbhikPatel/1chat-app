@@ -1,12 +1,4 @@
-import {
-  AfterViewChecked,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -18,10 +10,10 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   selector: 'app-chat-message-presentation',
   templateUrl: './chat-message-presentation.component.html',
   viewProviders: [ChatMessagePresenterService],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatMessagePresentationComponent
-  implements OnInit, AfterViewChecked {
+export class ChatMessagePresentationComponent implements OnInit, AfterViewChecked {
+  
   @ViewChild('scroll', { static: true }) scrolls: any;
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
@@ -89,15 +81,24 @@ export class ChatMessagePresentationComponent
   }
 
   ngAfterViewChecked(): void {
-    //    if (this.scrolls) {
+    // if (this.scrolls) {
     //   this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
     // }
   }
 
-
-
   ngOnInit(): void {
+    this.props();
+  }
+
+  /**
+   * @name props
+   * @description This method is called in ngOnInit
+  */
+  public props(): void {
     this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
+    if (this.scrolls) {
+      this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
+    }
   }
 
   /**
@@ -118,18 +119,16 @@ export class ChatMessagePresentationComponent
    * @description This method is use to convert the link into source link
    */
   public convertPhoto(profileImg?: string): string {
-    let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
+    let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
-    return profileImg
-      ? converter
-      : '../../../../../../assets/images/avatar.png';
+    return profileImg ? converter : '../../../../../../assets/images/avatar.png';
   }
 
   /**
    * @name onLogOut
    * @description This method is use to logout the user
    */
-  public onLogOut() {
+  public onLogOut(): void {
     this._route.navigateByUrl('/login');
     localStorage.clear();
   }
@@ -152,8 +151,7 @@ export class ChatMessagePresentationComponent
    * @name scrollUp
    */
   public scrollUp(): void {
-    this.scrolls.nativeElement.scrollTop =
-      this.scrolls.nativeElement.scrollHeight;
+    this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
   }
 
   /**
