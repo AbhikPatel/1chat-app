@@ -1,14 +1,4 @@
-import {
-  AfterViewChecked,
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -20,11 +10,10 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   selector: 'app-chat-message-presentation',
   templateUrl: './chat-message-presentation.component.html',
   viewProviders: [ChatMessagePresenterService],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatMessagePresentationComponent
-  implements OnInit, AfterViewChecked
-{
+export class ChatMessagePresentationComponent implements OnInit, AfterViewChecked {
+  
   @ViewChild('scroll', { static: true }) scrolls: any;
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
@@ -48,7 +37,7 @@ export class ChatMessagePresentationComponent
     return this._getChat;
   }
 
-  // This property is use to get the details of the recevier
+  // This property is use to get the details of the receiver
   @Input() public set getReceiverData(v: NewUser) {
     if (v) {
       this._getReceiverData = v;
@@ -73,9 +62,9 @@ export class ChatMessagePresentationComponent
   // This property is to store the details of the receiver
   private _getReceiverData: NewUser;
   public _getTypingData: Typing;
-  public showTyping: boolean;
-   public scrollTop: number;
-   public scrollHeight: number;
+  public showTyping: Subject<boolean>;
+  public scrollTop: number;
+  public scrollHeight: number;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -87,21 +76,29 @@ export class ChatMessagePresentationComponent
     this.destroy = new Subject();
     this._getReceiverData = {} as NewUser;
     this._getChat = [];
-    this.showTyping = false;
+    this.showTyping = new Subject();
     this.senderId = localStorage.getItem('userId');
   }
+
   ngAfterViewChecked(): void {
-    //    if (this.scrolls) {
+    // if (this.scrolls) {
     //   this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
     // }
   }
-  
- 
 
   ngOnInit(): void {
-    this.chatGroup.valueChanges.subscribe((data: string) =>
-      this.emitSenderId.emit(this.senderId)
-    );
+    this.props();
+  }
+
+  /**
+   * @name props
+   * @description This method is called in ngOnInit
+  */
+  public props(): void {
+    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
+    if (this.scrolls) {
+      this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
+    }
   }
 
   /**
@@ -112,7 +109,6 @@ export class ChatMessagePresentationComponent
     if (this.chatGroup.valid) {
       this.emitChat.emit(this.chatGroup.value.message);
       this.chatGroup.reset();
-      
     }
   }
 
@@ -120,21 +116,19 @@ export class ChatMessagePresentationComponent
    * @name convertPhoto
    * @param profileImg
    * @returns image url
-   * @description This method is use to convert the link into soucre link
+   * @description This method is use to convert the link into source link
    */
   public convertPhoto(profileImg?: string): string {
-    let converter = 'http://172.16.3.107:21321/img/users/' + profileImg;
+    let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
-    return profileImg
-      ? converter
-      : '../../../../../../assets/images/avatar.png';
+    return profileImg ? converter : '../../../../../../assets/images/avatar.png';
   }
 
   /**
    * @name onLogOut
    * @description This method is use to logout the user
    */
-  public onLogOut() {
+  public onLogOut(): void {
     this._route.navigateByUrl('/login');
     localStorage.clear();
   }
@@ -146,23 +140,23 @@ export class ChatMessagePresentationComponent
    */
   public receivingTyping(sender: string): void {
     if (sender === this.getReceiverData._id) {
-      this.showTyping = true;
+      this.showTyping.next(true)
       setTimeout(() => {
-        this.showTyping = false;
+        this.showTyping.next(false)
       }, 3000);
     }
   }
+
   /**
-   * message up
+   * @name scrollUp
    */
   public scrollUp(): void {
-    this.scrolls.nativeElement.scrollTop =
-      this.scrolls.nativeElement.scrollHeight;
+    this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
   }
 
   /**
    * @name ngOnDestroy
-   * @description This method is called the component is destoryed
+   * @description This method is called the component is destroyed
    */
   public ngOnDestroy(): void {
     this.destroy.next();

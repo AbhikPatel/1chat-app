@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { ConversationUser, CreateChat, NewMessage, Typing } from '../../models/chat.model';
+import { ConversationUser, CreateChat, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 
 @Component({
@@ -14,6 +14,18 @@ export class OneChatPresentationComponent implements OnInit {
 
   /** This property is used to get the details og the Typing event */
   @Input() public typingData: Observable<Typing>
+
+  /** This property is used to get the details of all the users */
+  @Input() public set getIsRead(v: MessageRead) {
+    if (v) {
+      this._getIsRead = v;
+      this._service.updateChatArray(v)
+    }
+  }
+
+  public get getIsRead(): MessageRead {
+    return this._getIsRead;
+  }
 
   /** This property is used to get the details of all the users */
   @Input() public set getAllUser(v: NewUser[]) {
@@ -31,8 +43,7 @@ export class OneChatPresentationComponent implements OnInit {
   @Input() public set getNewChatId(v: CreateChat) {
     if (v) {
       this._getNewChatId = v;
-      this.getChatId(v._id)
-      this._service.updatedChatObj();
+      this._service.updatedChatObj(v._id);
     }
   }
   public get getNewChatId(): CreateChat {
@@ -80,11 +91,13 @@ export class OneChatPresentationComponent implements OnInit {
   @Output() public emitChatData: EventEmitter<NewMessage>;
   @Output() public emitNewConversation: EventEmitter<CreateChat>;
   @Output() public emitTypingData: EventEmitter<Typing>;
+  @Output() public emitReadMessage: EventEmitter<MessageRead>;
 
   private _newChat: NewMessage;
   private _getNewChatId: CreateChat;
   private _getAllUser: NewUser[];
   private _getConversationUsers: ConversationUser[];
+  private _getIsRead:MessageRead;
   public destroy: Subject<void>;
   public transferAllUser$: Observable<NewUser[]>;
   public receiverData$: Observable<NewUser>;
@@ -102,6 +115,7 @@ export class OneChatPresentationComponent implements OnInit {
     this.emitNewConversation = new EventEmitter();
     this.emitChatData = new EventEmitter();
     this.emitTypingData = new EventEmitter();
+    this.emitReadMessage = new EventEmitter();
     this._getConversationUsers = [];
     this.transferAllUser$ = new Observable();
     this.transferConversationUser$ = new Observable();
@@ -182,8 +196,17 @@ export class OneChatPresentationComponent implements OnInit {
   }
 
   /**
+   * @name getIsReadData
+   * @param data 
+   * @description This method will transfer data of is_read into container
+   */
+  public getIsReadData(data:MessageRead){
+    this.emitReadMessage.emit(data)
+  }
+
+  /**
    * @name ngOnDestroy
-   * @description This method is called the component is destoryed
+   * @description This method is called the component is destroyed
    */
   ngOnDestroy(): void {
     this.destroy.next();

@@ -21,7 +21,7 @@ export class ScrollDistanceDirective {
       this.scrollDirection = 'up';
     }
     
-    console.log(scrollDistance, this.scrollDirection);
+    // console.log(scrollDistance, this.scrollDirection);
   }
 
 }

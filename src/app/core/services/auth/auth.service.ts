@@ -27,13 +27,12 @@ export class AuthService {
    * @description This method will call the post API for login to get user info
    */
   public loginUser(credentials: any): Observable<any> {
-    const url: string = this.api + 'users/log-in';
+    const url: string = this.api + 'user/log-in';
     return this._http.httpPostRequest(url, credentials).pipe(
       map((res) => {
         localStorage.setItem('token', res.token)
         localStorage.setItem('role', res.data.doc.role)
         localStorage.setItem('userId', res.data.doc._id)
-
         return this._adapt.toResponse(res.data.doc)
       })
     )

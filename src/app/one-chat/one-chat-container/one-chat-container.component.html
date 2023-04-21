@@ -9,4 +9,6 @@
     [getNewChatId]="newChatId$ | async"
     (emitTypingData)="getTypingId($event)"
     [typingData]="getTypingData$"
+    (emitReadMessage)="getReadMessagesData($event)"
+    [getIsRead]="getIsReadData$ | async"
 ></app-one-chat-presentation>
