@@ -1,4 +1,4 @@
-import { AfterViewChecked, ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component,  EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -63,8 +63,13 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   private _getReceiverData: NewUser;
   public _getTypingData: Typing;
   public showTyping: Subject<boolean>;
-  public scrollTop: number;
+  public scrollEnd: any;
+  public scrollDown: any;
   public scrollHeight: number;
+  public scrollHeights: number;
+  public scrollTop: number;
+  public scrollTops: any;
+  public previousScrollPosition = 0;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -81,14 +86,25 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   }
 
   ngAfterViewChecked(): void {
-    // if (this.scrolls) {
-    //   this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
-    // }
+    if (this.scrolls) {
+      this.scrollTop=this.scrolls.nativeElement.scrollTop;
+      this.scrollHeights=this.scrolls.nativeElement.scrollHeight;
+      // this.scrolls.nativeElement.scrollTop = this.scrollHeights;
+      // this.scrollEnd=this.scrollHeights>=this.scrollTop
+    };
   }
-
+  public scrollFn(event)
+  {
+    console.log(event);
+   this.scrollTops= event.target.scrollTop;
+   this.scrollHeight= event.target.scrollHeight 
+    console.log(this.scrollTops);
+    console.log(this.scrollHeight);
+  }
   ngOnInit(): void {
     this.props();
   }
+ 
 
   /**
    * @name props
@@ -96,9 +112,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   */
   public props(): void {
     this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
-    if (this.scrolls) {
-      this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
-    }
+   
   }
 
   /**
