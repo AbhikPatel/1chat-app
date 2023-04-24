@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { FormatTime } from '../core/utilities/formatTime';
 import { SharedModule } from '../shared/shared.module';
 import { ConversationUserAdaptor, MessageAdaptor, NewChatAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
@@ -12,7 +12,9 @@ import { OneChatPresentationComponent } from './one-chat-container/one-chat-pres
 import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { SearchPipe } from './pipe/search.pipe';
-import { ScrollDistanceDirective } from './pipe/directive/scroll-distance.directive';
+import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
+
+
 
 
 @NgModule({
@@ -22,8 +24,7 @@ import { ScrollDistanceDirective } from './pipe/directive/scroll-distance.direct
     ChatListPresentationComponent,
     ChatMessagePresentationComponent,
     SearchPipe,
-    ScrollDistanceDirective,
-    
+    ScrollDistanceDirective,  
   ],
   imports: [
     CommonModule,

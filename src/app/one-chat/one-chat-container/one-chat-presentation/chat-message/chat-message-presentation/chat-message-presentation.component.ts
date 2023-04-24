@@ -1,4 +1,4 @@
-import { AfterViewChecked, ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -10,11 +10,11 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   selector: 'app-chat-message-presentation',
   templateUrl: './chat-message-presentation.component.html',
   viewProviders: [ChatMessagePresenterService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatMessagePresentationComponent implements OnInit, AfterViewChecked {
+export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('scroll', { static: true }) scrolls: any;
+  @ViewChild('messageContainer') messageContainerRef: ElementRef;
   // This property is used to get online users
   @Input() public set getOnlineUsers(v: Alive[]) {
     if (v) {
@@ -25,7 +25,6 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   public get getOnlineUsers(): Alive[] {
     return this._getOnlineUsers;
   }
-
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
     if (v) {
@@ -42,6 +41,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
     if (v) {
       this._getChat = v;
       this.chatGroup.setValue({ message: '' });
+      setTimeout(() => {
+        this.scrollUp();
+      }, 0);
     }
   }
   public get getChat(): NewMessage[] {
@@ -75,10 +77,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   private _getReceiverData: NewUser;
   public _getTypingData: Typing;
   public showTyping: Subject<boolean>;
-  public scrollTop: number;
-  private _getOnlineUsers:Alive[];
-  public scrollHeight: number;
-  public showStatus:Alive;
+  private _getOnlineUsers: Alive[];
+  public showStatus: Alive;
+  public isScrolledToBottom: boolean;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -92,12 +93,25 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
     this._getChat = [];
     this.showTyping = new Subject();
     this.senderId = localStorage.getItem('userId');
+    this.isScrolledToBottom = true;
   }
 
-  ngAfterViewChecked(): void {
-    // if (this.scrolls) {
-    //   this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
-    // }
+  ngAfterViewInit(): void {
+    this.scrollUp();
+  }
+  /**
+   * @name onMessageScroll
+   * @param container
+   * @description Down arrow icon show and hide as per scroll
+   */
+  public onMessageScroll(container: any): void {
+    //  this.isScrolledToBottom = container.scrollTop < container.scrollHeight- container.clientHeight
+    const messageContainer = this.messageContainerRef.nativeElement;
+    const scrollHeight = messageContainer.scrollHeight;
+    let scrollTop = messageContainer.scrollTop;
+    const clientHeight = messageContainer.clientHeight;
+    const isScrolledToBottom = scrollHeight - scrollTop === clientHeight;
+    this.isScrolledToBottom = isScrolledToBottom;
   }
 
   ngOnInit(): void {
@@ -107,12 +121,11 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   /**
    * @name props
    * @description This method is called in ngOnInit
-  */
+   */
   public props(): void {
-    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
-    if (this.scrolls) {
-      this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
-    }
+    this.chatGroup.valueChanges.subscribe((data: string) =>
+      this.emitSenderId.emit(this.senderId)
+    );
   }
 
   /**
@@ -122,6 +135,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   public onSubmit(): void {
     if (this.chatGroup.valid) {
       this.emitChat.emit(this.chatGroup.value.message);
+      this.scrollUp();
       this.chatGroup.reset();
     }
   }
@@ -154,26 +168,32 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
    */
   public receivingTyping(sender: string): void {
     if (sender === this.getReceiverData._id) {
-      this.showTyping.next(true)
+      this.showTyping.next(true);
       setTimeout(() => {
-        this.showTyping.next(false)
+        this.showTyping.next(false);
       }, 3000);
     }
   }
 
   /**
+   * Click arrow down icon got to up message
    * @name scrollUp
    */
   public scrollUp(): void {
-    this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
+    setTimeout(() => {
+      this.messageContainerRef.nativeElement.scrollTo(
+        0,
+        this.messageContainerRef.nativeElement.scrollHeight
+      );
+    }, 0);
   }
 
   /**
    * @name checkOnline
    * @description THis method will show the status of the user
    */
-  public checkOnline():void{
-    this.showStatus = this.getOnlineUsers.find((data:Alive) => data.userId === this.getReceiverData._id)
+  public checkOnline(): void {
+    this.showStatus = this.getOnlineUsers.find((data: Alive) => data.userId === this.getReceiverData._id)
   }
 
   /**

@@ -42,6 +42,7 @@ export class ChatListPresentationComponent implements OnInit {
   @Input() public set getConversationUser(v: ConversationUser[]) {
     if (v) {
       this._getConversationUser = v;
+    
     }
   }
   public get getConversationUser(): ConversationUser[] {
