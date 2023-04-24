@@ -17,4 +17,5 @@ export class AppComponent {
     this.showLoader = false;
     this._service.loader.subscribe((data:Boolean) => this.showLoader = data)
   }
+  
 }

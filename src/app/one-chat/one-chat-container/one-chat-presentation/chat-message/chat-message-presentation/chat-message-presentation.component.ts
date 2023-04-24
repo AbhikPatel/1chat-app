@@ -1,4 +1,15 @@
-import { AfterViewChecked, ChangeDetectionStrategy, Component,  EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -10,11 +21,10 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   selector: 'app-chat-message-presentation',
   templateUrl: './chat-message-presentation.component.html',
   viewProviders: [ChatMessagePresenterService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatMessagePresentationComponent implements OnInit, AfterViewChecked {
-  
-  @ViewChild('scroll', { static: true }) scrolls: any;
+export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
+  @ViewChild('messageContainer') messageContainerRef: ElementRef;
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
     if (v) {
@@ -31,6 +41,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
     if (v) {
       this._getChat = v;
       this.chatGroup.setValue({ message: '' });
+      setTimeout(() => {
+        this.scrollUp();
+      }, 0);
     }
   }
   public get getChat(): NewMessage[] {
@@ -63,13 +76,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   private _getReceiverData: NewUser;
   public _getTypingData: Typing;
   public showTyping: Subject<boolean>;
-  public scrollEnd: any;
-  public scrollDown: any;
-  public scrollHeight: number;
-  public scrollHeights: number;
-  public scrollTop: number;
-  public scrollTops: any;
-  public previousScrollPosition = 0;
+  public isScrolledToBottom: boolean;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -83,36 +90,38 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
     this._getChat = [];
     this.showTyping = new Subject();
     this.senderId = localStorage.getItem('userId');
+    this.isScrolledToBottom = true;
   }
 
-  ngAfterViewChecked(): void {
-    if (this.scrolls) {
-      this.scrollTop=this.scrolls.nativeElement.scrollTop;
-      this.scrollHeights=this.scrolls.nativeElement.scrollHeight;
-      // this.scrolls.nativeElement.scrollTop = this.scrollHeights;
-      // this.scrollEnd=this.scrollHeights>=this.scrollTop
-    };
+  ngAfterViewInit(): void {
+    this.scrollUp();
   }
-  public scrollFn(event)
-  {
-    console.log(event);
-   this.scrollTops= event.target.scrollTop;
-   this.scrollHeight= event.target.scrollHeight 
-    console.log(this.scrollTops);
-    console.log(this.scrollHeight);
+  /**
+   * Down arrow icon show and hide as per scroll
+   * @param container
+   */
+  public onMessageScroll(container: any): void {
+    //  this.isScrolledToBottom = container.scrollTop < container.scrollHeight- container.clientHeight
+    const messageContainer = this.messageContainerRef.nativeElement;
+    const scrollHeight = messageContainer.scrollHeight;
+    let scrollTop = messageContainer.scrollTop;
+    const clientHeight = messageContainer.clientHeight;
+    const isScrolledToBottom = scrollHeight - scrollTop === clientHeight;
+    this.isScrolledToBottom = isScrolledToBottom;
   }
+
   ngOnInit(): void {
     this.props();
   }
- 
 
   /**
    * @name props
    * @description This method is called in ngOnInit
-  */
+   */
   public props(): void {
-    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
-   
+    this.chatGroup.valueChanges.subscribe((data: string) =>
+      this.emitSenderId.emit(this.senderId)
+    );
   }
 
   /**
@@ -122,6 +131,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   public onSubmit(): void {
     if (this.chatGroup.valid) {
       this.emitChat.emit(this.chatGroup.value.message);
+      this.scrollUp();
       this.chatGroup.reset();
     }
   }
@@ -135,7 +145,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   public convertPhoto(profileImg?: string): string {
     let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
-    return profileImg ? converter : '../../../../../../assets/images/avatar.png';
+    return profileImg
+      ? converter
+      : '../../../../../../assets/images/avatar.png';
   }
 
   /**
@@ -154,18 +166,24 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
    */
   public receivingTyping(sender: string): void {
     if (sender === this.getReceiverData._id) {
-      this.showTyping.next(true)
+      this.showTyping.next(true);
       setTimeout(() => {
-        this.showTyping.next(false)
+        this.showTyping.next(false);
       }, 3000);
     }
   }
 
   /**
+   * Click arrow down icon got to up message
    * @name scrollUp
    */
   public scrollUp(): void {
-    this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
+    setTimeout(() => {
+      this.messageContainerRef.nativeElement.scrollTo(
+        0,
+        this.messageContainerRef.nativeElement.scrollHeight
+      );
+    }, 0);
   }
 
   /**
