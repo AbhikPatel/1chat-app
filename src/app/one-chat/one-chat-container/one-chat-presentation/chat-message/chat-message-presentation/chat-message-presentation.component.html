@@ -18,8 +18,9 @@
     <!-- End: Header Section  -->
 
     <!-- Start: Chat Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto py-4 " #scroll appScrollDistance>
-        <div class="container h-100">
+  <ng-container >
+    <div class="chat-container flex-grow-1 overflow-auto py-4  h-100"  #messageContainer   (scroll)="onMessageScroll(messageContainer)" >
+        <div class="container" >
             <!-- Chat  -->
             <div class="d-flex" *ngFor="let data of getChat"
                 [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
@@ -57,20 +58,21 @@
                     </p>
                 </div>
             </div>
-            <!-- <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-4 position-relative" id="icon"
-            (click)="scrollUp()">
-            <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black">1</span>
-        </div> -->
+            <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-5 position-relative scroll-icon" id="icon"
+            (click)="scrollUp()" *ngIf="!isScrolledToBottom">
+            <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span>
+        </div>
             <ng-container *ngIf="!getReceiverData.full_name">
                 <div class="d-flex flex-column h-100 justify-content-center align-items-center">
                     <figure>
-                        <img src="../../../../../../assets/icons/981-consultation-lineal.gif" alt="">
+                        <img src="../../../../../../assets/icons/981-consultation-lineal.gif" alt="user-conversation-image" class="w-75">
                     </figure>
                     <h4 class="text-center"> Select any user to start the conversation </h4>
                 </div>
             </ng-container>
         </div>
     </div>
+</ng-container>
     <!-- End: Chat Screen  -->
 
     <!-- Start: Message  -->
