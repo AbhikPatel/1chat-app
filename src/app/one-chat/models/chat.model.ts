@@ -225,3 +225,16 @@ export class MessageRead {
         this.count = count
     }
 }
+
+export class Alive{
+    userId:string
+    socketId:string
+    
+    constructor(
+        userId:string,
+        socketId:string
+    ){
+        this.userId = userId
+        this.socketId = socketId
+    }
+}

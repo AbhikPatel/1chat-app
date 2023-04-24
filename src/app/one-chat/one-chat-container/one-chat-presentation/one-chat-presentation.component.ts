@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { ConversationUser, CreateChat, MessageRead, NewMessage, Typing } from '../../models/chat.model';
+import { Alive, ConversationUser, CreateChat, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 
 @Component({
@@ -14,6 +14,18 @@ export class OneChatPresentationComponent implements OnInit {
 
   /** This property is used to get the details og the Typing event */
   @Input() public typingData: Observable<Typing>
+
+  /** This property is used to get the details of all the online users */
+  @Input() public set getAliveData(v: Alive[]) {
+    if (v) {
+      this._getAliveData = v;
+      this._service.getOnlineUsers(v);
+    }
+  }
+
+  public get getAliveData(): Alive[] {
+    return this._getAliveData;
+  }
 
   /** This property is used to get the details of all the users */
   @Input() public set getIsRead(v: MessageRead) {
@@ -98,6 +110,7 @@ export class OneChatPresentationComponent implements OnInit {
   private _getAllUser: NewUser[];
   private _getConversationUsers: ConversationUser[];
   private _getIsRead:MessageRead;
+  private _getAliveData:Alive[];
   public destroy: Subject<void>;
   public transferAllUser$: Observable<NewUser[]>;
   public receiverData$: Observable<NewUser>;

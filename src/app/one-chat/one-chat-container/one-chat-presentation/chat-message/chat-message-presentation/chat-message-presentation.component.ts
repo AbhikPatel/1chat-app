@@ -2,7 +2,7 @@ import { AfterViewChecked, ChangeDetectionStrategy, Component, EventEmitter, Inp
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
+import { Alive, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 
@@ -13,8 +13,19 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatMessagePresentationComponent implements OnInit, AfterViewChecked {
-  
+
   @ViewChild('scroll', { static: true }) scrolls: any;
+  // This property is used to get online users
+  @Input() public set getOnlineUsers(v: Alive[]) {
+    if (v) {
+      this._getOnlineUsers = v;
+      this.checkOnline();
+    }
+  }
+  public get getOnlineUsers(): Alive[] {
+    return this._getOnlineUsers;
+  }
+
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
     if (v) {
@@ -41,6 +52,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   @Input() public set getReceiverData(v: NewUser) {
     if (v) {
       this._getReceiverData = v;
+      this.checkOnline();
     }
   }
   public get getReceiverData(): NewUser {
@@ -64,7 +76,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
   public _getTypingData: Typing;
   public showTyping: Subject<boolean>;
   public scrollTop: number;
+  private _getOnlineUsers:Alive[];
   public scrollHeight: number;
+  public showStatus:Alive;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -152,6 +166,14 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewChecke
    */
   public scrollUp(): void {
     this.scrolls.nativeElement.scrollTop = this.scrolls.nativeElement.scrollHeight;
+  }
+
+  /**
+   * @name checkOnline
+   * @description THis method will show the status of the user
+   */
+  public checkOnline():void{
+    this.showStatus = this.getOnlineUsers.find((data:Alive) => data.userId === this.getReceiverData._id)
   }
 
   /**

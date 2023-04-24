@@ -24,11 +24,11 @@
         <!-- Start: Search User  -->
         <div id="user" class="position-absolute bg-white">
             <form class="p-3 bg-theme" [formGroup]="resetSearch">
-                <input type="text" class="form-control"  id="toggle-user" name="search" autocomplete="off"
-                    placeholder="Search a User.." formControlName="search" >
+                <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
+                    placeholder="Search a User.." formControlName="search">
             </form>
             <div class="border-end bg-white overflow-auto h-100">
-                <div class="user-container d-flex align-items-center p-2 border-bottom " 
+                <div class="user-container d-flex align-items-center p-2 border-bottom "
                     *ngFor="let data of getAllUser | search:searchText" role="button" (click)="onNewChat(data)">
                     <div class="px-3 me-1">
                         <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
@@ -40,44 +40,54 @@
                             ({{data.role}}) </span>
                     </div>
                 </div>
-                <div class="h-100 d-flex justify-content-center align-items-center" *ngIf="(getAllUser | search:searchText).length <= 0 " >
+                <div class="h-100 d-flex justify-content-center align-items-center"
+                    *ngIf="(getAllUser | search:searchText).length <= 0 ">
                     <span class="text-info"> No User Found </span>
                 </div>
             </div>
         </div>
-       
+
         <!-- End: Search User  -->
 
         <!-- Start: Chat User  -->
         <div class="h-100 overflow-auto">
-            <div class="user-container d-flex align-items-center" role="button" *ngFor="let data of getConversationUser, let i = index"
-            (click)="onUser(data)" [ngClass]="{'bg-theme' : data._id === userId}">
-            <div class="px-3 me-1">
-                <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
-            </div>
-            <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
-                <div class="d-flex justify-content-between">
-                    <span class="fw-semibold text-truncate" style="width: 140px;"> {{data.full_name}} </span>
-                    <span class="text-chat fs-7"> {{data.time ? data.time : ''}} </span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <ng-container *ngIf="typingStatus && typingId.includes(data._id) else elseStatement">
-                        <span class="fs-7 text-success fw-semibold"> Typing... </span>
+            <div class="user-container d-flex align-items-center" role="button"
+                *ngFor="let data of getConversationUser, let i = index" (click)="onUser(data)"
+                [ngClass]="{'bg-theme' : data._id === userId}">
+                <div class="px-3 me-1 position-relative">
+                    <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
+                    <ng-container *ngIf="checkOnline(data._id)">
+                        <span
+                            class="online position-absolute translate-middle bg-success border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
                     </ng-container>
-                    <ng-template #elseStatement>
-                        <ng-container *ngIf="data.message">
-                            <span class="fs-7 last-chat text-truncate text-chat" [ngClass]="{'fw-bold' : data.notificationCount != 0}"> {{data.message}} </span>
+                </div>
+                <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold text-truncate" style="width: 160px;"> {{data.full_name}} </span>
+                        <span class="text-chat fs-7"> {{data.time ? data.time : ''}} </span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <ng-container *ngIf="typingStatus && typingId.includes(data._id) else elseStatement">
+                            <span class="fs-7 text-success fw-semibold"> Typing... </span>
                         </ng-container>
-                    </ng-template>
-                    <ng-container *ngIf="data.notificationCount">
-                        <span class="badge rounded-circle bg-success text-white">{{data.notificationCount}}</span>
-                    </ng-container>
+                        <ng-template #elseStatement>
+                            <ng-container *ngIf="data.message">
+                                <span class="fs-7 last-chat text-truncate text-chat"
+                                    [ngClass]="{'fw-bold' : data.notificationCount != 0}"> {{data.message}} </span>
+                            </ng-container>
+                        </ng-template>
+                        <ng-container *ngIf="data.notificationCount">
+                            <span class="badge rounded-circle bg-success text-white">{{data.notificationCount}}</span>
+                        </ng-container>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="d-flex justify-content-center align-items-center h-100" *ngIf="getConversationUser?.length === 0">
-            <span class="text-info"> No Conversation started </span>
-        </div>
+            <div class="d-flex justify-content-center align-items-center h-100"
+                *ngIf="getConversationUser?.length === 0">
+                <span class="text-info"> No Conversation started </span>
+            </div>
         </div>
         <!-- End: Chat User  -->
     </div>

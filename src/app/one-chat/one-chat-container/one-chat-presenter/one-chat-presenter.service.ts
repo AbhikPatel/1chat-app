@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { ConversationUser, CreateChat, MessageRead, NewMessage, Typing } from '../../models/chat.model';
+import { Alive, ConversationUser, CreateChat, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 
 @Injectable()
 
@@ -66,6 +66,8 @@ export class OneChatPresenterService {
   public userDetails: NewUser | undefined;
   /** This property is used to store the details of all the leads */
   public onlyLeads: NewUser[];
+  /** This property is used to store the details of all the leads */
+  public onlineUsers: string[];
   public conversationUser: ConversationUser[];
 
   constructor(
@@ -173,7 +175,7 @@ export class OneChatPresenterService {
       } else {
         let currentTime = new Date()
         let chatObj: NewMessage = {
-          is_read: false,
+          is_read: this.onlineUsers.includes(this.receiverId),
           chat: this.chatId,
           sender: this.userId,
           receiver: this.receiverId,
@@ -280,7 +282,7 @@ export class OneChatPresenterService {
     this.allChatIds.push(id);
     this.getMessage(this.updatedChat);
     this.updatedChat = '';
-    
+
   }
 
   /**
@@ -301,10 +303,18 @@ export class OneChatPresenterService {
    * @param data 
    * @description This method will update the chat array
    */
-  public updateChatArray(data: MessageRead) {
+  public updateChatArray(data: MessageRead): void {
     if (this.chatId === data.chatId) {
       this.chats.map((message: NewMessage) => message.is_read = true)
       this.getChatArray(this.chats)
     }
+  }
+
+  /**
+   * @name getOnlineUsers
+   * @description This method will get all the online users ID
+   */
+  public getOnlineUsers(user: Alive[]): void {
+    this.onlineUsers = user.map((data:Alive) => data.userId)
   }
 }

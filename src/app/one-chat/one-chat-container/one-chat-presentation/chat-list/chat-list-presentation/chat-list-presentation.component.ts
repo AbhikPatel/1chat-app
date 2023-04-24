@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { ConversationUser, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
+import { Alive, ConversationUser, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 import { FormGroup } from '@angular/forms';
@@ -13,6 +13,9 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatListPresentationComponent implements OnInit {
+
+  /** This property is used to get Typing details */
+  @Input() public getOnlineUsers:Alive[];
 
   /** This property is used to get Typing details */
   @Input() public set getTypingData(v: Typing) {
@@ -225,5 +228,18 @@ export class ChatListPresentationComponent implements OnInit {
   public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
+  }
+
+  /**
+   * @name checkOnline
+   * @param id 
+   * @description This method will show if the user is online or not
+   */
+  public checkOnline(id:string): boolean{
+    if(this.getOnlineUsers){
+      let isOnline = this.getOnlineUsers.find((data:Alive) => data.userId === id)
+      return isOnline ? true : false
+    }else
+      return false
   }
 }

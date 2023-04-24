@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { ConversationUser, CreateChat, Message, MessageRead, NewMessage, Typing } from '../models/chat.model';
+import { Alive, ConversationUser, CreateChat, Message, MessageRead, NewMessage, Typing } from '../models/chat.model';
 import { NewChatAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
 import { OneChatService } from '../one-chat.service';
 
@@ -29,6 +29,8 @@ export class OneChatContainerComponent implements OnInit {
   public getTypingData$: Observable<Typing>;
   /** This observable will pass all the is_read data */
   public getIsReadData$: Observable<MessageRead>;
+  /** This observable will pass all the online users */
+  public aliveData$: Observable<Alive[]>;
 
   constructor(
     private _service: OneChatService,
@@ -41,6 +43,8 @@ export class OneChatContainerComponent implements OnInit {
     this.getAllMessages$ = new Observable();
     this.getTypingData$ = new Observable();
     this.conversationUser$ = new Observable();
+    this.getIsReadData$ = new Observable();
+    this.aliveData$ = new Observable();
     this.newChatId$ = new Subject();
   }
 
@@ -58,10 +62,9 @@ export class OneChatContainerComponent implements OnInit {
     this.conversationUser$ = this._service.getConversationUser();
     this._service.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
     this.getTypingData$ = this._service.listen('typing');
-    // this.getIsReadData$ = this._service.listen('read_ack');
-    this._service.listen('dm:messageRead').subscribe((data) => console.log(data))
+    this.getIsReadData$ = this._service.listen('dm:messageRead')
     this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
-    this._service.listen('alive').subscribe((data) => console.log(data))
+    this.aliveData$ = this._service.listen('alive')
   }
 
   /**
