@@ -34,16 +34,13 @@ export class OneChatService {
    */
   public listen(eventname: string): Observable<any> {
     return new Observable((subscriber) => {
-      if(eventname === 'dm:messageRead'){
-        this.socket.on(eventname, (data: any, fn: any) => {
-          fn("received")
-          subscriber.next(data);
-        })
-      }else{
-        this.socket.on(eventname, (data: any, fn: any) => {
-          subscriber.next(data);
-        })
-      }
+      this.socket.on(eventname, (data: any, fn: any) => {
+        if (eventname === 'dm:message')
+          fn('received')
+        if (eventname === 'dm:messageRead')
+          fn('read')
+        subscriber.next(data);
+      })
     })
   }
 
@@ -55,6 +52,10 @@ export class OneChatService {
    */
   public emit(eventname: string, data: any): void {
     if (eventname === 'dm:message') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
+      })
+    } else if (eventname === 'dm:messageRead') {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response);
       })
@@ -110,7 +111,7 @@ export class OneChatService {
   public postNewChat(newChat: CreateChat): Observable<CreateChat> {
     const url: string = this.api + `chat`
     return this._http.httpPostRequest(url, newChat).pipe(
-      map((res: any) => res.data.doc)
+      map((res: any) => res.data.data)
     )
   }
 

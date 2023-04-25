@@ -159,17 +159,20 @@ export class Member {
     first_name: string
     last_name: string
     photo: string
+    role:string
 
     constructor(
         _id: string,
         first_name: string,
         last_name: string,
         photo: string,
+        role:string
     ) {
         this._id = _id
         this.first_name = first_name
         this.last_name = last_name
         this.photo = photo
+        this.role = role
     }
 }
 
@@ -183,6 +186,7 @@ export class ConversationUser {
     time: string
     message: string
     notificationCount: number
+    role?:string
 
     constructor(
         _id: string,
@@ -193,7 +197,8 @@ export class ConversationUser {
         full_name: string,
         time: string,
         message: string,
-        notificationCount: number
+        notificationCount: number,
+        role?:string
     ) {
         this._id = _id
         this.first_name = first_name
@@ -204,6 +209,7 @@ export class ConversationUser {
         this.time = time
         this.message = message
         this.notificationCount = notificationCount
+        this.role = role
     }
 }
 
@@ -223,5 +229,18 @@ export class MessageRead {
         this.sender = sender
         this.receiver = receiver
         this.count = count
+    }
+}
+
+export class Alive{
+    userId:string
+    socketId:string
+    
+    constructor(
+        userId:string,
+        socketId:string
+    ){
+        this.userId = userId
+        this.socketId = socketId
     }
 }

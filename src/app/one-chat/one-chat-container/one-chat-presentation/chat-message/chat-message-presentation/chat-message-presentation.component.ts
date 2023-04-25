@@ -1,19 +1,8 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
+import { Alive, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 
@@ -24,7 +13,18 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
+
   @ViewChild('messageContainer') messageContainerRef: ElementRef;
+  // This property is used to get online users
+  @Input() public set getOnlineUsers(v: Alive[]) {
+    if (v) {
+      this._getOnlineUsers = v;
+      this.checkOnline();
+    }
+  }
+  public get getOnlineUsers(): Alive[] {
+    return this._getOnlineUsers;
+  }
   // This property is used to get sender Details
   @Input() public set getTypingData(v: Typing) {
     if (v) {
@@ -54,6 +54,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   @Input() public set getReceiverData(v: NewUser) {
     if (v) {
       this._getReceiverData = v;
+      this.checkOnline();
     }
   }
   public get getReceiverData(): NewUser {
@@ -76,11 +77,13 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   private _getReceiverData: NewUser;
   public _getTypingData: Typing;
   public showTyping: Subject<boolean>;
+  private _getOnlineUsers: Alive[];
+  public showStatus: Alive;
   public isScrolledToBottom: boolean;
 
   constructor(
     private _service: ChatMessagePresenterService,
-    private _route: Router
+    private _route: Router,
   ) {
     this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
@@ -97,8 +100,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this.scrollUp();
   }
   /**
-   * Down arrow icon show and hide as per scroll
+   * @name onMessageScroll
    * @param container
+   * @description Down arrow icon show and hide as per scroll
    */
   public onMessageScroll(container: any): void {
     //  this.isScrolledToBottom = container.scrollTop < container.scrollHeight- container.clientHeight
@@ -145,9 +149,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public convertPhoto(profileImg?: string): string {
     let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
-    return profileImg
-      ? converter
-      : '../../../../../../assets/images/avatar.png';
+    return profileImg ? converter : '../../../../../../assets/images/avatar.png';
   }
 
   /**
@@ -174,8 +176,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Click arrow down icon got to up message
    * @name scrollUp
+   * @description Click arrow down icon got to up message
    */
   public scrollUp(): void {
     setTimeout(() => {
@@ -184,6 +186,18 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
         this.messageContainerRef.nativeElement.scrollHeight
       );
     }, 0);
+  }
+
+  /**
+   * @name checkOnline
+   * @description THis method will show the status of the user
+   */
+  public checkOnline(): void {
+    if (this.getOnlineUsers)
+      this.showStatus = this.getOnlineUsers.find((data: Alive) => data.userId === this.getReceiverData._id)
+  }
+
+  public displayTime(){
   }
 
   /**
