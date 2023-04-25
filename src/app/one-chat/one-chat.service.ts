@@ -111,7 +111,7 @@ export class OneChatService {
   public postNewChat(newChat: CreateChat): Observable<CreateChat> {
     const url: string = this.api + `chat`
     return this._http.httpPostRequest(url, newChat).pipe(
-      map((res: any) => res.data.doc)
+      map((res: any) => res.data.data)
     )
   }
 

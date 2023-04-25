@@ -1,9 +1,9 @@
 <!-- Start: User Message  -->
-<div class="h-100 d-flex flex-column overflow-hidden">
+<div class="h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3">
     <!-- Start: Header Section  -->
-    <div id="header" class="d-flex align-items-center justify-content-between px-5">
-        <div class="d-flex align-items-center">
-            <ng-container *ngIf="getReceiverData.photo">
+    <ng-container *ngIf="getReceiverData.photo">
+        <div id="header" class="d-flex align-items-center justify-content-between px-5">
+            <div class="d-flex align-items-center">
                 <figure class="m-0">
                     <img [src]="convertPhoto(getReceiverData?.photo)" class="rounded-circle profile-img" alt="profile">
                 </figure>
@@ -16,72 +16,76 @@
                         <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
                     </ng-template>
                 </div>
-            </ng-container>
+            </div>
+            <div class="fs-4" role="button" (click)="onLogOut()" title="logout">
+                <i class='icon-bx-log-out  text-info'></i>
+            </div>
         </div>
-        <div class="fs-4" role="button" (click)="onLogOut()" title="logout">
-            <i class='icon-bx-log-out  text-info'></i>
-        </div>
-    </div>
+    </ng-container>
     <!-- End: Header Section  -->
 
     <!-- Start: Chat Screen  -->
-  <ng-container >
-    <div class="chat-container flex-grow-1 overflow-auto py-4  h-100"  #messageContainer   (scroll)="onMessageScroll(messageContainer)" >
-        <div class="container" >
-            <!-- Chat  -->
-            <div class="d-flex flex-column" *ngFor="let data of getChat, let i = index"
-                [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-                <!-- <div class="d-flex justify-content-center" *ngIf="showDays(data.time)">
-                    <span class="tick-color border text-info py-1 px-2 rounded-2 fs-7"> {{showDays(data.time)}} </span>
-                </div> -->
-                <div class="chat">
-                    <!-- Sender Name  -->
-                    <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
-                        <span class="text-info"> {{data.sender === senderId ? 'You' : getReceiverData?.full_name}}
+    <ng-container>
+        <div class="chat-container flex-grow-1 overflow-auto py-4  h-100" #messageContainer
+            (scroll)="onMessageScroll(messageContainer)">
+            <div class="container h-100">
+                <!-- Chat  -->
+                <div class="d-flex flex-column" *ngFor="let data of getChat, let i = index"
+                    [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
+                    <div class="d-flex justify-content-center">
+                        <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7"> 
+                            Today
                         </span>
-                    </p>
+                    </div>
+                    <div class="chat">
+                        <!-- Sender Name  -->
+                        <!-- <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
+                            <span class="text-info"> {{data.sender === senderId ? 'You' : getReceiverData?.full_name}}
+                            </span>
+                        </p> -->
 
-                    <!-- Chat Message  -->
-                    <div class="d-flex"
-                        [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-                        <p class="chat-text rounded-3 py-1 px-2 border mb-1"
-                            [ngClass]="data.sender === senderId ? 'bg-secondary' : 'bg-white'">
-                            {{data.content.text}}
+                        <!-- Chat Message  -->
+                        <div class="d-flex"
+                            [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
+                            <p class="chat-text rounded-3 py-1 px-2 shadow-sm mb-1"
+                                [ngClass]="data.sender === senderId ? 'bg-secondary' : 'bg-white'">
+                                {{data.content.text}}
+                            </p>
+                        </div>
+
+                        <!-- Time and Date  -->
+                        <p class="fs-8 text-info d-flex align-items-center"
+                            [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
+                            <span class="pe-1">
+                                {{data.convertedTime}}
+                            </span>
+                            <ng-container *ngIf="data.sender === senderId">
+                                <span *ngIf="!data.is_read">
+                                    <img src="https://img.icons8.com/ios-filled/16/b1b1b1/double-tick.png" />
+                                </span>
+                                <span *ngIf="data.is_read">
+                                    <img src="https://img.icons8.com/ios-filled/16/00ffff/double-tick.png" />
+                                </span>
+                            </ng-container>
                         </p>
                     </div>
-
-                    <!-- Time and Date  -->
-                    <p class="fs-8 text-info d-flex align-items-center"
-                        [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-                        <span class="pe-1">
-                            {{data.convertedTime}}
-                        </span>
-                        <ng-container *ngIf="data.sender === senderId">
-                            <span *ngIf="!data.is_read">
-                                <img src="https://img.icons8.com/ios-filled/16/b1b1b1/double-tick.png" />
-                            </span>
-                            <span *ngIf="data.is_read">
-                                <img src="https://img.icons8.com/ios-filled/16/00ffff/double-tick.png" />
-                            </span>
-                        </ng-container>
-                    </p>
                 </div>
+                <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-5 position-relative scroll-icon"
+                    id="icon" (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
+                    <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
+                </div>
+                <ng-container *ngIf="!getReceiverData.full_name">
+                    <div class="d-flex flex-column h-100 justify-content-center align-items-center">
+                        <figure>
+                            <img src="../../../../../../assets/icons/981-consultation-lineal.gif"
+                                alt="user-conversation-image" class="w-75">
+                        </figure>
+                        <h4 class="text-center"> Select any user to start the conversation </h4>
+                    </div>
+                </ng-container>
             </div>
-            <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-5 position-relative scroll-icon" id="icon"
-            (click)="scrollUp()" *ngIf="!isScrolledToBottom">
-            <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span>
         </div>
-            <ng-container *ngIf="!getReceiverData.full_name">
-                <div class="d-flex flex-column h-100 justify-content-center align-items-center">
-                    <figure>
-                        <img src="../../../../../../assets/icons/981-consultation-lineal.gif" alt="user-conversation-image" class="w-75">
-                    </figure>
-                    <h4 class="text-center"> Select any user to start the conversation </h4>
-                </div>
-            </ng-container>
-        </div>
-    </div>
-</ng-container>
+    </ng-container>
     <!-- End: Chat Screen  -->
 
     <!-- Start: Message  -->

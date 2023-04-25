@@ -137,7 +137,6 @@ export class OneChatPresentationComponent implements OnInit {
     this.senderDetails$ = new Observable();
     this.newConversationUser = new Observable();
     this._getAllUser = [];
-    this._getNewChatId = {} as CreateChat;
     this.onScreen = {} as ElementRef;
   }
 

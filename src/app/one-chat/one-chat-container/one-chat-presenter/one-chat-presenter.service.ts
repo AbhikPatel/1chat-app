@@ -130,8 +130,7 @@ export class OneChatPresenterService {
    * @description This method is use to filter the data and get only conversation user and also only chat Ids
    */
   public removeUserData(users: ConversationUser[]): void {
-    let localData = JSON.parse(localStorage.getItem('conversation'))
-    localData ? this.conversationUser = localData : this.conversationUser = users
+    this.conversationUser = users
     this.allChatIds = this.conversationUser.map((user: ConversationUser) => user.chatId);
     this.onlyConversationUsers.next(this.conversationUser);
   }
@@ -171,11 +170,10 @@ export class OneChatPresenterService {
         this.chats = [];
         this.newChatState = false;
         this.updatedChat = message;
-
       } else {
         let currentTime = new Date()
         let chatObj: NewMessage = {
-          is_read: this.onlineUsers.includes(this.receiverId),
+          is_read: false,
           chat: this.chatId,
           sender: this.userId,
           receiver: this.receiverId,
@@ -236,6 +234,7 @@ export class OneChatPresenterService {
           time: this._formatter.Formatter(new Date()),
           message: newChat.content.text,
           notificationCount: 1,
+          role: this.userDetails.role
         }
 
         if (this.conversationUser.length === 0)
@@ -253,7 +252,6 @@ export class OneChatPresenterService {
       this.conversationUser.unshift(this.conversationUser.splice(userId, 1)[0]);
       this.onlyConversationUsers.next(this.conversationUser);
     }
-    localStorage.setItem('conversation', JSON.stringify(this.conversationUser))
   }
 
   /**
@@ -277,10 +275,10 @@ export class OneChatPresenterService {
    */
   public updatedChatObj(id: string): void {
     this.chatId = id;
+    this.getMessage(this.updatedChat);
     let index = this.conversationUser.findIndex((user: ConversationUser) => user.chatId === '');
     this.conversationUser[index].chatId = id;
     this.allChatIds.push(id);
-    this.getMessage(this.updatedChat);
     this.updatedChat = '';
 
   }
@@ -315,6 +313,6 @@ export class OneChatPresenterService {
    * @description This method will get all the online users ID
    */
   public getOnlineUsers(user: Alive[]): void {
-    this.onlineUsers = user.map((data:Alive) => data.userId)
+    this.onlineUsers = user.map((data: Alive) => data.userId)
   }
 }

@@ -83,7 +83,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
 
   constructor(
     private _service: ChatMessagePresenterService,
-    private _route: Router
+    private _route: Router,
   ) {
     this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
@@ -176,8 +176,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Click arrow down icon got to up message
    * @name scrollUp
+   * @description Click arrow down icon got to up message
    */
   public scrollUp(): void {
     setTimeout(() => {
@@ -193,7 +193,11 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    * @description THis method will show the status of the user
    */
   public checkOnline(): void {
-    this.showStatus = this.getOnlineUsers.find((data: Alive) => data.userId === this.getReceiverData._id)
+    if (this.getOnlineUsers)
+      this.showStatus = this.getOnlineUsers.find((data: Alive) => data.userId === this.getReceiverData._id)
+  }
+
+  public displayTime(){
   }
 
   /**
