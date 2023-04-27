@@ -14,6 +14,9 @@
             [getTypingData]="typingData |async"
             (emitIsReadData)="getIsReadData($event)"
             [getOnlineUsers]="getAliveData"
+            (emitChatType)="getChatType($event)"
+            [getGroupDetails]="groupConversation$ | async"
+            [notificationCount]="notificationCount$ | async"
         ></app-chat-list-presentation>
     </div>
     <!-- End: User List  -->
@@ -27,6 +30,7 @@
             (emitSenderId)="getSenderId($event)"
             [getTypingData]="typingData |async"
             [getOnlineUsers]="getAliveData"
+            [getGroupDetails]="groupChatDetails$ | async"
         ></app-chat-message-presentation>
     </div>
     <!-- End: Chat Screen  -->

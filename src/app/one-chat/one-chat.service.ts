@@ -5,8 +5,8 @@ import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { HttpService } from '../core/services/http/http.service';
 import { NewUser } from '../shared/models/user.model';
-import { ConversationUser, CreateChat, NewMessage } from './models/chat.model';
-import { ConversationUserAdaptor, MessageAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
+import { Conversation, CreateChat, NewMessage } from './models/chat.model';
+import { MessageAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
 
 @Injectable()
 
@@ -21,7 +21,6 @@ export class OneChatService {
     private _http: HttpService,
     private _allUserAdaptor: allUserAdaptor,
     private _messageAdaptor: MessageAdaptor,
-    private _conversationUser: ConversationUserAdaptor,
   ) {
     this.api = environment.baseURL;
   }
@@ -82,11 +81,11 @@ export class OneChatService {
    * @returns observable
    * @description This will return all the users who have started conversation with the sender
   */
-  public getConversationUser(): Observable<ConversationUser[]> {
+  public getConversationUser(): Observable<Conversation[]> {
     this.userId = localStorage.getItem('userId')
     const url: string = this.api + `user/` + this.userId;
     return this._http.httpGetRequest(url).pipe(
-      map((res: any) => this._conversationUser.toResponse(res.data.doc))
+      map((res: any) => res.data.doc)
     )
   }
 

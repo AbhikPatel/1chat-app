@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, ConversationUser, CreateChat, Message, MessageRead, NewMessage, Typing } from '../models/chat.model';
+import { Alive, Conversation, ConversationUser, CreateChat, Message, MessageRead, NewMessage, Typing } from '../models/chat.model';
 import { NewChatAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
 import { OneChatService } from '../one-chat.service';
 
@@ -22,7 +22,7 @@ export class OneChatContainerComponent implements OnInit {
   /** This observable will pass all the users data */
   public allUser$: Observable<NewUser[]>;
   /** This observable will pass all the users which has conversation with the sender */
-  public conversationUser$: Observable<ConversationUser[]>;
+  public conversationUser$: Subject<Conversation[]>;
   /** This observable will pass all the Messages data */
   public getAllMessages$: Observable<NewMessage[]>;
   /** This observable will pass all the Messages data */
@@ -42,7 +42,7 @@ export class OneChatContainerComponent implements OnInit {
     this.allUser$ = new Observable();
     this.getAllMessages$ = new Observable();
     this.getTypingData$ = new Observable();
-    this.conversationUser$ = new Observable();
+    this.conversationUser$ = new Subject();
     this.getIsReadData$ = new Observable();
     this.aliveData$ = new Observable();
     this.newChatId$ = new Subject();
@@ -59,12 +59,34 @@ export class OneChatContainerComponent implements OnInit {
   public props(): void {
     this._service.setMap();
     this.allUser$ = this._service.getAllUserData();
-    this.conversationUser$ = this._service.getConversationUser();
+    this._service.getConversationUser().subscribe((users: Conversation[]) => {
+      this.conversationUser$.next(users);
+      var groupIds: string[] = [];
+      users.map((data:Conversation) => {
+        if(data.chat_type === 'group')
+          groupIds.push(data._id)
+      })
+      this._service.emit('group:join', groupIds)
+    })
     this._service.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
+    this._service.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
     this.getTypingData$ = this._service.listen('typing');
     this.getIsReadData$ = this._service.listen('dm:messageRead')
+    // this._service.listen('dm:messageRead').subscribe((data) => console.log(data))
     this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
-    this.aliveData$ = this._service.listen('alive')
+    this.aliveData$ = this._service.listen('alive');
+    // this._service.emit('group:message', {
+    //   is_read:false,
+    //   chat:'6447780f3b2c76475b1b4d97',
+    //   sender:'64007dcd89acbc81fb9a997d',
+    //   receiver:'64007dcd89acbc81fb9a997d',
+    //   time:'2023-04-25T10:35:26.003Z',
+    //   type:'text',
+    //   content:{
+    //     text:'mehul test 2'
+    //   }
+    // })
+    // this._service.listen('group:message').subscribe((data) => console.log(data))
   }
 
   /**
@@ -83,7 +105,7 @@ export class OneChatContainerComponent implements OnInit {
    */
   public getChatObject(chat: NewMessage): void {
     const data: Message = this._newChatAdaptor.toRequest(chat);
-    this._service.emit('dm:message', data);
+    chat.chat_type === 'dm' ? this._service.emit('dm:message', data) : this._service.emit('group:message', data)
   }
 
   /**
@@ -109,8 +131,8 @@ export class OneChatContainerComponent implements OnInit {
    * @param data 
    * @description This method will emit the message read data into socket
    */
-  public getReadMessagesData(data:MessageRead){
-    this._service.emit('dm:messageRead', data)    
+  public getReadMessagesData(data: MessageRead) {
+    this._service.emit('dm:messageRead', data)
   }
 
   /**

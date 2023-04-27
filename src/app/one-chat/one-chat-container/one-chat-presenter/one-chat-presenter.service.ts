@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, ConversationUser, CreateChat, MessageRead, NewMessage, Typing } from '../../models/chat.model';
+import { Alive, Conversation, ConversationUser, CreateChat, Group, GroupDetails, Member, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 
 @Injectable()
 
@@ -44,6 +44,18 @@ export class OneChatPresenterService {
   private typingData: Subject<Typing>;
   public typingData$: Observable<Typing>;
 
+  /** This property is used to transfer group chats conversation */
+  private groupChatDetails: Subject<GroupDetails>;
+  public groupChatDetails$: Observable<GroupDetails>;
+
+  /** This property is used to transfer group chat details */
+  private groupChatConversation: Subject<Group[]>;
+  public groupChatConversation$: Observable<Group[]>;
+
+  /** This property is used to transfer group chat details */
+  private notificationCount: Subject<any>;
+  public notificationCount$: Observable<any>;
+
   /** This property is used to store all the users */
   public users: NewUser[];
   /** This property is used to store array of chats */
@@ -68,7 +80,9 @@ export class OneChatPresenterService {
   public onlyLeads: NewUser[];
   /** This property is used to store the details of all the leads */
   public onlineUsers: string[];
+  public chatType: string;
   public conversationUser: ConversationUser[];
+  public groupConversation: Group[];
 
   constructor(
     private _formatter: FormatTime
@@ -109,6 +123,18 @@ export class OneChatPresenterService {
     this.typingData$ = new Observable();
     this.typingData$ = this.typingData.asObservable();
 
+    this.groupChatDetails = new Subject();
+    this.groupChatDetails$ = new Observable();
+    this.groupChatDetails$ = this.groupChatDetails.asObservable();
+
+    this.groupChatConversation = new Subject();
+    this.groupChatConversation$ = new Observable();
+    this.groupChatConversation$ = this.groupChatConversation.asObservable();
+
+    this.notificationCount = new Subject();
+    this.notificationCount$ = new Observable();
+    this.notificationCount$ = this.notificationCount.asObservable();
+
     this.userId = localStorage.getItem('userId');
     this.role = localStorage.getItem('role');
 
@@ -120,6 +146,7 @@ export class OneChatPresenterService {
     this.allChatIds = [];
     this.onlyLeads = [];
     this.conversationUser = [];
+    this.groupConversation = [];
     this.newChatState = false;
     this.userDetails = {} as NewUser;
   }
@@ -129,10 +156,51 @@ export class OneChatPresenterService {
    * @param chat 
    * @description This method is use to filter the data and get only conversation user and also only chat Ids
    */
-  public removeUserData(users: ConversationUser[]): void {
-    this.conversationUser = users
-    this.allChatIds = this.conversationUser.map((user: ConversationUser) => user.chatId);
-    this.onlyConversationUsers.next(this.conversationUser);
+  public removeUserData(users: Conversation[]): void {
+    this.allChatIds = users.map((user: Conversation) => user._id);
+    users.forEach((chatData: Conversation) => {
+      if (chatData.chat_type === 'dm') {
+        let id: string = chatData._id
+        let member: Member = chatData.members.find((user: Member) => user._id !== this.userId)
+        let obj = {
+          message: chatData.lastMessage ? chatData.lastMessage.content.text : '-',
+          time: this._formatter.Formatter(chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date()),
+          timestamp: chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date(),
+          notificationCount: chatData.lastMessage ? ((chatData.lastMessage.is_read === false && chatData.lastMessage.sender !== this.userId) ? 1 : 0) : 0,
+          full_name: member.first_name + ' ' + member.last_name,
+          chatId: id,
+          type: chatData.chat_type
+        }
+        this.conversationUser.push(Object.assign(member, obj))
+      } else {
+        let obj = {
+          chatId: chatData._id,
+          photo: 'default.jpeg',
+          title: chatData.title,
+          // message: chatData.lastMessage ? chatData.lastMessage.content.text : '-',
+          message: '-',
+          notificationCount: 0,
+          time: this._formatter.Formatter(new Date()),
+          type: 'group',
+          lastUser: '',
+        }
+        let memberArr: Member[] = chatData.members.map((user: Member) => {
+            user.full_name = user.first_name + ' ' + user.last_name
+            return user
+        });
+        this.groupConversation.push(Object.assign(obj, { members: memberArr }))
+      }
+    });
+
+    const sortbyTime = (a, b) => {  
+      const timestampA = a.timestamp.getTime();
+      const timestampB = b.timestamp.getTime();
+      return timestampB - timestampA;
+    };
+
+    this.onlyConversationUsers.next(this.conversationUser.sort(sortbyTime));
+    this.groupChatConversation.next(this.groupConversation.sort(sortbyTime));
+    this.countNotification();
   }
 
   /**
@@ -176,25 +244,37 @@ export class OneChatPresenterService {
           is_read: false,
           chat: this.chatId,
           sender: this.userId,
-          receiver: this.receiverId,
+          receiver: this.chatType === 'group' ? this.chatId : this.receiverId,
           time: currentTime,
           type: 'text',
           is_sender: true,
           convertedTime: this._formatter.Formatter(currentTime),
           content: {
             text: message
-          }
+          },
+          chat_type: this.chatType
         }
         this.chatData.next(chatObj);
         this.chats.push(chatObj)
         this.getChatArray(this.chats);
-        let id = this.conversationUser.findIndex((user: ConversationUser) => user.chatId === this.chatId);
-        this.conversationUser[id].message = message;
-        this.conversationUser[id].time = this._formatter.Formatter(currentTime);
-        this.conversationUser.unshift(this.conversationUser.splice(id, 1)[0]);
-        this.onlyConversationUsers.next(this.conversationUser);
+        if (this.chatType === 'dm') {
+          let id = this.conversationUser.findIndex((user: ConversationUser) => user.chatId === this.chatId);
+          this.conversationUser[id].message = message;
+          this.conversationUser[id].time = this._formatter.Formatter(currentTime);
+          this.conversationUser.unshift(this.conversationUser.splice(id, 1)[0]);
+          this.onlyConversationUsers.next(this.conversationUser);
+          this.countNotification();
+        } else {
+          let id = this.groupConversation.findIndex((user: Group) => user.chatId === this.chatId);
+          this.groupConversation[id].message = message;
+          this.groupConversation[id].time = this._formatter.Formatter(currentTime);
+          let fullName = this.users.find((data:NewUser) => data._id === this.userId).full_name
+          this.groupConversation[id].lastUser = fullName;
+          this.groupConversation.unshift(this.groupConversation.splice(id, 1)[0]);
+          this.groupChatConversation.next(this.groupConversation);
+          this.countNotification();
+        }
       }
-
     }
   }
 
@@ -214,43 +294,60 @@ export class OneChatPresenterService {
    * @description This method is use to add new conversation user
    */
   public addNewChat(newChat: NewMessage): void {
-    let isChatId = this.allChatIds.filter((id: string) => id === newChat.chat);
+    const isGroupChat = this.groupConversation.find((user: Group) => user.chatId === newChat.chat);
+    const isChatId = this.allChatIds.find((id: string) => id === newChat.chat);
     if (this.receiverId === newChat.sender) {
       this.chats.push(newChat);
       this.getChatArray(this.chats);
     }
-    if (isChatId.length === 0) {
-      this.userDetails = this.users.find((items: NewUser) => items._id === newChat.sender);
 
-      if (this.userDetails) {
+    // if (newChat.chat === this.chatId)
+    //   this.chats.push(newChat)
 
-        let obj: ConversationUser = {
-          _id: this.userDetails._id,
-          first_name: this.userDetails.first_name,
-          last_name: this.userDetails.last_name,
-          photo: this.userDetails.photo,
-          full_name: this.userDetails.full_name,
-          chatId: newChat.chat,
-          time: this._formatter.Formatter(new Date()),
-          message: newChat.content.text,
-          notificationCount: 1,
-          role: this.userDetails.role
-        }
+    if (isGroupChat) {
+      let userId: number = this.groupConversation.findIndex((items: Group) => items.chatId === newChat.chat);
+      let user:string = this.users.find((data:NewUser) => data._id === newChat.sender).full_name;
+      this.groupConversation[userId].message = newChat.content.text;
+      this.groupConversation[userId].time = newChat.convertedTime;
+      this.groupConversation[userId].lastUser = user;
+      this.groupChatConversation.next(this.groupConversation)
 
-        if (this.conversationUser.length === 0)
-          this.chatId = newChat.chat;
-
-        this.newConversationUser.next(obj);
-        this.allChatIds.push(newChat.chat);
-      }
     } else {
-      let userId: number = this.conversationUser.findIndex((items: ConversationUser) => items.chatId === newChat.chat);
-      this.conversationUser[userId].message = newChat.content.text;
-      this.conversationUser[userId].time = newChat.convertedTime;
-      if (newChat.sender !== this.receiverId)
-        this.conversationUser[userId].notificationCount === 0 ? this.conversationUser[userId].notificationCount = 1 : this.conversationUser[userId].notificationCount++;
-      this.conversationUser.unshift(this.conversationUser.splice(userId, 1)[0]);
-      this.onlyConversationUsers.next(this.conversationUser);
+      if (!isChatId) {
+        this.userDetails = this.users.find((items: NewUser) => items._id === newChat.sender);
+
+        if (this.userDetails) {
+          let obj: ConversationUser = {
+            _id: this.userDetails._id,
+            first_name: this.userDetails.first_name,
+            last_name: this.userDetails.last_name,
+            photo: this.userDetails.photo,
+            full_name: this.userDetails.full_name,
+            chatId: newChat.chat,
+            time: this._formatter.Formatter(new Date()),
+            message: newChat.content.text,
+            notificationCount: 1,
+            role: this.userDetails.role
+          }
+
+          if (this.conversationUser.length === 0)
+            this.chatId = newChat.chat;
+
+          this.newConversationUser.next(obj);
+          this.allChatIds.push(newChat.chat);
+          this.onlyConversationUsers.next(this.conversationUser);
+          this.countNotification();
+        }
+      } else {
+        let userId: number = this.conversationUser.findIndex((items: ConversationUser) => items.chatId === newChat.chat);
+        this.conversationUser[userId].message = newChat.content.text;
+        this.conversationUser[userId].time = newChat.convertedTime;
+        if (newChat.sender !== this.receiverId)
+          this.conversationUser[userId].notificationCount === 0 ? this.conversationUser[userId].notificationCount = 1 : this.conversationUser[userId].notificationCount++;
+        this.conversationUser.unshift(this.conversationUser.splice(userId, 1)[0]);
+        this.onlyConversationUsers.next(this.conversationUser);
+        this.countNotification();
+      }
     }
   }
 
@@ -260,13 +357,24 @@ export class OneChatPresenterService {
    * @description This method is use to get the details of the receiver from Id
    */
   public getReceiverId(id: string): void {
-    this.receiverId = id;
-    let receiver: NewUser | undefined = this.users.find((items: NewUser) => items._id === this.receiverId);
-    if (receiver)
-      this.receiverData.next(receiver);
-
+    if (this.chatType === 'dm') {
+      this.receiverId = id;
+      let receiver: NewUser | undefined = this.users.find((items: NewUser) => items._id === this.receiverId);
+      if (receiver)
+        this.receiverData.next(receiver);
+    } else {
+      let groupData: Group = this.groupConversation.find((user: Group) => user.chatId === this.chatId);
+      let groupObj: GroupDetails = {
+        chatId: groupData.chatId,
+        members: groupData.members,
+        title: groupData.title,
+        photo: groupData.photo,
+      }
+      this.groupChatDetails.next(groupObj)
+    }
     if (this.newChatState)
       this.chatArray.next([]);
+
   }
 
   /**
@@ -280,7 +388,6 @@ export class OneChatPresenterService {
     this.conversationUser[index].chatId = id;
     this.allChatIds.push(id);
     this.updatedChat = '';
-
   }
 
   /**
@@ -306,6 +413,14 @@ export class OneChatPresenterService {
       this.chats.map((message: NewMessage) => message.is_read = true)
       this.getChatArray(this.chats)
     }
+  }
+
+  public countNotification(){
+    const obj = {
+      group: this.groupConversation.filter((user:Group) => user.notificationCount > 0).length,
+      chat: this.conversationUser.filter((user:ConversationUser) => user.notificationCount > 0).length,
+    }
+    this.notificationCount.next(obj)
   }
 
   /**

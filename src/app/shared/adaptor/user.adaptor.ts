@@ -13,13 +13,7 @@ export class userAdaptor implements Adapter<NewUser>{
             item.last_name,
             fullName,
             item.email,
-            item.admin,
-            item.timezone,
-            item.country,
-            item.language,
             item.chats,
-            item.passwordChangedAt,
-            item._v,
             item.photo,
             item.role,
         )

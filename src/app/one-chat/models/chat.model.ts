@@ -36,6 +36,7 @@ export class NewMessage {
     content: Text
     convertedTime: string
     is_sender: boolean
+    chat_type:string
 
     constructor(
         is_read: boolean,
@@ -47,6 +48,7 @@ export class NewMessage {
         content: Text,
         convertedTime: string,
         is_sender: boolean,
+        chat_type:string
     ) {
         this.is_read = is_read
         this.chat = chat
@@ -57,6 +59,7 @@ export class NewMessage {
         this.content = content
         this.convertedTime = convertedTime
         this.is_sender = is_sender
+        this.chat_type = chat_type
     }
 }
 
@@ -160,13 +163,15 @@ export class Member {
     last_name: string
     photo: string
     role:string
+    full_name?:string
 
     constructor(
         _id: string,
         first_name: string,
         last_name: string,
         photo: string,
-        role:string
+        role:string,
+        full_name?:string
     ) {
         this._id = _id
         this.first_name = first_name
@@ -187,6 +192,9 @@ export class ConversationUser {
     message: string
     notificationCount: number
     role?:string
+    type?:string
+    timestamp?:Date
+    members?:string[]
 
     constructor(
         _id: string,
@@ -198,7 +206,10 @@ export class ConversationUser {
         time: string,
         message: string,
         notificationCount: number,
-        role?:string
+        role?:string,
+        type?:string,
+        timestamp?:Date,
+        members?:string[],
     ) {
         this._id = _id
         this.first_name = first_name
@@ -209,7 +220,6 @@ export class ConversationUser {
         this.time = time
         this.message = message
         this.notificationCount = notificationCount
-        this.role = role
     }
 }
 
@@ -243,4 +253,45 @@ export class Alive{
         this.userId = userId
         this.socketId = socketId
     }
+}
+
+export class Group{
+    chatId:string
+    members:Member[]
+    title:string
+    photo:string
+    message:string
+    lastUser:string
+    notificationCount:number
+    time:string
+    type:string
+
+    constructor(
+        chatId:string,
+        members:Member[],
+        title:string,
+        photo:string,
+        message:string,
+        lastUser:string,
+        notificationCount:number,
+        time:string,
+        type:string
+    ){
+        this.chatId = chatId
+        this.members = members
+        this.title = title
+        this.photo = photo
+        this.message = message
+        this.lastUser = lastUser
+        this.notificationCount = notificationCount
+        this.time = time
+        this.type = type
+    }
+}
+
+export interface GroupDetails{
+    chatId:string,
+    members:Member[],
+    photo:string,
+    title:string
 }

@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmi
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { Alive, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
+import { Alive, GroupDetails, Member, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 
@@ -15,7 +15,19 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
 export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
 
   @ViewChild('messageContainer') messageContainerRef: ElementRef;
+
   // This property is used to get online users
+  @Input() public set getGroupDetails(v: GroupDetails) {
+    if (v) {
+      this._getGroupDetails = v;
+      this.count = 2;
+      this.getGroupMembers(v.members)
+    }
+  }
+  public get getGroupDetails(): GroupDetails {
+    return this._getGroupDetails;
+  }
+
   @Input() public set getOnlineUsers(v: Alive[]) {
     if (v) {
       this._getOnlineUsers = v;
@@ -55,6 +67,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     if (v) {
       this._getReceiverData = v;
       this.checkOnline();
+      this.count = 1;
     }
   }
   public get getReceiverData(): NewUser {
@@ -80,6 +93,10 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   private _getOnlineUsers: Alive[];
   public showStatus: Alive;
   public isScrolledToBottom: boolean;
+  private _getGroupDetails: GroupDetails;
+  public count: number;
+  public groupMembers: string;
+  public senderName:string;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -94,6 +111,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this.showTyping = new Subject();
     this.senderId = localStorage.getItem('userId');
     this.isScrolledToBottom = true;
+    this.count = 0;
+    this.groupMembers = '';
   }
 
   ngAfterViewInit(): void {
@@ -197,7 +216,15 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
       this.showStatus = this.getOnlineUsers.find((data: Alive) => data.userId === this.getReceiverData._id)
   }
 
-  public displayTime(){
+  public displayTime() {
+  }
+
+  public getGroupMembers(members:Member[]): void{
+    this.groupMembers = members.map((data:Member) => data.full_name).join(', ')
+  }
+
+  public getSenderName(id:string):string{
+    return this.getGroupDetails.members.find((data:Member) => data._id === id).full_name;
   }
 
   /**

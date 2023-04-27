@@ -16,7 +16,7 @@ export class ChatListPresenterService {
   private isReadData: Subject<MessageRead>;
   public isReadData$: Observable<MessageRead>;
 
-  public userId: string = localStorage.getItem('userId')
+  public userId: string = localStorage.getItem('userId');
 
   constructor(
     private _formatter: FormatTime,
@@ -45,8 +45,10 @@ export class ChatListPresenterService {
       full_name: user.full_name,
       chatId: '',
       time: this._formatter.Formatter(new Date()),
-      message: 'New Conversation Created',
+      message: '-',
       notificationCount: 0,
+      role: user.role,
+      type:'dm'
     }
     this.newConversationUser.next(obj)
   }
