@@ -13,6 +13,8 @@ import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { SearchPipe } from './pipe/search.pipe';
 import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from 'src/environments/environment.prod';
 
 
 
@@ -24,13 +26,14 @@ import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
     ChatListPresentationComponent,
     ChatMessagePresentationComponent,
     SearchPipe,
-    ScrollDistanceDirective,  
+    ScrollDistanceDirective
   ],
   imports: [
     CommonModule,
     OneChatRoutingModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers:[
     OneChatService,

@@ -7,6 +7,7 @@ import { HttpService } from '../core/services/http/http.service';
 import { NewUser } from '../shared/models/user.model';
 import { ConversationUser, CreateChat, NewMessage } from './models/chat.model';
 import { ConversationUserAdaptor, MessageAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
+import { SwPush } from "@angular/service-worker";
 
 @Injectable()
 
@@ -16,14 +17,45 @@ export class OneChatService {
   socket = io('http://172.16.3.107:2132');
   public api: string;
   public userId: string;
+  public subscriber: any;
+
+  // Voluntary Application Server Identity to send push notification
+  private readonly VAPID_PUBLIC_KEY: string = "BKX5wA9WxBSYJZWvQtdgD-1rknSL5ejHQd25tUxl5bM9QkNrQVms__OnS1cbRxsJ96E09gKruA8pOcEv7XTfSc4";
 
   constructor(
     private _http: HttpService,
     private _allUserAdaptor: allUserAdaptor,
     private _messageAdaptor: MessageAdaptor,
     private _conversationUser: ConversationUserAdaptor,
+    private swPush: SwPush,
   ) {
     this.api = environment.baseURL;
+    this.subscribeToPushNotification()
+  }
+
+
+  /**
+   * @name subscribeToPushNotification
+   * @param eventname 
+   * @description This method is used to subsribe client to push notification
+   */
+  private subscribeToPushNotification() : void{
+    this.swPush.requestSubscription({
+      serverPublicKey: this.VAPID_PUBLIC_KEY
+    })
+      .then(sub => this.subscriber = sub)
+      .catch(err => console.error("Could not subscribe to notifications", err));
+  }
+
+    /**
+   * @name sendPushNotification
+   * @param sub, data 
+   * @returns observable
+   * @description This method is used to send push notification to client
+   */
+  private sendPushNotification(sub: any, data: any): Observable<any> {
+    const url: string = this.api + `push-notification`;
+    return this._http.httpPostRequest(url, {sub, data})
   }
 
   /**
@@ -35,8 +67,10 @@ export class OneChatService {
   public listen(eventname: string): Observable<any> {
     return new Observable((subscriber) => {
       this.socket.on(eventname, (data: any, fn: any) => {
-        if (eventname === 'dm:message')
+        if (eventname === 'dm:message') {
           fn('received')
+          this.sendPushNotification(this.subscriber, data).subscribe();
+        }
         if (eventname === 'dm:messageRead')
           fn('read')
         subscriber.next(data);
