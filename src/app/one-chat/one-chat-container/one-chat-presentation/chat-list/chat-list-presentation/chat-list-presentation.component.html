@@ -74,7 +74,7 @@
             <ng-container *ngIf="tabCount else group">
                 <div class="user-container d-flex align-items-center" role="button"
                     *ngFor="let data of getConversationUser, let i = index" (click)="onUser(data)"
-                    [ngClass]="{'bg-theme' : data.chatId === chatId}">
+                    [ngClass]="{'bg-theme' : data._id === userId}">
                     <div class="px-3 me-1 position-relative">
                         <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
                         <ng-container *ngIf="checkOnline(data._id)">

@@ -48,7 +48,7 @@ export class ChatListPresenterService {
       message: '-',
       notificationCount: 0,
       role: user.role,
-      type:'dm'
+      type:'dm',
     }
     this.newConversationUser.next(obj)
   }

@@ -29,32 +29,34 @@ export class OneChatService {
     private swPush: SwPush,
   ) {
     this.api = environment.baseURL;
-    this.subscribeToPushNotification()
+    this.subscribeToPushNotification();
   }
 
 
   /**
    * @name subscribeToPushNotification
-   * @param eventname 
    * @description This method is used to subscribe client to push notification
-   */
-  private subscribeToPushNotification() : void{
+  */
+  private subscribeToPushNotification(): void {
     this.swPush.requestSubscription({
       serverPublicKey: this.VAPID_PUBLIC_KEY
     })
-      .then(sub => this.subscriber = sub)
+      .then(sub => {
+        console.log(sub);
+        this.subscriber = sub
+      })
       .catch(err => console.error("Could not subscribe to notifications", err));
   }
 
-    /**
-   * @name sendPushNotification
-   * @param sub, data 
-   * @returns observable
-   * @description This method is used to send push notification to client
-   */
+  /**
+ * @name sendPushNotification
+ * @param sub, data 
+ * @returns observable
+ * @description This method is used to send push notification to client
+ */
   private sendPushNotification(sub: any, data: any): Observable<any> {
     const url: string = this.api + `push-notification`;
-    return this._http.httpPostRequest(url, {sub, data})
+    return this._http.httpPostRequest(url, { sub, data })
   }
 
   /**
@@ -64,6 +66,7 @@ export class OneChatService {
    * @description This method is used to listen the socket
    */
   public listen(eventname: string): Observable<any> {
+    debugger
     return new Observable((subscriber) => {
       this.socket.on(eventname, (data: any, fn: any) => {
         if (eventname === 'dm:message') {

@@ -185,14 +185,14 @@ export class OneChatPresenterService {
           lastUser: '',
         }
         let memberArr: Member[] = chatData.members.map((user: Member) => {
-            user.full_name = user.first_name + ' ' + user.last_name
-            return user
+          user.full_name = user.first_name + ' ' + user.last_name
+          return user
         });
         this.groupConversation.push(Object.assign(obj, { members: memberArr }))
       }
     });
 
-    const sortbyTime = (a, b) => {  
+    const sortbyTime = (a, b) => {
       const timestampA = a.timestamp.getTime();
       const timestampB = b.timestamp.getTime();
       return timestampB - timestampA;
@@ -268,7 +268,7 @@ export class OneChatPresenterService {
           let id = this.groupConversation.findIndex((user: Group) => user.chatId === this.chatId);
           this.groupConversation[id].message = message;
           this.groupConversation[id].time = this._formatter.Formatter(currentTime);
-          let fullName = this.users.find((data:NewUser) => data._id === this.userId).full_name
+          let fullName = this.users.find((data: NewUser) => data._id === this.userId).full_name
           this.groupConversation[id].lastUser = fullName;
           this.groupConversation.unshift(this.groupConversation.splice(id, 1)[0]);
           this.groupChatConversation.next(this.groupConversation);
@@ -296,7 +296,12 @@ export class OneChatPresenterService {
   public addNewChat(newChat: NewMessage): void {
     const isGroupChat = this.groupConversation.find((user: Group) => user.chatId === newChat.chat);
     const isChatId = this.allChatIds.find((id: string) => id === newChat.chat);
-    if (this.receiverId === newChat.sender) {
+    if (this.receiverId === newChat.sender && newChat.chat_type === 'dm') {
+      this.chats.push(newChat);
+      this.getChatArray(this.chats);
+    }
+
+    if (newChat.chat === this.chatId && newChat.chat_type === 'group') {
       this.chats.push(newChat);
       this.getChatArray(this.chats);
     }
@@ -306,10 +311,13 @@ export class OneChatPresenterService {
 
     if (isGroupChat) {
       let userId: number = this.groupConversation.findIndex((items: Group) => items.chatId === newChat.chat);
-      let user:string = this.users.find((data:NewUser) => data._id === newChat.sender).full_name;
+      let user: string = this.users.find((data: NewUser) => data._id === newChat.sender).full_name;
       this.groupConversation[userId].message = newChat.content.text;
       this.groupConversation[userId].time = newChat.convertedTime;
       this.groupConversation[userId].lastUser = user;
+      if (newChat.chat !== this.chatId)
+        this.groupConversation[userId].notificationCount = this.groupConversation[userId].notificationCount + 1
+      this.countNotification();
       this.groupChatConversation.next(this.groupConversation)
 
     } else {
@@ -335,8 +343,8 @@ export class OneChatPresenterService {
 
           this.newConversationUser.next(obj);
           this.allChatIds.push(newChat.chat);
-          this.onlyConversationUsers.next(this.conversationUser);
           this.countNotification();
+          this.onlyConversationUsers.next(this.conversationUser);
         }
       } else {
         let userId: number = this.conversationUser.findIndex((items: ConversationUser) => items.chatId === newChat.chat);
@@ -345,8 +353,8 @@ export class OneChatPresenterService {
         if (newChat.sender !== this.receiverId)
           this.conversationUser[userId].notificationCount === 0 ? this.conversationUser[userId].notificationCount = 1 : this.conversationUser[userId].notificationCount++;
         this.conversationUser.unshift(this.conversationUser.splice(userId, 1)[0]);
-        this.onlyConversationUsers.next(this.conversationUser);
         this.countNotification();
+        this.onlyConversationUsers.next(this.conversationUser);
       }
     }
   }
@@ -415,10 +423,10 @@ export class OneChatPresenterService {
     }
   }
 
-  public countNotification(){
+  public countNotification() {
     const obj = {
-      group: this.groupConversation.filter((user:Group) => user.notificationCount > 0).length,
-      chat: this.conversationUser.filter((user:ConversationUser) => user.notificationCount > 0).length,
+      group: this.groupConversation.filter((user: Group) => user.notificationCount > 0).length,
+      chat: this.conversationUser.filter((user: ConversationUser) => user.notificationCount > 0).length,
     }
     this.notificationCount.next(obj)
   }

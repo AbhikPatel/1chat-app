@@ -155,7 +155,7 @@ export class ChatListPresentationComponent implements OnInit {
   public props(): void {
     this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this.getConversationUser.unshift(user))
     this._service.isReadData$.pipe(takeUntil(this.destroy)).subscribe((data: MessageRead) => this.emitIsReadData.emit(data))
-    this.resetSearch.valueChanges.subscribe((data) => this.searchText = data.search)
+    this.resetSearch.valueChanges.subscribe((data) => this.searchText = data.search);
   }
 
   /**
@@ -170,6 +170,7 @@ export class ChatListPresentationComponent implements OnInit {
       this.onUser(isUser);
     } else {
       this.emitNewChatState.emit();
+      this.emitChatType.emit('dm');
       this._service.getNewConversationUser(user);
       this.toggle.nativeElement.checked = false;
       this.emitReceiverId.emit(user._id);
