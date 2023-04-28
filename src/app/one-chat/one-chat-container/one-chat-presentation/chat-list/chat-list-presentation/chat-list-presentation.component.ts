@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Alive, ConversationUser, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { Router } from '@angular/router';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -13,6 +15,7 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatListPresentationComponent implements OnInit {
+@ViewChild('inputType')inputType:ElementRef
 
   /** This property is used to get Typing details */
   @Input() public getOnlineUsers:Alive[];
@@ -104,6 +107,7 @@ export class ChatListPresentationComponent implements OnInit {
   constructor(
     private _service: ChatListPresenterService,
     private _cdr: ChangeDetectorRef,
+    private _route: Router,
   ) {
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
@@ -211,16 +215,33 @@ export class ChatListPresentationComponent implements OnInit {
 
   }
 
+ /**
+   * @name onLogOut
+   * @description This method is use to logout the user
+   */
+ public onLogOut(): void {
+  this._route.navigateByUrl('/login');
+  localStorage.clear();
+}
 
   /**
    * Reset SearchFrom
    */
   public resetSearchForm(): void {
+    this.setFocus()
     setTimeout(() => {
       this.resetSearch.reset();
       this.searchText = ''
     }, 1000);
+    
   }
+
+  /**
+ * @description This method set focus default
+ */
+ public setFocus():void {
+  this.inputType.nativeElement.focus();
+}
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

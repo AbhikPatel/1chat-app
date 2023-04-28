@@ -1,6 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { Alive, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
@@ -13,8 +22,10 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
-
+  @ViewChild('myInput') myInput: ElementRef;
   @ViewChild('messageContainer') messageContainerRef: ElementRef;
+  @ViewChild('popupElement') popupElement: ElementRef;
+  @ViewChild('positionRelative') positionRelative: ElementRef;
   // This property is used to get online users
   @Input() public set getOnlineUsers(v: Alive[]) {
     if (v) {
@@ -41,6 +52,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     if (v) {
       this._getChat = v;
       this.chatGroup.setValue({ message: '' });
+      this.setFocus();
       setTimeout(() => {
         this.scrollUp();
       }, 0);
@@ -80,11 +92,15 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   private _getOnlineUsers: Alive[];
   public showStatus: Alive;
   public isScrolledToBottom: boolean;
+  public showEmojiPicker: boolean;
+  public message: string;
+  public closeIcon: string;
+  public openBox: string;
+  public isIdApplied: boolean;
+  public id:number;
+  public ToggleModel:boolean
 
-  constructor(
-    private _service: ChatMessagePresenterService,
-    private _route: Router,
-  ) {
+  constructor(private _service: ChatMessagePresenterService) {
     this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
     this.emitSenderId = new EventEmitter();
@@ -93,19 +109,22 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this._getChat = [];
     this.showTyping = new Subject();
     this.senderId = localStorage.getItem('userId');
-    this.isScrolledToBottom = true;
+    this.showEmojiPicker = false;
+    this.closeIcon = '';
+    this.openBox = 'openBox';
+    this.ToggleModel=false;
   }
 
   ngAfterViewInit(): void {
     this.scrollUp();
   }
+
   /**
    * @name onMessageScroll
    * @param container
    * @description Down arrow icon show and hide as per scroll
    */
   public onMessageScroll(container: any): void {
-    //  this.isScrolledToBottom = container.scrollTop < container.scrollHeight- container.clientHeight
     const messageContainer = this.messageContainerRef.nativeElement;
     const scrollHeight = messageContainer.scrollHeight;
     let scrollTop = messageContainer.scrollTop;
@@ -149,16 +168,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public convertPhoto(profileImg?: string): string {
     let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
-    return profileImg ? converter : '../../../../../../assets/images/avatar.png';
-  }
-
-  /**
-   * @name onLogOut
-   * @description This method is use to logout the user
-   */
-  public onLogOut(): void {
-    this._route.navigateByUrl('/login');
-    localStorage.clear();
+    return profileImg
+      ? converter
+      : '../../../../../../assets/images/avatar.png';
   }
 
   /**
@@ -194,12 +206,101 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    */
   public checkOnline(): void {
     if (this.getOnlineUsers)
-      this.showStatus = this.getOnlineUsers.find((data: Alive) => data.userId === this.getReceiverData._id)
+      this.showStatus = this.getOnlineUsers.find(
+        (data: Alive) => data.userId === this.getReceiverData._id
+      );
   }
 
-  public displayTime(){
+  /**
+   * @description This method set focus default
+   */
+  public setFocus(): void {
+    this.myInput.nativeElement.focus();
   }
 
+  /**
+   * @description This method Open emojis model and show  close icon
+   */
+  public openEmojiPicker(): void {
+    this.closeIcon = 'x-lg';
+    this.showEmojiPicker = true;
+  }
+  /**
+   * @description This method close emojis model and also hide close icon
+   */
+  public closeEmojiPicker(): void {
+    this.closeIcon = '';
+    this.showEmojiPicker = false;
+  }
+  /**
+   * @description this method add a emojis
+   * @param event
+   */
+  public addEmoji(event: any): void {
+    const { message } = this;
+    const text = `${message}${event.emoji.native}`;
+    this.message = text;
+  }
+/**
+ * @description this method toggle model
+ * @param message 
+ * @param i 
+ */
+  openPopup(message: string, i: number) {
+    this.id = i;
+    if(this.id=i){
+      this.ToggleModel=!this.ToggleModel
+    }
+  }
+
+  /**
+   *@description this method print Today Yesterday and full week then print full date
+   */
+  formatDate(data: Date, pre: Date): string {
+    // convert string to date object
+    const newData = new Date(data);
+    const getday = newData.getDate();
+    // convert string to date object
+    const preData = new Date(pre);
+    const preDay = preData.getDate();
+    // check first date and Previous date then Return
+    if (getday === preDay) {
+      return '';
+    }
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    // Check if the date is today
+    if (newData.toDateString() === today.toDateString()) {
+      return 'Today';
+    }
+    // Check if the date is yesterday
+    if (newData.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    }
+
+    // Check if the date is within the last week
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    if (newData >= oneWeekAgo) {
+      return newData.toLocaleString('en-US', { weekday: 'short' });
+    }
+    // Return the full date
+    return newData.toLocaleString('en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+/**
+ * @description 
+ * @param message 
+ */
+  public editData(message: any) {
+    this.setFocus()
+    const text = `${message}`;
+    this.message = text;
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

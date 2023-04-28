@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 
 export class ChatMessagePresenterService {
-
+ 
   constructor(
     private _fb:FormBuilder
-  ) { }
+  ) { 
+    
+  }
 
   /**
    * @name getGroup
@@ -19,4 +22,5 @@ export class ChatMessagePresenterService {
       message:['',[Validators.required]]
     })
   }
+  
 }
