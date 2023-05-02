@@ -14,6 +14,9 @@ import { OneChatService } from './one-chat.service';
 import { SearchPipe } from './pipe/search.pipe';
 import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from 'src/environments/environment.prod';
+
 
 
 
@@ -24,7 +27,7 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
     ChatListPresentationComponent,
     ChatMessagePresentationComponent,
     SearchPipe,
-    ScrollDistanceDirective,  
+    ScrollDistanceDirective
   ],
   imports: [
     CommonModule,
@@ -32,7 +35,8 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
     ReactiveFormsModule,
     SharedModule,
     PickerModule,
-    FormsModule
+    FormsModule,
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers:[
     OneChatService,

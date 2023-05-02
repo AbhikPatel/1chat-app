@@ -292,8 +292,10 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
       year: 'numeric',
     });
   }
+
+
 /**
- * @description 
+ * @description this method patch message value in input Box
  * @param message 
  */
   public editData(message: any) {
