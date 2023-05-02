@@ -98,13 +98,18 @@ export class CreateChat {
 export class Typing {
     receiver: string
     sender: string
+    isGroup: boolean
+    typer?:string
 
     constructor(
         receiver: string,
-        sender: string
+        sender: string,
+        isGroup: boolean,
+        typer?:string
     ) {
         this.receiver = receiver
         this.sender = sender
+        this.isGroup = isGroup
     }
 }
 

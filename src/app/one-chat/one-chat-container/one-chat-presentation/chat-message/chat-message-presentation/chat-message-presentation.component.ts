@@ -16,7 +16,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
 
   @ViewChild('messageContainer') messageContainerRef: ElementRef;
 
-  // This property is used to get online users
+  /** This property is used to get online users */
   @Input() public set getGroupDetails(v: GroupDetails) {
     if (v) {
       this._getGroupDetails = v;
@@ -28,6 +28,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     return this._getGroupDetails;
   }
 
+  /** This property is used to get online users */
   @Input() public set getOnlineUsers(v: Alive[]) {
     if (v) {
       this._getOnlineUsers = v;
@@ -37,18 +38,19 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public get getOnlineUsers(): Alive[] {
     return this._getOnlineUsers;
   }
-  // This property is used to get sender Details
+
+  /** This property is used to get sender Details */
   @Input() public set getTypingData(v: Typing) {
     if (v) {
       this._getTypingData = v;
-      this.receivingTyping(v.sender);
+      v.isGroup ? this.getGroupTyping(v) : this.receivingTyping(v.sender);
     }
   }
   public get getTypingData(): Typing {
     return this._getTypingData;
   }
 
-  // This property is use to get the array of chats
+  /** This property is use to get the array of chats */
   @Input() public set getChat(v: NewMessage[]) {
     if (v) {
       this._getChat = v;
@@ -62,7 +64,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     return this._getChat;
   }
 
-  // This property is use to get the details of the receiver
+  /** This property is use to get the details of the receiver */
   @Input() public set getReceiverData(v: NewUser) {
     if (v) {
       this._getReceiverData = v;
@@ -74,42 +76,50 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     return this._getReceiverData;
   }
 
-  // This property is use to emit the chat
+  /** This property is use to emit the chat */
   @Output() public emitChat: EventEmitter<string>;
-  // This property is use to emit the sender Id
+  /** This property is use to emit the sender Id */
   @Output() public emitSenderId: EventEmitter<string>;
-  // This property is use to emit the chat
+  /** This property is use to emit the chat */
   public destroy: Subject<void>;
-  // This property is to create a FormGroup
+  /** This property is to create a FormGroup */
   public chatGroup: FormGroup;
-  // This property is to store the sender ID
+  /** This property is to store the sender ID */
   public senderId: string | null;
-  // This property is to store array of chats
+  /** This property is to store array of chats */
   private _getChat: NewMessage[] | null;
-  // This property is to store the details of the receiver
-  private _getReceiverData: NewUser;
-  public _getTypingData: Typing;
+  /** This property is to store the details of the receiver */
   public showTyping: Subject<boolean>;
-  private _getOnlineUsers: Alive[];
+  /** This property is to store status */
   public showStatus: Alive;
+  /** This property is to scroll to bottom */
   public isScrolledToBottom: boolean;
-  private _getGroupDetails: GroupDetails;
+  /** This property is to store the count */
   public count: number;
+  /** This property is to store the members of the group */
   public groupMembers: string;
-  public senderName:string;
+  /** This property is to store the sender name */
+  public senderName: string;
+  /** This property is to store the typer name */
+  public typerNames: string[];
+  public _getTypingData: Typing;
+  private _getOnlineUsers: Alive[];
+  private _getGroupDetails: GroupDetails;
+  private _getReceiverData: NewUser;
 
   constructor(
     private _service: ChatMessagePresenterService,
     private _route: Router,
   ) {
+    this.senderId = localStorage.getItem('userId');
     this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
     this.emitSenderId = new EventEmitter();
     this.destroy = new Subject();
+    this.showTyping = new Subject();
     this._getReceiverData = {} as NewUser;
     this._getChat = [];
-    this.showTyping = new Subject();
-    this.senderId = localStorage.getItem('userId');
+    this.typerNames = [];
     this.isScrolledToBottom = true;
     this.count = 0;
     this.groupMembers = '';
@@ -118,6 +128,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.scrollUp();
   }
+
   /**
    * @name onMessageScroll
    * @param container
@@ -142,9 +153,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    * @description This method is called in ngOnInit
    */
   public props(): void {
-    this.chatGroup.valueChanges.subscribe((data: string) =>
-      this.emitSenderId.emit(this.senderId)
-    );
+    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
   }
 
   /**
@@ -195,6 +204,21 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * @name getGroupTyping
+   * @param data 
+   * @description This method will show the typing UI in the screen for group chat
+   */
+  public getGroupTyping(data: Typing): void {
+    if (!this.typerNames.includes(data.typer))
+      this.typerNames.push(data.typer)
+
+    setTimeout(() => {
+      let id = this.typerNames.indexOf(data.typer)
+      this.typerNames.splice(id, 1)
+    }, 2000);
+  }
+
+  /**
    * @name scrollUp
    * @description Click arrow down icon got to up message
    */
@@ -216,15 +240,23 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
       this.showStatus = this.getOnlineUsers.find((data: Alive) => data.userId === this.getReceiverData._id)
   }
 
-  public displayTime() {
+  /**
+   * @name getGroupMembers
+   * @param members 
+   * @description This method will store the members of the current group chat
+   */
+  public getGroupMembers(members: Member[]): void {
+    this.groupMembers = members.map((data: Member) => data.full_name).join(', ')
   }
 
-  public getGroupMembers(members:Member[]): void{
-    this.groupMembers = members.map((data:Member) => data.full_name).join(', ')
-  }
-
-  public getSenderName(id:string):string{
-    return this.getGroupDetails.members.find((data:Member) => data._id === id).full_name;
+  /**
+   * @name getSenderName
+   * @param id 
+   * @returns sender's Name
+   * @description This method will get the sender name
+   */
+  public getSenderName(id: string): string {
+    return this.getGroupDetails.members.find((data: Member) => data._id === id).full_name;
   }
 
   /**

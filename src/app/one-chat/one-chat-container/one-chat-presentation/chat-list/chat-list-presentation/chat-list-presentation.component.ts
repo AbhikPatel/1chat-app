@@ -91,7 +91,6 @@ export class ChatListPresentationComponent implements OnInit {
   @Output() public emitIsReadData: EventEmitter<MessageRead>;
   /** This property is used to emit the type of the chat */
   @Output() public emitChatType: EventEmitter<string>;
-  /** This property is used for toggle feature to search user */
   /** This property is use to store the text for search */
   public searchText: string;
   /** This property is use to store the chat ID */
@@ -108,17 +107,22 @@ export class ChatListPresentationComponent implements OnInit {
   public typingStatus: boolean;
   // This property is used to reset form
   public resetSearch: FormGroup;
+  /** This property is used for toggle feature to search user */
   @ViewChild('toggle') public toggle: any;
+  /** This variable will store the destroy */
+  public destroy: Subject<void>;
+  /** This variable will store the tab count */
+  public tabCount: boolean;
+  /** This variable will store the group notification count */
+  public groupNotificationCount: number;
+  /** This variable will store the chat notification count */
+  public chatNotificationCount: number;
   private _newConversationUser: ConversationUser;
   private _getConversationUser: ConversationUser[];
   private _getAllUser: NewUser[];
   private _getTypingData: Typing;
   private _getSenderDetails: NewUser;
   private _getGroupDetails: Group[];
-  public destroy: Subject<void>;
-  public tabCount: boolean;
-  public groupNotificationCount: number;
-  public chatNotificationCount: number;
 
   constructor(
     private _service: ChatListPresenterService,
@@ -261,6 +265,10 @@ export class ChatListPresentationComponent implements OnInit {
       return false;
   }
 
+  /**
+   * @name onTab
+   * @description This method is used to switch tab between chat and group chat
+   */
   public onTab(): void {
     this.tabCount ? this.tabCount = false : this.tabCount = true;
     this.removeNonConversationUser();

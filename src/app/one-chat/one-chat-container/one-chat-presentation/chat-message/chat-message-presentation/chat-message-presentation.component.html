@@ -30,13 +30,12 @@
                 </figure>
                 <div class="ms-3 d-flex flex-column">
                     <span class="fw-semibold"> {{getGroupDetails?.title}} </span>
-                    <!-- <ng-container *ngIf="showTyping | async else status">
-                        <span [ngClass]="(showTyping | async) ? 'visible' : 'invisible'" class="fs-8"> Typing... </span>
+                    <ng-container *ngIf="typerNames.length !== 0 else members">
+                        <span class="fs-7">{{typerNames.join(', ') + ' is typing'}}</span>
                     </ng-container>
-                    <ng-template #status>
-                        <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
-                    </ng-template> -->
-                    <span class="fs-7">{{groupMembers}}</span>
+                    <ng-template #members>
+                        <span class="fs-7">{{groupMembers}}</span>
+                    </ng-template>
                 </div>
             </div>
             <div class="fs-4" role="button" (click)="onLogOut()" title="logout">

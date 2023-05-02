@@ -78,10 +78,13 @@ export class OneChatPresenterService {
   public userDetails: NewUser | undefined;
   /** This property is used to store the details of all the leads */
   public onlyLeads: NewUser[];
-  /** This property is used to store the details of all the leads */
+  /** This property is used to store the details online  users */
   public onlineUsers: string[];
+  /** This variable will store the type of the current chat */
   public chatType: string;
+  /** This property is used to store the details of conversation users */
   public conversationUser: ConversationUser[];
+  /** This property is used to store the details of group conversation users */
   public groupConversation: Group[];
 
   constructor(
@@ -156,9 +159,9 @@ export class OneChatPresenterService {
    * @param chat 
    * @description This method is use to filter the data and get only conversation user and also only chat Ids
    */
-  public removeUserData(users: Conversation[]): void {
-    this.allChatIds = users.map((user: Conversation) => user._id);
-    users.forEach((chatData: Conversation) => {
+  public removeUserData(conversationUsers: Conversation[]): void {
+    this.allChatIds = conversationUsers.map((user: Conversation) => user._id);
+    conversationUsers.forEach((chatData: Conversation) => {
       if (chatData.chat_type === 'dm') {
         let id: string = chatData._id
         let member: Member = chatData.members.find((user: Member) => user._id !== this.userId)
@@ -173,16 +176,16 @@ export class OneChatPresenterService {
         }
         this.conversationUser.push(Object.assign(member, obj))
       } else {
+        var sender:NewUser | undefined  = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
         let obj = {
           chatId: chatData._id,
           photo: 'default.jpeg',
           title: chatData.title,
-          // message: chatData.lastMessage ? chatData.lastMessage.content.text : '-',
-          message: '-',
+          message: chatData.lastMessage ? chatData.lastMessage.content.text : '-',
           notificationCount: 0,
           time: this._formatter.Formatter(new Date()),
           type: 'group',
-          lastUser: '',
+          lastUser: sender ? sender.full_name : 'Unknown',
         }
         let memberArr: Member[] = chatData.members.map((user: Member) => {
           user.full_name = user.first_name + ' ' + user.last_name
@@ -306,9 +309,6 @@ export class OneChatPresenterService {
       this.getChatArray(this.chats);
     }
 
-    // if (newChat.chat === this.chatId)
-    //   this.chats.push(newChat)
-
     if (isGroupChat) {
       let userId: number = this.groupConversation.findIndex((items: Group) => items.chatId === newChat.chat);
       let user: string = this.users.find((data: NewUser) => data._id === newChat.sender).full_name;
@@ -405,8 +405,9 @@ export class OneChatPresenterService {
    */
   public createTypingData(id: string): void {
     let obj: Typing = {
-      receiver: this.receiverId,
-      sender: id
+      receiver: this.chatType === 'dm' ? this.receiverId : this.chatId,
+      sender: id,
+      isGroup: this.chatType === 'dm' ? false : true
     }
     this.typingData.next(obj)
   }
@@ -423,7 +424,11 @@ export class OneChatPresenterService {
     }
   }
 
-  public countNotification() {
+  /**
+   * @name countNotification
+   * @description This method will update the notification count of both the chat and group chat
+   */
+  private countNotification(): void {
     const obj = {
       group: this.groupConversation.filter((user: Group) => user.notificationCount > 0).length,
       chat: this.conversationUser.filter((user: ConversationUser) => user.notificationCount > 0).length,

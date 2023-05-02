@@ -66,15 +66,15 @@ export class OneChatService {
    * @description This method is used to listen the socket
    */
   public listen(eventname: string): Observable<any> {
-    debugger
     return new Observable((subscriber) => {
       this.socket.on(eventname, (data: any, fn: any) => {
         if (eventname === 'dm:message') {
           fn('received')
-          this.sendPushNotification(this.subscriber, data).subscribe();
+          // this.sendPushNotification(this.subscriber, data).subscribe();
         }
-        if (eventname === 'dm:messageRead')
+        if (eventname === 'dm:messageRead') {
           fn('read')
+        }
         subscriber.next(data);
       })
     })

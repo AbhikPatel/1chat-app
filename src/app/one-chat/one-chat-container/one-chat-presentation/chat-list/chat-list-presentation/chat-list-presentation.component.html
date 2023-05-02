@@ -137,12 +137,12 @@
                             <span class="text-chat fs-7"> {{data.time ? data.time : ''}} </span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <!-- <ng-container *ngIf="typingStatus && typingId.includes(data._id) else elseStatement">
+                            <!-- <ng-container>
                                 <span class="fs-7 text-success fw-semibold"> Typing... </span>
                             </ng-container> -->
                             <span class="fs-7 last-chat text-truncate text-chat"
                                 [ngClass]="{'fw-bold' : data.notificationCount != 0}">{{data.lastUser ? data.lastUser +
-                                ' : ' + data.message : 'No Messages'}} </span>
+                                ': ' + data.message : 'No Messages'}} </span>
                             <ng-container *ngIf="data.notificationCount">
                                 <span
                                     class="badge rounded-circle bg-success text-white">{{data.notificationCount}}</span>
