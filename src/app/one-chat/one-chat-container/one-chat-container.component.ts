@@ -112,6 +112,14 @@ export class OneChatContainerComponent implements OnInit {
   public getReadMessagesData(data:MessageRead){
     this._service.emit('dm:messageRead', data)    
   }
+  /**
+   * 
+   * @param id 
+   */
+  public editMessage(id:string){
+          console.log(id);
+
+  }
 
   /**
    * @name ngOnDestroy
@@ -120,5 +128,6 @@ export class OneChatContainerComponent implements OnInit {
   public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
+ 
   }
 }

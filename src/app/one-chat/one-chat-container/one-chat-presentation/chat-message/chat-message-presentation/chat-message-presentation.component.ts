@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnInit,
   Output,
@@ -14,6 +15,7 @@ import { Subject } from 'rxjs';
 import { Alive, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-chat-message-presentation',
@@ -22,10 +24,23 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
+  @HostListener('document:click', ['$event'])
+  onClickEvent(event: MouseEvent) {
+    // debugger
+    // console.log('event',event.target);
+    // console.log('span',this.SpanData);
+    // if(event.target === this.SpanData){
+    //   //  debugger
+    //   this.ToggleModel=!this.ToggleModel 
+    // } else  {
+    //   this.ToggleModel= false 
+    //  }
+  }
+
   @ViewChild('myInput') myInput: ElementRef;
   @ViewChild('messageContainer') messageContainerRef: ElementRef;
   @ViewChild('popupElement') popupElement: ElementRef;
-  @ViewChild('positionRelative') positionRelative: ElementRef;
+  @ViewChild('span') span: ElementRef;
   // This property is used to get online users
   @Input() public set getOnlineUsers(v: Alive[]) {
     if (v) {
@@ -51,6 +66,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   @Input() public set getChat(v: NewMessage[]) {
     if (v) {
       this._getChat = v;
+
       this.chatGroup.setValue({ message: '' });
       this.setFocus();
       setTimeout(() => {
@@ -69,6 +85,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
       this.checkOnline();
     }
   }
+
   public get getReceiverData(): NewUser {
     return this._getReceiverData;
   }
@@ -77,6 +94,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   @Output() public emitChat: EventEmitter<string>;
   // This property is use to emit the sender Id
   @Output() public emitSenderId: EventEmitter<string>;
+  // This property is use to emit the emitMessageId
+  @Output() public emitMessageId: EventEmitter<string>;
   // This property is use to emit the chat
   public destroy: Subject<void>;
   // This property is to create a FormGroup
@@ -95,15 +114,20 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public showEmojiPicker: boolean;
   public message: string;
   public closeIcon: string;
+  public cancelEdit: string;
   public openBox: string;
   public isIdApplied: boolean;
-  public id:number;
-  public ToggleModel:boolean
+  public id: number;
+  public ToggleModel: boolean;
+  public modelNone:string;
+  public isClose: boolean;
+  public SpanData:any;
 
-  constructor(private _service: ChatMessagePresenterService) {
+  constructor(private _service: ChatMessagePresenterService,private _commonService:CommonService) {
     this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
     this.emitSenderId = new EventEmitter();
+    this.emitMessageId = new EventEmitter();
     this.destroy = new Subject();
     this._getReceiverData = {} as NewUser;
     this._getChat = [];
@@ -111,12 +135,17 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this.senderId = localStorage.getItem('userId');
     this.showEmojiPicker = false;
     this.closeIcon = '';
+    this.cancelEdit = ''
     this.openBox = 'openBox';
-    this.ToggleModel=false;
+    this.ToggleModel = false;
+    this.modelNone=''
+    this.isClose = true
   }
 
   ngAfterViewInit(): void {
     this.scrollUp();
+      // this.SpanData=
+     console.log( this.span?.nativeElement);
   }
 
   /**
@@ -137,6 +166,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this.props();
   }
 
+
   /**
    * @name props
    * @description This method is called in ngOnInit
@@ -145,6 +175,9 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this.chatGroup.valueChanges.subscribe((data: string) =>
       this.emitSenderId.emit(this.senderId)
     );
+    this._commonService.closeModel.subscribe((data:any)=>{
+      this.ToggleModel=data
+    })
   }
 
   /**
@@ -241,20 +274,22 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     const text = `${message}${event.emoji.native}`;
     this.message = text;
   }
-/**
- * @description this method toggle model
- * @param message 
- * @param i 
- */
-  openPopup(message: string, i: number) {
-    this.id = i;
-    if(this.id=i){
-      this.ToggleModel=!this.ToggleModel
-    }
+
+  /**
+   * @description this method toggle model
+   * @param message 
+   * @param i 
+   */
+  openPopup(i: number) {
+      this.id = i;
+        this.ToggleModel = !this.ToggleModel
   }
 
   /**
-   *@description this method print Today Yesterday and full week then print full date
+   * @description this method print Today Yesterday and full week then print full date
+   * @param data 
+   * @param pre 
+   * @returns 
    */
   formatDate(data: Date, pre: Date): string {
     // convert string to date object
@@ -278,7 +313,6 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     if (newData.toDateString() === yesterday.toDateString()) {
       return 'Yesterday';
     }
-
     // Check if the date is within the last week
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -294,15 +328,27 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   }
 
 
-/**
- * @description this method patch message value in input Box
- * @param message 
- */
-  public editData(message: any) {
+  /**
+   * @description this method patch message value in input Box and emit indexId
+   * @param message 
+   */
+  public editMessage(message: any, indexId: string) {
     this.setFocus()
+    this.cancelEdit = 'x-lg';
     const text = `${message}`;
     this.message = text;
+    this.ToggleModel=true
+    this.emitMessageId.emit(indexId);
   }
+  /**
+   * @description This method Clear input Text
+   */
+  public editCancel(): void {
+    this.cancelEdit = ''
+    this.chatGroup.reset()
+  }
+
+  
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

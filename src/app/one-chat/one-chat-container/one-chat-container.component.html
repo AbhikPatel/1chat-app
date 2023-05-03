@@ -12,4 +12,5 @@
     (emitReadMessage)="getReadMessagesData($event)"
     [getIsRead]="getIsReadData$ | async"
     [getAliveData]="aliveData$ | async"
+    (emitMessageId)="editMessage($event)"
 ></app-one-chat-presentation>

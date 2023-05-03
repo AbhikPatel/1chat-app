@@ -149,6 +149,7 @@ export class OneChatService {
     )
   }
 
+
   /**
    * @name setMap
    * @description This method will setMapper for the socket

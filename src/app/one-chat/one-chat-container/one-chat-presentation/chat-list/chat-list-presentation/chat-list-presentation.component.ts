@@ -108,6 +108,7 @@ export class ChatListPresentationComponent implements OnInit {
     private _service: ChatListPresenterService,
     private _cdr: ChangeDetectorRef,
     private _route: Router,
+    private _commonService:CommonService
   ) {
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
@@ -147,6 +148,7 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is use when the user tru to create chat with a new user
    */
   public onNewChat(user: NewUser): void {
+    this._commonService.closeModel.next(false)
     let isUser = this.getConversationUser?.find((item: ConversationUser) => user._id === item._id)
     if (isUser) {
       this.toggle.nativeElement.checked = false;
@@ -169,6 +171,7 @@ export class ChatListPresentationComponent implements OnInit {
     this.chatId = data.chatId;
     this.emitChatId.emit(data.chatId)
     this.emitReceiverId.emit(data._id)
+    this._commonService.closeModel.next(false)
     if (data.notificationCount !== 0)
       this._service.getIsReadData(data)
     this.userId = data._id
@@ -183,7 +186,8 @@ export class ChatListPresentationComponent implements OnInit {
       })
     }
     localStorage.setItem('conversation', JSON.stringify(this.getConversationUser))
-  }
+       
+}
 
   /**
    * @name convertPhoto

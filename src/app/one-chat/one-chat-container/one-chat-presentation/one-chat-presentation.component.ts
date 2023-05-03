@@ -104,6 +104,7 @@ export class OneChatPresentationComponent implements OnInit {
   @Output() public emitNewConversation: EventEmitter<CreateChat>;
   @Output() public emitTypingData: EventEmitter<Typing>;
   @Output() public emitReadMessage: EventEmitter<MessageRead>;
+  @Output() public emitMessageId: EventEmitter<string>;
 
   private _newChat: NewMessage;
   private _getNewChatId: CreateChat;
@@ -129,6 +130,7 @@ export class OneChatPresentationComponent implements OnInit {
     this.emitChatData = new EventEmitter();
     this.emitTypingData = new EventEmitter();
     this.emitReadMessage = new EventEmitter();
+    this.emitMessageId = new EventEmitter();
     this._getConversationUsers = [];
     this.transferAllUser$ = new Observable();
     this.transferConversationUser$ = new Observable();
@@ -216,6 +218,13 @@ export class OneChatPresentationComponent implements OnInit {
     this.emitReadMessage.emit(data)
   }
 
+/**
+ * This method will transfer messageId
+ * @param MessageId 
+ */
+  public getMessageId(MessageId:string){
+        this.emitMessageId.emit(MessageId)
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

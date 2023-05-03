@@ -5,11 +5,10 @@ import { Observable, Subject } from 'rxjs';
 @Injectable()
 
 export class ChatMessagePresenterService {
- 
+
   constructor(
     private _fb:FormBuilder
   ) { 
-    
   }
 
   /**
@@ -22,5 +21,6 @@ export class ChatMessagePresenterService {
       message:['',[Validators.required]]
     })
   }
+  
   
 }
