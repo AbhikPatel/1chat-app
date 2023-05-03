@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Alive, ConversationUser, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
+import { Alive, ConversationUser, Group, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 import { FormGroup } from '@angular/forms';
@@ -12,13 +12,26 @@ import { CommonService } from 'src/app/shared/services/common.service';
   selector: 'app-chat-list-presentation',
   templateUrl: './chat-list-presentation.component.html',
   viewProviders: [ChatListPresenterService],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatListPresentationComponent implements OnInit {
 @ViewChild('inputType')inputType:ElementRef
 
   /** This property is used to get Typing details */
-  @Input() public getOnlineUsers:Alive[];
+  @Input() public notificationCount: any;
+
+  /** This property is used to get Typing details */
+  @Input() public getOnlineUsers: Alive[];
+
+  /** This property is used to get Typing details */
+  @Input() public set getGroupDetails(v: Group[]) {
+    if (v) {
+      this._getGroupDetails = v;
+    }
+  }
+  public get getGroupDetails(): Group[] {
+    return this._getGroupDetails;
+  }
 
   /** This property is used to get Typing details */
   @Input() public set getTypingData(v: Typing) {
@@ -79,7 +92,8 @@ export class ChatListPresentationComponent implements OnInit {
   @Output() public emitNewChatState: EventEmitter<void>;
   /** This property is used to emit the state of new chat */
   @Output() public emitIsReadData: EventEmitter<MessageRead>;
-  /** This property is used for toggle feature to search user */
+  /** This property is used to emit the type of the chat */
+  @Output() public emitChatType: EventEmitter<string>;
   /** This property is use to store the text for search */
   public searchText: string;
   /** This property is use to store the chat ID */
@@ -96,13 +110,22 @@ export class ChatListPresentationComponent implements OnInit {
   public typingStatus: boolean;
   // This property is used to reset form
   public resetSearch: FormGroup;
+  /** This property is used for toggle feature to search user */
   @ViewChild('toggle') public toggle: any;
+  /** This variable will store the destroy */
+  public destroy: Subject<void>;
+  /** This variable will store the tab count */
+  public tabCount: boolean;
+  /** This variable will store the group notification count */
+  public groupNotificationCount: number;
+  /** This variable will store the chat notification count */
+  public chatNotificationCount: number;
   private _newConversationUser: ConversationUser;
   private _getConversationUser: ConversationUser[];
   private _getAllUser: NewUser[];
   private _getTypingData: Typing;
   private _getSenderDetails: NewUser;
-  public destroy: Subject<void>;
+  private _getGroupDetails: Group[];
 
   constructor(
     private _service: ChatListPresenterService,
@@ -114,6 +137,7 @@ export class ChatListPresentationComponent implements OnInit {
     this.emitReceiverId = new EventEmitter();
     this.emitNewChatState = new EventEmitter();
     this.emitIsReadData = new EventEmitter();
+    this.emitChatType = new EventEmitter();
     this.destroy = new Subject();
     this.showNewMessage = new Subject();
     this._newConversationUser = {} as ConversationUser;
@@ -123,9 +147,10 @@ export class ChatListPresentationComponent implements OnInit {
     this.typingStatus = false;
     this.searchText = '';
     this.chatId = '';
-    this.userId = '';
     this.resetSearch = this._service.getGroup();
-
+    this.tabCount = true;
+    this.groupNotificationCount = 0;
+    this.chatNotificationCount = 0;
   }
 
   ngOnInit(): void {
@@ -137,9 +162,9 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method is use to call in ngOnInit
    */
   public props(): void {
-    this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this._getConversationUser?.unshift(user))
+    this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this.getConversationUser.unshift(user))
     this._service.isReadData$.pipe(takeUntil(this.destroy)).subscribe((data: MessageRead) => this.emitIsReadData.emit(data))
-    this.resetSearch.valueChanges.subscribe((data) => this.searchText = data.search)
+    this.resetSearch.valueChanges.subscribe((data) => this.searchText = data.search);
   }
 
   /**
@@ -155,6 +180,7 @@ export class ChatListPresentationComponent implements OnInit {
       this.onUser(isUser);
     } else {
       this.emitNewChatState.emit();
+      this.emitChatType.emit('dm');
       this._service.getNewConversationUser(user);
       this.toggle.nativeElement.checked = false;
       this.emitReceiverId.emit(user._id);
@@ -167,16 +193,32 @@ export class ChatListPresentationComponent implements OnInit {
    * @param data 
    * @description This method is use to get the details of the user on click
    */
-  public onUser(data: ConversationUser): void {
+  public onUser(data: any): void {
     this.chatId = data.chatId;
-    this.emitChatId.emit(data.chatId)
-    this.emitReceiverId.emit(data._id)
     this._commonService.closeModel.next(false)
+    this.emitChatId.emit(data.chatId);
+    this.emitChatType.emit(data.type);
+    this.emitReceiverId.emit(data._id);
     if (data.notificationCount !== 0)
-      this._service.getIsReadData(data)
-    this.userId = data._id
-    let id = this.getConversationUser.findIndex((user: ConversationUser) => user === data)
-    this.getConversationUser[id].notificationCount = 0;
+      this._service.getIsReadData(data);
+    this.userId = data._id;
+    if (data.type === 'dm') {
+      if (data.notificationCount > 0)
+        this.notificationCount.chat = this.notificationCount.chat - 1
+      let id = this.getConversationUser.findIndex((user: ConversationUser) => user === data);
+      this.getConversationUser[id].notificationCount = 0;
+      this.removeNonConversationUser();
+    } else {
+      let id = this.getGroupDetails.findIndex((user: Group) => user === data);
+      this.getGroupDetails[id].notificationCount = 0;
+    }
+  }
+
+  /**
+   * @name removeNonConversationUser
+   * @description This method will remove the user which has not yet started any conversation
+   */
+  public removeNonConversationUser() {
     let removeUser = this.getConversationUser.filter((user: ConversationUser) => user.chatId === '')
     if (removeUser) {
       /** To remove the users which has not started the conversations  */
@@ -185,9 +227,7 @@ export class ChatListPresentationComponent implements OnInit {
         this.getConversationUser.splice(id, 1)
       })
     }
-    localStorage.setItem('conversation', JSON.stringify(this.getConversationUser))
-       
-}
+  }
 
   /**
    * @name convertPhoto
@@ -227,9 +267,31 @@ export class ChatListPresentationComponent implements OnInit {
   this._route.navigateByUrl('/login');
   localStorage.clear();
 }
+  /**
+   * @name checkOnline
+   * @param id 
+   * @description This method will show if the user is online or not
+   */
+  public checkOnline(id: string): boolean {
+    if (this.getOnlineUsers) {
+      let isOnline = this.getOnlineUsers.find((data: Alive) => data.userId === id)
+      return isOnline ? true : false;
+    } else
+      return false;
+  }
 
   /**
-   * Reset SearchFrom
+   * @name onTab
+   * @description This method is used to switch tab between chat and group chat
+   */
+  public onTab(): void {
+    this.tabCount ? this.tabCount = false : this.tabCount = true;
+    this.removeNonConversationUser();
+  }
+
+  /**
+   * @name resetSearchForm
+   * @description This method will reset search form
    */
   public resetSearchForm(): void {
     this.setFocus()
@@ -253,18 +315,5 @@ export class ChatListPresentationComponent implements OnInit {
   public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
-  }
-
-  /**
-   * @name checkOnline
-   * @param id 
-   * @description This method will show if the user is online or not
-   */
-  public checkOnline(id:string): boolean{
-    if(this.getOnlineUsers){
-      let isOnline = this.getOnlineUsers.find((data:Alive) => data.userId === id)
-      return isOnline ? true : false
-    }else
-      return false
   }
 }

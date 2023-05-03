@@ -9,7 +9,8 @@ export class allUserAdaptor implements Adapter<NewUser[]>{
 
     public toResponse(item: User[]): NewUser[] {
 
-        const items: any = item.map((data: User) => {
+        const items: NewUser[] = []; 
+        item.forEach((data: User) => {
             const fullName: string = data.first_name + ' ' + data.last_name
 
             const user: NewUser = new NewUser(
@@ -18,17 +19,11 @@ export class allUserAdaptor implements Adapter<NewUser[]>{
                 data.last_name,
                 fullName,
                 data.email,
-                data.admin,
-                data.timezone,
-                data.country,
-                data.language,
                 data.chats,
-                data.passwordChangedAt,
-                data._v,
                 data.photo,
                 data.role,
             )
-            data = user
+            items.push(user)
             return data
         });
         return items
@@ -56,7 +51,8 @@ export class MessageAdaptor implements Adapter<NewMessage[]>{
                 data.type,
                 data.content,
                 allTIme,
-                this.userID === data.sender
+                this.userID === data.sender,
+                data.chat === data.receiver ? 'group' : 'dm'
             )
             data = newItem
             return data
@@ -65,41 +61,64 @@ export class MessageAdaptor implements Adapter<NewMessage[]>{
     }
 
 }
-@Injectable()
-export class ConversationUserAdaptor implements Adapter<ConversationUser[]>{
+// @Injectable()
+// export class ConversationUserAdaptor implements Adapter<ConversationUser[]>{
 
-    public userId: string
-    constructor(
-        private _formatter: FormatTime
-    ) {
-        this.userId = localStorage.getItem('userId')
-    }
+//     public userId: string
+//     constructor(
+//         private _formatter: FormatTime
+//     ) {
+//         this.userId = localStorage.getItem('userId')
+//     }
 
-    public toResponse(item: Conversation[]): ConversationUser[] {
-        var result: ConversationUser[] = []
-        item.forEach((chatData: Conversation) => {
-            if (chatData.chat_type === 'dm') {
-                let id: string = chatData._id
-                let member: Member = chatData.members.find((user: Member) => user._id !== this.userId)
-                let obj = {
-                    message: chatData.lastMessage ? chatData.lastMessage.content.text : 'No Messages',
-                    time: this._formatter.Formatter(chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date()),
-                    timestamp: chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date(),
-                    notificationCount: 0,
-                    full_name: member.first_name + ' ' + member.last_name,
-                    chatId: id
-                }
-                result.push(Object.assign(member, obj))
-            }
-        })
-        const sortbyTime = (a, b) => {
-            const timestampA = a.timestamp.getTime();
-            const timestampB = b.timestamp.getTime();
-            return timestampB - timestampA;
-        };
-        return result.sort(sortbyTime)
-    }
-}
+//     public toResponse(item: Conversation[]): ConversationUser[] {
+//         var result: ConversationUser[] = []
+//         item.forEach((chatData: Conversation) => {
+//             if (chatData.chat_type === 'dm') {
+//                 let id: string = chatData._id
+//                 let member: Member = chatData.members.find((user: Member) => user._id !== this.userId)
+//                 let obj = {
+//                     message: chatData.lastMessage ? chatData.lastMessage.content.text : 'No Messages',
+//                     time: this._formatter.Formatter(chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date()),
+//                     timestamp: chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date(),
+//                     notificationCount: 0,
+//                     full_name: member.first_name + ' ' + member.last_name,
+//                     chatId: id,
+//                     type:chatData.chat_type
+//                 }
+//                 result.push(Object.assign(member, obj))
+//             } 
+//             else {
+//                 let Obj: ConversationUser = {
+//                     _id: '',
+//                     first_name: '',
+//                     last_name: '',
+//                     chatId: chatData._id,
+//                     photo: '',
+//                     full_name: chatData.title,
+//                     time: this._formatter.Formatter(new Date()),
+//                     timestamp: new Date(),
+//                     message: 'No Messages',
+//                     notificationCount: 0,
+//                     role: '',
+//                     type:chatData.chat_type
+//                 }
+//                 let memberArr:string[] = [];
+//                 chatData.members.map((member:Member) => {
+//                     const fullName = member.first_name + ' ' + member.last_name;
+//                     memberArr.push(fullName)
+//                 })
+//                 result.push(Object.assign(Obj, {members:memberArr}))
+//             }
+//         })
+//         const sortbyTime = (a, b) => {
+//             const timestampA = a.timestamp.getTime();
+//             const timestampB = b.timestamp.getTime();
+//             return timestampB - timestampA;
+//         };
+//         return result.sort(sortbyTime)
+//     }
+// }
 
 @Injectable()
 export class NewChatAdaptor implements Adapter<NewMessage>{
@@ -123,7 +142,8 @@ export class NewChatAdaptor implements Adapter<NewMessage>{
             item.type,
             item.content,
             allTIme,
-            this.userID === item.sender
+            this.userID === item.sender,
+            item.chat === item.receiver ? 'group' : 'dm'
         )
         return newChat
     }

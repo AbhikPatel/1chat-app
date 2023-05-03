@@ -22,15 +22,15 @@ export class FormatTime {
         hours = hours ? hours : 12;
         minutes = minutes < 10 ? '0' + minutes : minutes;
         const result = hours + ':' + minutes + ' ' + amPm;
-        if (todayDate > incomingDate) {
-            if (todayDate - incomingDate === 1)
-                return 'Yesterday ' + result;
-            else if (todayDate - incomingDate > 1 && todayDate - incomingDate < 7)
-                return convertToString + ' ' + result;
-            else
-                return date.getDate() + '/' + date.getMonth() + ' ' + result;
-        }
-        else
+        // if (todayDate > incomingDate) {
+        //     if (todayDate - incomingDate === 1)
+        //         return 'Yesterday ' + result;
+        //     else if (todayDate - incomingDate > 1 && todayDate - incomingDate < 7)
+        //         return convertToString + ' ' + result;
+        //     else
+        //         return date.getDate() + '/' + date.getMonth() + ' ' + result;
+        // }
+        // else
             return result
 
     }

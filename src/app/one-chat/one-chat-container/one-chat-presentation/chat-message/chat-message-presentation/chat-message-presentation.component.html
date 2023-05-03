@@ -1,7 +1,7 @@
 <!-- Start: User Message  --> 
 <div class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3" >
     <!-- Start: Header Section  -->
-    <ng-container *ngIf="getReceiverData.photo">
+    <ng-container *ngIf="count === 1">
         <div id="header" class="d-flex align-items-center justify-content-between px-5">
             <div class="d-flex align-items-center">
                 <figure class="m-0">
@@ -14,6 +14,24 @@
                     </ng-container>
                     <ng-template #status>
                         <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="count === 2">
+        <div id="header" class="d-flex align-items-center justify-content-between px-5">
+            <div class="d-flex align-items-center">
+                <figure class="m-0">
+                    <img [src]="convertPhoto(getGroupDetails?.photo)" class="rounded-circle profile-img" alt="profile">
+                </figure>
+                <div class="ms-3 d-flex flex-column">
+                    <span class="fw-semibold"> {{getGroupDetails?.title}} </span>
+                    <ng-container *ngIf="typerNames.length !== 0 else members">
+                        <span class="fs-7">{{typerNames.join(', ') + ' is typing'}}</span>
+                    </ng-container>
+                    <ng-template #members>
+                        <span class="fs-7">{{groupMembers}}</span>
                     </ng-template>
                 </div>
             </div>
@@ -41,6 +59,13 @@
                             <span class="text-info"> {{data.sender === senderId ? 'You' : getReceiverData?.full_name}}
                             </span>
                         </p> -->
+                        <ng-container *ngIf="data.chat_type === 'group'">
+                            <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
+                                <span class="text-info"> {{data.sender === senderId ? 'You' : getSenderName(data.sender)}}
+                                </span>
+                            </p>
+                        </ng-container>
+
                         <!-- Chat Message  -->
                         <div class="d-flex"
                             [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
@@ -82,8 +107,11 @@
                         </p>
                     </div>
                 </div>
-
-                <ng-container *ngIf="!getReceiverData.full_name">
+                <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-5 position-relative scroll-icon"
+                    id="icon" (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
+                    <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
+                </div>
+                <ng-container *ngIf="!getReceiverData.full_name && !getGroupDetails">
                     <div class="d-flex flex-column h-100 justify-content-center align-items-center">
                         <figure>
                             <img src="../../../../../../assets/icons/981-consultation-lineal.gif"
@@ -111,8 +139,8 @@
     <!-- End: Chat Screen  -->
 
     <!-- Start: Message  -->
-    <ng-container *ngIf="getReceiverData.full_name" >
-        <div id="typer" class="d-flex align-items-center bg-theme px-5 pt-2" >
+    <ng-container *ngIf="getReceiverData.full_name || getGroupDetails">
+        <div id="typer" class="d-flex align-items-center bg-theme px-5 pt-2">
             <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
                 <div class="d-flex align-items-center ">
                     <input type="text" class="form-control py-2 rounded-1 " name="message" formControlName="message"

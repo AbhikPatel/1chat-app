@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, ConversationUser, CreateChat, MessageRead, NewMessage, Typing } from '../../models/chat.model';
+import { Alive, Conversation, ConversationUser, CreateChat, Group, GroupDetails, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 
 @Component({
@@ -75,14 +75,14 @@ export class OneChatPresentationComponent implements OnInit {
   }
 
   /** This property is used to get the details of conversation users */
-  @Input() public set getConversationUsers(v: ConversationUser[]) {
+  @Input() public set getConversationUsers(v: Conversation[]) {
     if (v) {
       this._getConversationUsers = v;
       this._service.removeUserData(v);
     }
   }
 
-  public get getConversationUsers(): ConversationUser[] {
+  public get getConversationUsers(): Conversation[] {
     return this._getConversationUsers;
   }
 
@@ -109,9 +109,10 @@ export class OneChatPresentationComponent implements OnInit {
   private _newChat: NewMessage;
   private _getNewChatId: CreateChat;
   private _getAllUser: NewUser[];
-  private _getConversationUsers: ConversationUser[];
+  private _getConversationUsers: Conversation[];
   private _getIsRead:MessageRead;
   private _getAliveData:Alive[];
+  public _getChatArray: NewMessage[];
   public destroy: Subject<void>;
   public transferAllUser$: Observable<NewUser[]>;
   public receiverData$: Observable<NewUser>;
@@ -119,7 +120,9 @@ export class OneChatPresentationComponent implements OnInit {
   public updatedChatArray$: Observable<NewMessage[]>;
   public senderDetails$: Observable<NewUser>;
   public newConversationUser: Observable<ConversationUser>;
-  public _getChatArray: NewMessage[];
+  public groupChatDetails$: Observable<GroupDetails>;
+  public groupConversation$: Observable<Group[]>;
+  public notificationCount$: Observable<any>;
 
   constructor(
     private _service: OneChatPresenterService,
@@ -138,6 +141,9 @@ export class OneChatPresentationComponent implements OnInit {
     this.updatedChatArray$ = new Observable();
     this.senderDetails$ = new Observable();
     this.newConversationUser = new Observable();
+    this.groupChatDetails$ = new Observable();
+    this.groupConversation$ = new Observable();
+    this.notificationCount$ = new Observable();
     this._getAllUser = [];
     this.onScreen = {} as ElementRef;
   }
@@ -160,6 +166,9 @@ export class OneChatPresentationComponent implements OnInit {
     this._service.startNewChat$.pipe(takeUntil(this.destroy)).subscribe((chat: CreateChat) => this.emitNewConversation.emit(chat))
     this.newConversationUser = this._service.newConversationUser$;
     this._service.typingData$.pipe(takeUntil(this.destroy)).subscribe((data: Typing) => this.emitTypingData.emit(data))
+    this.groupChatDetails$ = this._service.groupChatDetails$;
+    this.groupConversation$ = this._service.groupChatConversation$;
+    this.notificationCount$ = this._service.notificationCount$
   }
 
   /**
@@ -170,7 +179,7 @@ export class OneChatPresentationComponent implements OnInit {
   public getChatId(chatId?: string): void {
     if (chatId) {
       this.emitConversationId.emit(chatId);
-      this._service.chatId = chatId
+      this._service.chatId = chatId;
     }
   }
 
@@ -198,6 +207,15 @@ export class OneChatPresentationComponent implements OnInit {
    */
   public getNewChatState(): void {
     this._service.newChatState = true;
+  }
+
+  /**
+   * @name getChatType
+   * @param type chat type
+   * @description This method will get the chat type
+   */
+  public getChatType(type:string):void{
+    this._service.chatType = type; 
   }
 
   /**
