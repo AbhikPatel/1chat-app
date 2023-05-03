@@ -19,8 +19,28 @@
     <!-- End: Header Section  -->
 
     <!-- Start: List  -->
-    <div class="flex-grow-1 position-relative h-100">
+    <div class="flex-grow-1 position-relative h-100 overflow-hidden">
+
+        <!-- Tab Switch  -->
+        <div class="row border">
+            <div class="col-6 p-0 border-end" role="button" (click)="onTab()">
+                <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1"
+                    [ngClass]="{'border-bottom border-3 border-success' : tabCount}">
+                    <span class="fw-bold"> Chat </span>
+                    <span class="badge rounded-circle bg-success text-white" *ngIf="notificationCount?.chat > 0">{{notificationCount.chat}}</span>
+                </div>
+            </div>
+            <div class="col-6 p-0" role="button" (click)="onTab()">
+                <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1"
+                    [ngClass]="{'border-bottom border-3 border-success' : !tabCount}">
+                    <span class="fw-bold"> Groups </span>
+                    <span class="badge rounded-circle bg-success text-white" *ngIf="notificationCount?.group > 0">{{notificationCount.group}}</span>
+                </div>
+            </div>
+        </div>
+
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
+
         <!-- Start: Search User  -->
         <div id="user" class="search-container position-absolute bg-white">
             <form class="p-3 bg-theme" [formGroup]="resetSearch">
@@ -51,47 +71,90 @@
 
         <!-- Start: Chat User  -->
         <div class="h-100 overflow-auto">
-            <div class="user-container d-flex align-items-center" role="button"
-                *ngFor="let data of getConversationUser, let i = index" (click)="onUser(data)"
-                [ngClass]="{'bg-theme' : data._id === userId}">
-                <div class="px-3 me-1 position-relative">
-                    <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
-                    <ng-container *ngIf="checkOnline(data._id)">
-                        <span
-                            class="online position-absolute translate-middle bg-success border border-light rounded-circle">
-                            <span class="visually-hidden">New alerts</span>
-                        </span>
-                    </ng-container>
-                </div>
-                <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <span class="fw-semibold text-truncate"> {{data.full_name}} </span>
-                            <span class="badge ms-2" 
-                            [ngClass]="{'bg-danger' : data.role === 'lead', 'bg-warning' : data.role === 'mentor', 'bg-success' : data.role === 'intern'}"> {{data.role}} </span>
+            <ng-container *ngIf="tabCount else group">
+                <div class="user-container d-flex align-items-center" role="button"
+                    *ngFor="let data of getConversationUser, let i = index" (click)="onUser(data)"
+                    [ngClass]="{'bg-theme' : data._id === userId}">
+                    <div class="px-3 me-1 position-relative">
+                        <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
+                        <ng-container *ngIf="checkOnline(data._id)">
+                            <span
+                                class="online position-absolute translate-middle bg-success border border-light rounded-circle">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        </ng-container>
+                    </div>
+                    <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="fw-semibold text-truncate"> {{data.full_name}} </span>
+                                <span class="badge ms-2"
+                                    [ngClass]="{'bg-danger' : data.role === 'lead', 'bg-warning' : data.role === 'mentor', 'bg-success' : data.role === 'intern'}">
+                                    {{data.role}} </span>
+                            </div>
+                            <span class="text-chat fs-7"> {{data.time ? data.time : ''}} </span>
                         </div>
-                        <span class="text-chat fs-7"> {{data.time ? data.time : ''}} </span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <ng-container *ngIf="typingStatus && typingId.includes(data._id) else elseStatement">
-                            <span class="fs-7 text-success fw-semibold"> Typing... </span>
-                        </ng-container>
-                        <ng-template #elseStatement>
-                            <ng-container *ngIf="data.message">
-                                <span class="fs-7 last-chat text-truncate text-chat"
-                                    [ngClass]="{'fw-bold' : data.notificationCount != 0}"> {{data.message}} </span>
+                        <div class="d-flex justify-content-between">
+                            <ng-container *ngIf="typingStatus && typingId.includes(data._id) else elseStatement">
+                                <span class="fs-7 text-success fw-semibold"> Typing... </span>
                             </ng-container>
-                        </ng-template>
-                        <ng-container *ngIf="data.notificationCount">
-                            <span class="badge rounded-circle bg-success text-white">{{data.notificationCount}}</span>
-                        </ng-container>
+                            <ng-template #elseStatement>
+                                <span class="fs-7 last-chat text-truncate text-chat"
+                                    [ngClass]="{'fw-bold' : data.notificationCount != 0}"> {{data.message ? data.message
+                                    : 'No Messages'}} </span>
+                            </ng-template>
+                            <ng-container *ngIf="data.notificationCount">
+                                <span
+                                    class="badge rounded-circle bg-success text-white">{{data.notificationCount}}</span>
+                            </ng-container>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="d-flex justify-content-center align-items-center h-100"
-                *ngIf="getConversationUser?.length === 0">
-                <span class="text-info"> No Conversation started </span>
-            </div>
+                <div class="d-flex justify-content-center align-items-center h-100"
+                    *ngIf="getConversationUser?.length === 0">
+                    <span class="text-info"> No Conversation started </span>
+                </div>
+            </ng-container>
+
+            <ng-template #group>
+                <div class="user-container d-flex align-items-center" role="button"
+                    *ngFor="let data of getGroupDetails, let i = index" (click)="onUser(data)"
+                    [ngClass]="{'bg-theme' : data.chatId === chatId}">
+                    <div class="px-3 me-1 position-relative">
+                        <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
+                        <!-- <ng-container *ngIf="checkOnline(data._id)">
+                            <span
+                                class="online position-absolute translate-middle bg-success border border-light rounded-circle">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        </ng-container> -->
+                    </div>
+                    <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="fw-semibold text-truncate"> {{data.title}} </span>
+                            </div>
+                            <span class="text-chat fs-7"> {{data.time ? data.time : ''}} </span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <!-- <ng-container>
+                                <span class="fs-7 text-success fw-semibold"> Typing... </span>
+                            </ng-container> -->
+                            <span class="fs-7 last-chat text-truncate text-chat"
+                                [ngClass]="{'fw-bold' : data.notificationCount != 0}">{{data.lastUser ? data.lastUser +
+                                ': ' + data.message : 'No Messages'}} </span>
+                            <ng-container *ngIf="data.notificationCount">
+                                <span
+                                    class="badge rounded-circle bg-success text-white">{{data.notificationCount}}</span>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center h-100"
+                    *ngIf="getGroupDetails?.length === 0">
+                    <span class="text-info"> No Group Chats </span>
+                </div>
+            </ng-template>
         </div>
         <!-- End: Chat User  -->
     </div>
