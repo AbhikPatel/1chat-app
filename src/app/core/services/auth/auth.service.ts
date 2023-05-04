@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { userAdaptor } from 'src/app/shared/adaptor/user.adaptor';
 import { environment } from 'src/environments/environment';
 import { HttpService } from '../http/http.service';
+import { ToasterService } from '../toaster/toaster.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,8 @@ export class AuthService {
 
   constructor(
     private _http: HttpService,
-    private _adapt: userAdaptor
+    private _adapt: userAdaptor,
+    private _toaster:ToasterService
   ) {
     this.api = environment.baseURL
   }

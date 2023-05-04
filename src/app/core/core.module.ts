@@ -9,25 +9,40 @@ import { AuthGuard } from './guards/auth.guard';
 import { HttpService } from './services/http/http.service';
 import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { RouterModule } from '@angular/router';
+import { CustomToastrComponent } from './components/custom-toastr/custom-toastr.component';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToasterService } from './services/toaster/toaster.service';
 
 
 
 @NgModule({
   declarations: [
     MasterComponent,
-    LoginComponent
+    LoginComponent,
+    CustomToastrComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RouterModule
+    RouterModule,
+    ToastrModule.forRoot({
+      toastComponent: CustomToastrComponent,
+      preventDuplicates: true,
+      enableHtml: true,
+      easing:'ease-in',
+      timeOut: 5000,
+      extendedTimeOut:2000
+    }),
+    BrowserAnimationsModule
   ],
   providers:[
     AuthService,
     AuthGuard,
     HttpService,
-    userAdaptor
+    userAdaptor,
+    ToasterService
   ]
 })
 export class CoreModule { }

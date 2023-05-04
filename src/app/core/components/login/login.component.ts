@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { AuthService } from '../../services/auth/auth.service';
+import { ToasterService } from '../../services/toaster/toaster.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,8 @@ export class LoginComponent implements OnInit {
     private _service: AuthService,
     private _fb: FormBuilder,
     private _route: Router,
-    private _commonService: CommonService
+    private _commonService: CommonService,
+    private _toastr:ToasterService
   ) {
     this.inputType = 'password'
     this.loginGroup = this._fb.group({
@@ -49,7 +51,7 @@ export class LoginComponent implements OnInit {
     if (this.loginGroup.valid) {
       this._service.loginUser(this.loginGroup.value).pipe(takeUntil(this.destroy)).subscribe((data) => {
         this._commonService.user$.next(data);
-        this._route.navigateByUrl('/home')
+        this._route.navigateByUrl('/home');
       })
     }
   }
