@@ -29,7 +29,7 @@ export class OneChatService {
     private swPush: SwPush,
   ) {
     this.api = environment.baseURL;
-    this.subscribeToPushNotification();
+    // this.subscribeToPushNotification();
   }
 
 

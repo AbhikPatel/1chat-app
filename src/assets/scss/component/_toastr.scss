@@ -1,0 +1,32 @@
+.toast-container {
+    margin: 10px;
+    
+    .ngx-toastr{
+        display: flex;
+        max-width: 400px;
+        &.toast-success{
+            border-bottom: 2px solid $success;
+            color: $success;
+            background-color: lighten($success, 45);
+        }
+        &.toast-warning{
+            border-bottom: 2px solid $warning;
+            color: $warning;
+            background-color: lighten($warning, 45);
+        }
+        &.toast-info{
+            border-bottom: 2px solid $info;
+            color: $info;
+            background-color: lighten($info, 45);
+        }
+        &.toast-error{
+            border-bottom: 2px solid $danger;
+            color: $danger;
+            background-color: lighten($danger, 40);
+        }
+
+        &:hover{
+            box-shadow: 2px 2px 20px #a5a5a5;
+        }
+    }
+}
