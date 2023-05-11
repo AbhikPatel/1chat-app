@@ -3,6 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { Alive, Conversation, ConversationUser, CreateChat, Group, GroupDetails, Member, MessageRead, NewMessage, Typing } from '../../models/chat.model';
+import { animate } from '@angular/animations';
 
 @Injectable()
 
@@ -19,7 +20,9 @@ export class OneChatPresenterService {
   /** This property is used to transfer the data of the new chat */
   private chatData: Subject<NewMessage>;
   public chatData$: Observable<NewMessage>;
-
+  /** This property is used to transfer the data of the edit Chat */
+  private editChat: Subject<NewMessage>;
+  public editChat$: Observable<NewMessage>;
   /** This property is used to transfer the array of chats */
   private chatArray: Subject<NewMessage[]>;
   public chatArray$: Observable<NewMessage[]>;
@@ -86,6 +89,8 @@ export class OneChatPresenterService {
   public conversationUser: ConversationUser[];
   /** This property is used to store the details of group conversation users */
   public groupConversation: Group[];
+  public editMessage: string;
+
 
   constructor(
     private _formatter: FormatTime
@@ -153,7 +158,6 @@ export class OneChatPresenterService {
     this.newChatState = false;
     this.userDetails = {} as NewUser;
   }
-
   /**
    * @name removeUserData
    * @param chat 
@@ -176,7 +180,7 @@ export class OneChatPresenterService {
         }
         this.conversationUser.push(Object.assign(member, obj))
       } else {
-        var sender:NewUser | undefined  = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
+        var sender: NewUser | undefined = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
         let obj = {
           chatId: chatData._id,
           photo: 'default.jpeg',
@@ -194,13 +198,11 @@ export class OneChatPresenterService {
         this.groupConversation.push(Object.assign(obj, { members: memberArr }))
       }
     });
-
     const sortbyTime = (a, b) => {
       const timestampA = a.timestamp.getTime();
       const timestampB = b.timestamp.getTime();
       return timestampB - timestampA;
     };
-
     this.onlyConversationUsers.next(this.conversationUser.sort(sortbyTime));
     this.groupChatConversation.next(this.groupConversation.sort(sortbyTime));
     this.countNotification();
@@ -244,7 +246,10 @@ export class OneChatPresenterService {
       } else {
         let currentTime = new Date()
         let chatObj: NewMessage = {
+          _id: '',
+          replied_to:'',
           is_read: false,
+          is_edit: false,
           chat: this.chatId,
           sender: this.userId,
           receiver: this.chatType === 'group' ? this.chatId : this.receiverId,
@@ -257,7 +262,7 @@ export class OneChatPresenterService {
           },
           chat_type: this.chatType
         }
-        this.chatData.next(chatObj);
+        this.chatData.next(chatObj)
         this.chats.push(chatObj)
         this.getChatArray(this.chats);
         if (this.chatType === 'dm') {
@@ -295,7 +300,7 @@ export class OneChatPresenterService {
    * @name addNewChat
    * @param newChat 
    * @description This method is use to add new conversation user
-   */
+  */
   public addNewChat(newChat: NewMessage): void {
     const isGroupChat = this.groupConversation.find((user: Group) => user.chatId === newChat.chat);
     const isChatId = this.allChatIds.find((id: string) => id === newChat.chat);
@@ -303,12 +308,10 @@ export class OneChatPresenterService {
       this.chats.push(newChat);
       this.getChatArray(this.chats);
     }
-
     if (newChat.chat === this.chatId && newChat.chat_type === 'group') {
       this.chats.push(newChat);
       this.getChatArray(this.chats);
     }
-
     if (isGroupChat) {
       let userId: number = this.groupConversation.findIndex((items: Group) => items.chatId === newChat.chat);
       let user: string = this.users.find((data: NewUser) => data._id === newChat.sender).full_name;
@@ -358,12 +361,11 @@ export class OneChatPresenterService {
       }
     }
   }
-
   /**
    * @name getReceiverId
    * @param id 
    * @description This method is use to get the details of the receiver from Id
-   */
+  */
   public getReceiverId(id: string): void {
     if (this.chatType === 'dm') {
       this.receiverId = id;
@@ -388,7 +390,7 @@ export class OneChatPresenterService {
   /**
    * @name updatedChatObj
    * @description This method is use to update the chat object
-   */
+  */
   public updatedChatObj(id: string): void {
     this.chatId = id;
     this.getMessage(this.updatedChat);
@@ -402,7 +404,7 @@ export class OneChatPresenterService {
    * @name createTypingData
    * @param id 
    * @description This method is use to create obj for typing event
-   */
+  */
   public createTypingData(id: string): void {
     let obj: Typing = {
       receiver: this.chatType === 'dm' ? this.receiverId : this.chatId,
@@ -416,7 +418,7 @@ export class OneChatPresenterService {
    * @name updateChatArray
    * @param data 
    * @description This method will update the chat array
-   */
+  */
   public updateChatArray(data: MessageRead): void {
     if (this.chatId === data.chatId) {
       this.chats.map((message: NewMessage) => message.is_read = true)
@@ -427,7 +429,7 @@ export class OneChatPresenterService {
   /**
    * @name countNotification
    * @description This method will update the notification count of both the chat and group chat
-   */
+  */
   private countNotification(): void {
     const obj = {
       group: this.groupConversation.filter((user: Group) => user.notificationCount > 0).length,
@@ -442,5 +444,40 @@ export class OneChatPresenterService {
    */
   public getOnlineUsers(user: Alive[]): void {
     this.onlineUsers = user.map((data: Alive) => data.userId)
+  }
+  /**
+   * 
+   * @param newMessage 
+   * @description This method Using edit message with out page Refresh and receiver ConversationUser list update last message 
+  */
+  public editMessageChat(newMessage: NewMessage) :void{
+    if (this.chatType === 'dm') {
+      const chatsFilterData: any = this.chats.filter((data: NewMessage) => data.receiver === newMessage.receiver);
+    if (chatsFilterData[chatsFilterData.length - 1]._id === newMessage._id) {
+      let userId: number = this.conversationUser.findIndex((items: ConversationUser) => items.chatId === newMessage.chat);
+      this.conversationUser[userId].message = newMessage.content.text;
+      this.onlyConversationUsers.next(this.conversationUser);
+    }
+    // splice Message 
+    const index = this.chats.findIndex((chats: NewMessage) => chats._id === newMessage._id);
+    this.chats.splice(index, 1, newMessage);
+    }
+ 
+  }
+
+  /**
+   * @param editMessage 
+   * @description This Method Update edit Message 
+   */
+  public getEditMessage(editMessage: string):void {
+    if (this.chatType === 'dm') {
+      let id = this.conversationUser.findIndex((user: ConversationUser) => user.chatId === this.chatId);
+      this.conversationUser[id].message = editMessage;
+    }
+  }
+
+  public getReplyMessage(replyObj:NewMessage):void{
+    console.log(replyObj);
+    this.chats.push(replyObj)
   }
 }

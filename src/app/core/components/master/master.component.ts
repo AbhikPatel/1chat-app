@@ -6,13 +6,13 @@ import { CommonService } from 'src/app/shared/services/common.service';
   templateUrl: './master.component.html'
 })
 export class MasterComponent {
-constructor(private _commonService:CommonService){
-
-}
-
-public backDropClick():void{
-  // setTimeout(() => {
-  //   this._commonService.closeModel.next(true)
-  // }, 30000);
+  constructor(private _commonService:CommonService){
+    
+  }
+  
+  public backDropClick():void{
+    // setTimeout(() => {
+    this._commonService.closeModel.next(false)
+  // }, 0);
 }
 }

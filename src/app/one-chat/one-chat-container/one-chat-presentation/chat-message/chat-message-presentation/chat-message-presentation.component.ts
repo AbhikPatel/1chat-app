@@ -12,11 +12,9 @@ import {
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { Alive, GroupDetails, Member, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
+import { Alive, Chat, GroupDetails, Member, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
-import { CommonService } from 'src/app/shared/services/common.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat-message-presentation',
@@ -27,22 +25,15 @@ import { Router } from '@angular/router';
 export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   @HostListener('document:click', ['$event'])
   onClickEvent(event: MouseEvent) {
-    // debugger
-    // console.log('event',event.target);
-    // console.log('span',this.SpanData);
-    // if(event.target === this.SpanData){
-    //   //  debugger
-    //   this.ToggleModel=!this.ToggleModel 
-    // } else  {
-    //   this.ToggleModel= false 
-    //  }
+    if (event.target['id'] !== 'downArrow') {
+      this.ToggleModel = false
+    }
   }
-
   @ViewChild('myInput') myInput: ElementRef;
   @ViewChild('messageContainer') messageContainerRef: ElementRef;
   @ViewChild('popupElement') popupElement: ElementRef;
   @ViewChild('span') span: ElementRef;
-  // This property is used to get online users
+  @ViewChild('ReplyWrapper') replyWrapper: ElementRef;
 
   /** This property is used to get online users */
   @Input() public set getGroupDetails(v: GroupDetails) {
@@ -81,6 +72,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   /** This property is use to get the array of chats */
   @Input() public set getChat(v: NewMessage[]) {
     if (v) {
+      console.log(v);
+
       this._getChat = v;
 
       this.chatGroup.setValue({ message: '' });
@@ -106,13 +99,16 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public get getReceiverData(): NewUser {
     return this._getReceiverData;
   }
-
   /** This property is use to emit the chat */
   @Output() public emitChat: EventEmitter<string>;
+  /** This property is use to emit Edit Message */
+  @Output() public emitChatMessage: EventEmitter<string>;
   /** This property is use to emit the sender Id */
   @Output() public emitSenderId: EventEmitter<string>;
   // This property is use to emit the emitMessageId
-  @Output() public emitMessageId: EventEmitter<string>;
+  @Output() public emitEditMessageData: EventEmitter<NewMessage>;
+  @Output() public emitReplyMessageData: EventEmitter<NewMessage>;
+  @Output() public emitReplyMessageDataPush: EventEmitter<NewMessage>;
   /** This property is use to emit the chat */
   public destroy: Subject<void>;
   /** This property is to create a FormGroup */
@@ -135,10 +131,6 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public isIdApplied: boolean;
   public id: number;
   public ToggleModel: boolean;
-  public modelNone:string;
-  public isClose: boolean;
-  public SpanData:any;
-  
   /** This property is to store the count */
   public count: number;
   /** This property is to store the members of the group */
@@ -151,17 +143,24 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   private _getOnlineUsers: Alive[];
   private _getGroupDetails: GroupDetails;
   private _getReceiverData: NewUser;
+  public chatMessageId: string;
+  public editDataObject: NewMessage;
+  public replyMessageData: NewMessage;
+  public replyObjectId: any;
+  public replyObjectIds: any;
+
 
   constructor(
     private _service: ChatMessagePresenterService,
-    private _route: Router,
-    private _commonService:CommonService
   ) {
     this.senderId = localStorage.getItem('userId');
     this.chatGroup = this._service.getGroup();
     this.emitChat = new EventEmitter();
     this.emitSenderId = new EventEmitter();
-    this.emitMessageId = new EventEmitter();
+    this.emitEditMessageData = new EventEmitter();
+    this.emitChatMessage = new EventEmitter();
+    this.emitReplyMessageData = new EventEmitter();
+    this.emitReplyMessageDataPush = new EventEmitter();
     this.destroy = new Subject();
     this.showTyping = new Subject();
     this._getReceiverData = {} as NewUser;
@@ -173,26 +172,85 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this.cancelEdit = ''
     this.openBox = 'openBox';
     this.ToggleModel = false;
-    this.modelNone=''
-    this.isClose = true
     this.typerNames = [];
     this.isScrolledToBottom = true;
     this.count = 0;
     this.groupMembers = '';
+    this.chatMessageId = '';
+    this.editDataObject={} as NewMessage
   }
 
   ngAfterViewInit(): void {
     this.scrollUp();
-      // this.SpanData=
-     console.log( this.span?.nativeElement);
+  }
+  ngOnInit(): void {
+    this.props();
+
+  }
+  /**
+   * @name props
+   * @description This method is called in ngOnInit
+  */
+  public props(): void {
+    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
   }
 
+  /**
+   * @name onSubmit
+   * @description This method is use to submit the form add and edit Both
+  */
+ public onSubmit(): void {
+   if (this.chatGroup.valid) {
+     if (this.chatMessageId) {
+       this.editSingleMessage()
+      }  else if(this.replyObjectId){
+          this.replyMessages()
+      }
+      else{ 
+        this.addNewMessage()
+      }
+    }
+  }
+  
+  /**
+   * @description his Method add new Message call submit method 
+  */
+ public addNewMessage(): void {
+   this.emitChat.emit(this.chatGroup.value.message);
+   this.chatGroup.reset();
+   this.scrollUp();
+  }
+  /**
+   * @description This Method Edit Message call submit method
+  */
+ public editSingleMessage(): void {
+   this.editDataObject.content.text = this.message;
+   this.editDataObject.is_edit = true;
+   this.emitEditMessageData.emit(this.editDataObject);
+   this.emitChatMessage.emit(this.message);
+   this.chatMessageId = '';
+   this.chatGroup.reset();
+   this.cancelEdit = '';
+   this.scrollUp();
+  }
+  /**
+   * @description This Method reply Message call submit Method
+  */
+  public replyMessages(){
+      this.replyMessageData.replied_to={replied_to:this.replyObjectId,content:{text:this.replyMessageData.content.text}};
+      this.replyMessageData.content.text =this.message;
+      this.emitReplyMessageData.emit(this.replyMessageData);
+      this.scrollUp();
+      this.chatGroup.reset();
+      this.replyWrapper.nativeElement.style.display='none';
+  }
+  
   /**
    * @name onMessageScroll
    * @param container
    * @description Down arrow icon show and hide as per scroll
    */
-  public onMessageScroll(container: any): void {
+  public onMessageScroll(): void {
     const messageContainer = this.messageContainerRef.nativeElement;
     const scrollHeight = messageContainer.scrollHeight;
     let scrollTop = messageContainer.scrollTop;
@@ -200,46 +258,17 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     const isScrolledToBottom = scrollHeight - scrollTop === clientHeight;
     this.isScrolledToBottom = isScrolledToBottom;
   }
-
-  ngOnInit(): void {
-    this.props();
-  }
-
-
-  /**
-   * @name props
-   * @description This method is called in ngOnInit
-   */
-  public props(): void {
-    this._commonService.closeModel.subscribe((data:any)=>{
-      this.ToggleModel=data
-    })
-    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
-  }
-
-  /**
-   * @name onSubmit
-   * @description This method is use to submit the form
-   */
-  public onSubmit(): void {
-    if (this.chatGroup.valid) {
-      this.emitChat.emit(this.chatGroup.value.message);
-      this.scrollUp();
-      this.chatGroup.reset();
-    }
-  }
-
   /**
    * @name convertPhoto
    * @param profileImg
    * @returns image url
    * @description This method is use to convert the link into source link
-   */
+  */
   public convertPhoto(profileImg?: string): string {
     let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
     // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
     return profileImg
-      ? converter
+    ? converter
       : '../../../../../../assets/images/avatar.png';
   }
 
@@ -247,7 +276,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    * @name receivingTyping
    * @param sender gets the sender Id
    * @description This method is used for the displaying the typing feature
-   */
+  */
   public receivingTyping(sender: string): void {
     if (sender === this.getReceiverData._id) {
       this.showTyping.next(true);
@@ -261,13 +290,12 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    * @name getGroupTyping
    * @param data 
    * @description This method will show the typing UI in the screen for group chat
-   */
+  */
   public getGroupTyping(data: Typing): void {
     if (!this.typerNames.includes(data.typer))
       this.typerNames.push(data.typer)
-
-    setTimeout(() => {
-      let id = this.typerNames.indexOf(data.typer)
+      setTimeout(() => {
+        let id = this.typerNames.indexOf(data.typer)
       this.typerNames.splice(id, 1)
     }, 2000);
   }
@@ -275,30 +303,30 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   /**
    * @name scrollUp
    * @description Click arrow down icon got to up message
-   */
-  public scrollUp(): void {
+  */
+ public scrollUp(): void {
     setTimeout(() => {
       this.messageContainerRef.nativeElement.scrollTo(
         0,
         this.messageContainerRef.nativeElement.scrollHeight
-      );
-    }, 0);
+        );
+      }, 0);
   }
-
+  
   /**
    * @name checkOnline
    * @description THis method will show the status of the user
-   */
-  public checkOnline(): void {
+  */
+ public checkOnline(): void {
     if (this.getOnlineUsers)
-      this.showStatus = this.getOnlineUsers.find(
-        (data: Alive) => data.userId === this.getReceiverData._id
+    this.showStatus = this.getOnlineUsers.find(
+      (data: Alive) => data.userId === this.getReceiverData._id
       );
-  }
-
-  /**
-   * @description This method set focus default
-   */
+    }
+    
+    /**
+     * @description This method set focus default
+    */
   public setFocus(): void {
     this.myInput.nativeElement.focus();
   }
@@ -309,7 +337,6 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public getGroupMembers(members: Member[]): void {
     this.groupMembers = members.map((data: Member) => data.full_name).join(', ')
   }
-
   /**
    * @name getSenderName
    * @param id 
@@ -322,15 +349,15 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
 
   /**
    * @description This method Open emojis model and show  close icon
-   */
-  public openEmojiPicker(): void {
-    this.closeIcon = 'x-lg';
-    this.showEmojiPicker = true;
+  */
+ public openEmojiPicker(): void {
+   this.closeIcon = 'x-lg';
+   this.showEmojiPicker = true;
   }
   /**
    * @description This method close emojis model and also hide close icon
-   */
-  public closeEmojiPicker(): void {
+  */
+ public closeEmojiPicker(): void {
     this.closeIcon = '';
     this.showEmojiPicker = false;
   }
@@ -343,15 +370,15 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     const text = `${message}${event.emoji.native}`;
     this.message = text;
   }
-
+  
   /**
    * @description this method toggle model
    * @param message 
    * @param i 
-   */
-  openPopup(i: number) {
-      this.id = i;
-        this.ToggleModel = !this.ToggleModel
+  */
+  public toggleModel(i: number): void {
+    this.id = i;
+    this.ToggleModel = !this.ToggleModel;
   }
 
   /**
@@ -359,7 +386,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    * @param data 
    * @param pre 
    * @returns 
-   */
+  */
   formatDate(data: Date, pre: Date): string {
     // convert string to date object
     const newData = new Date(data);
@@ -395,20 +422,22 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
       year: 'numeric',
     });
   }
-
-
+  
+  
   /**
-   * @description this method patch message value in input Box and emit indexId
+   * @description this method patch message value 
    * @param message 
-   */
-  public editMessage(message: any, indexId: string) {
-    this.setFocus()
-    this.cancelEdit = 'x-lg';
-    const text = `${message}`;
+  */
+ public editMessage(messageObj: NewMessage): void {
+   this.chatMessageId = messageObj._id;
+   this.setFocus()
+   this.cancelEdit = 'x-lg';
+    const text = `${messageObj.content.text}`;
     this.message = text;
-    this.ToggleModel=true
-    this.emitMessageId.emit(indexId);
+    this.ToggleModel = true;
+    this.editDataObject = messageObj;
   }
+
   /**
    * @description This method Clear input Text
    */
@@ -416,8 +445,23 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
     this.cancelEdit = ''
     this.chatGroup.reset()
   }
-
-  
+  /**
+   *  
+   * @param item 
+   * @description This Method get object
+  */
+ public replyMessage(messageObject: NewMessage) {
+   this.replyObjectId = messageObject._id;
+   this.replyMessageData = messageObject;
+   this.replyWrapper.nativeElement.style.display = 'block';
+   this.setFocus();
+  }
+  /**
+   * @description This Method close Reply Model 
+   */
+  public closeReplyModel() {
+    this.replyWrapper.nativeElement.style.display = 'none';
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

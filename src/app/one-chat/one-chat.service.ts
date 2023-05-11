@@ -29,7 +29,7 @@ export class OneChatService {
     private swPush: SwPush,
   ) {
     this.api = environment.baseURL;
-    this.subscribeToPushNotification();
+    // this.subscribeToPushNotification();
   }
 
 
@@ -75,6 +75,12 @@ export class OneChatService {
         if (eventname === 'dm:messageRead') {
           fn('read')
         }
+        if (eventname === 'dm:messageEdit') {
+          fn('Edit')
+        }
+        if (eventname === 'dm:messageReply') {
+          fn('reply')
+        }
         subscriber.next(data);
       })
     })
@@ -95,7 +101,15 @@ export class OneChatService {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response);
       })
-    } else {
+    } else if (eventname === 'dm:messageEdit') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
+      })
+    } else if (eventname === 'dm:messageReply') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
+      })
+    }else {
       this.socket.emit(eventname, data);
     }
   }

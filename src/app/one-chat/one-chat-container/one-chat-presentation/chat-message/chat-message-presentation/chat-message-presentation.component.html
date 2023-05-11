@@ -1,5 +1,5 @@
-<!-- Start: User Message  --> 
-<div class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3" >
+<!-- Start: User Message  -->
+<div class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3">
     <!-- Start: Header Section  -->
     <ng-container *ngIf="count === 1">
         <div id="header" class="d-flex align-items-center justify-content-between px-5">
@@ -42,11 +42,12 @@
     <!-- Start: Chat Screen  -->
     <ng-container>
         <div class="chat-container flex-grow-1 overflow-auto  py-4  h-100" #messageContainer
-            (scroll)="onMessageScroll(messageContainer)">
+            (scroll)="onMessageScroll()">
             <div class="container h-100 ">
                 <!-- Chat  -->
                 <div class="d-flex flex-column" *ngFor="let data of getChat, let i = index"
                     [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
+                    <!-- {{data | json}} -->
                     <div class="d-flex justify-content-center">
                         <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7"
                             *ngIf="formatDate(data.time,getChat[i-1]?.time)">
@@ -61,7 +62,8 @@
                         </p> -->
                         <ng-container *ngIf="data.chat_type === 'group'">
                             <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
-                                <span class="text-info"> {{data.sender === senderId ? 'You' : getSenderName(data.sender)}}
+                                <span class="text-info"> {{data.sender === senderId ? 'You' :
+                                    getSenderName(data.sender)}}
                                 </span>
                             </p>
                         </ng-container>
@@ -71,25 +73,52 @@
                             [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
                             <div class="d-flex align-items-center chat-text rounded-3 py-1 px-2 shadow-sm mb-1"
                                 [ngClass]="data.sender === senderId ? 'bg-secondary' : 'bg-white'">
-                                {{data.content.text}}
+                                <div>
+                                    <div class="fs-8 d-flex justify-content-end text-info"*ngIf="data.is_edit === true">Edited</div>
+                                    <div class="Message-wrapper  text-white rounded-1 p-1 " *ngIf="data.replied_to">
+                                        <div class="mx-3" >
+                                            <div class="d-flex align-items-center justify-content-between mb-1 ">
+                                                <span class="fs-9 text-nowrap"> {{data.sender === senderId ? 'You' :
+                                                    getReceiverData.full_name}}</span>
+                                            </div>
+                                            <div class="fs-9">{{data.replied_to['content']?.text }}</div>
+                                        </div>
+                                    </div>
+                                     <div> {{data.content.text}}</div>
+                                </div> 
+                                <!--  -->
                                 <label for="openBox" class="position-relative">
-                                    <span class="d-flex icon-down-arrow fs-9" (click)="openPopup(i)" #span>
+                                    <span class="d-flex icon-down-arrow fs-9" id="downArrow" (click)="toggleModel(i)"
+                                        #span>
                                     </span>
                                     <ng-container>
-                                        <div class="popup bg-black text-white mt-5 position-absolute" [ngClass]="i === id && ToggleModel  ? ' d-block' : 'd-none'">
-                                        <ul class="list-group ps-3">
-                                            <li class="list-group-item fs-9 mt-2 ">Message Info </li>
-                                            <li class="list-group-item fs-9 my-2">Reply</li>
-                                            <li class="list-group-item fs-9"(click)="editMessage(data.content.text,data.chat)">Edit</li>
-                                          </ul>
-                                    </div>
+                                        <div class="popup bg-white text-black  position-absolute p-1"
+                                            [ngClass]="i === id && ToggleModel  ? ' d-block' : 'd-none'">
+                                            <ul class="list-group cursor-pointer">
+                                                <li class="list-group-item fs-9 mt-2 d-flex align-items-center">
+                                                    <span class="icon-info"></span>
+                                                    <span class="ms-1">Message Info </span>
+                                                </li>
+                                                <li class="list-group-item fs-9 my-2 d-flex align-items-center">
+                                                    <label for="reply" (click)="replyMessage(data)">
+                                                        <span class="icon-reply"></span>
+                                                        <span class="ms-1">Reply</span>
+                                                    </label>
+                                                </li>
+                                                <li class="list-group-item fs-9 d-flex align-items-center"
+                                                    (click)="editMessage(data)" *ngIf="data.sender === senderId">
+                                                    <span class="icon-pencil "></span>
+                                                    <span class="ms-1">Edit</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </ng-container>
-                                    
+
                                 </label>
-                               
+
                             </div>
                         </div>
-                        
+
                         <!-- Time and Date  -->
                         <p class="fs-8 text-info d-flex align-items-center"
                             [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
@@ -124,13 +153,13 @@
             </div>
         </div>
         <div class="px-5 position-relative py-0 emojis-container">
-            <ng-container  *ngIf="getReceiverData.full_name">
+            <ng-container *ngIf="getReceiverData.full_name">
                 <div class="icon-circle-down position-absolute  fs-4 text-info  me-5  scroll-icon" id="icon"
-                (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
-                <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
-            </div>
+                    (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
+                    <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
+                </div>
             </ng-container>
-            
+
             <emoji-mart class="emoji-mart " *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
                 title="Pick your emoji…"></emoji-mart>
         </div>
@@ -140,12 +169,24 @@
 
     <!-- Start: Message  -->
     <ng-container *ngIf="getReceiverData.full_name || getGroupDetails">
-        <div id="typer" class="d-flex align-items-center bg-theme px-5 pt-2">
+        <div id="typer" class="d-flex flex-column bg-theme px-5 pt-2">
             <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
+                <!-- Reply Model -->
+                <div class="Reply-wrapper  text-white rounded-1 p-2 pe-3" #ReplyWrapper>
+                    <div class="mx-3">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span> {{replyMessageData?.sender === senderId ? 'You' : getReceiverData.full_name}}</span>
+                            <span class="closeReplayMessage" (click)="closeReplyModel()">X</span>
+                        </div>
+                        <div>{{replyMessageData?.content.text}}</div>
+                    </div>
+                </div>
+                <!-- Reply Model -->
                 <div class="d-flex align-items-center ">
-                    <input type="text" class="form-control py-2 rounded-1 " name="message" formControlName="message"
+                    <input type="text" class="form-control py-2 rounded-1" name="message" formControlName="message"
                         autocomplete="off" placeholder="Type a new message" #myInput [(ngModel)]="message">
-                    <span class="icon-{{cancelEdit}} ps-3 cursor-pointer text-danger fw-bold" (click)="editCancel()"></span>
+                    <span class="icon-{{cancelEdit}} ps-3 cursor-pointer text-danger fw-bold"
+                        (click)="editCancel()"></span>
                 </div>
                 <div class="d-flex align-items-center justify-content-between px-1 py-1">
                     <div class="file-attach">
@@ -165,4 +206,4 @@
         </div>
     </ng-container>
     <!-- End: Message  -->
-<!-- End: User Message  -->
+    <!-- End: User Message  -->

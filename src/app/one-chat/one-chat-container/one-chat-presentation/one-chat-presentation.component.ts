@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, Conversation, ConversationUser, CreateChat, Group, GroupDetails, MessageRead, NewMessage, Typing } from '../../models/chat.model';
+import { Alive, Conversation, ConversationUser, CreateChat,  Group, GroupDetails, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 
 @Component({
@@ -65,6 +65,8 @@ export class OneChatPresentationComponent implements OnInit {
   /** This property is used to get chat array */
   @Input() public set getChatArray(v: NewMessage[]) {
     if (v) {
+      // console.log(v);
+      
       this._getChatArray = v;
       this._service.getChatArray(v)
     }
@@ -90,12 +92,24 @@ export class OneChatPresentationComponent implements OnInit {
   /** This property is used to get the object of the new chat */
   @Input() public set newChat(v: NewMessage) {
     if (v) {
+      // console.log(v);
+      
       this._newChat = v;
       this._service.addNewChat(v);
     }
   }
   public get newChat(): NewMessage {
     return this._newChat;
+  }
+  /** This property is used to get the object of the new chat */
+  @Input() public set newEditChat(v: NewMessage) {
+    if(v){
+     this._service.editMessageChat(v)
+    }
+    
+  }
+  public get newEditChat(): NewMessage {
+    return this._newEditChat
   }
 
   @ViewChild('onScreen') public onScreen: ElementRef;
@@ -104,9 +118,11 @@ export class OneChatPresentationComponent implements OnInit {
   @Output() public emitNewConversation: EventEmitter<CreateChat>;
   @Output() public emitTypingData: EventEmitter<Typing>;
   @Output() public emitReadMessage: EventEmitter<MessageRead>;
-  @Output() public emitMessageId: EventEmitter<string>;
+  @Output() public emitMessageData: EventEmitter<NewMessage>;
+  @Output() public emitReplyMessageData: EventEmitter<NewMessage>;
 
   private _newChat: NewMessage;
+  private _newEditChat: NewMessage;
   private _getNewChatId: CreateChat;
   private _getAllUser: NewUser[];
   private _getConversationUsers: Conversation[];
@@ -133,7 +149,8 @@ export class OneChatPresentationComponent implements OnInit {
     this.emitChatData = new EventEmitter();
     this.emitTypingData = new EventEmitter();
     this.emitReadMessage = new EventEmitter();
-    this.emitMessageId = new EventEmitter();
+    this.emitMessageData = new EventEmitter();
+    this.emitReplyMessageData = new EventEmitter();
     this._getConversationUsers = [];
     this.transferAllUser$ = new Observable();
     this.transferConversationUser$ = new Observable();
@@ -200,7 +217,15 @@ export class OneChatPresentationComponent implements OnInit {
   public getChat(chat: string): void {
     this._service.getMessage(chat)
   }
+  /**
+   * 
+   * @param editMessage 
+   * @description This method is use to get the Edit message test
+   */
+public getEditChatMessageData(editMessage:string){
+  this._service.getEditMessage(editMessage)
 
+}
   /**
    * @name getNewChatState
    * @description This method is use to get the new chat state
@@ -218,7 +243,7 @@ export class OneChatPresentationComponent implements OnInit {
     this._service.chatType = type; 
   }
 
-  /**
+  /**getIsReadData
    * @name getSenderId
    * @param id 
    * @description This method will get the sender id for typing event
@@ -238,11 +263,22 @@ export class OneChatPresentationComponent implements OnInit {
 
 /**
  * This method will transfer messageId
- * @param MessageId 
+ * @param editMessage 
  */
-  public getMessageId(MessageId:string){
-        this.emitMessageId.emit(MessageId)
+  public getEditMessageData(editMessage:NewMessage){
+     this.emitMessageData.emit(editMessage);
   }
+/**
+ * 
+ * @param replyMessageObj 
+ */
+  public getReplyMessageData(replyMessageObj:NewMessage){
+    //  console.log(replyMessageObj);
+    this.emitReplyMessageData.emit(replyMessageObj)
+    
+  }
+
+  
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed
