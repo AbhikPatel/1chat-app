@@ -196,7 +196,7 @@ export class ChatListPresentationComponent implements OnInit {
     this.emitChatId.emit(data.chatId);
     this.emitChatType.emit(data.type);
     this.emitReceiverId.emit(data._id);
-    if (data.notificationCount !== 0)
+    if (data.notificationCount !== 0 && data.type === 'dm')
       this._service.getIsReadData(data);
     this.userId = data._id;
     if (data.type === 'dm') {
@@ -206,6 +206,8 @@ export class ChatListPresentationComponent implements OnInit {
       this.getConversationUser[id].notificationCount = 0;
       this.removeNonConversationUser();
     } else {
+      if (data.notificationCount > 0)
+        this.notificationCount.group = this.notificationCount.group - 1
       let id = this.getGroupDetails.findIndex((user: Group) => user === data);
       this.getGroupDetails[id].notificationCount = 0;
     }
