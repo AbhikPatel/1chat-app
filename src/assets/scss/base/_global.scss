@@ -72,3 +72,11 @@ html,body{
 textarea{
     resize: none !important;
 }
+
+.icon{
+    color: $icon-color;
+
+    &:hover{
+        color: $primary;
+    }
+}

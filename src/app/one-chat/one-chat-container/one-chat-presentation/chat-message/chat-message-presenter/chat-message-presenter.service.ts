@@ -24,7 +24,7 @@ export class ChatMessagePresenterService {
     return this._fb.group({
       completed: new FormArray([]),
       onGoing: new FormArray([]),
-      // newLearning: new FormArray([]),
+      newLearning: new FormArray([]),
     })
   }
 }

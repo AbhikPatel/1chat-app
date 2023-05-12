@@ -159,9 +159,10 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @description This method is called in ngOnInit
    */
   public props(): void {
-    this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
+    this.chatGroup.valueChanges.subscribe(() => this.emitSenderId.emit(this.senderId));
     this.onAddTask(0);
     this.onAddTask(1);
+    this.onAddTask(2);
   }
 
   /**
@@ -268,7 +269,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   }
 
   public onEodSubmit(): void {
-
+    console.log(this.eodGroup.value);
   }
 
   public get getControls(): any {
@@ -283,10 +284,19 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     let group: FormGroup = this._fb.group({
       title: ['', [Validators.required]],
       hours: ['', [Validators.required]],
-      description: ['', [Validators.required]]
+      description: ['', [Validators.required]],
+      blocker: ['']
     })
+    switch (id) {
+      case 0: this.formTaskArray('onGoing').push(group)
+        break;
 
-    id === 0 ? this.formTaskArray('onGoing').push(group) : this.formTaskArray('complete').push(group)
+      case 1: this.formTaskArray('completed').push(group)
+        break;
+
+      case 2: this.formTaskArray('newLearning').push(group)
+        break;
+    }
   }
 
   /**

@@ -65,7 +65,7 @@ export class OneChatContainerComponent implements OnInit {
       var groupIds: string[] = [];
       users.map((data: Conversation) => {
         if (data.chat_type === 'group')
-          groupIds.push(data._id)
+        groupIds.push(data._id)
       })
       this._service.emit('group:join', groupIds)
     })
