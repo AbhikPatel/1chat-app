@@ -4,8 +4,9 @@
 
 export const environment = {
   production: false,
-  // baseURL: 'https://anonychat.onrender.com/api/v1/'
-  baseURL: 'http://172.16.3.107:2132/api/v1/'
+  baseURL: 'https://onechat-jj9m.onrender.com/api/v1/',
+  socketUrl:'https://onechat-jj9m.onrender.com',
+  // baseURL: 'http://172.16.3.107:2132/api/v1/'
 };
 
 /*

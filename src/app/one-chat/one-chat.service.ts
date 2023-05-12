@@ -12,12 +12,11 @@ import { SwPush } from "@angular/service-worker";
 @Injectable()
 
 export class OneChatService {
-
-  // socket = io('wss://anonychat.onrender.com');
-  socket = io('http://172.16.3.107:2132');
+  
   public api: string;
   public userId: string;
   public subscriber: any;
+  public socket:any;
 
   // Voluntary Application Server Identity to send push notification
   private readonly VAPID_PUBLIC_KEY: string = "BKX5wA9WxBSYJZWvQtdgD-1rknSL5ejHQd25tUxl5bM9QkNrQVms__OnS1cbRxsJ96E09gKruA8pOcEv7XTfSc4";
@@ -28,6 +27,7 @@ export class OneChatService {
     private _messageAdaptor: MessageAdaptor,
     private swPush: SwPush,
   ) {
+    this.socket = io(environment.socketUrl);
     this.api = environment.baseURL;
     // this.subscribeToPushNotification();
   }

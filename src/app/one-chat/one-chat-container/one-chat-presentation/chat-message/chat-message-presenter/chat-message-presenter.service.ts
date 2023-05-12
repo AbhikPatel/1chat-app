@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Injectable()
 
 export class ChatMessagePresenterService {
 
   constructor(
-    private _fb:FormBuilder
+    private _fb: FormBuilder
   ) { }
 
   /**
@@ -14,9 +14,17 @@ export class ChatMessagePresenterService {
    * @returns formGroup
    * @description This method is use to create form Group
    */
-  public getGroup(): FormGroup{
+  public getGroup(): FormGroup {
     return this._fb.group({
-      message:['',[Validators.required]]
+      message: ['', [Validators.required]]
+    })
+  }
+
+  public getEodGroup(): FormGroup {
+    return this._fb.group({
+      completed: new FormArray([]),
+      onGoing: new FormArray([]),
+      // newLearning: new FormArray([]),
     })
   }
 }

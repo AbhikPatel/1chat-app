@@ -68,3 +68,7 @@ html,body{
 .tick-color{
     background-color: $tick-color;
 }
+
+textarea{
+    resize: none !important;
+}

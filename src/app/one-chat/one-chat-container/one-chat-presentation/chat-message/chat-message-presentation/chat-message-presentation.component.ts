@@ -1,10 +1,11 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { Alive, GroupDetails, Member, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
+import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
 
 @Component({
   selector: 'app-chat-message-presentation',
@@ -12,7 +13,7 @@ import { ChatMessagePresenterService } from '../chat-message-presenter/chat-mess
   viewProviders: [ChatMessagePresenterService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
+export class ChatMessagePresentationComponent extends OneChatPresentationBase implements OnInit, AfterViewInit {
 
   @ViewChild('messageContainer') messageContainerRef: ElementRef;
 
@@ -84,6 +85,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   public destroy: Subject<void>;
   /** This property is to create a FormGroup */
   public chatGroup: FormGroup;
+  /** This property is to create a FormGroup */
+  public eodGroup: FormGroup;
   /** This property is to store the sender ID */
   public senderId: string | null;
   /** This property is to store array of chats */
@@ -110,9 +113,12 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   constructor(
     private _service: ChatMessagePresenterService,
     private _route: Router,
+    private _fb: FormBuilder
   ) {
+    super()
     this.senderId = localStorage.getItem('userId');
     this.chatGroup = this._service.getGroup();
+    this.eodGroup = this._service.getEodGroup();
     this.emitChat = new EventEmitter();
     this.emitSenderId = new EventEmitter();
     this.destroy = new Subject();
@@ -154,6 +160,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    */
   public props(): void {
     this.chatGroup.valueChanges.subscribe((data: string) => this.emitSenderId.emit(this.senderId));
+    this.onAddTask(0);
+    this.onAddTask(1);
   }
 
   /**
@@ -175,8 +183,8 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    * @description This method is use to convert the link into source link
    */
   public convertPhoto(profileImg?: string): string {
-    let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
-    // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
+    // let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
+    let converter = 'https://onechat-jj9m.onrender.com/img/user/' + profileImg;
     return profileImg ? converter : '../../../../../../assets/images/avatar.png';
   }
 
@@ -257,6 +265,28 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
    */
   public getSenderName(id: string): string {
     return this.getGroupDetails.members.find((data: Member) => data._id === id).full_name;
+  }
+
+  public onEodSubmit(): void {
+
+  }
+
+  public get getControls(): any {
+    return this.eodGroup['controls']
+  }
+
+  public formTaskArray(arrName: string): FormArray {
+    return this.eodGroup.get(arrName) as FormArray
+  }
+
+  public onAddTask(id: number): void {
+    let group: FormGroup = this._fb.group({
+      title: ['', [Validators.required]],
+      hours: ['', [Validators.required]],
+      description: ['', [Validators.required]]
+    })
+
+    id === 0 ? this.formTaskArray('onGoing').push(group) : this.formTaskArray('complete').push(group)
   }
 
   /**
