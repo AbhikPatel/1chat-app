@@ -1,5 +1,5 @@
 <!-- Start: User Message  -->
-<div class="h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3">
+<div class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3">
     <!-- Start: Header Section  -->
     <ng-container *ngIf="count === 1">
         <div id="header" class="d-flex align-items-center justify-content-between px-5">
@@ -16,9 +16,6 @@
                         <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
                     </ng-template>
                 </div>
-            </div>
-            <div class="fs-4" role="button" (click)="onLogOut()" title="logout">
-                <i class='icon-bx-log-out  text-info'></i>
             </div>
         </div>
     </ng-container>
@@ -38,28 +35,31 @@
                     </ng-template>
                 </div>
             </div>
-            <div class="fs-4" role="button" (click)="onLogOut()" title="logout">
-                <i class='icon-bx-log-out  text-info'></i>
-            </div>
         </div>
     </ng-container>
     <!-- End: Header Section  -->
 
     <!-- Start: Chat Screen  -->
     <ng-container>
-        <div class="chat-container flex-grow-1 overflow-auto py-4  h-100" #messageContainer
-            (scroll)="onMessageScroll(messageContainer)">
-            <div class="container h-100">
+        <div class="chat-container flex-grow-1 overflow-auto  py-4  h-100" #messageContainer
+            (scroll)="onMessageScroll()">
+            <div class="container h-100 ">
                 <!-- Chat  -->
                 <div class="d-flex flex-column" *ngFor="let data of getChat, let i = index"
                     [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
+                    <!-- {{data | json}} -->
                     <div class="d-flex justify-content-center">
-                        <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7">
-                            Today
+                        <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7"
+                            *ngIf="formatDate(data.time,getChat[i-1]?.time)">
+                            {{formatDate(data.time,getChat[i-1]?.time) }}
                         </span>
                     </div>
                     <div class="chat">
                         <!-- Sender Name  -->
+                        <!-- <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
+                            <span class="text-info"> {{data.sender === senderId ? 'You' : getReceiverData?.full_name}}
+                            </span>
+                        </p> -->
                         <ng-container *ngIf="data.chat_type === 'group'">
                             <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
                                 <span class="text-info"> {{data.sender === senderId ? 'You' :
@@ -71,10 +71,53 @@
                         <!-- Chat Message  -->
                         <div class="d-flex"
                             [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-                            <p class="chat-text rounded-3 py-1 px-2 shadow-sm mb-1"
+                            <div class="d-flex align-items-center chat-text rounded-3 py-1 px-2 shadow-sm mb-1"
                                 [ngClass]="data.sender === senderId ? 'bg-secondary' : 'bg-white'">
-                                {{data.content.text}}
-                            </p>
+                                <div>
+                                    <div class="fs-8 d-flex justify-content-end text-info"
+                                        *ngIf="data.is_edit === true">Edited</div>
+                                    <div class="Message-wrapper  text-white rounded-1 p-1 " *ngIf="data.replied_to">
+                                        <div class="mx-3">
+                                            <div class="d-flex align-items-center justify-content-between mb-1 ">
+                                                <span class="fs-9 text-nowrap"> {{data.sender === senderId ? 'You' :
+                                                    getReceiverData.full_name}}</span>
+                                            </div>
+                                            <div class="fs-9">{{data.replied_to['content']?.text }}</div>
+                                        </div>
+                                    </div>
+                                    <div> {{data.content.text}}</div>
+                                </div>
+                                <!--  -->
+                                <label for="openBox" class="position-relative">
+                                    <span class="d-flex icon-down-arrow fs-9" id="downArrow" (click)="toggleModel(i)"
+                                        #span>
+                                    </span>
+                                    <ng-container>
+                                        <div class="popup bg-white text-black  position-absolute p-1"
+                                            [ngClass]="i === id && ToggleModel  ? ' d-block' : 'd-none'">
+                                            <ul class="list-group cursor-pointer">
+                                                <li class="list-group-item fs-9 mt-2 d-flex align-items-center">
+                                                    <span class="icon-info"></span>
+                                                    <span class="ms-1">Message Info </span>
+                                                </li>
+                                                <li class="list-group-item fs-9 my-2 d-flex align-items-center">
+                                                    <label for="reply" (click)="replyMessage(data)">
+                                                        <span class="icon-reply"></span>
+                                                        <span class="ms-1">Reply</span>
+                                                    </label>
+                                                </li>
+                                                <li class="list-group-item fs-9 d-flex align-items-center"
+                                                    (click)="editMessage(data)" *ngIf="data.sender === senderId">
+                                                    <span class="icon-pencil "></span>
+                                                    <span class="ms-1">Edit</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </ng-container>
+
+                                </label>
+
+                            </div>
                         </div>
 
                         <!-- Time and Date  -->
@@ -94,8 +137,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="icon-circle-down fs-4 text-info position-fixed end-0 me-5 position-relative scroll-icon"
-                    id="icon" (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
+                <div class="icon icon-circle-down fs-4 text-info position-fixed end-0 me-5 position-relative scroll-icon"
+                    (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
                     <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
                 </div>
                 <ng-container *ngIf="!getReceiverData.full_name && !getGroupDetails">
@@ -107,8 +150,21 @@
                         <h4 class="text-center"> Select any user to start the conversation </h4>
                     </div>
                 </ng-container>
+
             </div>
         </div>
+        <div class="px-5 position-relative py-0 emojis-container">
+            <ng-container *ngIf="getReceiverData.full_name">
+                <div class="icon icon-circle-down position-absolute  fs-4 text-info  me-5  scroll-icon"
+                    (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
+                    <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
+                </div>
+            </ng-container>
+
+            <emoji-mart class="emoji-mart " *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
+                title="Pick your emoji…"></emoji-mart>
+        </div>
+
     </ng-container>
     <!-- End: Chat Screen  -->
 
@@ -270,8 +326,9 @@
                                                     class="form-control" formControlName="description"></textarea>
                                             </div>
                                         </div>
-                                        <button class="btn btn-primary w-100 mt-3" [disabled]="eodGroup.get('newLearning').invalid"
-                                            (click)="onAddTask(2)"> + Add Task
+                                        <button class="btn btn-primary w-100 mt-3"
+                                            [disabled]="eodGroup.get('newLearning').invalid" (click)="onAddTask(2)"> +
+                                            Add Task
                                         </button>
                                     </ng-container>
                                 </div>
@@ -295,16 +352,33 @@
 
     <!-- Start: Message  -->
     <ng-container *ngIf="getReceiverData.full_name || getGroupDetails">
-        <div id="typer" class="d-flex align-items-center bg-theme px-5 pt-2">
+        <div id="typer" class="d-flex flex-column bg-theme px-5 pt-2">
             <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
-                <input type="text" class="form-control py-2 rounded-1 " name="message" id="message"
-                    formControlName="message" autocomplete="off" placeholder="Type a new message">
+                <!-- Reply Model -->
+                <div class="Reply-wrapper  text-white rounded-1 p-2 pe-3" #ReplyWrapper>
+                    <div class="mx-3">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span> {{replyMessageData?.sender === senderId ? 'You' : getReceiverData.full_name}}</span>
+                            <span class="closeReplayMessage" (click)="closeReplyModel()">X</span>
+                        </div>
+                        <div>{{replyMessageData?.content.text}}</div>
+                    </div>
+                </div>
+                <!-- Reply Model -->
+                <div class="d-flex align-items-center ">
+                    <input type="text" class="form-control py-2 rounded-1" name="message" formControlName="message"
+                        autocomplete="off" placeholder="Type a new message" #myInput [(ngModel)]="message">
+                    <span class="icon-{{cancelEdit}} ps-3 cursor-pointer text-danger fw-bold"
+                        (click)="editCancel()"></span>
+                </div>
                 <div class="d-flex align-items-center justify-content-between px-1 py-1">
                     <div class="file-attach d-flex align-items-center">
-                        <label for="file" class="d-flex align-items-center">
-                            <span class="icon icon-paperclip fs-5 cursor-pointer"></span>
+                        <span class="icon-{{closeIcon}} cursor-pointer" (click)="closeEmojiPicker()"></span>
+                        <span class="icon icon-emoji-smile fs-5 ms-2 text-info cursor-pointer"
+                            (click)="openEmojiPicker()"></span>
+                        <label for="file">
+                            <span class="icon icon-paperclip fs-5 text-info cursor-pointer"></span>
                         </label>
-                        <span class="icon icon-emoji-smile fs-5 mx-2 cursor-pointer"></span>
                         <span class="icon" role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
                             aria-controls="offcanvasRight"> EOD </span>
                     </div>
@@ -317,5 +391,4 @@
         </div>
     </ng-container>
     <!-- End: Message  -->
-</div>
-<!-- End: User Message  -->
+    <!-- End: User Message  -->

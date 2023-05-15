@@ -5,6 +5,7 @@
     [getChatArray]="getAllMessages$ | async"
     (emitChatData)="getChatObject($event)"
     [newChat]="newMessage | async"
+    [newEditChat]="editMessages | async"
     (emitNewConversation)="getNewConservation($event)"
     [getNewChatId]="newChatId$ | async"
     (emitTypingData)="getTypingId($event)"
@@ -12,4 +13,7 @@
     (emitReadMessage)="getReadMessagesData($event)"
     [getIsRead]="getIsReadData$ | async"
     [getAliveData]="aliveData$ | async"
+    (emitMessageData)="editMessage($event)"
+    (emitReplyMessageData)="replyMessageData($event)"
+
 ></app-one-chat-presentation>

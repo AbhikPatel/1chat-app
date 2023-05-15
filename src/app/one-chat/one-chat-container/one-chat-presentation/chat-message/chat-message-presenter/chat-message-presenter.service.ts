@@ -26,5 +26,5 @@ export class ChatMessagePresenterService {
       onGoing: new FormArray([]),
       newLearning: new FormArray([]),
     })
-  }
+  } 
 }

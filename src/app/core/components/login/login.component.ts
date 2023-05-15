@@ -13,9 +13,9 @@ import { ToasterService } from '../../services/toaster/toaster.service';
 export class LoginComponent implements OnInit {
 
   public loginGroup: FormGroup;
-  public inputType: string;
   private destroy: Subject<void>;
-
+  public password: string ;
+  public show: boolean;
   constructor(
     private _service: AuthService,
     private _fb: FormBuilder,
@@ -23,7 +23,6 @@ export class LoginComponent implements OnInit {
     private _commonService: CommonService,
     private _toastr:ToasterService
   ) {
-    this.inputType = 'password'
     this.loginGroup = this._fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
       password: ['', [Validators.required, Validators.maxLength(10)]]
@@ -34,15 +33,6 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
 
   }
-
-  /**
-   * @name showPassword
-   * @description This method is called to change the type of the input to show password
-   */
-  public showPassword() {
-    this.inputType === 'password' ? this.inputType = 'text' : this.inputType = 'password'
-  }
-
   /**
    * @name onSubmit
    * @description This method is called when form is submitted
@@ -63,7 +53,19 @@ export class LoginComponent implements OnInit {
   public get getControls() {
     return this.loginGroup.controls;
   }
-
+/**
+   * 
+   * @description password show-hide icon-Logic
+   */
+ public onClick() :void{
+  if (this.password === 'password') {
+    this.password = 'text';
+    this.show = true;
+  } else {
+    this.password = 'password';
+    this.show = false;
+  }
+}
   /**
    * @name ngOnDestroy
    * @description This method is called when the component is destroyed

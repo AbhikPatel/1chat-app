@@ -8,7 +8,9 @@ import { User } from '../models/user.model';
 export class CommonService {
 
   public user$:Subject<User>
+  public closeModel:Subject<boolean>
   constructor() { 
     this.user$ = new Subject();
+    this.closeModel = new Subject();
   }
 }

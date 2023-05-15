@@ -30,6 +30,9 @@
             (emitSenderId)="getSenderId($event)"
             [getTypingData]="typingData |async"
             [getOnlineUsers]="getAliveData"
+            (emitEditMessageData)="getEditMessageData($event)"
+            (emitChatMessage)="getEditChatMessageData($event)"
+            (emitReplyMessageData)="getReplyMessageData($event)"
             [getGroupDetails]="groupChatDetails$ | async"
         ></app-chat-message-presentation>
     </div>
