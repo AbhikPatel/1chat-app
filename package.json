@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/pwa": "^15.2.7",
     "@angular/router": "^15.2.0",
+    "@ctrl/ngx-emoji-mart": "^7.1.0",
     "@angular/service-worker": "^15.2.8",
     "@types/socket.io-client": "^3.0.0",
     "bootstrap": "^5.2.3",

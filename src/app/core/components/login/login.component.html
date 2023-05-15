@@ -43,12 +43,12 @@
                                 *ngIf="getControls['password']?.errors?.['required'] && getControls['password'].touched"> This field is required </span>
                             </div>
                             <div class="position-relative">
-                                <input [type]="inputType" class="form-control" name="password" id="password"
+                                <input type="{{password}}" class="form-control" name="password" id="password"
                                     formControlName="password"
                                     [ngClass]="{'border-danger' : getControls['password'].invalid && getControls['password'].touched}">
-                                <div id="icon-eye" class="position-absolute" role="button" (mousedown)="showPassword()"
-                                    (mouseup)="showPassword()">
-                                    <i class='bx bxs-bullseye text-info fs-5'></i>
+                                <div id="icon-eye" class="position-absolute" role="button" (click)="onClick()">
+                                    <span class="icon-eye-slash" *ngIf="!show"></span>
+                                     <span class="icon-eye" *ngIf="show"></span>
                                 </div>
                             </div>
                         </div>

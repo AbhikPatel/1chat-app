@@ -1,5 +1,8 @@
 export class Message {
+    _id?:string
     is_read: boolean
+    is_edit: boolean
+    replied_to?:{}
     chat: string
     sender: string
     receiver: string
@@ -9,6 +12,78 @@ export class Message {
 
     constructor(
         is_read: boolean,
+        is_edit: boolean,
+        chat: string,
+        sender: string,
+        receiver: string,
+        time: Date,
+        type: string,
+        content: Text,
+    ) {
+     
+        this.is_read = is_read
+        this.is_edit=is_edit
+        this.chat = chat
+        this.sender = sender
+        this.receiver = receiver
+        this.time = time
+        this.type = type
+        this.content = content
+    }
+
+}
+export class EditMessage {
+    _id:string
+    is_read: boolean
+    is_edit: boolean
+    replied_to: {}
+    chat: string
+    sender: string
+    receiver: string
+    time: Date
+    type: string
+    content: Text
+
+    constructor(
+        _id:string,
+        is_read: boolean,
+        is_edit: boolean,
+        replied_to: {},
+        chat: string,
+        sender: string,
+        receiver: string,
+        time: Date,
+        type: string,
+        content: Text,
+    ) {
+        this._id=_id
+        this.is_read = is_read
+        this.is_edit=is_edit
+        this.replied_to=replied_to
+        this.chat = chat
+        this.sender = sender
+        this.receiver = receiver
+        this.time = time
+        this.type = type
+        this.content = content
+    }
+
+}
+export class replyMessage {
+    is_read: boolean
+    is_edit: boolean
+    replied_to: {}
+    chat: string
+    sender: string
+    receiver: string
+    time: Date
+    type: string
+    content: Text
+
+    constructor(
+        is_read: boolean,
+        is_edit: boolean,
+        replied_to: {},
         chat: string,
         sender: string,
         receiver: string,
@@ -17,6 +92,8 @@ export class Message {
         content: Text,
     ) {
         this.is_read = is_read
+        this.is_edit=is_edit
+        this.replied_to=replied_to
         this.chat = chat
         this.sender = sender
         this.receiver = receiver
@@ -27,9 +104,13 @@ export class Message {
 
 }
 export class NewMessage {
+    _id:string
     is_read: boolean
+    is_edit: boolean
+    replied_to:{}
     chat: string
     sender: string
+    full_name?: string
     receiver: string
     time: Date
     type: string
@@ -37,9 +118,12 @@ export class NewMessage {
     convertedTime: string
     is_sender: boolean
     chat_type:string
-
+    
     constructor(
+        _id:string,
         is_read: boolean,
+        is_edit: boolean,
+        replied_to:{},
         chat: string,
         sender: string,
         receiver: string,
@@ -50,7 +134,10 @@ export class NewMessage {
         is_sender: boolean,
         chat_type:string
     ) {
+        this._id = _id
         this.is_read = is_read
+        this.is_edit=is_edit;
+        this.replied_to= replied_to
         this.chat = chat
         this.sender = sender
         this.receiver = receiver

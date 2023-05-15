@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormatTime } from '../core/utilities/formatTime';
 import { SharedModule } from '../shared/shared.module';
-import { MessageAdaptor, NewChatAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
+import { MessageAdaptor, NewChatAdaptor, NewEditAdaptor, NewReplyAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
 import { OneChatContainerComponent } from './one-chat-container/one-chat-container.component';
 import { ChatListPresentationComponent } from './one-chat-container/one-chat-presentation/chat-list/chat-list-presentation/chat-list-presentation.component';
 import { ChatMessagePresentationComponent } from './one-chat-container/one-chat-presentation/chat-message/chat-message-presentation/chat-message-presentation.component';
@@ -12,6 +12,7 @@ import { OneChatPresentationComponent } from './one-chat-container/one-chat-pres
 import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { SearchPipe } from './pipe/search.pipe';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from 'src/environments/environment.prod';
@@ -33,6 +34,8 @@ import { environment } from 'src/environments/environment.prod';
     OneChatRoutingModule,
     ReactiveFormsModule,
     SharedModule,
+    PickerModule,
+    FormsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers:[
@@ -41,7 +44,9 @@ import { environment } from 'src/environments/environment.prod';
     MessageAdaptor,
     NewChatAdaptor,
     FormatTime,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NewEditAdaptor,
+    NewReplyAdaptor
   ]
 })
 export class OneChatModule { }

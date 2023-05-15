@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, Conversation, CreateChat, Message, MessageRead, NewMessage, Typing } from '../models/chat.model';
-import { NewChatAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
+import { Alive, Conversation, CreateChat, EditMessage, Message, MessageRead, NewMessage, Typing, replyMessage } from '../models/chat.model';
+import { NewChatAdaptor, NewEditAdaptor, NewReplyAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
 import { OneChatService } from '../one-chat.service';
 
 @Component({
@@ -19,6 +19,8 @@ export class OneChatContainerComponent implements OnInit {
   public listen$: Observable<any>;
   /** This Subject will pass the new Message Object */
   public newMessage: Subject<NewMessage>;
+  /** This Subject will pass the Edit Message Object */
+  public editMessages: Subject<NewMessage>;
   /** This observable will pass all the users data */
   public allUser$: Observable<NewUser[]>;
   /** This observable will pass all the users which has conversation with the sender */
@@ -35,10 +37,13 @@ export class OneChatContainerComponent implements OnInit {
   constructor(
     private _service: OneChatService,
     private _newChatAdaptor: NewChatAdaptor,
+    private _NewEditAdaptor:NewEditAdaptor,
+    private _newReplyAdaptor:NewReplyAdaptor,
   ) {
     this.destroy = new Subject();
     this.listen$ = new Observable();
     this.newMessage = new Subject();
+    this.editMessages = new Subject();
     this.allUser$ = new Observable();
     this.getAllMessages$ = new Observable();
     this.getTypingData$ = new Observable();
@@ -59,7 +64,6 @@ export class OneChatContainerComponent implements OnInit {
   public props(): void {
     this._service.setMap();
     this.allUser$ = this._service.getAllUserData();
-
     this._service.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: Conversation[]) => {
       this.conversationUser$.next(users);
       var groupIds: string[] = [];
@@ -71,9 +75,10 @@ export class OneChatContainerComponent implements OnInit {
     })
 
     this._service.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
+    this._service.listen('dm:messageEdit').subscribe((data) =>this.editMessages.next(data))
     this._service.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
+    this._service.listen('dm:messageReply').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
     this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
-
     this.getTypingData$ = this._service.listen('typing');
     this.getIsReadData$ = this._service.listen('dm:messageRead')
     this.aliveData$ = this._service.listen('alive');
@@ -94,6 +99,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called to get chat object to emit on chat event
    */
   public getChatObject(chat: NewMessage): void {
+    // console.log(chat);
     const data: Message = this._newChatAdaptor.toRequest(chat);
     chat.chat_type === 'dm' ? this._service.emit('dm:message', data) : this._service.emit('group:message', data)
   }
@@ -115,7 +121,6 @@ export class OneChatContainerComponent implements OnInit {
   public getTypingId(data: Typing): void {
     this._service.emit('typing', data);
   }
-
   /**
    * @name getReadMessagesData
    * @param data 
@@ -124,7 +129,23 @@ export class OneChatContainerComponent implements OnInit {
   public getReadMessagesData(data: MessageRead) {
     this._service.emit('dm:messageRead', data)
   }
+  /**
+   * 
+   * @param messageData 
+   * @description this method will be emit message object into socket
+   */
+  public editMessage(messageData:NewMessage){
+    const data =this._NewEditAdaptor.toRequest(messageData);
+    this._service.emit('dm:messageEdit',data)
+  }
+  
+  public replyMessageData(replyMessageObj:NewMessage){
+    console.log(replyMessageObj);
+    
+    // const data:replyMessage=this._newReplyAdaptor.toRequest(replyMessageObj);
+    // this._service.emit('dm:messageReply',data)
 
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed
@@ -132,5 +153,6 @@ export class OneChatContainerComponent implements OnInit {
   public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
+ 
   }
 }
