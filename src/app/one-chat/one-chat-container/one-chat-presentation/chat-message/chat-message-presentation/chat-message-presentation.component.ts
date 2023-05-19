@@ -281,8 +281,8 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @description This method is use to convert the link into source link
   */
   public convertPhoto(profileImg?: string): string {
-    // let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
-    let converter = 'https://onechat-jj9m.onrender.com/img/user/' + profileImg;
+    let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
+    // let converter = 'https://onechat-jj9m.onrender.com/img/user/' + profileImg;
     return profileImg ? converter : '../../../../../../assets/images/avatar.png';
   }
 

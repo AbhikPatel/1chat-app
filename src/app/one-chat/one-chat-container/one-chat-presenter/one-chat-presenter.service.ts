@@ -179,8 +179,9 @@ export class OneChatPresenterService {
         }
         this.conversationUser.push(Object.assign(member, obj))
       } else {
+        let sender:NewUser;
         if(chatData.lastMessage){
-          var sender:NewUser | undefined  = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
+          sender = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
         }
         
         let obj = {
@@ -191,7 +192,7 @@ export class OneChatPresenterService {
           notificationCount: 0,
           time: this._formatter.Formatter(new Date()),
           type: 'group',
-          lastUser: 'Unknown',
+          lastUser: sender ? sender.full_name : 'Unknown',
         }
         let memberArr: Member[] = chatData.members.map((user: Member) => {
           user.full_name = user.first_name + ' ' + user.last_name

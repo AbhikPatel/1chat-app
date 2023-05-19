@@ -29,7 +29,11 @@ export class OneChatService {
   ) {
     this.socket = io(environment.socketUrl);
     this.api = environment.baseURL;
-    // this.subscribeToPushNotification();
+    window.addEventListener('load', () => {
+      this.subscribeToPushNotification();
+    })
+    // if('serviceWorker' in navigator) {
+    // }
   }
 
 
@@ -70,7 +74,7 @@ export class OneChatService {
       this.socket.on(eventname, (data: any, fn: any) => {
         if (eventname === 'dm:message') {
           fn('received')
-          // this.sendPushNotification(this.subscriber, data).subscribe();
+          this.sendPushNotification(this.subscriber, data).subscribe();
         }
         if (eventname === 'dm:messageRead') {
           fn('read')

@@ -23,7 +23,7 @@
     <!-- End: Header Section  -->
 
     <!-- Start: List  -->
-    <div class="flex-grow-1 position-relative h-100 overflow-hidden">
+    <ul class="flex-grow-1 position-relative h-100 overflow-hidden">
 
         <!-- Tab Switch  -->
         <div class="row border">
@@ -46,7 +46,7 @@
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
 
         <!-- Start: Search User  -->
-        <div id="user" class="search-container position-absolute bg-white">
+        <li id="user" class="search-container position-absolute bg-white">
             <form class="p-3 bg-theme" [formGroup]="resetSearch">
                 <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
                     placeholder="Search a User.." formControlName="search" #inputType>
@@ -69,7 +69,7 @@
                     <span class="text-info"> No User Found </span>
                 </div>
             </div>
-        </div>
+        </li>
 
         <!-- End: Search User  -->
 
@@ -161,7 +161,7 @@
             </ng-template>
         </div>
         <!-- End: Chat User  -->
-    </div>
+    </ul>
     <!-- End: List  -->
 </div>
 <!-- End: User List  -->

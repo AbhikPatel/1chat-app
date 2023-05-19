@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Adapter } from "src/app/core/adaptor/adaptor";
-import { NewUser, User } from "src/app/shared/models/user.model";
-import { Chat, Conversation, ConversationUser, EditMessage, Member, Message, NewMessage, replyMessage } from "../models/chat.model";
 import { FormatTime } from "src/app/core/utilities/formatTime";
+import { NewUser, User } from "src/app/shared/models/user.model";
+import { EditMessage, Message, NewMessage, replyMessage } from "../models/chat.model";
 
 @Injectable()
 export class allUserAdaptor implements Adapter<NewUser[]>{
