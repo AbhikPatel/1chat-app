@@ -1,6 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 // @import '~@ctrl/ngx-emoji-mart/picker';
 
+/** CDK SCSS */
+@import '@angular/cdk/overlay-prebuilt.css';
 /** Toastr scss */
 @import 'ngx-toastr/toastr';
 // Project base and component style import

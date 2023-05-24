@@ -6,7 +6,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class ChatMessagePresenterService {
 
   constructor(
-    private _fb: FormBuilder
+    private _fb: FormBuilder,
   ) { }
 
   /**
@@ -20,11 +20,16 @@ export class ChatMessagePresenterService {
     })
   }
 
+  /**
+   * @name getEodGroup
+   * @returns form group
+   * @desciption This method will return a form group 
+   */
   public getEodGroup(): FormGroup {
     return this._fb.group({
       completed: new FormArray([]),
       onGoing: new FormArray([]),
       newLearning: new FormArray([]),
     })
-  } 
+  }
 }

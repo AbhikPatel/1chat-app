@@ -80,3 +80,41 @@ textarea{
         color: $primary;
     }
 }
+
+.overlay-container{
+    width: 800px;
+    padding: 30px 50px;
+}
+
+.cdk-overlay-container{
+    z-index: 1100;
+}
+
+.eod-container{
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30px 50px;
+    transition: 0.6s all;
+}
+
+.eod-close{
+    transform: translateX(100%);
+}
+
+.eod-open{
+    transform: translateX(0%);
+}
+
+.bg-completed{
+    background-color: #beffbe;
+}
+
+.bg-progress{
+    background-color: #ffb7b7;
+}
+
+.bg-learning{
+    background-color: #f9ffac;
+}

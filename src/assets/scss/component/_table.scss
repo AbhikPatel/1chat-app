@@ -1,0 +1,17 @@
+table{
+    thead, tbody{
+        tr{
+            th,td{
+                text-align: center;
+                vertical-align: baseline;
+                padding: 10px;
+                border: 1px solid black;
+            }
+
+            th{
+                background-color: #174666;
+                color:white;
+            }
+        }
+    }
+}

@@ -34,6 +34,7 @@
             (emitChatMessage)="getEditChatMessageData($event)"
             (emitReplyMessageData)="getReplyMessageData($event)"
             [getGroupDetails]="groupChatDetails$ | async"
+            (emitEodTasks)="getEodTasks($event)"
         ></app-chat-message-presentation>
     </div>
     <!-- End: Chat Screen  -->

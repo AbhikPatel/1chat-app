@@ -179,11 +179,11 @@ export class OneChatPresenterService {
         }
         this.conversationUser.push(Object.assign(member, obj))
       } else {
-        let sender:NewUser;
-        if(chatData.lastMessage){
+        let sender: NewUser;
+        if (chatData.lastMessage) {
           sender = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
         }
-        
+
         let obj = {
           chatId: chatData._id,
           photo: 'default.jpeg',
@@ -250,7 +250,7 @@ export class OneChatPresenterService {
         let currentTime = new Date()
         let chatObj: NewMessage = {
           _id: '',
-          replied_to:'',
+          replied_to: '',
           is_read: false,
           is_edit: false,
           chat: this.chatId,
@@ -453,34 +453,33 @@ export class OneChatPresenterService {
    * @param newMessage 
    * @description This method Using edit message with out page Refresh and receiver ConversationUser list update last message 
   */
-  public editMessageChat(newMessage: NewMessage) :void{
+  public editMessageChat(newMessage: NewMessage): void {
     if (this.chatType === 'dm') {
       const chatsFilterData: any = this.chats.filter((data: NewMessage) => data.receiver === newMessage.receiver);
-    if (chatsFilterData[chatsFilterData.length - 1]._id === newMessage._id) {
-      let userId: number = this.conversationUser.findIndex((items: ConversationUser) => items.chatId === newMessage.chat);
-      this.conversationUser[userId].message = newMessage.content.text;
-      this.onlyConversationUsers.next(this.conversationUser);
+      if (chatsFilterData[chatsFilterData.length - 1]._id === newMessage._id) {
+        let userId: number = this.conversationUser.findIndex((items: ConversationUser) => items.chatId === newMessage.chat);
+        this.conversationUser[userId].message = newMessage.content.text;
+        this.onlyConversationUsers.next(this.conversationUser);
+      }
+      // splice Message 
+      const index = this.chats.findIndex((chats: NewMessage) => chats._id === newMessage._id);
+      this.chats.splice(index, 1, newMessage);
     }
-    // splice Message 
-    const index = this.chats.findIndex((chats: NewMessage) => chats._id === newMessage._id);
-    this.chats.splice(index, 1, newMessage);
-    }
- 
+
   }
 
   /**
    * @param editMessage 
    * @description This Method Update edit Message 
    */
-  public getEditMessage(editMessage: string):void {
+  public getEditMessage(editMessage: string): void {
     if (this.chatType === 'dm') {
       let id = this.conversationUser.findIndex((user: ConversationUser) => user.chatId === this.chatId);
       this.conversationUser[id].message = editMessage;
     }
   }
 
-  public getReplyMessage(replyObj:NewMessage):void{
-    console.log(replyObj);
+  public getReplyMessage(replyObj: NewMessage): void {
     this.chats.push(replyObj)
   }
 }

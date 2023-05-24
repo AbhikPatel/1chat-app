@@ -64,10 +64,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   /** This property is use to get the array of chats */
   @Input() public set getChat(v: NewMessage[]) {
     if (v) {
-      console.log(v);
-
       this._getChat = v;
-
       this.chatGroup.setValue({ message: '' });
       this.setFocus();
       setTimeout(() => {
@@ -142,7 +139,9 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public replyMessageData: NewMessage;
   public replyObjectId: any;
   public replyObjectIds: any;
-
+  public allTasks: any[];
+  public showTasks: boolean;
+  public formValue: any;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -176,6 +175,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.groupMembers = '';
     this.chatMessageId = '';
     this.editDataObject = {} as NewMessage
+    this.showTasks = false;
   }
 
   ngAfterViewInit(): void {
@@ -192,9 +192,9 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    */
   public props(): void {
     this.chatGroup.valueChanges.subscribe(() => this.emitSenderId.emit(this.senderId));
-    this.onAddTask(0);
-    this.onAddTask(1);
-    this.onAddTask(2);
+    // this.onAddTask('onGoing');
+    // this.onAddTask('completed');
+    // this.onAddTask('newLearning');
   }
 
   /**
@@ -353,10 +353,11 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public setFocus(): void {
     this.myInput.nativeElement.focus();
   }
-  //  * @name getGroupMembers
-  //  * @param members 
-  //  * @description This method will store the members of the current group chat
-  //  */
+  /**
+   * @name getGroupMembers
+   * @param members 
+   * @description This method will store the members of the current group chat
+   */
   public getGroupMembers(members: Member[]): void {
     this.groupMembers = members.map((data: Member) => data.full_name).join(', ')
   }
@@ -370,35 +371,55 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     return this.getGroupDetails.members.find((data: Member) => data._id === id).full_name;
   }
 
+  /**
+   * @name onEodSubmit
+   * @description This method will submit the data for eod report
+   */
   public onEodSubmit(): void {
-    console.log(this.eodGroup.value);
+    this.formValue = this.eodGroup.value;
+    this.allTasks = [...this.eodGroup.value.completed, ...this.eodGroup.value.onGoing, ...this.eodGroup.value.newLearning]
+    this.showTasks = true;
   }
 
   public get getControls(): any {
     return this.eodGroup['controls']
   }
 
+  /**
+   * @name formTaskArray
+   * @param arrName 
+   * @returns formarray for eod report
+   */
   public formTaskArray(arrName: string): FormArray {
     return this.eodGroup.get(arrName) as FormArray
   }
 
-  public onAddTask(id: number): void {
+  /**
+   * @name onAddTask
+   * @param taskType type of the task
+   * @description This method will add the task 
+   */
+  public onAddTask(taskType: string): void {
     let group: FormGroup = this._fb.group({
       title: ['', [Validators.required]],
       hours: ['', [Validators.required]],
       description: ['', [Validators.required]],
-      blocker: ['']
+      blocker: [''],
+      type: [taskType]
     })
-    switch (id) {
-      case 0: this.formTaskArray('onGoing').push(group)
-        break;
 
-      case 1: this.formTaskArray('completed').push(group)
-        break;
+    if (this.formTaskArray(taskType).length < 6)
+      this.formTaskArray(taskType).push(group);
+  }
 
-      case 2: this.formTaskArray('newLearning').push(group)
-        break;
-    }
+  /**
+   * @name onDeleteTask
+   * @param index index of the task
+   * @param taskType type of the task
+   * @description This method will delete the task as per the params
+   */
+  public onDeleteTask(index: number, taskType: string): void {
+    this.formTaskArray(taskType).removeAt(index);
   }
 
   /**
@@ -516,6 +537,16 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public closeReplyModel() {
     this.replyWrapper.nativeElement.style.display = 'none';
   }
+
+  public backToEod() {
+    this.showTasks = false;
+    this.eodGroup.patchValue(this.formValue)
+  }
+
+  public eodSubmit() {
+    this.emitEodTasks.emit(this.allTasks);
+  }
+
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

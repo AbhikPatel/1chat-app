@@ -1,7 +1,11 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+import { environment } from 'src/environments/environment.prod';
 import { FormatTime } from '../core/utilities/formatTime';
 import { SharedModule } from '../shared/shared.module';
 import { MessageAdaptor, NewChatAdaptor, NewEditAdaptor, NewReplyAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
@@ -12,10 +16,7 @@ import { OneChatPresentationComponent } from './one-chat-container/one-chat-pres
 import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
-import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { SearchPipe } from './pipe/search.pipe';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from 'src/environments/environment.prod';
 
 
 
@@ -27,7 +28,7 @@ import { environment } from 'src/environments/environment.prod';
     ChatListPresentationComponent,
     ChatMessagePresentationComponent,
     SearchPipe,
-    ScrollDistanceDirective
+    ScrollDistanceDirective,
   ],
   imports: [
     CommonModule,
@@ -36,7 +37,8 @@ import { environment } from 'src/environments/environment.prod';
     SharedModule,
     PickerModule,
     FormsModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+    OverlayModule
   ],
   providers:[
     OneChatService,

@@ -37,8 +37,8 @@ export class OneChatContainerComponent implements OnInit {
   constructor(
     private _service: OneChatService,
     private _newChatAdaptor: NewChatAdaptor,
-    private _NewEditAdaptor:NewEditAdaptor,
-    private _newReplyAdaptor:NewReplyAdaptor,
+    private _NewEditAdaptor: NewEditAdaptor,
+    private _newReplyAdaptor: NewReplyAdaptor,
   ) {
     this.destroy = new Subject();
     this.listen$ = new Observable();
@@ -69,15 +69,15 @@ export class OneChatContainerComponent implements OnInit {
       var groupIds: string[] = [];
       users.map((data: Conversation) => {
         if (data.chat_type === 'group')
-        groupIds.push(data._id)
+          groupIds.push(data._id)
       })
       this._service.emit('group:join', groupIds)
     })
 
     this._service.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
-    this._service.listen('dm:messageEdit').subscribe((data) =>this.editMessages.next(data))
+    this._service.listen('dm:messageEdit').subscribe((data) => this.editMessages.next(data))
     this._service.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
-    this._service.listen('dm:messageReply').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
+    // this._service.listen('dm:messageReply').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
     this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
     this.getTypingData$ = this._service.listen('typing');
     this.getIsReadData$ = this._service.listen('dm:messageRead')
@@ -99,7 +99,6 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called to get chat object to emit on chat event
    */
   public getChatObject(chat: NewMessage): void {
-    // console.log(chat);
     const data: Message = this._newChatAdaptor.toRequest(chat);
     chat.chat_type === 'dm' ? this._service.emit('dm:message', data) : this._service.emit('group:message', data)
   }
@@ -134,18 +133,21 @@ export class OneChatContainerComponent implements OnInit {
    * @param messageData 
    * @description this method will be emit message object into socket
    */
-  public editMessage(messageData:NewMessage){
-    const data =this._NewEditAdaptor.toRequest(messageData);
-    this._service.emit('dm:messageEdit',data)
+  public editMessage(messageData: NewMessage) {
+    const data = this._NewEditAdaptor.toRequest(messageData);
+    this._service.emit('dm:messageEdit', data)
   }
-  
-  public replyMessageData(replyMessageObj:NewMessage){
+
+  public replyMessageData(replyMessageObj: NewMessage) {
     console.log(replyMessageObj);
-    
     // const data:replyMessage=this._newReplyAdaptor.toRequest(replyMessageObj);
     // this._service.emit('dm:messageReply',data)
-
   }
+
+  public getEodTasks(tasks: any): void {
+    
+  }
+
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed
@@ -153,6 +155,6 @@ export class OneChatContainerComponent implements OnInit {
   public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
- 
+
   }
 }
