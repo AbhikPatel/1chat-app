@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { NgModule } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,6 +17,8 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { SearchPipe } from './pipe/search.pipe';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from 'src/environments/environment.prod';
+import { CreateGroupPresentationComponent } from './shared/create-group-presentation/create-group-presentation.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 
 
@@ -27,7 +30,8 @@ import { environment } from 'src/environments/environment.prod';
     ChatListPresentationComponent,
     ChatMessagePresentationComponent,
     SearchPipe,
-    ScrollDistanceDirective
+    ScrollDistanceDirective,
+    CreateGroupPresentationComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +40,9 @@ import { environment } from 'src/environments/environment.prod';
     SharedModule,
     PickerModule,
     FormsModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
+    OverlayModule,
+    NgMultiSelectDropDownModule
   ],
   providers:[
     OneChatService,

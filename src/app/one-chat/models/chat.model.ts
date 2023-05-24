@@ -1,8 +1,8 @@
 export class Message {
-    _id?:string
+    _id?: string
     is_read: boolean
     is_edit: boolean
-    replied_to?:{}
+    replied_to?: {}
     chat: string
     sender: string
     receiver: string
@@ -20,9 +20,9 @@ export class Message {
         type: string,
         content: Text,
     ) {
-     
+
         this.is_read = is_read
-        this.is_edit=is_edit
+        this.is_edit = is_edit
         this.chat = chat
         this.sender = sender
         this.receiver = receiver
@@ -33,7 +33,7 @@ export class Message {
 
 }
 export class EditMessage {
-    _id:string
+    _id: string
     is_read: boolean
     is_edit: boolean
     replied_to: {}
@@ -45,7 +45,7 @@ export class EditMessage {
     content: Text
 
     constructor(
-        _id:string,
+        _id: string,
         is_read: boolean,
         is_edit: boolean,
         replied_to: {},
@@ -56,10 +56,10 @@ export class EditMessage {
         type: string,
         content: Text,
     ) {
-        this._id=_id
+        this._id = _id
         this.is_read = is_read
-        this.is_edit=is_edit
-        this.replied_to=replied_to
+        this.is_edit = is_edit
+        this.replied_to = replied_to
         this.chat = chat
         this.sender = sender
         this.receiver = receiver
@@ -92,8 +92,8 @@ export class replyMessage {
         content: Text,
     ) {
         this.is_read = is_read
-        this.is_edit=is_edit
-        this.replied_to=replied_to
+        this.is_edit = is_edit
+        this.replied_to = replied_to
         this.chat = chat
         this.sender = sender
         this.receiver = receiver
@@ -104,10 +104,10 @@ export class replyMessage {
 
 }
 export class NewMessage {
-    _id:string
+    _id: string
     is_read: boolean
     is_edit: boolean
-    replied_to:{}
+    replied_to: {}
     chat: string
     sender: string
     full_name?: string
@@ -117,13 +117,13 @@ export class NewMessage {
     content: Text
     convertedTime: string
     is_sender: boolean
-    chat_type:string
-    
+    chat_type: string
+
     constructor(
-        _id:string,
+        _id: string,
         is_read: boolean,
         is_edit: boolean,
-        replied_to:{},
+        replied_to: {},
         chat: string,
         sender: string,
         receiver: string,
@@ -132,12 +132,12 @@ export class NewMessage {
         content: Text,
         convertedTime: string,
         is_sender: boolean,
-        chat_type:string
+        chat_type: string
     ) {
         this._id = _id
         this.is_read = is_read
-        this.is_edit=is_edit;
-        this.replied_to= replied_to
+        this.is_edit = is_edit;
+        this.replied_to = replied_to
         this.chat = chat
         this.sender = sender
         this.receiver = receiver
@@ -186,13 +186,13 @@ export class Typing {
     receiver: string
     sender: string
     isGroup: boolean
-    typer?:string
+    typer?: string
 
     constructor(
         receiver: string,
         sender: string,
         isGroup: boolean,
-        typer?:string
+        typer?: string
     ) {
         this.receiver = receiver
         this.sender = sender
@@ -254,16 +254,16 @@ export class Member {
     first_name: string
     last_name: string
     photo: string
-    role:string
-    full_name?:string
+    role: string
+    full_name?: string
 
     constructor(
         _id: string,
         first_name: string,
         last_name: string,
         photo: string,
-        role:string,
-        full_name?:string
+        role: string,
+        full_name?: string
     ) {
         this._id = _id
         this.first_name = first_name
@@ -283,10 +283,10 @@ export class ConversationUser {
     time: string
     message: string
     notificationCount: number
-    role?:string
-    type?:string
-    timestamp?:Date
-    members?:string[]
+    role?: string
+    type?: string
+    timestamp?: Date
+    members?: string[]
 
     constructor(
         _id: string,
@@ -298,10 +298,10 @@ export class ConversationUser {
         time: string,
         message: string,
         notificationCount: number,
-        role?:string,
-        type?:string,
-        timestamp?:Date,
-        members?:string[],
+        role?: string,
+        type?: string,
+        timestamp?: Date,
+        members?: string[],
     ) {
         this._id = _id
         this.first_name = first_name
@@ -334,41 +334,41 @@ export class MessageRead {
     }
 }
 
-export class Alive{
-    userId:string
-    socketId:string
-    
+export class Alive {
+    userId: string
+    socketId: string
+
     constructor(
-        userId:string,
-        socketId:string
-    ){
+        userId: string,
+        socketId: string
+    ) {
         this.userId = userId
         this.socketId = socketId
     }
 }
 
-export class Group{
-    chatId:string
-    members:Member[]
-    title:string
-    photo:string
-    message:string
-    lastUser:string
-    notificationCount:number
-    time:string
-    type:string
+export class Group {
+    chatId: string
+    members: Member[]
+    title: string
+    photo: string
+    message: string
+    lastUser: string
+    notificationCount: number
+    time: string
+    type: string
 
     constructor(
-        chatId:string,
-        members:Member[],
-        title:string,
-        photo:string,
-        message:string,
-        lastUser:string,
-        notificationCount:number,
-        time:string,
-        type:string
-    ){
+        chatId: string,
+        members: Member[],
+        title: string,
+        photo: string,
+        message: string,
+        lastUser: string,
+        notificationCount: number,
+        time: string,
+        type: string
+    ) {
         this.chatId = chatId
         this.members = members
         this.title = title
@@ -381,9 +381,9 @@ export class Group{
     }
 }
 
-export interface GroupDetails{
-    chatId:string,
-    members:Member[],
-    photo:string,
-    title:string
+export interface GroupDetails {
+    chatId: string,
+    members: Member[],
+    photo: string,
+    title: string
 }

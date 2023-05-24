@@ -3,6 +3,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { Alive, Conversation, ConversationUser, CreateChat,  Group, GroupDetails, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
+import { OneChatPresentationBase } from '../one-chat-presentation-base/one-chat-presentation.base';
 
 @Component({
   selector: 'app-one-chat-presentation',
@@ -10,7 +11,7 @@ import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presente
   viewProviders: [OneChatPresenterService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OneChatPresentationComponent implements OnInit {
+export class OneChatPresentationComponent extends OneChatPresentationBase implements OnInit {
 
   /** This property is used to get the details og the Typing event */
   @Input() public typingData: Observable<Typing>
@@ -143,6 +144,7 @@ export class OneChatPresentationComponent implements OnInit {
   constructor(
     private _service: OneChatPresenterService,
   ) {
+    super();
     this.destroy = new Subject();
     this.emitConversationId = new EventEmitter();
     this.emitNewConversation = new EventEmitter();

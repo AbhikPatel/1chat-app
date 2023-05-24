@@ -11,14 +11,21 @@
             </div>
         </div>
         <div class="fs-3 d-flex align-items-center">
-            <label for="toggle-user" (click)="resetSearchForm()">
-                <i class='icon-bxs-user-plus text-info' role="button" title="users"></i>
-            </label>
+            <!-- <label for="toggle-user"> -->
+            <!-- </label> -->
+            <div class="drop-start">
+                <span class='icon-bxs-user-plus text-info' role="button" title="users" data-bs-toggle="dropdown"
+                    (click)="resetSearchForm()"></span>
+                <ul class="dropdown-menu overflow-hidden" [ngClass]="{ 'show' : showModel }">
+                    <li><a class="dropdown-item">New Chat</a></li>
+                    <li><a class="dropdown-item" (click)="onNewGroup()">New Group</a></li>
+                </ul>
+            </div>
             <div class=" fs-4 ms-2" role="button" (click)="onLogOut()" title="logout">
                 <i class='icon-bx-log-out  text-info'></i>
             </div>
         </div>
-        
+
     </div>
     <!-- End: Header Section  -->
 
@@ -31,14 +38,16 @@
                 <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1"
                     [ngClass]="{'border-bottom border-3 border-success' : tabCount}">
                     <span class="fw-bold"> Chat </span>
-                    <span class="badge rounded-circle bg-success text-white" *ngIf="notificationCount?.chat > 0">{{notificationCount.chat}}</span>
+                    <span class="badge rounded-circle bg-success text-white"
+                        *ngIf="notificationCount?.chat > 0">{{notificationCount.chat}}</span>
                 </div>
             </div>
             <div class="col-6 p-0" role="button" (click)="onTab()">
                 <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1"
                     [ngClass]="{'border-bottom border-3 border-success' : !tabCount}">
                     <span class="fw-bold"> Groups </span>
-                    <span class="badge rounded-circle bg-success text-white" *ngIf="notificationCount?.group > 0">{{notificationCount.group}}</span>
+                    <span class="badge rounded-circle bg-success text-white"
+                        *ngIf="notificationCount?.group > 0">{{notificationCount.group}}</span>
                 </div>
             </div>
         </div>

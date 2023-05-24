@@ -196,6 +196,7 @@ export class OneChatPresenterService {
           return user
         });
         this.groupConversation.push(Object.assign(obj, { members: memberArr }))
+        debugger
       }
     });
     const sortbyTime = (a, b) => {
