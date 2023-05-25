@@ -1,11 +1,11 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { Alive, Chat, GroupDetails, Member, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
+import { Alive, GroupDetails, Member, NewMessage, Typing } from 'src/app/one-chat/models/chat.model';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
+import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 
 @Component({
   selector: 'app-chat-message-presentation',
@@ -401,7 +401,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    */
   public onAddTask(taskType: string): void {
     let group: FormGroup = this._fb.group({
-      title: ['', [Validators.required]],
+      name: ['', [Validators.required]],
       hours: ['', [Validators.required]],
       description: ['', [Validators.required]],
       blocker: [''],
@@ -544,7 +544,16 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   }
 
   public eodSubmit() {
-    this.emitEodTasks.emit(this.allTasks);
+
+    this.emitEodTasks.emit({
+      name_of_emp:'Abhishek',
+      position:'Assosiate L1',
+      department:'Frontend',
+      date:new Date(),
+      sender:'64007dcd89acbc81fb9a9978',
+      receiver:this.getReceiverData._id,
+      status:this.allTasks
+    });
   }
 
   /**

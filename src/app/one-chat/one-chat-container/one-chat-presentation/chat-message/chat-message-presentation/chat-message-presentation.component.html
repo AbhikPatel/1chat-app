@@ -86,10 +86,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <figure class="m-0">
-                                            <img src="../../../../../../assets/images/avatar.png" style="width: 200px;"
-                                                alt="chat">
-                                        </figure>
+                                        <span> {{data.content.text}} </span>
                                     </div>
                                 </div>
                                 <!--  -->
@@ -210,7 +207,7 @@
                                             <div class="col-6">
                                                 <label for="title" class="form-label required"> Task Title</label>
                                                 <input type="text" class="form-control" name="title" id="title"
-                                                    formControlName="title">
+                                                    formControlName="name">
                                             </div>
 
                                             <!-- Work Hours  -->
@@ -274,7 +271,7 @@
                                             <div class="col-6">
                                                 <label for="title" class="form-label required">Task Title</label>
                                                 <input type="text" class="form-control" name="title" id="title"
-                                                    formControlName="title">
+                                                    formControlName="name">
                                             </div>
 
                                             <!-- Work Hours  -->
@@ -337,7 +334,7 @@
                                             <div class="col-6">
                                                 <label for="title" class="form-label required">Task Title</label>
                                                 <input type="text" class="form-control" name="title" id="title"
-                                                    formControlName="title">
+                                                    formControlName="name">
                                             </div>
 
                                             <!-- Work Hours  -->
@@ -377,7 +374,7 @@
                 <div class="d-flex justify-content-between pt-3">
                     <button class="btn btn-danger text-white" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"> Cancel </button>
-                    <button class="btn btn-success text-white" (click)="onEodSubmit()" type="submit"> Submit </button>
+                    <button class="btn btn-success text-white" [disabled]="eodGroup.invalid" (click)="onEodSubmit()" type="submit"> Submit </button>
                 </div>
             </div>
             <!-- End: Accordion Section  -->

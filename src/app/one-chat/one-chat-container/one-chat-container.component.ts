@@ -145,7 +145,7 @@ export class OneChatContainerComponent implements OnInit {
   }
 
   public getEodTasks(tasks: any): void {
-    
+    this._service.emit('eod:status', tasks)
   }
 
   /**

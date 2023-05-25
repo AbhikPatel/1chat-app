@@ -207,7 +207,7 @@ export class OneChatPresenterService {
       return timestampB - timestampA;
     };
     this.onlyConversationUsers.next(this.conversationUser.sort(sortbyTime));
-    this.groupChatConversation.next(this.groupConversation.sort(sortbyTime));
+    // this.groupChatConversation.next(this.groupConversation.sort(sortbyTime));
     this.countNotification();
   }
 

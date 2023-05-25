@@ -27,9 +27,9 @@ export class ChatMessagePresenterService {
    */
   public getEodGroup(): FormGroup {
     return this._fb.group({
-      completed: new FormArray([]),
-      onGoing: new FormArray([]),
-      newLearning: new FormArray([]),
+      completed:[[],[Validators.required]],
+      onGoing:[[],[Validators.required]],
+      newLearning:[[]],
     })
   }
 }
