@@ -165,6 +165,8 @@ export class OneChatPresenterService {
    */
   public removeUserData(conversationUsers: Conversation[]): void {
     this.allChatIds = conversationUsers.map((user: Conversation) => user._id);
+    this.groupConversation = [];
+    this.conversationUser = [];
     conversationUsers.forEach((chatData: Conversation) => {
       if (chatData.chat_type === 'dm') {
         let id: string = chatData._id
@@ -180,16 +182,17 @@ export class OneChatPresenterService {
         }
         this.conversationUser.push(Object.assign(member, obj))
       } else {
-        var sender: NewUser | undefined = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
+        // var sender: NewUser | undefined = this.users.find((data: NewUser) => data._id === chatData.lastMessage.sender);
         let obj = {
           chatId: chatData._id,
           photo: 'default.jpeg',
           title: chatData.title,
           message: chatData.lastMessage ? chatData.lastMessage.content.text : '-',
+          timestamp: chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date(),
           notificationCount: 0,
           time: this._formatter.Formatter(new Date()),
           type: 'group',
-          lastUser: sender ? sender.full_name : 'Unknown',
+          lastUser: 'Unknown',
         }
         let memberArr: Member[] = chatData.members.map((user: Member) => {
           user.full_name = user.first_name + ' ' + user.last_name
@@ -477,7 +480,6 @@ export class OneChatPresenterService {
   }
 
   public getReplyMessage(replyObj:NewMessage):void{
-    console.log(replyObj);
     this.chats.push(replyObj)
   }
 }

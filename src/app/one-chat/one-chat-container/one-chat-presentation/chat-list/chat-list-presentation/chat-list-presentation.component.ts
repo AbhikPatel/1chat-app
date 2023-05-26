@@ -7,6 +7,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/shared/services/common.service';
+import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -14,8 +15,8 @@ import { CommonService } from 'src/app/shared/services/common.service';
   viewProviders: [ChatListPresenterService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatListPresentationComponent implements OnInit {
-@ViewChild('inputType')inputType:ElementRef
+export class ChatListPresentationComponent extends OneChatPresentationBase implements OnInit {
+  @ViewChild('inputType') inputType: ElementRef
 
   /** This property is used to get Typing details */
   @Input() public notificationCount: any;
@@ -77,8 +78,9 @@ export class ChatListPresentationComponent implements OnInit {
 
   /** This property is used to get all the users */
   @Input() public set getAllUser(v: NewUser[]) {
-    if (v)
+    if (v) {
       this._getAllUser = v;
+    }
   }
   public get getAllUser(): NewUser[] {
     return this._getAllUser;
@@ -120,6 +122,7 @@ export class ChatListPresentationComponent implements OnInit {
   public groupNotificationCount: number;
   /** This variable will store the chat notification count */
   public chatNotificationCount: number;
+  public showModel: boolean;
   private _newConversationUser: ConversationUser;
   private _getConversationUser: ConversationUser[];
   private _getAllUser: NewUser[];
@@ -132,6 +135,7 @@ export class ChatListPresentationComponent implements OnInit {
     private _cdr: ChangeDetectorRef,
     private _route: Router,
   ) {
+    super();
     this.emitChatId = new EventEmitter();
     this.emitReceiverId = new EventEmitter();
     this.emitNewChatState = new EventEmitter();
@@ -150,6 +154,7 @@ export class ChatListPresentationComponent implements OnInit {
     this.tabCount = true;
     this.groupNotificationCount = 0;
     this.chatNotificationCount = 0;
+    this.showModel = false;
   }
 
   ngOnInit(): void {
@@ -164,6 +169,7 @@ export class ChatListPresentationComponent implements OnInit {
     this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this.getConversationUser.unshift(user))
     this._service.isReadData$.pipe(takeUntil(this.destroy)).subscribe((data: MessageRead) => this.emitIsReadData.emit(data))
     this.resetSearch.valueChanges.subscribe((data) => this.searchText = data.search);
+    this._service.newGroup$.subscribe((data) => this.emitGroupData.emit(data))
   }
 
   /**
@@ -258,14 +264,14 @@ export class ChatListPresentationComponent implements OnInit {
 
   }
 
- /**
-   * @name onLogOut
-   * @description This method is use to logout the user
-   */
- public onLogOut(): void {
-  this._route.navigateByUrl('/login');
-  localStorage.clear();
-}
+  /**
+    * @name onLogOut
+    * @description This method is use to logout the user
+    */
+  public onLogOut(): void {
+    this._route.navigateByUrl('/login');
+    localStorage.clear();
+  }
   /**
    * @name checkOnline
    * @param id 
@@ -293,20 +299,37 @@ export class ChatListPresentationComponent implements OnInit {
    * @description This method will reset search form
    */
   public resetSearchForm(): void {
-    this.setFocus()
+    this.setFocus();
+    this.showModel ? this.showModel = false : this.showModel = true;
+    this.toggle.nativeElement.checked = false;
     setTimeout(() => {
       this.resetSearch.reset();
       this.searchText = ''
     }, 1000);
-    
+
   }
 
   /**
  * @description This method set focus default
  */
- public setFocus():void {
-  this.inputType.nativeElement.focus();
-}
+  public setFocus(): void {
+    this.inputType.nativeElement.focus();
+  }
+
+  public onNewGroup(): void {
+    let userDetails: any[] = this.getAllUser.map((user: NewUser) => ({
+      id: user._id,
+      full_name: `${user.full_name} (${user.role})`,
+    }))
+    this._service.openCreateGroupForm(userDetails);
+    this.showModel = false;
+  }
+
+  public openNewChat(){
+    this.toggle.nativeElement.checked = true;
+    this.showModel = false;
+  }
+
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

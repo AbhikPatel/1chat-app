@@ -72,8 +72,6 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   /** This property is use to get the array of chats */
   @Input() public set getChat(v: NewMessage[]) {
     if (v) {
-      console.log(v);
-
       this._getChat = v;
 
       this.chatGroup.setValue({ message: '' });
@@ -266,7 +264,7 @@ export class ChatMessagePresentationComponent implements OnInit, AfterViewInit {
   */
   public convertPhoto(profileImg?: string): string {
     let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
-    // let converter = 'https://anonychat.onrender.com/img/users/' + profileImg;
+    // let converter = 'https://onechat-jj9m.onrender.com/img/users/' + profileImg;
     return profileImg
     ? converter
       : '../../../../../../assets/images/avatar.png';
