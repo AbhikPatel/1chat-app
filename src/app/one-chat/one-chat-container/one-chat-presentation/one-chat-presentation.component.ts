@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, Conversation, ConversationUser, CreateChat,  Group, GroupDetails, MessageRead, NewMessage, Typing } from '../../models/chat.model';
+import { Alive, Conversation, ConversationUser, CreateChat, Group, GroupDetails, MessageRead, NewMessage, Typing } from '../../models/chat.model';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 import { OneChatPresentationBase } from '../one-chat-presentation-base/one-chat-presentation.base';
 
@@ -66,8 +66,6 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   /** This property is used to get chat array */
   @Input() public set getChatArray(v: NewMessage[]) {
     if (v) {
-      // console.log(v);
-      
       this._getChatArray = v;
       this._service.getChatArray(v)
     }
@@ -93,8 +91,6 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   /** This property is used to get the object of the new chat */
   @Input() public set newChat(v: NewMessage) {
     if (v) {
-      // console.log(v);
-      
       this._newChat = v;
       this._service.addNewChat(v);
     }
@@ -104,10 +100,10 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   }
   /** This property is used to get the object of the new chat */
   @Input() public set newEditChat(v: NewMessage) {
-    if(v){
-     this._service.editMessageChat(v)
+    if (v) {
+      this._service.editMessageChat(v)
     }
-    
+
   }
   public get newEditChat(): NewMessage {
     return this._newEditChat
@@ -127,8 +123,8 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   private _getNewChatId: CreateChat;
   private _getAllUser: NewUser[];
   private _getConversationUsers: Conversation[];
-  private _getIsRead:MessageRead;
-  private _getAliveData:Alive[];
+  private _getIsRead: MessageRead;
+  private _getAliveData: Alive[];
   public _getChatArray: NewMessage[];
   public destroy: Subject<void>;
   public transferAllUser$: Observable<NewUser[]>;
@@ -224,10 +220,10 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
    * @param editMessage 
    * @description This method is use to get the Edit message test
    */
-public getEditChatMessageData(editMessage:string){
-  this._service.getEditMessage(editMessage)
+  public getEditChatMessageData(editMessage: string) {
+    this._service.getEditMessage(editMessage)
 
-}
+  }
   /**
    * @name getNewChatState
    * @description This method is use to get the new chat state
@@ -241,8 +237,8 @@ public getEditChatMessageData(editMessage:string){
    * @param type chat type
    * @description This method will get the chat type
    */
-  public getChatType(type:string):void{
-    this._service.chatType = type; 
+  public getChatType(type: string): void {
+    this._service.chatType = type;
   }
 
   /**getIsReadData
@@ -259,28 +255,26 @@ public getEditChatMessageData(editMessage:string){
    * @param data 
    * @description This method will transfer data of is_read into container
    */
-  public getIsReadData(data:MessageRead){
+  public getIsReadData(data: MessageRead) {
     this.emitReadMessage.emit(data)
   }
 
-/**
- * This method will transfer messageId
- * @param editMessage 
- */
-  public getEditMessageData(editMessage:NewMessage){
-     this.emitMessageData.emit(editMessage);
+  /**
+   * This method will transfer messageId
+   * @param editMessage 
+   */
+  public getEditMessageData(editMessage: NewMessage) {
+    this.emitMessageData.emit(editMessage);
   }
-/**
- * 
- * @param replyMessageObj 
- */
-  public getReplyMessageData(replyMessageObj:NewMessage){
-    //  console.log(replyMessageObj);
+  /**
+   * 
+   * @param replyMessageObj 
+   */
+  public getReplyMessageData(replyMessageObj: NewMessage) {
     this.emitReplyMessageData.emit(replyMessageObj)
-    
   }
 
-  
+
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

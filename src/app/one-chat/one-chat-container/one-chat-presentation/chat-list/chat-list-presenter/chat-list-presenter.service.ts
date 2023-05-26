@@ -106,7 +106,8 @@ export class ChatListPresenterService implements OnDestroy {
 
     overlayRef.instance.getUsers = users;
     overlayRef.instance.emitOverlayData.pipe(takeUntil(this.destroy)).subscribe((data) => {
-      this.newGroup.next(data)
+      if (data)
+        this.newGroup.next(data)
       overlay.detach();
     })
   }

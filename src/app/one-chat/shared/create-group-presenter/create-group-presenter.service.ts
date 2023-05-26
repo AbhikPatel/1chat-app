@@ -9,7 +9,7 @@ export class CreateGroupPresenterService {
 
   public userId: string;
   public GroupCreationData$:Observable<GroupDetails>;
-
+  
   private GroupCreationData:Subject<GroupDetails>;
 
   constructor(
@@ -39,6 +39,5 @@ export class CreateGroupPresenterService {
     formData.members = formData.members.map((data:any) => data.id);
     formData.members.push(this.userId);
     this.GroupCreationData.next(formData);
-    
   }
 }

@@ -27,7 +27,6 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   /** This property is used to get Typing details */
   @Input() public set getGroupDetails(v: Group[]) {
     if (v) {
-      debugger
       this._getGroupDetails = v;
     }
   }
@@ -301,7 +300,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    */
   public resetSearchForm(): void {
     this.setFocus();
-    this.showModel = true;
+    this.showModel ? this.showModel = false : this.showModel = true;
+    this.toggle.nativeElement.checked = false;
     setTimeout(() => {
       this.resetSearch.reset();
       this.searchText = ''
@@ -322,6 +322,11 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       full_name: `${user.full_name} (${user.role})`,
     }))
     this._service.openCreateGroupForm(userDetails);
+    this.showModel = false;
+  }
+
+  public openNewChat(){
+    this.toggle.nativeElement.checked = true;
     this.showModel = false;
   }
 

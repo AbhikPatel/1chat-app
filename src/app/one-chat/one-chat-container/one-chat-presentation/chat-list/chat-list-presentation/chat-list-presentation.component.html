@@ -17,7 +17,7 @@
                 <span class='icon-bxs-user-plus text-info' role="button" title="users" data-bs-toggle="dropdown"
                     (click)="resetSearchForm()"></span>
                 <ul class="dropdown-menu overflow-hidden" [ngClass]="{ 'show' : showModel }">
-                    <li><a class="dropdown-item">New Chat</a></li>
+                    <li><a class="dropdown-item" (click)="openNewChat()">New Chat</a></li>
                     <li><a class="dropdown-item" (click)="onNewGroup()">New Group</a></li>
                 </ul>
             </div>

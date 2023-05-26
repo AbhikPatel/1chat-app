@@ -24,9 +24,6 @@ export class TokenInterceptor implements HttpInterceptor {
     this._service.loader.next(true)
     return next.handle(modifiedReq).pipe(
       finalize(() => this._service.loader.next(false)),
-      tap((event: HttpEvent<any>) => {
-        // console.log(event);
-      }),
       catchError((errorResponse: HttpErrorResponse) => {
         if (errorResponse.status === 404)
           this._toastr.error(errorResponse.message)

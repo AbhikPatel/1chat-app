@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, of, takeUntil } from 'rxjs';
 import { NewUser } from 'src/app/shared/models/user.model';
 import { Alive, Conversation, CreateChat, EditMessage, GroupDetails, Message, MessageRead, NewMessage, Typing, replyMessage } from '../models/chat.model';
 import { NewChatAdaptor, NewEditAdaptor, NewReplyAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
@@ -63,22 +63,24 @@ export class OneChatContainerComponent implements OnInit {
    */
   public props(): void {
     this._service.setMap();
-    this.allUser$ = this._service.getAllUserData();
-    this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
-    
+    this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data));
+    this._service.getAllUserData().subscribe((data) => {
+      this.allUser$ = of(data);
+      this._service.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: Conversation[]) => {
+        this.conversationUser$.next(users);
+        var groupIds: string[] = [];
+        users.map((data: Conversation) => {
+          if (data.chat_type === 'group')
+            groupIds.push(data._id)
+        })
+        this._service.emit('group:join', groupIds)
+      })
+    })
+
     this._service.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
     this._service.listen('dm:messageEdit').subscribe((data) => this.editMessages.next(data))
     this._service.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
     this._service.listen('dm:messageReply').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
-    this._service.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: Conversation[]) => {
-      this.conversationUser$.next(users);
-      var groupIds: string[] = [];
-      users.map((data: Conversation) => {
-        if (data.chat_type === 'group')
-          groupIds.push(data._id)
-      })
-      this._service.emit('group:join', groupIds)
-    })
     this.getTypingData$ = this._service.listen('typing');
     this.getIsReadData$ = this._service.listen('dm:messageRead')
     this.aliveData$ = this._service.listen('alive');
@@ -99,7 +101,6 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called to get chat object to emit on chat event
    */
   public getChatObject(chat: NewMessage): void {
-    // console.log(chat);
     const data: Message = this._newChatAdaptor.toRequest(chat);
     chat.chat_type === 'dm' ? this._service.emit('dm:message', data) : this._service.emit('group:message', data)
   }
@@ -147,6 +148,7 @@ export class OneChatContainerComponent implements OnInit {
 
 
   public createGroup(data: GroupDetails): void {
+    // console.log(data);
     this._service.postNewGroup(data).pipe(takeUntil(this.destroy)).subscribe();
     this._service.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: Conversation[]) => {
       this.conversationUser$.next(users);
