@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from "@angular/core";
+import { GroupDetails } from "../../models/chat.model";
 
 @Component({
     template: ''
@@ -6,6 +7,7 @@ import { Component, EventEmitter, Output } from "@angular/core";
 export class OneChatPresentationBase {
 
     @Output() public emitEodTasks: EventEmitter<any>;
+    @Output() public emitGroupData: EventEmitter<GroupDetails>;
 
     constructor(
 
@@ -15,5 +17,10 @@ export class OneChatPresentationBase {
 
     public getEodTasks(tasks: any): void {
         this.emitEodTasks.emit(tasks)
+        this.emitGroupData = new EventEmitter();
+    }
+
+    public groupDetails(data: GroupDetails): void {
+        this.emitGroupData.emit(data)
     }
 }

@@ -17,6 +17,7 @@
             (emitChatType)="getChatType($event)"
             [getGroupDetails]="groupConversation$ | async"
             [notificationCount]="notificationCount$ | async"
+            (emitGroupData)="groupDetails($event)"
         ></app-chat-list-presentation>
     </div>
     <!-- End: User List  -->

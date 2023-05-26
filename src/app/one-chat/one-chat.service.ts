@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { HttpService } from '../core/services/http/http.service';
 import { NewUser } from '../shared/models/user.model';
-import { Conversation, CreateChat, NewMessage } from './models/chat.model';
+import { Conversation, CreateChat, GroupDetails, NewMessage } from './models/chat.model';
 import { MessageAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
 import { SwPush } from "@angular/service-worker";
 
@@ -166,6 +166,16 @@ export class OneChatService {
     return this._http.httpPostRequest(url, newChat).pipe(
       map((res: any) => res.data.data)
     )
+  }
+
+  /**
+   * @name postNewChat
+   * @param newChat 
+   * @returns This method will post the data of new
+   */
+  public postNewGroup(newGroup: GroupDetails): Observable<GroupDetails> {
+    const url: string = this.api + `chat`
+    return this._http.httpPostRequest(url, newGroup)
   }
 
 

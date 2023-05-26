@@ -17,6 +17,8 @@ import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
 import { SearchPipe } from './pipe/search.pipe';
+import { CreateGroupPresentationComponent } from './shared/create-group-presentation/create-group-presentation.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 
 
@@ -29,6 +31,7 @@ import { SearchPipe } from './pipe/search.pipe';
     ChatMessagePresentationComponent,
     SearchPipe,
     ScrollDistanceDirective,
+    CreateGroupPresentationComponent
   ],
   imports: [
     CommonModule,
@@ -38,7 +41,8 @@ import { SearchPipe } from './pipe/search.pipe';
     PickerModule,
     FormsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
-    OverlayModule
+    OverlayModule,
+    NgMultiSelectDropDownModule
   ],
   providers:[
     OneChatService,

@@ -287,9 +287,9 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   }
 
   /**
-   * @name onLogOut
-   * @description This method is use to logout the user
-   */
+ * @name onLogOut
+ * @description This method is use to logout the user
+ */
   public onLogOut(): void {
     this._route.navigateByUrl('/login');
     localStorage.clear();
@@ -546,13 +546,13 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public eodSubmit() {
 
     this.emitEodTasks.emit({
-      name_of_emp:'Abhishek',
-      position:'Assosiate L1',
-      department:'Frontend',
-      date:new Date(),
-      sender:'64007dcd89acbc81fb9a9978',
-      receiver:this.getReceiverData._id,
-      status:this.allTasks
+      name_of_emp: 'Abhishek',
+      position: 'Assosiate L1',
+      department: 'Frontend',
+      date: new Date(),
+      sender: '64007dcd89acbc81fb9a9978',
+      receiver: this.getReceiverData._id,
+      status: this.allTasks
     });
   }
 
