@@ -148,6 +148,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this.emitTypingData = new EventEmitter();
     this.emitReadMessage = new EventEmitter();
     this.emitMessageData = new EventEmitter();
+    this.emitGroupData = new EventEmitter();
     this.emitReplyMessageData = new EventEmitter();
     this._getConversationUsers = [];
     this.transferAllUser$ = new Observable();

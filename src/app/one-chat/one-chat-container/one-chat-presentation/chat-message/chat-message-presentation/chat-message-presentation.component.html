@@ -2,10 +2,10 @@
 <div class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3">
     <!-- Start: Header Section  -->
     <ng-container *ngIf="count === 1">
-        <div id="header" class="d-flex align-items-center justify-content-between px-5">
+        <div id="header" class="d-flex align-items-center px-5">
             <div class="d-flex align-items-center">
                 <figure class="m-0">
-                    <img [src]="convertPhoto(getReceiverData?.photo)" class="rounded-circle profile-img" alt="profile">
+                    <img [src]="convertPhoto(getReceiverData?.photo)" class="rounded-circle border shadow-lg profile-img" alt="profile">
                 </figure>
                 <div class="ms-3 d-flex flex-column">
                     <span class="fw-semibold"> {{getReceiverData?.full_name}} </span>
@@ -17,10 +17,16 @@
                     </ng-template>
                 </div>
             </div>
+            <div class="d-flex h-100 px-4">
+                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(true)"
+                    role="button" [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
+                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(false)"
+                    role="button" [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
+            </div>
         </div>
     </ng-container>
     <ng-container *ngIf="count === 2">
-        <div id="header" class="d-flex align-items-center justify-content-between px-5">
+        <div id="header" class="d-flex align-items-center px-5">
             <div class="d-flex align-items-center">
                 <figure class="m-0">
                     <img [src]="convertPhoto(getGroupDetails?.photo)" class="rounded-circle profile-img" alt="profile">
@@ -34,6 +40,12 @@
                         <span class="fs-7">{{groupMembers}}</span>
                     </ng-template>
                 </div>
+            </div>
+            <div class="d-flex h-100 px-4">
+                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(true)"
+                    role="button" [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
+                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(false)"
+                    role="button" [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
             </div>
         </div>
     </ng-container>
@@ -90,7 +102,7 @@
                                     </div>
                                 </div>
                                 <!--  -->
-                                <label for="openBox" class="position-relative">
+                                <!-- <label for="openBox" class="position-relative">
                                     <span class="d-flex icon-down-arrow fs-9" id="downArrow" (click)="toggleModel(i)"
                                         #span>
                                     </span>
@@ -117,7 +129,7 @@
                                         </div>
                                     </ng-container>
 
-                                </label>
+                                </label> -->
 
                             </div>
                         </div>
@@ -234,7 +246,7 @@
                                     </ng-container>
                                 </div>
                             </form>
-                            <button class="btn btn-primary w-100 mt-3" [disabled]="eodGroup.get('onGoing').invalid"
+                            <button class="btn btn-primary w-100 mt-3"
                                 (click)="onAddTask('onGoing')">
                                 + Add
                                 Task
@@ -299,7 +311,7 @@
                                     </ng-container>
                                 </div>
                             </form>
-                            <button class="btn btn-primary w-100 mt-3" [disabled]="eodGroup.get('completed').invalid"
+                            <button class="btn btn-primary w-100 mt-3"
                                 (click)="onAddTask('completed')"> + Add
                                 Task
                             </button>
@@ -321,13 +333,13 @@
 
                             <!-- Start: EOD Form  -->
                             <form [formGroup]="eodGroup">
-                                <div class="border p-4 rounded-3 my-3 position-relative" formArrayName="newLearning"
+                                <!-- <div class="border p-4 rounded-3 my-3 position-relative" formArrayName="newLearning"
                                     *ngFor="let m of this.formTaskArray('newLearning').controls; let i = index">
                                     <div class="model-close-btn position-absolute"
                                         (click)="onDeleteTask(i, 'newLearning')">
                                         <button class="btn-close" type="button"></button>
-                                    </div>
-                                    <ng-container [formGroupName]="i">
+                                    </div> -->
+                                    <ng-container >
                                         <div class="row g-4">
 
                                             <!-- Task Title  -->
@@ -359,9 +371,9 @@
                                             </div>
                                         </div>
                                     </ng-container>
-                                </div>
+                                <!-- </div> -->
                             </form>
-                            <button class="btn btn-primary w-100 mt-3" [disabled]="eodGroup.get('newLearning').invalid"
+                            <button class="btn btn-primary w-100 mt-3"
                                 (click)="onAddTask('newLearning')"> +
                                 Add Task
                             </button>
@@ -374,7 +386,8 @@
                 <div class="d-flex justify-content-between pt-3">
                     <button class="btn btn-danger text-white" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"> Cancel </button>
-                    <button class="btn btn-success text-white" [disabled]="eodGroup.invalid" (click)="onEodSubmit()" type="submit"> Submit </button>
+                    <button class="btn btn-success text-white" [disabled]="eodGroup.invalid" (click)="onEodSubmit()"
+                        type="submit"> Submit </button>
                 </div>
             </div>
             <!-- End: Accordion Section  -->
@@ -408,7 +421,8 @@
                                 <td> {{task.hours}} </td>
                                 <td> {{task.description}} </td>
                                 <td> {{task.blocker || '-'}} </td>
-                                <td [ngClass]="{'bg-completed' : task.type === 'completed','bg-progress' : task.type === 'onGoing', 'bg-learning' : task.type === 'newLearning'}">
+                                <td
+                                    [ngClass]="{'bg-completed' : task.type === 'completed','bg-progress' : task.type === 'onGoing', 'bg-learning' : task.type === 'newLearning'}">
                                     {{task.type}} </td>
                             </tr>
                         </tbody>

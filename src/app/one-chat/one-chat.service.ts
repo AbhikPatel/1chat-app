@@ -29,10 +29,10 @@ export class OneChatService {
   ) {
     this.socket = io(environment.socketUrl);
     this.api = environment.baseURL;
-    window.addEventListener('load', () => {
-      console.log('trying to subscribe')
-      this.subscribeToPushNotification();
-    })
+    // window.addEventListener('load', () => {
+    //   console.log('trying to subscribe')
+    //   this.subscribeToPushNotification();
+    // })
   }
 
 

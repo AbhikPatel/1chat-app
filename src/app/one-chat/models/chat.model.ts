@@ -206,6 +206,7 @@ export class Conversation {
     chat_type: string
     title: string
     members: Member[]
+    photo:string
     lastMessage: Message
 
     constructor(
@@ -214,6 +215,7 @@ export class Conversation {
         chat_type: string,
         title: string,
         members: Member[],
+        photo:string,
         lastMessage: Message
     ) {
         this._id = _id
@@ -222,6 +224,7 @@ export class Conversation {
         this.title = title
         this.members = members
         this.lastMessage = lastMessage
+        this.photo = photo
     }
 }
 export class Chat {

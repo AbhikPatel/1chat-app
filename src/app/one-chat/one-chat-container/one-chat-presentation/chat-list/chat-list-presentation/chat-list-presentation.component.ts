@@ -141,6 +141,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.emitNewChatState = new EventEmitter();
     this.emitIsReadData = new EventEmitter();
     this.emitChatType = new EventEmitter();
+    this.emitGroupData = new EventEmitter();
     this.destroy = new Subject();
     this.showNewMessage = new Subject();
     this._newConversationUser = {} as ConversationUser;

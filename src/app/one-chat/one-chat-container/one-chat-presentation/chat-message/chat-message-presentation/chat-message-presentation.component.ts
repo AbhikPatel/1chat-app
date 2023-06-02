@@ -142,6 +142,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public allTasks: any[];
   public showTasks: boolean;
   public formValue: any;
+  public currentWindow: boolean;
 
   constructor(
     private _service: ChatMessagePresenterService,
@@ -176,6 +177,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.chatMessageId = '';
     this.editDataObject = {} as NewMessage
     this.showTasks = false;
+    this.currentWindow = true;
   }
 
   ngAfterViewInit(): void {
@@ -192,22 +194,10 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    */
   public props(): void {
     this.chatGroup.valueChanges.subscribe(() => this.emitSenderId.emit(this.senderId));
-    // this.onAddTask('onGoing');
-    // this.onAddTask('completed');
-    // this.onAddTask('newLearning');
+    this.onAddTask('onGoing');
+    this.onAddTask('completed');
+    this.onAddTask('newLearning');
   }
-
-  /**
-   * @name onSubmit
-   * @description This method is use to submit the form
-   */
-  // public onSubmit(): void {
-  //   if (this.chatGroup.valid) {
-  //     this.emitChat.emit(this.chatGroup.value.message);
-  //     this.scrollUp();
-  //     this.chatGroup.reset();
-  //   }
-  // }
 
   /**
    * @name onSubmit
@@ -407,7 +397,6 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
       blocker: [''],
       type: [taskType]
     })
-
     if (this.formTaskArray(taskType).length < 6)
       this.formTaskArray(taskType).push(group);
   }
@@ -554,6 +543,10 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
       receiver: this.getReceiverData._id,
       status: this.allTasks
     });
+  }
+
+  public onWindow(data: boolean): void {
+    this.currentWindow = data;
   }
 
   /**

@@ -4,7 +4,7 @@
     <div id="header" class="d-flex align-items-center justify-content-between px-3">
         <div class="d-flex align-items-center">
             <figure class="m-0">
-                <img [src]="convertPhoto(getSenderDetails?.photo)" alt="profile" class="profile-img rounded-circle">
+                <img [src]="convertPhoto(getSenderDetails?.photo)" alt="profile" class="profile-img border shadow-lg rounded-circle">
             </figure>
             <div class="ms-3">
                 <span class="fw-semibold"> {{getSenderDetails?.full_name}} </span>
@@ -64,7 +64,7 @@
                 <div class="user-container d-flex align-items-center p-2 border-bottom "
                     *ngFor="let data of getAllUser | search:searchText" role="button" (click)="onNewChat(data)">
                     <div class="px-3 me-1">
-                        <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
+                        <img [src]="convertPhoto(data.photo)" class="rounded-circle border shadow-lg user-img" alt="profile">
                     </div>
                     <div class="ms-2">
                         <span class="fw-semibold"> {{data.full_name}} </span>
@@ -89,7 +89,7 @@
                     *ngFor="let data of getConversationUser, let i = index" (click)="onUser(data)"
                     [ngClass]="{'bg-theme' : data._id === userId}">
                     <div class="px-3 me-1 position-relative">
-                        <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
+                        <img [src]="convertPhoto(data.photo)" class="rounded-circle shadow-lg border user-img" alt="profile">
                         <ng-container *ngIf="checkOnline(data._id)">
                             <span
                                 class="online position-absolute translate-middle bg-success border border-light rounded-circle">
@@ -134,7 +134,7 @@
                     *ngFor="let data of getGroupDetails, let i = index" (click)="onUser(data)"
                     [ngClass]="{'bg-theme' : data.chatId === chatId}">
                     <div class="px-3 me-1 position-relative">
-                        <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img" alt="profile">
+                        <img [src]="convertPhoto(data.photo)" class="rounded-circle user-img border shadow-lg" alt="profile">
                         <!-- <ng-container *ngIf="checkOnline(data._id)">
                             <span
                                 class="online position-absolute translate-middle bg-success border border-light rounded-circle">

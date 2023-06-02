@@ -187,7 +187,7 @@ export class OneChatPresenterService {
         }
         let obj = {
           chatId: chatData._id,
-          photo: 'default.jpeg',
+          photo: chatData.photo,
           title: chatData.title,
           message: chatData.lastMessage ? chatData.lastMessage.content.text : '-',
           timestamp: chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date(),
@@ -209,7 +209,7 @@ export class OneChatPresenterService {
       return timestampB - timestampA;
     };
     this.onlyConversationUsers.next(this.conversationUser.sort(sortbyTime));
-    // this.groupChatConversation.next(this.groupConversation.sort(sortbyTime));
+    this.groupChatConversation.next(this.groupConversation.sort(sortbyTime));
     this.countNotification();
   }
 

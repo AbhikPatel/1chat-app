@@ -81,7 +81,6 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this._service.listen('dm:messageEdit').subscribe((data) => this.editMessages.next(data))
     this._service.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
     // this._service.listen('dm:messageReply').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
-    this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
     this._service.listen('dm:messageReply').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
     this.getTypingData$ = this._service.listen('typing');
     this.getIsReadData$ = this._service.listen('dm:messageRead')
