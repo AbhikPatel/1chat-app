@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Adapter } from "src/app/core/adaptor/adaptor";
-import { environment } from "src/environments/environment";
 import { User, UserResponse } from "../models/user.model";
+import { environment } from "src/environments/environment";
 
 @Injectable()
 export class userAdaptor implements Adapter<User>{

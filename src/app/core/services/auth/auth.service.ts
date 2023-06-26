@@ -35,6 +35,7 @@ export class AuthService {
         localStorage.setItem('token', res.token)
         localStorage.setItem('role', res.data.doc.role)
         localStorage.setItem('userId', res.data.doc._id)
+        localStorage.setItem('fullName', res.data.doc.first_name + ' ' + res.data.doc.last_name)
         return this._adapt.toResponse(res.data.doc)
       })
     )
