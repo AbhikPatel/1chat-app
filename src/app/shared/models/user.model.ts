@@ -1,4 +1,4 @@
-export class NewUser{
+export class User{
     _id:string
     first_name:string
     last_name:string
@@ -7,6 +7,7 @@ export class NewUser{
     chats:string[]
     photo:string
     role:string
+    showIsOnline?:boolean
     
     constructor(
         _id:string,
@@ -16,7 +17,8 @@ export class NewUser{
         email:string,
         chats:string[],
         photo:string,
-        role:string
+        role:string,
+        showIsOnline?:boolean
     ){
         this._id = _id
         this.first_name = first_name
@@ -29,7 +31,7 @@ export class NewUser{
     }
 }
 
-export class User{
+export class UserResponse{
     _id:string
     first_name:string
     last_name:string

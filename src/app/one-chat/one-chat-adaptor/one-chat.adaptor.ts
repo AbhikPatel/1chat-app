@@ -1,207 +1,171 @@
 import { Injectable } from "@angular/core";
 import { Adapter } from "src/app/core/adaptor/adaptor";
+import { ConversationUserResponse, ConversationUsers, Member, Message, MessageResponse } from "../models/chat.model";
 import { FormatTime } from "src/app/core/utilities/formatTime";
-import { NewUser, User } from "src/app/shared/models/user.model";
-import { EditMessage, Message, NewMessage, replyMessage } from "../models/chat.model";
+import { CommonService } from "src/app/shared/services/common.service";
+import { environment } from "src/environments/environment";
+import { EOD, EODResponse, Task, TaskResponse } from "../models/eod.model";
+import { taskBgColor, taskTypeFormat } from "src/app/core/utilities/constants";
 
 @Injectable()
-export class allUserAdaptor implements Adapter<NewUser[]>{
+export class conversationUserAdapter implements Adapter<ConversationUsers>{
 
-    public toResponse(item: User[]): NewUser[] {
+    public userId: string;
 
-        const items: NewUser[] = []; 
-        item.forEach((data: User) => {
-            const fullName: string = data.first_name + ' ' + data.last_name
+    constructor(
+        private _formatter: FormatTime,
+        private _commonService: CommonService
+    ) {
+        this.userId = this._commonService.getUserId();
+    }
 
-            const user: NewUser = new NewUser(
-                data._id,
-                data.first_name,
-                data.last_name,
-                fullName,
-                data.email,
-                data.chats,
-                data.photo,
-                data.role,
-            )
-            items.push(user)
-            return data
+    public toResponse(item: ConversationUserResponse): ConversationUsers {
+
+        let newMembers: Member[]
+        item.chat_type === 'dm' ? newMembers = item.members.filter((member: Member) => member._id !== this.userId) : newMembers = item.members
+        newMembers.map((member: Member) => {
+            member.full_name = member.first_name + ' ' + member.last_name;
+            member.photo = environment.imageUrl + member.photo;
         });
-        return items
-    }
-}
+        const profile: string = item.chat_type === 'dm' ? newMembers[0].photo : environment.imageUrl + item.photo;
 
-@Injectable()
-export class MessageAdaptor implements Adapter<NewMessage[]>{
-    public userID: string | null
-    constructor(
-        private _formatter: FormatTime
-    ) {
-        this.userID = localStorage.getItem('userId')
-    }
-    public toResponse(item: Message[]): NewMessage[] {
-        const items: any = item.map((data: Message) => {
-            const converter: Date = new Date(data.time)
-            const allTIme: string = this._formatter.Formatter(converter)
-            const newItem: NewMessage = new NewMessage(
-                data._id,
-                data.is_read,
-                data.is_edit,
-                data.replied_to,
-                data.chat,
-                data.sender,
-                data.receiver,
-                data.time,
-                data.type,
-                data.content,
-                allTIme,
-                this.userID === data.sender,
-                data.chat === data.receiver ? 'group' : 'dm'
-            )
-            data = newItem
-            return data
-        })
-        return items
-    }
-
-}
-// @Injectable()
-// export class ConversationUserAdaptor implements Adapter<ConversationUser[]>{
-
-//     public userId: string
-//     constructor(
-//         private _formatter: FormatTime
-//     ) {
-//         this.userId = localStorage.getItem('userId')
-//     }
-
-//     public toResponse(item: Conversation[]): ConversationUser[] {
-//         var result: ConversationUser[] = []
-//         item.forEach((chatData: Conversation) => {
-//             if (chatData.chat_type === 'dm') {
-//                 let id: string = chatData._id
-//                 let member: Member = chatData.members.find((user: Member) => user._id !== this.userId)
-//                 let obj = {
-//                     message: chatData.lastMessage ? chatData.lastMessage.content.text : 'No Messages',
-//                     time: this._formatter.Formatter(chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date()),
-//                     timestamp: chatData.lastMessage ? new Date(chatData.lastMessage.time) : new Date(),
-//                     notificationCount: 0,
-//                     full_name: member.first_name + ' ' + member.last_name,
-//                     chatId: id,
-//                     type:chatData.chat_type
-//                 }
-//                 result.push(Object.assign(member, obj))
-//             } 
-//             else {
-//                 let Obj: ConversationUser = {
-//                     _id: '',
-//                     first_name: '',
-//                     last_name: '',
-//                     chatId: chatData._id,
-//                     photo: '',
-//                     full_name: chatData.title,
-//                     time: this._formatter.Formatter(new Date()),
-//                     timestamp: new Date(),
-//                     message: 'No Messages',
-//                     notificationCount: 0,
-//                     role: '',
-//                     type:chatData.chat_type
-//                 }
-//                 let memberArr:string[] = [];
-//                 chatData.members.map((member:Member) => {
-//                     const fullName = member.first_name + ' ' + member.last_name;
-//                     memberArr.push(fullName)
-//                 })
-//                 result.push(Object.assign(Obj, {members:memberArr}))
-//             }
-//         })
-//         const sortbyTime = (a, b) => {
-//             const timestampA = a.timestamp.getTime();
-//             const timestampB = b.timestamp.getTime();
-//             return timestampB - timestampA;
-//         };
-//         return result.sort(sortbyTime)
-//     }
-// }
-
-@Injectable()
-export class NewChatAdaptor implements Adapter<NewMessage>{
-
-    public userID: string | null
-    constructor(
-        private _formatter: FormatTime
-    ) {
-        this.userID = localStorage.getItem('userId')
-    }
-
-    public toResponse(item: Message): NewMessage {
-        const converter: Date = new Date(item.time)
-        const allTIme: string = this._formatter.Formatter(converter)
-        const newChat: NewMessage = new NewMessage(
+        const user: ConversationUsers = new ConversationUsers(
             item._id,
-            item.is_read,
-            item.is_edit,
-            item.replied_to,
-            item.chat,
-            item.sender,
-            item.receiver,
-            item.time,
-            item.type,
-            item.content,
-            allTIme,
-            this.userID === item.sender,
-            item.chat === item.receiver ? 'group' : 'dm'
+            item.owner,
+            item.chat_type,
+            newMembers,
+            item.lastMessage ? item.lastMessage.sender : '',
+            item.lastMessage ? item.lastMessage.receiver : '',
+            item.lastMessage ? new Date(item.lastMessage.time) : new Date(),
+            item.lastMessage ? item.lastMessage.content.text : 'No Messages',
+            item.lastMessage ? item.lastMessage._id : '',
+            item.lastMessage ? item.lastMessage.is_read : false,
+            item.lastMessage ? item.lastMessage.is_edit : false,
+            this._formatter.Formatter(item.lastMessage ? new Date(item.lastMessage.time) : new Date()),
+            profile,
+            item.chat_type === 'dm' ? newMembers[0].full_name : item.title,
+            item.lastMessage ? item.lastMessage.sender === this.userId ? 0 : item.notificationCount : 0,
+            false,
+            false
+        );
+        return user;
+    }
+}
+
+@Injectable()
+export class MessageAdapter implements Adapter<Message>{
+
+    public userId: string;
+
+    constructor(
+        private _formatter: FormatTime,
+        private _commonService: CommonService
+    ) {
+        this.userId = this._commonService.getUserId();
+    }
+
+    public toResponse(message: MessageResponse): Message {
+
+        if (message.replied_to) {
+            message.replied_to.sender === this.userId ? message.replied_to.is_sender = true : message.replied_to.is_sender = false;
+        }
+        const newMessage: Message = new Message(
+            message._id,
+            message.is_read,
+            message.is_edit,
+            message.chat,
+            message.sender,
+            message.receiver,
+            message.time,
+            message.type,
+            message.content,
+            message.sender === this.userId,
+            this._formatter.Formatter(new Date(message.time)),
+            message.replied_to
         )
-        return newChat
+        return newMessage
     }
 
-    public toRequest(item: NewMessage): Message {
-        const data: Message = new Message(
-            item.is_read,
-            item.is_edit,
-            item.chat,
-            item.sender,
-            item.receiver,
-            item.time,
-            item.type,
-            item.content,
-        );
-        return data
+    toRequest(message: Message): MessageResponse {
+        const messageData: MessageResponse = new MessageResponse(
+            message.is_read,
+            message.is_edit,
+            message.chat,
+            message.sender,
+            message.receiver,
+            message.time,
+            message.type,
+            message.content,
+        )
+
+        return messageData
     }
 }
 
 @Injectable()
+export class EODAdapter implements Adapter<EOD>{
 
-export class NewEditAdaptor implements Adapter<NewMessage>{
-    public toRequest(item: NewMessage): EditMessage {
-        const data: EditMessage = new EditMessage(
-            item._id,
-            item.is_read,
-            item.is_edit,
-            item.replied_to,
-            item.chat,
-            item.sender,
-            item.receiver,
-            item.time,
-            item.type,
-            item.content,
-        );
-        return data
+    /**
+     * @name toResponse
+     * @param eod 
+     * @description This method is used to convert the type into response
+     */
+    public toResponse(eod: EODResponse): EOD {
+
+        let newTasks: Task[] = [];
+
+        eod.status.map((taskDetails: any) => {
+            taskDetails.type = {
+                displayName: taskTypeFormat[taskDetails.type],
+                className: taskBgColor[taskDetails.type]
+            }
+            newTasks.push(taskDetails)
+        })
+
+        const newEOD: EOD = new EOD(
+            eod.employeeName,
+            eod.position,
+            eod.department,
+            eod.date,
+            eod.sender,
+            eod.receiver,
+            eod.chatId,
+            newTasks,
+        )
+        return newEOD
     }
-}
 
-export class NewReplyAdaptor implements Adapter<NewMessage>{
-    public toRequest(item: NewMessage): replyMessage {
-        const data: replyMessage = new replyMessage(
-            item.is_read,
-            item.is_edit,
-            item.replied_to,
-            item.chat,
-            item.sender,
-            item.receiver,
-            item.time,
-            item.type,
-            item.content,
-        );
-        return data
+    /**
+     * @name toRequest
+     * @param eod 
+     */
+    public toRequest(eod: EOD): EODResponse {
+
+        let newStatus: TaskResponse[] = [];
+
+        eod.status.map((tasks: any) => {
+            switch (tasks.type.displayName) {
+                case 'Complete': tasks.type = 'completed'
+                    break;
+                case 'In Progress': tasks.type = 'InProgress'
+                    break;
+                case 'New Learning': tasks.type = 'newLearning'
+                    break;
+            }
+            newStatus.push(tasks);
+        })
+
+        const newEODResult: EODResponse = new EODResponse(
+            eod.employeeName,
+            eod.position,
+            eod.department,
+            eod.date,
+            eod.sender,
+            eod.receiver,
+            eod.chatId,
+            newStatus
+        )
+
+        return newEODResult;
     }
 }

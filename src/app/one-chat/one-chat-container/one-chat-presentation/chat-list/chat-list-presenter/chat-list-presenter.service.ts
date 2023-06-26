@@ -1,85 +1,58 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Overlay } from '@angular/cdk/overlay';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Subject } from 'rxjs/internal/Subject';
+import { Overlay } from '@angular/cdk/overlay';
 import { Observable } from 'rxjs/internal/Observable';
+import { Subject } from 'rxjs/internal/Subject';
 
-import { FormatTime } from 'src/app/core/utilities/formatTime';
-import { ConversationUser, GroupDetails, MessageRead } from 'src/app/one-chat/models/chat.model';
-import { NewUser } from 'src/app/shared/models/user.model';
+import { ConversationUsers, GroupDetails, MessageRead } from 'src/app/one-chat/models/chat.model';
+import { User } from 'src/app/shared/models/user.model';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { CreateGroupPresentationComponent } from 'src/app/one-chat/shared/create-group-presentation/create-group-presentation.component';
-import { takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Injectable()
 
 export class ChatListPresenterService implements OnDestroy {
 
-  public newConversationUser$: Observable<ConversationUser>;
-  public isReadData$: Observable<MessageRead>;
-  public newGroup$: Observable<GroupDetails>;
+  /** Observable for current conversation user */
+  public currentConversationUser$: Observable<ConversationUsers>;
+  /** Observable for new conversation user */
+  public newConversation$: Observable<ConversationUsers>;
+  /** Observable for message read data */
+  public messageRead$: Observable<MessageRead>;
+  /** Observable for new group details */
+  public newGroupData$: Observable<GroupDetails>;
 
-  private newConversationUser: Subject<ConversationUser>;
-  private isReadData: Subject<MessageRead>;
+  /** Subject for current conversation user */
+  private currentConversationUser: Subject<ConversationUsers>;
+  /** Subject for messaage read data*/
+  private messageRead: Subject<MessageRead>;
+  /** Subject for new conversation users*/
+  private newConversation: Subject<ConversationUsers>;
+  /** Observable for new group details */
+  public newGroupData: Subject<GroupDetails>;
+  /** stops the subcription on destroy*/
   private destroy: Subject<void>;
-  private newGroup: Subject<GroupDetails>;
-
-  public userId: string = localStorage.getItem('userId');
 
   constructor(
-    private _formatter: FormatTime,
     private _fb: FormBuilder,
     private _overlay: Overlay
   ) {
-    this.newConversationUser = new Subject();
-    this.isReadData = new Subject();
+    this.currentConversationUser$ = new Observable();
+    this.messageRead$ = new Observable();
+    this.newConversation$ = new Observable();
+    this.newGroupData$ = new Observable();
+
+    this.currentConversationUser = new Subject();
+    this.messageRead = new Subject();
+    this.newConversation = new Subject();
+    this.newGroupData = new Subject();
     this.destroy = new Subject();
-    this.newGroup = new Subject();
 
-    this.newConversationUser$ = new Observable();
-    this.isReadData$ = new Observable();
-    this.newGroup$ = new Observable();
-
-    this.newConversationUser$ = this.newConversationUser.asObservable();
-    this.isReadData$ = this.isReadData.asObservable();
-    this.newGroup$ = this.newGroup.asObservable();
-  }
-
-  /**
-   * @name getNewConversationUser
-   * @param user 
-   * @description This method is use to create new Conversation user
-   */
-  public getNewConversationUser(user: NewUser): void {
-    let obj: ConversationUser = {
-      _id: user._id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      photo: user.photo,
-      full_name: user.full_name,
-      chatId: '',
-      time: this._formatter.Formatter(new Date()),
-      message: '-',
-      notificationCount: 0,
-      role: user.role,
-      type: 'dm',
-    }
-    this.newConversationUser.next(obj)
-  }
-
-  /**
-   * @name getIsReadData
-   * @param data 
-   * @description This method will create the message Read object
-   */
-  public getIsReadData(data: ConversationUser): void {
-    let obj: MessageRead = {
-      chatId: data.chatId,
-      sender: data._id,
-      receiver: this.userId,
-      count: data.notificationCount
-    }
-    this.isReadData.next(obj)
+    this.currentConversationUser$ = this.currentConversationUser.asObservable();
+    this.messageRead$ = this.messageRead.asObservable();
+    this.newConversation$ = this.newConversation.asObservable();
+    this.newGroupData$ = this.newGroupData.asObservable();
   }
 
   /**
@@ -91,6 +64,60 @@ export class ChatListPresenterService implements OnDestroy {
     return this._fb.group({
       search: ['']
     })
+  }
+
+  /**
+   * @name getCurrentConversation
+   * @param user 
+   * @description This methosd will get the current  conversation
+   */
+  public getCurrentConversation(user: ConversationUsers, senderId: string): void {
+    let readMessages: MessageRead = {
+      chatId: user.chatId,
+      sender: senderId,
+      receiver: user.members[0]._id,
+      count: user.notificationCount
+    };
+    user.notificationCount = 0;
+    user.eodNotification = false;
+    this.currentConversationUser.next(user);
+    this.messageRead.next(readMessages);
+  }
+
+  /**
+   * @name createNewConversation
+   * @param user 
+   * @description This method will create a new Conversation user
+   */
+  public createNewConversation(user: User): void {
+    let newConversationUser: ConversationUsers = {
+      chatId: user._id,
+      owner: user._id,
+      chat_type: 'dm',
+      members: [{
+        _id: user._id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        photo: user.photo,
+        role: user.role,
+        full_name: user.full_name,
+      }],
+      sender: '',
+      receiver: '',
+      time: '',
+      lastMessage: '-',
+      lastMessageId: '',
+      isRead: false,
+      isEdit: false,
+      standardTime: '',
+      profile: user.photo,
+      displayName: user.full_name,
+      notificationCount: 0,
+      showIsOnline: false,
+      eodNotification: false
+    };
+    this.newConversation.next(newConversationUser);
+    this.currentConversationUser.next(newConversationUser);
   }
 
   public openCreateGroupForm(users: any): void {
@@ -105,11 +132,7 @@ export class ChatListPresenterService implements OnDestroy {
     overlay.backdropClick().pipe(takeUntil(this.destroy)).subscribe(() => overlay.detach());
 
     overlayRef.instance.getUsers = users;
-    overlayRef.instance.emitOverlayData.pipe(takeUntil(this.destroy)).subscribe((data) => {
-      if (data)
-        this.newGroup.next(data)
-      overlay.detach();
-    })
+    overlayRef.instance.newGroupInformation.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupData.next(groupDetails));
   }
 
   ngOnDestroy(): void {

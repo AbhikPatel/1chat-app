@@ -101,6 +101,7 @@ textarea {
     right: 0;
     padding: 30px 50px;
     transition: 0.6s all;
+    z-index: 10;
 }
 
 .eod-close {
@@ -121,8 +122,4 @@ textarea {
 
 .bg-learning {
     background-color: #f9ffac;
-}
-
-.overlay-container {
-    width: 800px;
 }

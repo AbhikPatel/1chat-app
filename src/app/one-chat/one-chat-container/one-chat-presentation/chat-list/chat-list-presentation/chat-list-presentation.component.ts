@@ -1,13 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Alive, ConversationUser, Group, MessageRead, Typing } from 'src/app/one-chat/models/chat.model';
-import { NewUser } from 'src/app/shared/models/user.model';
-import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { Router } from '@angular/router';
+
+import { ConversationUsers, GroupDetails, MessageRead, OnlineUser } from 'src/app/one-chat/models/chat.model';
+import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
+import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -15,147 +14,92 @@ import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one
   viewProviders: [ChatListPresenterService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatListPresentationComponent extends OneChatPresentationBase implements OnInit {
-  @ViewChild('inputType') inputType: ElementRef
+export class ChatListPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy {
 
-  /** This property is used to get Typing details */
-  @Input() public notificationCount: any;
+  /** This element is for toggle search */
+  @ViewChild('toggle') public toggle: ElementRef;
 
-  /** This property is used to get Typing details */
-  @Input() public getOnlineUsers: Alive[];
-
-  /** This property is used to get Typing details */
-  @Input() public set getGroupDetails(v: Group[]) {
-    if (v) {
-      this._getGroupDetails = v;
+  /** This property is used to get all the user details from container component */
+  @Input() public set allUsers(users: User[]) {
+    if (users) {
+      this.senderDetails = users.find((user: User) => user._id === this.userId);
+      let senderIndex = users.indexOf(this.senderDetails);
+      users.splice(senderIndex, 1);
+      this._allUsers = this.userRole === 'intern' ? users.filter((user: User) => user.role !== 'intern') : users;
     }
   }
-  public get getGroupDetails(): Group[] {
-    return this._getGroupDetails;
+
+  public get allUsers(): User[] {
+    return this._allUsers;
   }
 
-  /** This property is used to get Typing details */
-  @Input() public set getTypingData(v: Typing) {
-    if (v) {
-      this._getTypingData = v;
-      this.receivingTyping(v.sender)
+  /** This property will get only one to one conversation users */
+  @Input() public set conversationUsers(users: ConversationUsers[]) {
+    if (users) {
+      this.copyOfConnversationUsers = [...users];
+      this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
+      if (this.tabFlag) {
+        this.tabFlag = false;
+        this.onTabSwitch(true);
+      }
     }
   }
-  public get getTypingData(): Typing {
-    return this._getTypingData;
+  public get conversationUsers(): ConversationUsers[] {
+    return this._conversationUsers;
   }
 
-  /** This property is used to get sender Details */
-  @Input() public set getSenderDetails(v: NewUser) {
-    if (v) {
-      this._getSenderDetails = v;
-    }
-  }
-  public get getSenderDetails(): NewUser {
-    return this._getSenderDetails;
-  }
+  /** This property is used to emit the current conversation user */
+  @Output() public currectConversation: EventEmitter<ConversationUsers>
 
-  /** This property is used to get conversation user */
-  @Input() public set getConversationUser(v: ConversationUser[]) {
-    if (v) {
-      this._getConversationUser = v;
-    }
-  }
-  public get getConversationUser(): ConversationUser[] {
-    return this._getConversationUser;
-  }
-
-  /** This property is used to get new conversation user */
-  @Input() public set newConversationUser(v: ConversationUser) {
-    if (v) {
-      this._newConversationUser = v;
-      this._getConversationUser?.unshift(v)
-    }
-  }
-  public get newConversationUser(): ConversationUser {
-    return this._newConversationUser;
-  }
-
-  /** This property is used to get all the users */
-  @Input() public set getAllUser(v: NewUser[]) {
-    if (v) {
-      this._getAllUser = v;
-    }
-  }
-  public get getAllUser(): NewUser[] {
-    return this._getAllUser;
-  }
-
-  /** This property is used to emit chat ID */
-  @Output() public emitChatId: EventEmitter<string>;
-  /** This property is used to emit receiver's ID */
-  @Output() public emitReceiverId: EventEmitter<string>;
-  /** This property is used to emit the state of new chat */
-  @Output() public emitNewChatState: EventEmitter<void>;
-  /** This property is used to emit the state of new chat */
-  @Output() public emitIsReadData: EventEmitter<MessageRead>;
-  /** This property is used to emit the type of the chat */
-  @Output() public emitChatType: EventEmitter<string>;
-  /** This property is use to store the text for search */
+  /** This variable will store the search text */
   public searchText: string;
-  /** This property is use to store the chat ID */
-  public chatId: string;
-  /** This property is use to store the user ID */
+  /** This variable is formGroup for search users */
+  public searchGroup: FormGroup;
+  /** This variable will store the data of the current tab */
+  public tabData: boolean;
+  /** Flag for checking once */
+  public tabFlag: boolean;
+  /** This variable will store the full name of the sender */
+  public senderFullName: string;
+  /** This variable will store the current chat Id */
+  public currentChatId: string;
+  /** This variable will store the details of the sender */
+  public senderDetails: User;
+  /** This variable will store copy of all the conversation users */
+  public copyOfConnversationUsers: ConversationUsers[];
+  /** This variable will store all the chat Ids of conversation users */
+  public allChatIds: string[];
+  /** This variable will store id of the user */
   public userId: string;
-  /** This property is use to store typing data as per subject */
-  public showTyping: Subject<boolean>;
-  /** This property is use to store the new message */
-  public showNewMessage: Subject<boolean>;
-  /** This property is use to store ID of typing */
-  public typingId: string[];
-  /** This property is used to store boolean data for */
-  public typingStatus: boolean;
-  // This property is used to reset form
-  public resetSearch: FormGroup;
-  /** This property is used for toggle feature to search user */
-  @ViewChild('toggle') public toggle: any;
-  /** This variable will store the destroy */
-  public destroy: Subject<void>;
-  /** This variable will store the tab count */
-  public tabCount: boolean;
-  /** This variable will store the group notification count */
-  public groupNotificationCount: number;
-  /** This variable will store the chat notification count */
-  public chatNotificationCount: number;
+  /** This variable will store role of the user */
+  public userRole: string;
+  /** Flag for showing model */
   public showModel: boolean;
-  private _newConversationUser: ConversationUser;
-  private _getConversationUser: ConversationUser[];
-  private _getAllUser: NewUser[];
-  private _getTypingData: Typing;
-  private _getSenderDetails: NewUser;
-  private _getGroupDetails: Group[];
+
+  /**This properties are used for getter setter */
+  private _conversationUsers: ConversationUsers[];
+  private _allUsers: User[];
+
+  /** Stops the subscription on ngOnDestory */
+  private destroy: Subject<void>;
 
   constructor(
-    private _service: ChatListPresenterService,
-    private _cdr: ChangeDetectorRef,
-    private _route: Router,
+    private _ChatListPresenterService: ChatListPresenterService,
+    private _commonService: CommonService
   ) {
     super();
-    this.emitChatId = new EventEmitter();
-    this.emitReceiverId = new EventEmitter();
-    this.emitNewChatState = new EventEmitter();
-    this.emitIsReadData = new EventEmitter();
-    this.emitChatType = new EventEmitter();
-    this.emitGroupData = new EventEmitter();
-    this.destroy = new Subject();
-    this.showNewMessage = new Subject();
-    this._newConversationUser = {} as ConversationUser;
-    this._getAllUser = [];
-    this._getConversationUser = [];
-    this.typingId = [];
-    this.typingStatus = false;
-    this.searchText = '';
-    this.chatId = '';
-    this.resetSearch = this._service.getGroup();
-    this.tabCount = true;
-    this.groupNotificationCount = 0;
-    this.chatNotificationCount = 0;
+    this.searchGroup = this._ChatListPresenterService.getGroup();
     this.showModel = false;
+    this.tabData = true;
+    this.tabFlag = true;
+    this.currectConversation = new EventEmitter();
+    this.userRole = this._commonService.getUserRole();
+    this.userId = this._commonService.getUserId();
+    this.senderDetails = {} as User;
+    this.allChatIds = [];
+    this.copyOfConnversationUsers = [];
+    this._conversationUsers = [];
+    
   }
 
   ngOnInit(): void {
@@ -164,171 +108,120 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
 
   /**
    * @name props
-   * @description This method is use to call in ngOnInit
+   * @description This method is called in ngOnInit
    */
-  public props(): void {
-    this._service.newConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUser) => this.getConversationUser.unshift(user))
-    this._service.isReadData$.pipe(takeUntil(this.destroy)).subscribe((data: MessageRead) => this.emitIsReadData.emit(data))
-    this.resetSearch.valueChanges.subscribe((data) => this.searchText = data.search);
-    this._service.newGroup$.subscribe((data) => this.emitGroupData.emit(data))
+  private props() {
+    this._ChatListPresenterService.currentConversationUser$.subscribe((user: ConversationUsers) => this.currectConversation.emit(user));
+    this._ChatListPresenterService.messageRead$.subscribe((messages: MessageRead) => this.readedMessages.emit(messages));
+    this._ChatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
+      this._conversationUsers.unshift(user);
+      this.currentChatId = user.chatId;
+    })
+    this._ChatListPresenterService.newGroupData$.subscribe((groupDetails:GroupDetails) => this.newGroupDetails.emit(groupDetails))
   }
 
   /**
    * @name onNewChat
    * @param user 
-   * @description This method is use when the user tru to create chat with a new user
+   * @description This method is called to start a new dm conversation
    */
-  public onNewChat(user: NewUser): void {
-    let isUser = this.getConversationUser?.find((item: ConversationUser) => user._id === item._id)
-    if (isUser) {
-      this.toggle.nativeElement.checked = false;
-      this.onUser(isUser);
+  public onNewChat(user: User) {
+    const chatIdArr = this.conversationUsers.map((user: ConversationUsers) => user.chatId);
+    const resultArr = user.chats.reduce((acc, sub) => {
+      if (chatIdArr.includes(sub)) {
+        acc.push(sub)
+      }
+      return acc
+    }, []);
+    if (resultArr.length === 0) {
+      this._ChatListPresenterService.createNewConversation(user);
     } else {
-      this.emitNewChatState.emit();
-      this.emitChatType.emit('dm');
-      this._service.getNewConversationUser(user);
-      this.toggle.nativeElement.checked = false;
-      this.emitReceiverId.emit(user._id);
-      this.userId = user._id;
+      let findConversation: ConversationUsers = this.conversationUsers.find((user: ConversationUsers) => user.chatId === resultArr[0]);
+      this.onUser(findConversation);
     }
+    this.toggle.nativeElement.checked = false;
   }
 
   /**
    * @name onUser
+   * @param user 
+   * @description This method is used to display the chats of the selected user
+   */
+  public onUser(user: ConversationUsers): void {
+    this.checkNonConversationUsers();
+    this.currentChatId = user.chatId;
+    this._ChatListPresenterService.getCurrentConversation(user, this.userId);
+  }
+
+  /**
+   * @name checkNonConversationUsers
+   * @description This method is called to check if there is a non conversation chat in the list 
+   */
+  public checkNonConversationUsers(): void {
+    let nonConversationUser: number[] = [];
+    this.copyOfConnversationUsers.forEach((user: ConversationUsers) => {
+      if (!this.allChatIds.includes(user.chatId))
+        nonConversationUser.push(this.conversationUsers.indexOf(user));
+    });
+
+    setTimeout(() => {
+      this.conversationUsers = this.copyOfConnversationUsers.filter((user: ConversationUsers, index: number) => !nonConversationUser.includes(index));
+    }, 500);
+  }
+
+  /**
+   * @name onTabSwitch
    * @param data 
-   * @description This method is use to get the details of the user on click
+   * @description This method is used to show the chats which depend on the data
    */
-  public onUser(data: any): void {
-    this.chatId = data.chatId;
-    this.emitChatId.emit(data.chatId);
-    this.emitChatType.emit(data.type);
-    this.emitReceiverId.emit(data._id);
-    if (data.notificationCount !== 0 && data.type === 'dm')
-      this._service.getIsReadData(data);
-    this.userId = data._id;
-    if (data.type === 'dm') {
-      if (data.notificationCount > 0)
-        this.notificationCount.chat = this.notificationCount.chat - 1
-      let id = this.getConversationUser.findIndex((user: ConversationUser) => user === data);
-      this.getConversationUser[id].notificationCount = 0;
-      this.removeNonConversationUser();
-    } else {
-      if (data.notificationCount > 0)
-        this.notificationCount.group = this.notificationCount.group - 1
-      let id = this.getGroupDetails.findIndex((user: Group) => user === data);
-      this.getGroupDetails[id].notificationCount = 0;
-    }
+  public onTabSwitch(data: boolean): void {
+    this.tabData = data;
+    this._conversationUsers = this.copyOfConnversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' : users.chat_type === 'group');
+    const sortbyTime = (a, b) => {
+      const timestampA = a.time.getTime();
+      const timestampB = b.time.getTime();
+      return timestampB - timestampA;
+    };
+    this._conversationUsers.sort(sortbyTime);
   }
 
   /**
-   * @name removeNonConversationUser
-   * @description This method will remove the user which has not yet started any conversation
-   */
-  public removeNonConversationUser() {
-    let removeUser = this.getConversationUser.filter((user: ConversationUser) => user.chatId === '')
-    if (removeUser) {
-      /** To remove the users which has not started the conversations  */
-      removeUser.forEach((user: ConversationUser) => {
-        let id = this.getConversationUser.findIndex((data: ConversationUser) => data === user)
-        this.getConversationUser.splice(id, 1)
-      })
-    }
-  }
-
-  /**
-   * @name convertPhoto
-   * @param profileImg 
-   * @returns image url
-   * @description This method is use to convert the link into source link
-   */
-  public convertPhoto(profileImg: string): string {
-    let converter = 'http://172.16.3.107:2132/img/user/' + profileImg;
-    // let converter = 'https://onechat-jj9m.onrender.com/img/user/' + profileImg;
-    return profileImg ? converter : '../../../../../../assets/images/avatar.png';
-  }
-
-  /**
-   * @name receivingTyping
-   * @param sender gets the sender Id
-   * @description This method is used for the displaying the typing feature
-   */
-  public receivingTyping(sender: string): void {
-    if (!this.typingId.includes(sender)) {
-      this.typingId.push(sender)
-    }
-    this.typingStatus = true;
-    setTimeout(() => {
-      this.typingId = [];
-      this.typingStatus = false;
-      this._cdr.detectChanges();
-    }, 3000);
-
-  }
-
-  /**
-    * @name onLogOut
-    * @description This method is use to logout the user
-    */
-  public onLogOut(): void {
-    this._route.navigateByUrl('/login');
-    localStorage.clear();
-  }
-  /**
-   * @name checkOnline
+   * @name checkIfOnline
    * @param id 
-   * @description This method will show if the user is online or not
+   * @description This method is used to check if the user is online or not
    */
-  public checkOnline(id: string): boolean {
-    if (this.getOnlineUsers) {
-      let isOnline = this.getOnlineUsers.find((data: Alive) => data.userId === id)
-      return isOnline ? true : false;
-    } else
-      return false;
+  public checkIfOnline(id: string): boolean {
+    let allOnlineUsers: any = this.onlineUsers.map((user: OnlineUser) => user.userId);
+    return allOnlineUsers.includes(id);
   }
 
   /**
-   * @name onTab
-   * @description This method is used to switch tab between chat and group chat
+   * @name onNewConversation
+   * @description This method will open a model to start any new conversation
    */
-  public onTab(): void {
-    this.tabCount ? this.tabCount = false : this.tabCount = true;
-    this.removeNonConversationUser();
-  }
-
-  /**
-   * @name resetSearchForm
-   * @description This method will reset search form
-   */
-  public resetSearchForm(): void {
-    this.setFocus();
+  public onNewConversation(): void {
     this.showModel ? this.showModel = false : this.showModel = true;
-    this.toggle.nativeElement.checked = false;
-    setTimeout(() => {
-      this.resetSearch.reset();
-      this.searchText = ''
-    }, 1000);
-
   }
 
   /**
- * @description This method set focus default
- */
-  public setFocus(): void {
-    this.inputType.nativeElement.focus();
+   * @name onSearchUser
+   * @description This method is used to show modal
+   */
+  public onSearchUser(): void {
+    this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true
+    this.showModel = false;
   }
 
-  public onNewGroup(): void {
-    let userDetails: any[] = this.getAllUser.map((user: NewUser) => ({
+  /**
+   * @name onNewGroup
+   * @description This method is used to open overlay for create group form
+   */
+  public onNewGroup():void{
+    let userDetails: any[] = this.allUsers.map((user: User) => ({
       id: user._id,
       full_name: `${user.full_name} (${user.role})`,
     }))
-    this._service.openCreateGroupForm(userDetails);
-    this.showModel = false;
-  }
-
-  public openNewChat(){
-    this.toggle.nativeElement.checked = true;
-    this.showModel = false;
+    this._ChatListPresenterService.openCreateGroupForm(userDetails);
   }
 
   /**

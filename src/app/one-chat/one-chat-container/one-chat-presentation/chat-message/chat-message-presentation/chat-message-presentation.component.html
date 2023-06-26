@@ -1,483 +1,375 @@
 <!-- Start: User Message  -->
-<div class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3">
-    <!-- Start: Header Section  -->
-    <ng-container *ngIf="count === 1">
-        <div id="header" class="d-flex align-items-center px-5">
-            <div class="d-flex align-items-center">
-                <figure class="m-0">
-                    <img [src]="convertPhoto(getReceiverData?.photo)" class="rounded-circle border shadow-lg profile-img" alt="profile">
-                </figure>
-                <div class="ms-3 d-flex flex-column">
-                    <span class="fw-semibold"> {{getReceiverData?.full_name}} </span>
+<div
+    class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3 position-relative">
+
+    <ng-container *ngIf="receiversConversation else gif">
+
+        <!-- Floating Label  -->
+        <div class="floating-btn position-absolute rounded-circle d-flex justify-content-center align-items-center shadow-lg"
+            role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
+            *ngIf="userRole === 'intern'">
+            <span class="fs-4 text-white"> + </span>
+        </div>
+
+        <!-- Start: Header Section  -->
+        <div id="header" class="d-flex align-items-center px-5 justify-content-between">
+            <div class="d-flex align-items-center h-100">
+                <div class="d-flex align-items-center">
+                    <figure class="m-0">
+                        <img [src]="receiversConversation.profile" class="rounded-circle shadow border profile-img"
+                            alt="profile">
+                    </figure>
+                    <div class="ms-3 d-flex flex-column">
+                        <!-- <span class="fw-semibold"> {{getReceiverData?.full_name}} </span>
                     <ng-container *ngIf="showTyping | async else status">
                         <span [ngClass]="(showTyping | async) ? 'visible' : 'invisible'" class="fs-8"> Typing... </span>
                     </ng-container>
                     <ng-template #status>
                         <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
-                    </ng-template>
-                </div>
-            </div>
-            <div class="d-flex h-100 px-4">
-                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(true)"
-                    role="button" [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
-                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(false)"
-                    role="button" [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
-            </div>
-        </div>
-    </ng-container>
-    <ng-container *ngIf="count === 2">
-        <div id="header" class="d-flex align-items-center px-5">
-            <div class="d-flex align-items-center">
-                <figure class="m-0">
-                    <img [src]="convertPhoto(getGroupDetails?.photo)" class="rounded-circle profile-img" alt="profile">
-                </figure>
-                <div class="ms-3 d-flex flex-column">
-                    <span class="fw-semibold"> {{getGroupDetails?.title}} </span>
-                    <ng-container *ngIf="typerNames.length !== 0 else members">
-                        <span class="fs-7">{{typerNames.join(', ') + ' is typing'}}</span>
-                    </ng-container>
-                    <ng-template #members>
-                        <span class="fs-7">{{groupMembers}}</span>
-                    </ng-template>
-                </div>
-            </div>
-            <div class="d-flex h-100 px-4">
-                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(true)"
-                    role="button" [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
-                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(false)"
-                    role="button" [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
-            </div>
-        </div>
-    </ng-container>
-    <!-- End: Header Section  -->
-
-    <!-- Start: Chat Screen  -->
-    <ng-container>
-        <div class="chat-container flex-grow-1 overflow-auto  py-4  h-100" #messageContainer
-            (scroll)="onMessageScroll()">
-            <div class="container h-100 ">
-                <!-- Chat  -->
-                <div class="d-flex flex-column" *ngFor="let data of getChat, let i = index"
-                    [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-                    <!-- {{data | json}} -->
-                    <div class="d-flex justify-content-center">
-                        <span class="tick-color shadow text-info py-1 px-2 rounded-2 fs-7"
-                            *ngIf="formatDate(data.time,getChat[i-1]?.time)">
-                            {{formatDate(data.time,getChat[i-1]?.time) }}
-                        </span>
-                    </div>
-                    <div class="chat">
-                        <!-- Sender Name  -->
-                        <!-- <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
-                            <span class="text-info"> {{data.sender === senderId ? 'You' : getReceiverData?.full_name}}
-                            </span>
-                        </p> -->
-                        <ng-container *ngIf="data.chat_type === 'group'">
-                            <p class="mb-1 fs-7" [ngClass]="data.sender === senderId ? 'text-end' : 'text-start'">
-                                <span class="text-info"> {{data.sender === senderId ? 'You' :
-                                    getSenderName(data.sender)}}
-                                </span>
-                            </p>
+                    </ng-template> -->
+                        <span class="fw-semibold"> {{receiversConversation.displayName}} </span>
+                        <div class="fs-7"
+                            *ngIf="typingIds.includes(receiversConversation.members[0]._id) && showTypingText | async else online">
+                            Typing </div>
+                        <ng-container *ngIf="groupTyperNames.length !== 0">
+                            <span class="fs-7">{{groupTyperNames.join(', ') + ' is typing'}}</span>
                         </ng-container>
+                        <ng-template #online>
+                            <span class="fs-7"> Online </span>
+                        </ng-template>
+                    </div>
+                </div>
 
-                        <!-- Chat Message  -->
-                        <div class="d-flex"
-                            [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-                            <div class="d-flex align-items-center chat-text rounded-3 py-1 px-2 shadow mb-1"
-                                [ngClass]="data.sender === senderId ? 'bg-secondary' : 'bg-white'">
-                                <div>
-                                    <div class="fs-8 d-flex justify-content-end text-info"
-                                        *ngIf="data.is_edit === true">Edited</div>
-                                    <div class="Message-wrapper  text-white rounded-1 p-1 " *ngIf="data.replied_to">
-                                        <div class="mx-3">
-                                            <div class="d-flex align-items-center justify-content-between mb-1 ">
-                                                <span class="fs-9 text-nowrap"> {{data.sender === senderId ? 'You' :
-                                                    getReceiverData.full_name}}</span>
+                <!-- Tab view  -->
+                <div class="d-flex h-100 px-4">
+                    <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(true)"
+                        role="button" [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
+                    <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(false)"
+                        role="button" [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
+                </div>
+            </div>
+
+            <!-- Group functionality -->
+            <div class="d-flex" *ngIf="receiversConversation.chat_type === 'group'">
+                <span role="button" class="icon icon-bxs-user-plus fs-3" title="View group members"
+                    (click)="viewMembers()"></span>
+            </div>
+        </div>
+        <!-- End: Header Section  -->
+
+        <!-- Start: EOD Form  -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" data-bs-backdrop="static"
+            aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header d-flex justify-content-center">
+                <h5 class="offcanvas-title" id="offcanvasRightLabel"> Eod Report </h5>
+            </div>
+            <div class="offcanvas-body position-relative">
+
+                <!-- Start: EOD Report Summary -->
+                <div class="eod-container bg-white position-absolute shadow h-100 py-4"
+                    [ngClass]="showEODSummary ? 'eod-open' : 'eod-close'">
+                    <div class="d-flex justify-content-between align-items-center pb-3">
+                        <div>
+                            <span class="fw-bold"> Name: </span>
+                            <span> {{senderName}} </span>
+                        </div>
+                        <div>
+                            <span class="fw-bold"> Date: </span>
+                            <span> {{eodDate}} </span>
+                        </div>
+                    </div>
+                    <div class="table-container pb-3">
+                        <table class="w-100">
+                            <thead>
+                                <tr>
+                                    <th> Task </th>
+                                    <th> Hours </th>
+                                    <th> Description </th>
+                                    <th> Blocker </th>
+                                    <th> Status </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let task of allTasks">
+                                    <td> {{task.name}} </td>
+                                    <td> {{task.hours}} </td>
+                                    <td> {{task.description}} </td>
+                                    <td> {{task.blocker || '-'}} </td>
+                                    <td [ngClass]="task.type.className"> {{task.type.displayName}} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- EOD Summary buttons  -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-danger text-white" type="button" (click)="backToEod()"> Edit Eod
+                        </button>
+                        <button class="btn btn-success text-white" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" (click)="onEodSubmit()">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+                <!-- End: EOD Report Summary -->
+
+                <!-- Start: Accordion  -->
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                In Progress tasks
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
+                            aria-labelledby="headingOne">
+                            <div class="accordion-body">
+                                <!-- Start: EOD Form  -->
+                                <form [formGroup]="eodFormGroup">
+                                    <div class="border p-4 border-1 rounded-3 my-3 position-relative"
+                                        formArrayName="InProgress"
+                                        *ngFor="let m of this.formTaskArray('InProgress').controls; let i = index">
+
+                                        <!-- Delete Task button  -->
+                                        <div class="model-close-btn position-absolute"
+                                            (click)="onDeleteTask(i, 'InProgress')">
+                                            <button class="btn-close" type="button"></button>
+                                        </div>
+
+                                        <ng-container [formGroupName]="i">
+                                            <div class="row g-4">
+                                                <!-- Task Title  -->
+                                                <div class="col-6">
+                                                    <label for="title" class="form-label required"> Task Title</label>
+                                                    <input type="text" class="form-control" name="title" id="title"
+                                                        formControlName="name">
+                                                </div>
+
+                                                <!-- Work Hours  -->
+                                                <div class="col-6">
+                                                    <label for="hours" class="form-label required">Work Hours</label>
+                                                    <input type="number" class="form-control" name="hours" id="hours"
+                                                        formControlName="hours">
+                                                </div>
+
+                                                <!-- Description  -->
+                                                <div class="col-12">
+                                                    <label for="description"
+                                                        class="form-label required">Description</label>
+                                                    <textarea name="description" id="description" cols="30" rows="8"
+                                                        class="form-control" formControlName="description"></textarea>
+                                                </div>
+
+                                                <!-- Blocker  -->
+                                                <div class="col-12">
+                                                    <label for="blocker" class="form-label"> Blocker </label>
+                                                    <input type="text" class="form-control" name="blocker" id="blocker"
+                                                        formControlName="blocker">
+                                                </div>
                                             </div>
-                                            <div class="fs-9">{{data.replied_to['content']?.text }}</div>
-                                        </div>
+                                        </ng-container>
                                     </div>
-                                    <div>
-                                        <span> {{data.content.text}} </span>
-                                    </div>
-                                </div>
-                                <!--  -->
-                                <!-- <label for="openBox" class="position-relative">
-                                    <span class="d-flex icon-down-arrow fs-9" id="downArrow" (click)="toggleModel(i)"
-                                        #span>
-                                    </span>
-                                    <ng-container>
-                                        <div class="popup bg-white text-black  position-absolute p-1"
-                                            [ngClass]="i === id && ToggleModel  ? ' d-block' : 'd-none'">
-                                            <ul class="list-group cursor-pointer">
-                                                <li class="list-group-item fs-9 mt-2 d-flex align-items-center">
-                                                    <span class="icon-info"></span>
-                                                    <span class="ms-1">Message Info </span>
-                                                </li>
-                                                <li class="list-group-item fs-9 my-2 d-flex align-items-center">
-                                                    <label for="reply" (click)="replyMessage(data)">
-                                                        <span class="icon-reply"></span>
-                                                        <span class="ms-1">Reply</span>
-                                                    </label>
-                                                </li>
-                                                <li class="list-group-item fs-9 d-flex align-items-center"
-                                                    (click)="editMessage(data)" *ngIf="data.sender === senderId">
-                                                    <span class="icon-pencil "></span>
-                                                    <span class="ms-1">Edit</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </ng-container>
+                                </form>
+                                <button class="btn btn-primary w-100 mt-3" type="button"
+                                    [disabled]="eodFormGroup.get('InProgress').invalid"
+                                    (click)="onAddTask('InProgress')">
+                                    + Add Task </button>
+                                <!-- End: EOD Form  -->
+                            </div>
+                        </div>
+                    </div>
 
-                                </label> -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Completed Tasks
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+
+                                <!-- Start: EOD Form  -->
+                                <form [formGroup]="eodFormGroup">
+                                    <div class="border p-4 border-1 rounded-3 my-3 position-relative"
+                                        formArrayName="completed"
+                                        *ngFor="let m of this.formTaskArray('completed').controls; let i = index">
+                                        <div class="model-close-btn position-absolute"
+                                            (click)="onDeleteTask(i, 'completed')">
+                                            <button class="btn-close" type="button"></button>
+                                        </div>
+                                        <ng-container [formGroupName]="i">
+                                            <div class="row g-4">
+
+                                                <!-- Task Title  -->
+                                                <div class="col-6">
+                                                    <label for="title" class="form-label required">Task Title</label>
+                                                    <input type="text" class="form-control" name="title" id="title"
+                                                        formControlName="name">
+                                                </div>
+
+                                                <!-- Work Hours  -->
+                                                <div class="col-6">
+                                                    <label for="hours" class="form-label required">Work Hours</label>
+                                                    <input type="number" class="form-control" name="hours" id="hours"
+                                                        formControlName="hours">
+                                                </div>
+
+                                                <!-- Description  -->
+                                                <div class="col-12">
+                                                    <label for="description"
+                                                        class="form-label required">Description</label>
+                                                    <textarea name="description" id="description" cols="30" rows="8"
+                                                        class="form-control" formControlName="description"></textarea>
+                                                </div>
+
+                                                <!-- Blocker  -->
+                                                <div class="col-12">
+                                                    <label for="blocker" class="form-label"> Blocker </label>
+                                                    <input type="text" class="form-control" name="blocker" id="blocker"
+                                                        formControlName="blocker">
+                                                </div>
+
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </form>
+                                <button class="btn btn-primary w-100 mt-3"
+                                    [disabled]="eodFormGroup.get('completed').invalid" (click)="onAddTask('completed')">
+                                    + Add
+                                    Task
+                                </button>
+                                <!-- End: EOD Form  -->
 
                             </div>
                         </div>
-
-                        <!-- Time and Date  -->
-                        <p class="fs-8 text-info d-flex align-items-center"
-                            [ngClass]="data.sender === senderId ? 'justify-content-end' : 'justify-content-start'">
-                            <span class="pe-1">
-                                {{data.convertedTime}}
-                            </span>
-                            <ng-container *ngIf="data.sender === senderId">
-                                <span *ngIf="!data.is_read">
-                                    <img src="https://img.icons8.com/ios-filled/16/b1b1b1/double-tick.png" />
-                                </span>
-                                <span *ngIf="data.is_read">
-                                    <img src="https://img.icons8.com/ios-filled/16/00ffff/double-tick.png" />
-                                </span>
-                            </ng-container>
-                        </p>
                     </div>
-                </div>
-                <div class="icon icon-circle-down fs-4 text-info position-fixed end-0 me-5 position-relative scroll-icon"
-                    (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
-                    <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
-                </div>
-                <ng-container *ngIf="!getReceiverData.full_name && !getGroupDetails">
-                    <div class="d-flex flex-column h-100 justify-content-center align-items-center">
-                        <figure>
-                            <img src="../../../../../../assets/icons/981-consultation-lineal.gif"
-                                alt="user-conversation-image" class="w-75">
-                        </figure>
-                        <h4 class="text-center"> Select any user to start the conversation </h4>
-                    </div>
-                </ng-container>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                New Learning
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
 
-            </div>
-        </div>
-        <div class="px-5 position-relative py-0 emojis-container">
-            <ng-container *ngIf="getReceiverData.full_name">
-                <div class="icon icon-circle-down position-absolute  fs-4 text-info  me-5  scroll-icon"
-                    (click)="scrollUp()" *ngIf="!isScrolledToBottom" role="button">
-                    <!-- <span class="count-message position-absolute   badge rounded-pill bg-secondary  fs-9 text-black" >1</span> -->
-                </div>
-            </ng-container>
+                                <!-- Start: EOD Form  -->
+                                <form [formGroup]="eodFormGroup">
+                                    <div class="border border-1 p-4 rounded-3 my-3 position-relative"
+                                        formArrayName="newLearning"
+                                        *ngFor="let m of this.formTaskArray('newLearning').controls; let i = index">
+                                        <div class="model-close-btn position-absolute"
+                                            (click)="onDeleteTask(i, 'newLearning')">
+                                            <button class="btn-close" type="button"></button>
+                                        </div>
+                                        <ng-container [formGroupName]="i">
+                                            <div class="row g-4">
 
-            <emoji-mart class="emoji-mart " *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
-                title="Pick your emoji…"></emoji-mart>
-        </div>
+                                                <!-- Task Title  -->
+                                                <div class="col-6">
+                                                    <label for="title" class="form-label required">Task Title</label>
+                                                    <input type="text" class="form-control" name="title" id="title"
+                                                        formControlName="name">
+                                                </div>
 
-    </ng-container>
-    <!-- End: Chat Screen  -->
+                                                <!-- Work Hours  -->
+                                                <div class="col-6">
+                                                    <label for="hours" class="form-label required">Work Hours</label>
+                                                    <input type="number" class="form-control" name="hours" id="hours"
+                                                        formControlName="hours">
+                                                </div>
 
-    <!-- Start: EOD Report -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" data-bs-backdrop="static" id="offcanvasRight"
-        aria-labelledby="offcanvasRightLabel">
-        <div class="offcanvas-header d-flex justify-content-center border-bottom border-1 shadow">
-            <h5 class="offcanvas-title" id="offcanvasRightLabel"> EOD Report </h5>
-        </div>
-        <div class="offcanvas-body position-relative">
+                                                <!-- Description  -->
+                                                <div class="col-12">
+                                                    <label for="description" class="form-label"> Description </label>
+                                                    <textarea name="description" id="description" cols="30" rows="8"
+                                                        class="form-control" formControlName="description"></textarea>
+                                                </div>
 
-            <!-- Start: Accordion Section  -->
-            <div class="accordion" id="accordionExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            OnGoing Tasks
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-
-                            <!-- Start: EOD Form  -->
-                            <form [formGroup]="eodGroup">
-                                <div class="border p-4 border-1 rounded-3 my-3 position-relative"
-                                    formArrayName="onGoing"
-                                    *ngFor="let m of this.formTaskArray('onGoing').controls; let i = index">
-                                    <div class="model-close-btn position-absolute" (click)="onDeleteTask(i, 'onGoing')">
-                                        <button class="btn-close" type="button"></button>
+                                                <!-- Blocker  -->
+                                                <div class="col-12">
+                                                    <label for="blocker" class="form-label"> Blocker </label>
+                                                    <input type="text" class="form-control" name="blocker" id="blocker"
+                                                        formControlName="blocker">
+                                                </div>
+                                            </div>
+                                        </ng-container>
                                     </div>
-                                    <ng-container [formGroupName]="i">
-                                        <div class="row g-4">
-                                            <!-- Delete Task button  -->
+                                </form>
+                                <button class="btn btn-primary w-100 mt-3"
+                                    [disabled]="eodFormGroup.get('newLearning').invalid"
+                                    (click)="onAddTask('newLearning')">
+                                    +
+                                    Add Task
+                                </button>
+                                <!-- End: EOD Form  -->
 
-                                            <!-- Task Title  -->
-                                            <div class="col-6">
-                                                <label for="title" class="form-label required"> Task Title</label>
-                                                <input type="text" class="form-control" name="title" id="title"
-                                                    formControlName="name">
-                                            </div>
-
-                                            <!-- Work Hours  -->
-                                            <div class="col-6">
-                                                <label for="hours" class="form-label required">Work Hours</label>
-                                                <input type="number" class="form-control" name="hours" id="hours"
-                                                    formControlName="hours">
-                                            </div>
-
-                                            <!-- Description  -->
-                                            <div class="col-12">
-                                                <label for="description" class="form-label required">Description</label>
-                                                <textarea name="description" id="description" cols="30" rows="8"
-                                                    class="form-control" formControlName="description"></textarea>
-                                            </div>
-
-                                            <!-- Blocker  -->
-                                            <div class="col-12">
-                                                <label for="blocker" class="form-label"> Blocker </label>
-                                                <input type="text" class="form-control" name="blocker" id="blocker"
-                                                    formControlName="blocker">
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </form>
-                            <button class="btn btn-primary w-100 mt-3"
-                                (click)="onAddTask('onGoing')">
-                                + Add
-                                Task
-                            </button>
-                            <!-- End: EOD Form  -->
-
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Completed Tasks
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-
-                            <!-- Start: EOD Form  -->
-                            <form [formGroup]="eodGroup">
-                                <div class="border p-4 border-1 rounded-3 my-3 position-relative"
-                                    formArrayName="completed"
-                                    *ngFor="let m of this.formTaskArray('completed').controls; let i = index">
-                                    <div class="model-close-btn position-absolute"
-                                        (click)="onDeleteTask(i, 'completed')">
-                                        <button class="btn-close" type="button"></button>
-                                    </div>
-                                    <ng-container [formGroupName]="i">
-                                        <div class="row g-4">
-
-                                            <!-- Task Title  -->
-                                            <div class="col-6">
-                                                <label for="title" class="form-label required">Task Title</label>
-                                                <input type="text" class="form-control" name="title" id="title"
-                                                    formControlName="name">
-                                            </div>
-
-                                            <!-- Work Hours  -->
-                                            <div class="col-6">
-                                                <label for="hours" class="form-label required">Work Hours</label>
-                                                <input type="number" class="form-control" name="hours" id="hours"
-                                                    formControlName="hours">
-                                            </div>
-
-                                            <!-- Description  -->
-                                            <div class="col-12">
-                                                <label for="description" class="form-label required">Description</label>
-                                                <textarea name="description" id="description" cols="30" rows="8"
-                                                    class="form-control" formControlName="description"></textarea>
-                                            </div>
-
-                                            <!-- Blocker  -->
-                                            <div class="col-12">
-                                                <label for="blocker" class="form-label"> Blocker </label>
-                                                <input type="text" class="form-control" name="blocker" id="blocker"
-                                                    formControlName="blocker">
-                                            </div>
-
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </form>
-                            <button class="btn btn-primary w-100 mt-3"
-                                (click)="onAddTask('completed')"> + Add
-                                Task
-                            </button>
-                            <!-- End: EOD Form  -->
-
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            New Learning
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-
-                            <!-- Start: EOD Form  -->
-                            <form [formGroup]="eodGroup">
-                                <!-- <div class="border p-4 rounded-3 my-3 position-relative" formArrayName="newLearning"
-                                    *ngFor="let m of this.formTaskArray('newLearning').controls; let i = index">
-                                    <div class="model-close-btn position-absolute"
-                                        (click)="onDeleteTask(i, 'newLearning')">
-                                        <button class="btn-close" type="button"></button>
-                                    </div> -->
-                                    <ng-container >
-                                        <div class="row g-4">
-
-                                            <!-- Task Title  -->
-                                            <div class="col-6">
-                                                <label for="title" class="form-label required">Task Title</label>
-                                                <input type="text" class="form-control" name="title" id="title"
-                                                    formControlName="name">
-                                            </div>
-
-                                            <!-- Work Hours  -->
-                                            <div class="col-6">
-                                                <label for="hours" class="form-label required">Work Hours</label>
-                                                <input type="number" class="form-control" name="hours" id="hours"
-                                                    formControlName="hours">
-                                            </div>
-
-                                            <!-- Description  -->
-                                            <div class="col-12">
-                                                <label for="description" class="form-label"> Description </label>
-                                                <textarea name="description" id="description" cols="30" rows="8"
-                                                    class="form-control" formControlName="description"></textarea>
-                                            </div>
-
-                                            <!-- Blocker  -->
-                                            <div class="col-12">
-                                                <label for="blocker" class="form-label"> Blocker </label>
-                                                <input type="text" class="form-control" name="blocker" id="blocker"
-                                                    formControlName="blocker">
-                                            </div>
-                                        </div>
-                                    </ng-container>
-                                <!-- </div> -->
-                            </form>
-                            <button class="btn btn-primary w-100 mt-3"
-                                (click)="onAddTask('newLearning')"> +
-                                Add Task
-                            </button>
-                            <!-- End: EOD Form  -->
-
-                        </div>
-                    </div>
-                </div>
+                <!-- End: Accordion  -->
 
                 <div class="d-flex justify-content-between pt-3">
                     <button class="btn btn-danger text-white" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"> Cancel </button>
-                    <button class="btn btn-success text-white" [disabled]="eodGroup.invalid" (click)="onEodSubmit()"
-                        type="submit"> Submit </button>
-                </div>
-            </div>
-            <!-- End: Accordion Section  -->
-
-            <div class="eod-container bg-white position-absolute shadow h-100 py-4"
-                [ngClass]="showTasks ? 'eod-open' : 'eod-close'">
-                <div class="d-flex justify-content-between align-items-center pb-3">
-                    <div>
-                        <span class="fw-bold"> Name: </span>
-                        <span> Abhishek </span>
-                    </div>
-                    <div>
-                        <span class="fw-bold"> Date: </span>
-                        <span> 23/5/2023 </span>
-                    </div>
-                </div>
-                <div class="table-container pb-3">
-                    <table class="w-100">
-                        <thead>
-                            <tr>
-                                <th> Task </th>
-                                <th> Hours </th>
-                                <th> Description </th>
-                                <th> Blocker </th>
-                                <th> Status </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let task of allTasks">
-                                <td> {{task.title}} </td>
-                                <td> {{task.hours}} </td>
-                                <td> {{task.description}} </td>
-                                <td> {{task.blocker || '-'}} </td>
-                                <td
-                                    [ngClass]="{'bg-completed' : task.type === 'completed','bg-progress' : task.type === 'onGoing', 'bg-learning' : task.type === 'newLearning'}">
-                                    {{task.type}} </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <button class="btn btn-danger text-white" type="button" (click)="backToEod()"> Edit Eod </button>
-                    <button class="btn btn-success text-white" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" (click)="eodSubmit()"> Submit
+                        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" (click)="onCancel()"> Cancel
+                    </button>
+                    <button class="btn btn-success text-white" type="submit" [disabled]="!eodFormGroup.valid"
+                        (click)="onEodSummary()"> Submit
                     </button>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- End: EOD Report -->
+        <!-- End: EOD Form  -->
 
-    <!-- Start: Message  -->
-    <ng-container *ngIf="getReceiverData.full_name || getGroupDetails">
-        <div id="typer" class="d-flex flex-column bg-theme px-5 pt-2">
-            <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
-                <!-- Reply Model -->
-                <div class="Reply-wrapper text-white rounded-1 p-2 pe-3" #ReplyWrapper>
-                    <div class="mx-3">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <span> {{replyMessageData?.sender === senderId ? 'You' : getReceiverData.full_name}}</span>
-                            <span class="closeReplayMessage" (click)="closeReplyModel()">X</span>
-                        </div>
-                        <div>{{replyMessageData?.content.text}}</div>
-                    </div>
-                </div>
-                <!-- Reply Model -->
-                <div class="d-flex align-items-center ">
-                    <input type="text" class="form-control py-2 rounded-1" name="message" formControlName="message"
-                        autocomplete="off" placeholder="Type a new message" #myInput [(ngModel)]="message">
-                    <span class="icon-{{cancelEdit}} ps-3 cursor-pointer text-danger fw-bold"
-                        (click)="editCancel()"></span>
-                </div>
-                <div class="d-flex align-items-center justify-content-between px-1 py-1">
-                    <div class="file-attach d-flex align-items-center gap-2">
-                        <span class="icon-{{closeIcon}} cursor-pointer" (click)="closeEmojiPicker()"></span>
-                        <span class="icon icon-emoji-smile fs-5 cursor-pointer" (click)="openEmojiPicker()"></span>
-                        <label for="file" class="d-flex align-items-center">
-                            <span class="icon icon-paperclip fs-5 cursor-pointer"></span>
-                        </label>
-                        <span class="icon" role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-                            aria-controls="offcanvasRight"> EOD </span>
-                    </div>
-                    <button class="fs-4 border-0 ms-3 bg-transparent" type="submit">
-                        <span class='icon icon-bxs-send'></span>
-                    </button>
-                </div>
-                <input type="file" id="file" class="d-none">
-            </form>
+        <!-- Start: Chat Screen -->
+        <div class="flex-grow-1 overflow-hidden position-relative">
+
+            <!-- Group Members Modal  -->
+            <div class="members-modal position-absolute shadow-lg py-2 rounded-1 bg-white top-0 end-0"
+                *ngIf="receiversConversation.chat_type === 'group' && showMembersModal">
+                <ul class="list-unstyled m-0">
+                    <li class="d-flex align-items-center px-3 py-2"
+                        *ngFor="let members of receiversConversation.members">
+                        <figure class="m-0">
+                            <img [src]="members.photo" alt="avatar" class="rounded-circle shadow profile-img">
+                        </figure>
+                        <span class="ps-3"> {{members.full_name}} </span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Chatting  -->
+            <ng-container *ngIf="currentWindow else eod">
+                <app-chatting-presentation [chatArray]="chatArray" [senderId]="senderId"
+                    (chatData)="getChatData($event)" (InputTyping)="getInputTyping()"
+                    (editMessageObj)="getEditMessageObj($event)" (repliedMessage)="getRepliedMessage($event)"
+                    [receiversConversation]="receiversConversation"></app-chatting-presentation>
+            </ng-container>
+
+            <!-- Eod Status Reaport  -->
+            <ng-template #eod>
+                <app-eod-presentation [getEodDetails]="eodReportDetails"
+                    [getReports]="getReports"></app-eod-presentation>
+            </ng-template>
         </div>
+        <!-- End: Chat Screen -->
+
     </ng-container>
-    <!-- End: Message  -->
+
+    <!-- If no conversation started message -->
+    <ng-template #gif>
+        <div class="d-flex flex-column h-100 justify-content-center align-items-center">
+            <figure>
+                <img src="../../../../../../assets/icons/981-consultation-lineal.gif" alt="user-conversation-image"
+                    class="w-75">
+            </figure>
+            <h4 class="text-center"> Select any user to start the conversation </h4>
+        </div>
+    </ng-template>
 </div>
-<!-- End: User Message  -->
+<!-- End: User Message -->

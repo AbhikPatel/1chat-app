@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   baseURL: 'http://172.16.3.107:2132/api/v1/',
   socketUrl:'http://172.16.3.107:2132',
+  imageUrl:'http://172.16.3.107:2132/img/user/'
   // baseURL: 'https://onechat-jj9m.onrender.com/api/v1/',
   // socketUrl: 'https://onechat-jj9m.onrender.com'
 };

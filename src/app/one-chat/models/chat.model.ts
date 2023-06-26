@@ -1,165 +1,3 @@
-export class Message {
-    _id?: string
-    is_read: boolean
-    is_edit: boolean
-    replied_to?: {}
-    chat: string
-    sender: string
-    receiver: string
-    time: Date
-    type: string
-    content: Text
-
-    constructor(
-        is_read: boolean,
-        is_edit: boolean,
-        chat: string,
-        sender: string,
-        receiver: string,
-        time: Date,
-        type: string,
-        content: Text,
-    ) {
-
-        this.is_read = is_read
-        this.is_edit = is_edit
-        this.chat = chat
-        this.sender = sender
-        this.receiver = receiver
-        this.time = time
-        this.type = type
-        this.content = content
-    }
-
-}
-export class EditMessage {
-    _id: string
-    is_read: boolean
-    is_edit: boolean
-    replied_to: {}
-    chat: string
-    sender: string
-    receiver: string
-    time: Date
-    type: string
-    content: Text
-
-    constructor(
-        _id: string,
-        is_read: boolean,
-        is_edit: boolean,
-        replied_to: {},
-        chat: string,
-        sender: string,
-        receiver: string,
-        time: Date,
-        type: string,
-        content: Text,
-    ) {
-        this._id = _id
-        this.is_read = is_read
-        this.is_edit = is_edit
-        this.replied_to = replied_to
-        this.chat = chat
-        this.sender = sender
-        this.receiver = receiver
-        this.time = time
-        this.type = type
-        this.content = content
-    }
-
-}
-export class replyMessage {
-    is_read: boolean
-    is_edit: boolean
-    replied_to: {}
-    chat: string
-    sender: string
-    receiver: string
-    time: Date
-    type: string
-    content: Text
-
-    constructor(
-        is_read: boolean,
-        is_edit: boolean,
-        replied_to: {},
-        chat: string,
-        sender: string,
-        receiver: string,
-        time: Date,
-        type: string,
-        content: Text,
-    ) {
-        this.is_read = is_read
-        this.is_edit = is_edit
-        this.replied_to = replied_to
-        this.chat = chat
-        this.sender = sender
-        this.receiver = receiver
-        this.time = time
-        this.type = type
-        this.content = content
-    }
-
-}
-export class NewMessage {
-    _id: string
-    is_read: boolean
-    is_edit: boolean
-    replied_to: {}
-    chat: string
-    sender: string
-    full_name?: string
-    receiver: string
-    time: Date
-    type: string
-    content: Text
-    convertedTime: string
-    is_sender: boolean
-    chat_type: string
-
-    constructor(
-        _id: string,
-        is_read: boolean,
-        is_edit: boolean,
-        replied_to: {},
-        chat: string,
-        sender: string,
-        receiver: string,
-        time: Date,
-        type: string,
-        content: Text,
-        convertedTime: string,
-        is_sender: boolean,
-        chat_type: string
-    ) {
-        this._id = _id
-        this.is_read = is_read
-        this.is_edit = is_edit;
-        this.replied_to = replied_to
-        this.chat = chat
-        this.sender = sender
-        this.receiver = receiver
-        this.time = time
-        this.type = type
-        this.content = content
-        this.convertedTime = convertedTime
-        this.is_sender = is_sender
-        this.chat_type = chat_type
-    }
-}
-
-export class Text {
-    text: string
-
-    constructor(
-        text: string
-    ) {
-        this.text = text
-    }
-}
-
 export class CreateChat {
     owner: string
     chat_type: string
@@ -186,13 +24,13 @@ export class Typing {
     receiver: string
     sender: string
     isGroup: boolean
-    typer?: string
+    typerName?: string
 
     constructor(
         receiver: string,
         sender: string,
         isGroup: boolean,
-        typer?: string
+        typerName?: string
     ) {
         this.receiver = receiver
         this.sender = sender
@@ -200,14 +38,103 @@ export class Typing {
     }
 }
 
-export class Conversation {
+export class Text {
+    text: string
+
+    constructor(
+        text: string
+    ) {
+        this.text = text
+    }
+}
+
+export class MessageResponse {
+    _id?: string
+    is_read: boolean
+    is_edit: boolean
+    chat: string
+    sender: string
+    receiver: string
+    time: Date
+    type: string
+    content: Text
+    replied_to?: any
+    
+    constructor(
+        is_read: boolean,
+        is_edit: boolean,
+        chat: string,
+        sender: string,
+        receiver: string,
+        time: Date,
+        type: string,
+        content: Text,
+    ) {
+
+        this.is_read = is_read
+        this.is_edit = is_edit
+        this.chat = chat
+        this.sender = sender
+        this.receiver = receiver
+        this.time = time
+        this.type = type
+        this.content = content
+    }
+}
+
+export class Message {
+    _id: string
+    is_read: boolean
+    is_edit: boolean
+    chat: string
+    sender: string
+    receiver: string
+    time: Date
+    type: string
+    content: Text
+    is_sender: boolean
+    displayTime: string
+    replied_to?: any
+    
+    constructor(
+        _id: string,
+        is_read: boolean,
+        is_edit: boolean,
+        chat: string,
+        sender: string,
+        receiver: string,
+        time: Date,
+        type: string,
+        content: Text,
+        is_sender: boolean,
+        displayTime: string,
+        replied_to?: any
+    ) {
+        this._id = _id
+        this.is_read = is_read
+        this.is_edit = is_edit
+        this.chat = chat
+        this.sender = sender
+        this.receiver = receiver
+        this.time = time
+        this.type = type
+        this.content = content
+        this.is_sender = is_sender
+        this.displayTime = displayTime
+        this.replied_to = replied_to
+    }
+}
+
+
+export class ConversationUserResponse {
     _id: string
     owner: string
     chat_type: string
     title: string
     members: Member[]
-    photo:string
-    lastMessage: Message
+    lastMessage: MessageResponse
+    notificationCount: number
+    photo?: string
 
     constructor(
         _id: string,
@@ -215,8 +142,9 @@ export class Conversation {
         chat_type: string,
         title: string,
         members: Member[],
-        photo:string,
-        lastMessage: Message
+        lastMessage: MessageResponse,
+        notificationCount: number,
+        photo?: string,
     ) {
         this._id = _id
         this.owner = owner
@@ -224,9 +152,70 @@ export class Conversation {
         this.title = title
         this.members = members
         this.lastMessage = lastMessage
-        this.photo = photo
+        this.notificationCount = notificationCount
     }
 }
+
+export class ConversationUsers {
+    chatId: string
+    owner: string
+    chat_type: string
+    members: Member[]
+    sender: string
+    receiver: string
+    time: any
+    lastMessage: string
+    lastMessageId: string
+    isRead: boolean
+    isEdit: boolean
+    standardTime: string
+    profile: string
+    displayName: string
+    notificationCount: number
+    showIsOnline: boolean
+    eodNotification:boolean
+    _id?: string
+
+    constructor(
+        chatId: string,
+        owner: string,
+        chat_type: string,
+        members: Member[],
+        sender: string,
+        receiver: string,
+        time: any,
+        lastMessage: string,
+        lastMessageId: string,
+        isRead: boolean,
+        isEdit: boolean,
+        standardTime: string,
+        profile: string,
+        displayName: string,
+        notificationCount: number,
+        showIsOnline: boolean,
+        eodNotification:boolean,
+        _id?: string
+    ) {
+        this.chatId = chatId
+        this.owner = owner
+        this.chat_type = chat_type
+        this.members = members
+        this.sender = sender
+        this.receiver = receiver
+        this.time = time
+        this.lastMessage = lastMessage
+        this.lastMessageId = lastMessageId
+        this.isRead = isRead
+        this.isEdit = isEdit
+        this.standardTime = standardTime
+        this.profile = profile
+        this.displayName = displayName
+        this.notificationCount = notificationCount
+        this.showIsOnline = showIsOnline
+        this.eodNotification = eodNotification
+    }
+}
+
 export class Chat {
     _id: string
     owner: string
@@ -276,48 +265,6 @@ export class Member {
     }
 }
 
-export class ConversationUser {
-    _id: string
-    first_name: string
-    last_name: string
-    chatId: string
-    photo: string
-    full_name: string
-    time: string
-    message: string
-    notificationCount: number
-    role?: string
-    type?: string
-    timestamp?: Date
-    members?: string[]
-
-    constructor(
-        _id: string,
-        first_name: string,
-        last_name: string,
-        chatId: string,
-        photo: string,
-        full_name: string,
-        time: string,
-        message: string,
-        notificationCount: number,
-        role?: string,
-        type?: string,
-        timestamp?: Date,
-        members?: string[],
-    ) {
-        this._id = _id
-        this.first_name = first_name
-        this.last_name = last_name
-        this.chatId = chatId
-        this.photo = photo
-        this.full_name = full_name
-        this.time = time
-        this.message = message
-        this.notificationCount = notificationCount
-    }
-}
-
 export class MessageRead {
     chatId: string
     sender: string
@@ -337,7 +284,7 @@ export class MessageRead {
     }
 }
 
-export class Alive {
+export class OnlineUser {
     userId: string
     socketId: string
 

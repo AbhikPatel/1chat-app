@@ -1,20 +1,23 @@
 import { Injectable } from "@angular/core";
 import { Adapter } from "src/app/core/adaptor/adaptor";
-import { NewUser, User } from "../models/user.model";
+import { environment } from "src/environments/environment";
+import { User, UserResponse } from "../models/user.model";
 
 @Injectable()
-export class userAdaptor implements Adapter<NewUser>{
+export class userAdaptor implements Adapter<User>{
 
-    public toResponse(item: User): NewUser {
-        const fullName = item.first_name + ' ' + item.last_name
-        const user:NewUser = new NewUser(
+    public toResponse(item: UserResponse): User {
+        const fullName:string = item.first_name + ' ' + item.last_name;
+        const profile:string = environment.imageUrl + item.photo;
+
+        const user:User = new User(
             item._id,
             item.first_name,
             item.last_name,
             fullName,
             item.email,
             item.chats,
-            item.photo,
+            profile,
             item.role,
         )
         return user
