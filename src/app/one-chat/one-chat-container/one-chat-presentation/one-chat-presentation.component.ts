@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, Conversation, ConversationUser, CreateChat, Group, GroupDetails, MessageRead, NewMessage, Typing } from '../../models/chat.model';
-import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+
+import { Observable } from 'rxjs/internal/Observable';
+import { Subject } from 'rxjs/internal/Subject';
+import { User } from 'src/app/shared/models/user.model';
+import { ConversationUsers, CreateChat, Message, MessageRead, Typing } from '../../models/chat.model';
 import { OneChatPresentationBase } from '../one-chat-presentation-base/one-chat-presentation.base';
+import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
+import { EOD } from '../../models/eod.model';
 
 @Component({
   selector: 'app-one-chat-presentation',
@@ -11,156 +14,144 @@ import { OneChatPresentationBase } from '../one-chat-presentation-base/one-chat-
   viewProviders: [OneChatPresenterService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OneChatPresentationComponent extends OneChatPresentationBase implements OnInit {
+export class OneChatPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy {
 
-  /** This property is used to get the details og the Typing event */
-  @Input() public typingData: Observable<Typing>
-
-  /** This property is used to get the details of all the online users */
-  @Input() public set getAliveData(v: Alive[]) {
-    if (v) {
-      this._getAliveData = v;
-      this._service.getOnlineUsers(v);
+  /** This property is used to get the message read chat Id */
+  @Input() public set getMessageReadData(message: MessageRead) {
+    if (message) {
+      this._getMessageReadData = message;
+      this._oneChatPresenterService.getReadChatId(message.chatId);
     }
   }
 
-  public get getAliveData(): Alive[] {
-    return this._getAliveData;
+  public get getMessageReadData(): MessageRead {
+    return this._getMessageReadData;
   }
 
-  /** This property is used to get the details of all the users */
-  @Input() public set getIsRead(v: MessageRead) {
-    if (v) {
-      this._getIsRead = v;
-      this._service.updateChatArray(v)
+  /** This property is used to get all the user details from container component */
+  @Input() public set allUsers(users: User[]) {
+    if (users) {
+      this._allUsers = users;
+      this._oneChatPresenterService.getAllUsers(users);
     }
   }
 
-  public get getIsRead(): MessageRead {
-    return this._getIsRead;
+  public get allUsers(): User[] {
+    return this._allUsers;
   }
 
-  /** This property is used to get the details of all the users */
-  @Input() public set getAllUser(v: NewUser[]) {
-    if (v) {
-      this._getAllUser = v;
-      this._service.removeOwner(v);
+  /** This property will get the new generated chatId */
+  @Input() public set getNewGeneratedChatId(chatId: string) {
+    if (chatId) {
+      this._getNewGeneratedChatId = chatId;
+      this._oneChatPresenterService.newGeneratedChatId(chatId);
     }
   }
-
-  public get getAllUser(): NewUser[] {
-    return this._getAllUser;
+  public get getNewGeneratedChatId(): string {
+    return this._getNewGeneratedChatId;
   }
 
-  /** This property is used to get new chat Object */
-  @Input() public set getNewChatId(v: CreateChat) {
-    if (v) {
-      this._getNewChatId = v;
-      this._service.updatedChatObj(v._id);
+  /** This property will get the conversation users from the container */
+  @Input() public set getMessages(messages: Message[]) {
+    if (messages) {
+      this._getMessages = messages;
+      this._oneChatPresenterService.getChatMessagesArray(messages);
     }
   }
-  public get getNewChatId(): CreateChat {
-    return this._getNewChatId;
+  public get getMessages(): Message[] {
+    return this._getMessages;
   }
 
-  /** This property is used to get chat array */
-  @Input() public set getChatArray(v: NewMessage[]) {
-    if (v) {
-      this._getChatArray = v;
-      this._service.getChatArray(v)
-    }
-
-  }
-  public get getChatArray(): NewMessage[] {
-    return this._getChatArray;
-  }
-
-  /** This property is used to get the details of conversation users */
-  @Input() public set getConversationUsers(v: Conversation[]) {
-    if (v) {
-      this._getConversationUsers = v;
-      this._service.removeUserData(v);
+  /** This property will get the conversation users from the container */
+  @Input() public set getNewSocketMessage(message: Message) {
+    if (message) {
+      this._getNewSocketMessage = message;
+      this._oneChatPresenterService.newMessageFromSocket(message)
     }
   }
+  public get getNewSocketMessage(): Message {
+    return this._getNewSocketMessage;
+  }
 
-  public get getConversationUsers(): Conversation[] {
+  /** This property will get the conversation users from the container */
+  @Input() public set getConversationUsers(users: ConversationUsers[]) {
+    if (users) {
+      this._getConversationUsers = users;
+      this._oneChatPresenterService.getConversationUsers(users);
+    }
+  }
+  public get getConversationUsers(): ConversationUsers[] {
     return this._getConversationUsers;
   }
 
-
-  /** This property is used to get the object of the new chat */
-  @Input() public set newChat(v: NewMessage) {
-    if (v) {
-      this._newChat = v;
-      this._service.addNewChat(v);
+  /** This property will get the EOD Report from the container */
+  @Input() public set getEODfromSocket(eod: EOD) {
+    if (eod) {
+      this._getEODfromSocket = eod;
+      this._oneChatPresenterService.eodFromSocket(eod);
     }
   }
-  public get newChat(): NewMessage {
-    return this._newChat;
+  public get getEODfromSocket(): EOD {
+    return this._getEODfromSocket;
   }
-  /** This property is used to get the object of the new chat */
-  @Input() public set newEditChat(v: NewMessage) {
-    if (v) {
-      this._service.editMessageChat(v)
+
+  /** This property will get the edited message from the container */
+  @Input() public set getEditedMessage(message: Message) {
+    if (message) {
+      this._getEditedMessage = message;
+      this._oneChatPresenterService.getEditedMessage(message);
     }
-
   }
-  public get newEditChat(): NewMessage {
-    return this._newEditChat
+  public get getEditedMessage(): Message {
+    return this._getEditedMessage;
   }
 
-  @ViewChild('onScreen') public onScreen: ElementRef;
-  @Output() public emitConversationId: EventEmitter<string>;
-  @Output() public emitChatData: EventEmitter<NewMessage>;
-  @Output() public emitNewConversation: EventEmitter<CreateChat>;
-  @Output() public emitTypingData: EventEmitter<Typing>;
-  @Output() public emitReadMessage: EventEmitter<MessageRead>;
-  @Output() public emitMessageData: EventEmitter<NewMessage>;
-  @Output() public emitReplyMessageData: EventEmitter<NewMessage>;
+  /** This property is used to emit the current chat Id */
+  @Output() public chatId: EventEmitter<string>;
+  /** This property is used to emit the new message */
+  @Output() public newMessage: EventEmitter<Message>;
+  /** This property is used to emit the new conversation */
+  @Output() public newConversationChat: EventEmitter<CreateChat>;
+  /** This property is used to emit the typing data into socket*/
+  @Output() public socketTyping: EventEmitter<Typing>;
 
-  private _newChat: NewMessage;
-  private _newEditChat: NewMessage;
-  private _getNewChatId: CreateChat;
-  private _getAllUser: NewUser[];
-  private _getConversationUsers: Conversation[];
-  private _getIsRead: MessageRead;
-  private _getAliveData: Alive[];
-  public _getChatArray: NewMessage[];
-  public destroy: Subject<void>;
-  public transferAllUser$: Observable<NewUser[]>;
-  public receiverData$: Observable<NewUser>;
-  public transferConversationUser$: Observable<ConversationUser[]>;
-  public updatedChatArray$: Observable<NewMessage[]>;
-  public senderDetails$: Observable<NewUser>;
-  public newConversationUser: Observable<ConversationUser>;
-  public groupChatDetails$: Observable<GroupDetails>;
-  public groupConversation$: Observable<Group[]>;
-  public notificationCount$: Observable<any>;
+  /** Observable for conversation users */
+  public conversationUser$: Observable<ConversationUsers[]>;
+  /** Observable for chat messages array */
+  public chatArray$: Observable<Message[]>;
+  /** Observable for receiver conversation data */
+  public receiverConversationData$: Observable<ConversationUsers>;
+  /** Observable for details of all the users */
+  public allUsers$: Observable<User[]>;
+
+  /** Stops the subcription on ngDestroy */
+  private destroy: Subject<void>;
+  /** This property is used for getter setter */
+  private _getMessages: Message[];
+  private _getConversationUsers: ConversationUsers[];
+  private _getNewSocketMessage: Message;
+  private _allUsers: User[];
+  private _getNewGeneratedChatId: string;
+  private _getMessageReadData: MessageRead;
+  private _getEODfromSocket: EOD;
+  private _getEditedMessage: Message;
 
   constructor(
-    private _service: OneChatPresenterService,
+    private _oneChatPresenterService: OneChatPresenterService,
   ) {
     super();
+
+    this.receiverConversationData$ = new Observable();
+    this.conversationUser$ = new Observable();
+    this.chatArray$ = new Observable();
+    this.allUsers$ = new Observable();
+
+    this.chatId = new EventEmitter();
+    this.newMessage = new EventEmitter();
+    this.newConversationChat = new EventEmitter();
+    this.socketTyping = new EventEmitter();
+
     this.destroy = new Subject();
-    this.emitConversationId = new EventEmitter();
-    this.emitNewConversation = new EventEmitter();
-    this.emitChatData = new EventEmitter();
-    this.emitTypingData = new EventEmitter();
-    this.emitReadMessage = new EventEmitter();
-    this.emitMessageData = new EventEmitter();
-    this.emitReplyMessageData = new EventEmitter();
-    this._getConversationUsers = [];
-    this.transferAllUser$ = new Observable();
-    this.transferConversationUser$ = new Observable();
-    this.receiverData$ = new Observable();
-    this.updatedChatArray$ = new Observable();
-    this.senderDetails$ = new Observable();
-    this.newConversationUser = new Observable();
-    this.groupChatDetails$ = new Observable();
-    this.groupConversation$ = new Observable();
-    this.notificationCount$ = new Observable();
-    this._getAllUser = [];
-    this.onScreen = {} as ElementRef;
   }
 
   ngOnInit(): void {
@@ -171,109 +162,43 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
    * @name props
    * @description This method is called in ngOnInit
    */
-  public props() {
-    this.senderDetails$ = this._service.senderDetails$
-    this.transferAllUser$ = this._service.allUsers$;
-    this.transferConversationUser$ = this._service.onlyConversationUsers$;
-    this._service.chatData$.pipe(takeUntil(this.destroy)).subscribe((chat: NewMessage) => this.emitChatData.emit(chat))
-    this.updatedChatArray$ = this._service.chatArray$
-    this.receiverData$ = this._service.receiverData$
-    this._service.startNewChat$.pipe(takeUntil(this.destroy)).subscribe((chat: CreateChat) => this.emitNewConversation.emit(chat))
-    this.newConversationUser = this._service.newConversationUser$;
-    this._service.typingData$.pipe(takeUntil(this.destroy)).subscribe((data: Typing) => this.emitTypingData.emit(data))
-    this.groupChatDetails$ = this._service.groupChatDetails$;
-    this.groupConversation$ = this._service.groupChatConversation$;
-    this.notificationCount$ = this._service.notificationCount$
+  private props(): void {
+    this.chatArray$ = this._oneChatPresenterService.chatArray$;
+    this.receiverConversationData$ = this._oneChatPresenterService.receiverConversation$;
+    this.conversationUser$ = this._oneChatPresenterService.conversationUser$;
+    this._oneChatPresenterService.newMessage$.subscribe((message: Message) => this.newMessage.emit(message));
+    this._oneChatPresenterService.createChat$.subscribe((chat: CreateChat) => this.newConversationChat.emit(chat));
+    this._oneChatPresenterService.currentChatId$.subscribe((id: string) => this.chatId.emit(id));
+    this.allUsers$ = this._oneChatPresenterService.allUsers$;
+    this._oneChatPresenterService.typingInfo$.subscribe((typing: Typing) => this.socketTyping.emit(typing));
   }
 
   /**
-   * @name getChatId
-   * @param chatId 
-   * @description This method is use to get chat Id
+   * @name getCurrentConversation
+   * @params conversation
+   * @description This method is used to emit the chat Id
    */
-  public getChatId(chatId?: string): void {
-    if (chatId) {
-      this.emitConversationId.emit(chatId);
-      this._service.chatId = chatId;
-    }
+  public getCurrentConversation(conversation: ConversationUsers): void {
+    this._oneChatPresenterService.getReceiversConversation(conversation);
   }
 
   /**
-   * @name getReceiverId
-   * @param id 
-   * @description This method is use to get receiver ID
-   */
-  public getReceiverId(id: string): void {
-    this._service.getReceiverId(id)
-  }
-
-  /**
-   * @name getChat
+   * @name getChatData
    * @param chat 
-   * @description This method is use to get the new message test
+   * @description This method is used to get the chat data
    */
-  public getChat(chat: string): void {
-    this._service.getMessage(chat)
-  }
-  /**
-   * 
-   * @param editMessage 
-   * @description This method is use to get the Edit message test
-   */
-  public getEditChatMessageData(editMessage: string) {
-    this._service.getEditMessage(editMessage)
-
-  }
-  /**
-   * @name getNewChatState
-   * @description This method is use to get the new chat state
-   */
-  public getNewChatState(): void {
-    this._service.newChatState = true;
+  public getChatData(chat: string): void {
+    this._oneChatPresenterService.getChatData(chat, this.repliedToMessage);
+    this.repliedToMessage = undefined;
   }
 
   /**
-   * @name getChatType
-   * @param type chat type
-   * @description This method will get the chat type
+   * @name getMessageTyping
+   * @description This method is used to 
    */
-  public getChatType(type: string): void {
-    this._service.chatType = type;
+  public getMessageTyping(): void {
+    this._oneChatPresenterService.getMessageTyping();
   }
-
-  /**getIsReadData
-   * @name getSenderId
-   * @param id 
-   * @description This method will get the sender id for typing event
-   */
-  public getSenderId(id: string): void {
-    this._service.createTypingData(id)
-  }
-
-  /**
-   * @name getIsReadData
-   * @param data 
-   * @description This method will transfer data of is_read into container
-   */
-  public getIsReadData(data: MessageRead) {
-    this.emitReadMessage.emit(data)
-  }
-
-  /**
-   * This method will transfer messageId
-   * @param editMessage 
-   */
-  public getEditMessageData(editMessage: NewMessage) {
-    this.emitMessageData.emit(editMessage);
-  }
-  /**
-   * 
-   * @param replyMessageObj 
-   */
-  public getReplyMessageData(replyMessageObj: NewMessage) {
-    this.emitReplyMessageData.emit(replyMessageObj)
-  }
-
 
   /**
    * @name ngOnDestroy

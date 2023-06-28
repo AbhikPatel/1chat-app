@@ -14,25 +14,27 @@ export class LoginComponent implements OnInit {
 
   public loginGroup: FormGroup;
   private destroy: Subject<void>;
-  public password: string ;
+  public password: string;
   public show: boolean;
+
   constructor(
     private _service: AuthService,
     private _fb: FormBuilder,
     private _route: Router,
     private _commonService: CommonService,
-    private _toastr:ToasterService
   ) {
     this.loginGroup = this._fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
       password: ['', [Validators.required, Validators.maxLength(10)]]
     })
     this.destroy = new Subject();
+    this.password ='password'
   }
 
   ngOnInit(): void {
 
   }
+
   /**
    * @name onSubmit
    * @description This method is called when form is submitted
@@ -53,19 +55,19 @@ export class LoginComponent implements OnInit {
   public get getControls() {
     return this.loginGroup.controls;
   }
-/**
-   * 
+  /**
+   * @name onClick 
    * @description password show-hide icon-Logic
    */
- public onClick() :void{
-  if (this.password === 'password') {
-    this.password = 'text';
-    this.show = true;
-  } else {
-    this.password = 'password';
-    this.show = false;
+  public onClick(): void {
+    if (this.password === 'password') {
+      this.password = 'text';
+      this.show = true;
+    } else {
+      this.password = 'password';
+      this.show = false;
+    }
   }
-}
   /**
    * @name ngOnDestroy
    * @description This method is called when the component is destroyed

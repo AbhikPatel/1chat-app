@@ -1,51 +1,55 @@
 // Global styles goes here
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: $font-family;
 }
 
-html,body{
+html,
+body {
     height: 100%;
     overflow: hidden;
 }
 
-#icon-eye{
+#icon-eye {
     right: 10px;
     top: 25%;
 }
 
-.login-container{
-    min-width: 500px; 
+.login-container {
+    min-width: 500px;
 }
 
-.bx{
+.bx {
     color: #7e7e7e;
 }
 
-.fs-7{
+.fs-7 {
     font-size: 0.8rem;
 }
 
-.fs-8{
+.fs-8 {
     font-size: 0.7rem;
 }
-.fs-9{
+
+.fs-9 {
     font-size: 0.7rem !important;
 }
-.cursor-pointer{
+
+.cursor-pointer {
     cursor: pointer;
 }
 
-.user-container{
+.user-container {
     background-color: $white;
-    &:hover{
+
+    &:hover {
         background-color: $user-hover-bg;
     }
 }
 
-#user{
+#user {
     top: 0;
     right: 0;
     left: 0;
@@ -54,21 +58,68 @@ html,body{
     transform: translateX(-100%);
 }
 
-#toggle-user{
+#toggle-user {
 
-    &:checked ~ #user{
+    &:checked~#user {
         transform: translateX(0px);
     }
 }
 
-.bg-theme{
+.bg-theme {
     background-color: #e7e7e7;
 }
 
-.tick-color{
+.tick-color {
     background-color: $tick-color;
 }
 
-.overlay-container{
+textarea {
+    resize: none !important;
+}
+
+.icon {
+    color: $icon-color;
+
+    &:hover {
+        color: $primary;
+    }
+}
+
+.overlay-container {
     width: 800px;
+    padding: 30px 50px;
+}
+
+.cdk-overlay-container {
+    z-index: 1100;
+}
+
+.eod-container {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30px 50px;
+    transition: 0.6s all;
+    z-index: 10;
+}
+
+.eod-close {
+    transform: translateX(100%);
+}
+
+.eod-open {
+    transform: translateX(0%);
+}
+
+.bg-completed {
+    background-color: #beffbe;
+}
+
+.bg-progress {
+    background-color: #ffb7b7;
+}
+
+.bg-learning {
+    background-color: #f9ffac;
 }

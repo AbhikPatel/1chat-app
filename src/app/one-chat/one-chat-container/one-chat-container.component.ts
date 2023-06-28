@@ -1,164 +1,220 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, Subject, of, takeUntil } from 'rxjs';
-import { NewUser } from 'src/app/shared/models/user.model';
-import { Alive, Conversation, CreateChat, EditMessage, GroupDetails, Message, MessageRead, NewMessage, Typing, replyMessage } from '../models/chat.model';
-import { NewChatAdaptor, NewEditAdaptor, NewReplyAdaptor } from '../one-chat-adaptor/one-chat.adaptor';
+import { User } from 'src/app/shared/models/user.model';
+import { CommonService } from 'src/app/shared/services/common.service';
+import { ConversationUsers, CreateChat, Message, MessageRead, MessageResponse, OnlineUser, Typing } from '../models/chat.model';
+import { EODAdapter, MessageAdapter } from '../one-chat-adaptor/one-chat.adaptor';
 import { OneChatService } from '../one-chat.service';
+import { EOD, EODResponse } from '../models/eod.model';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-one-chat-container',
   templateUrl: './one-chat-container.component.html',
 })
-export class OneChatContainerComponent implements OnInit {
 
-  /** This Subject is used to unsubscribe all the rxjs on destroy */
-  public destroy: Subject<void>;
-  /** This Subject is used to pass the new chatID  */
-  public newChatId$: Subject<CreateChat>;
-  /** This observable will pass the socket listen data */
-  public listen$: Observable<any>;
-  /** This Subject will pass the new Message Object */
-  public newMessage: Subject<NewMessage>;
-  /** This Subject will pass the Edit Message Object */
-  public editMessages: Subject<NewMessage>;
-  /** This observable will pass all the users data */
-  public allUser$: Observable<NewUser[]>;
-  /** This observable will pass all the users which has conversation with the sender */
-  public conversationUser$: Subject<Conversation[]>;
-  /** This observable will pass all the Messages data */
-  public getAllMessages$: Observable<NewMessage[]>;
-  /** This observable will pass all the Messages data */
-  public getTypingData$: Observable<Typing>;
-  /** This observable will pass all the is_read data */
-  public getIsReadData$: Observable<MessageRead>;
-  /** This observable will pass all the online users */
-  public aliveData$: Observable<Alive[]>;
+export class OneChatContainerComponent implements OnInit, OnDestroy {
+
+  /** Observable for the details of online users */
+  public getOnlineUsersData$: Observable<OnlineUser[]>;
+  /** Observable for the details of all the conversation users */
+  public getConversationUsers$: Observable<ConversationUsers[]>;
+  /** Observable for the details of all the users */
+  public getAllUsers$: Observable<User[]>;
+  /** Observable for the chat messages */
+  public getMessages$: Observable<Message[]>;
+  /** Observable for the sender details */
+  public senderDetails$: Observable<User>;
+  /** Observable for the sender details */
+  public newSocketMessage$: Observable<Message>;
+  /** Observable for new Chat Id */
+  public newChatId$: Observable<string>;
+  /** Observable for new Chat Id */
+  public typingInfo$: Observable<Typing>;
+  /** Observable for chat read Id */
+  public chatReadData$: Observable<MessageRead>;
+  /** Observable for EOD Reports */
+  public eodReports$: Observable<EOD[]>;
+  /** Observable for EOD Reports */
+  public eodReportSocket$: Observable<EOD>;
+  /** Observable for edit message */
+  public editMessageSocket$: Observable<Message>;
+  /** This varilable stores the Id of sender */
+  public senderId: string;
+  /** This varilable stores the Id of current chat */
+  public currectChatId: string;
+
+  /** stops the subscription on ngDestroy */
+  private destroy: Subject<void>;
 
   constructor(
-    private _service: OneChatService,
-    private _newChatAdaptor: NewChatAdaptor,
-    private _NewEditAdaptor: NewEditAdaptor,
-    private _newReplyAdaptor: NewReplyAdaptor,
+    private _oneChatService: OneChatService,
+    private _commonService: CommonService,
+    private _messageAdapter: MessageAdapter,
+    private _eodAdapter: EODAdapter,
+    private _auth: AuthService
   ) {
     this.destroy = new Subject();
-    this.listen$ = new Observable();
-    this.newMessage = new Subject();
-    this.editMessages = new Subject();
-    this.allUser$ = new Observable();
-    this.getAllMessages$ = new Observable();
-    this.getTypingData$ = new Observable();
-    this.conversationUser$ = new Subject();
-    this.getIsReadData$ = new Observable();
-    this.aliveData$ = new Observable();
-    this.newChatId$ = new Subject();
+    this.getOnlineUsersData$ = new Observable();
+    this.newChatId$ = new Observable();
+    this.getAllUsers$ = new Observable();
+    this.getConversationUsers$ = new Observable();
+    this.getMessages$ = new Observable();
+    this.typingInfo$ = new Observable();
+    this.chatReadData$ = new Observable();
+    this.eodReports$ = new Observable();
+    this.eodReportSocket$ = new Observable();
   }
 
   ngOnInit(): void {
-    this.props()
+    this.props();
   }
 
   /**
    * @name props
-   * @description This method is used to call on OnInit
+   * @description This method will be invoked on ngOnInit
    */
-  public props(): void {
-    this._service.setMap();
-    this._service.listen('welcome').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data));
-    this._service.getAllUserData().subscribe((data) => {
-      this.allUser$ = of(data);
-      this._service.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: Conversation[]) => {
-        this.conversationUser$.next(users);
-        var groupIds: string[] = [];
-        users.map((data: Conversation) => {
-          if (data.chat_type === 'group')
-            groupIds.push(data._id)
-        })
-        this._service.emit('group:join', groupIds)
-      })
+  private props(): void {
+    this.senderId = this._commonService.getUserId();
+    this._oneChatService.setMap();
+    this.getOnlineUsersData$ = this._oneChatService.listen('alive');
+    this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
+      this.getAllUsers$ = of(users);
+      this.joinGroupChatById();
     })
-
-    this._service.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
-    this._service.listen('dm:messageEdit').subscribe((data) => this.editMessages.next(data))
-    this._service.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((chat: Message) => this.newMessage.next(this._newChatAdaptor.toResponse(chat)));
-    this._service.listen('dm:messageReply').pipe(takeUntil(this.destroy)).subscribe((data) => console.log(data))
-    this.getTypingData$ = this._service.listen('typing');
-    this.getIsReadData$ = this._service.listen('dm:messageRead')
-    this.aliveData$ = this._service.listen('alive');
+    this._oneChatService.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((message: MessageResponse) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(message);
+      this.newSocketMessage$ = of(convertedMessage);
+    });
+    this._oneChatService.listen('eod:status').pipe(takeUntil(this.destroy)).subscribe((eod: EODResponse) => {
+      const eodResult: EOD = this._eodAdapter.toResponse(eod);
+      this.eodReportSocket$ = of(eodResult);
+    });
+    this._oneChatService.listen('dm:messageEdit').subscribe((message: MessageResponse) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(message);
+      this.editMessageSocket$ = of(convertedMessage);
+    })
+    this.chatReadData$ = this._oneChatService.listen('dm:messageRead');
+    this.typingInfo$ = this._oneChatService.listen('typing');
   }
 
   /**
-   * @name getConversationId
-   * @param chatId 
-   * @description This method is called to get conversation Id to pass the messages Data
+   * @name getLogOutUser
+   * @description This method will disconnect the user with the socket
    */
-  public getConversationId(chatId: string): void {
-    this.getAllMessages$ = this._service.getChatMessages(chatId);
+  public getLogOutUser(email: string): void {
+    this._auth.getLogOutEmail(email);
+    this._oneChatService.disconnectSocket();
   }
 
   /**
-   * @name getChatObject
+   * @name getChatId
+   * @param id 
+   * @description This method will call a http get request for chatId 
+   */
+  public getChatId(id: string): void {
+    this.currectChatId = id;
+    this.getMessages$ = this._oneChatService.getChatMessages(id);
+  }
+
+  /**
+   * @name getNewMessage
+   * @param message 
+   * @description This method is used to send new message into socket
+   */
+  public getNewMessage(message: Message): void {
+    const convertMessage: MessageResponse = this._messageAdapter.toRequest(message);
+    if (message.replied_to) {
+      convertMessage.replied_to = message.replied_to._id;
+      this._oneChatService.emit('dm:messageReply', convertMessage);
+    } else {
+      this._oneChatService.emit('dm:message', convertMessage);
+    }
+  }
+
+  /**
+   * @name getReadedMessages
+   * @param messages 
+   * @description This method is used to send the readed messages to socket
+   */
+  public getReadedMessages(messages: MessageRead): void {
+    this._oneChatService.emit('dm:messageRead', messages);
+  }
+
+  /**
+   * @name getNewCoversation
    * @param chat 
-   * @description This method is called to get chat object to emit on chat event
-   */
-  public getChatObject(chat: NewMessage): void {
-    const data: Message = this._newChatAdaptor.toRequest(chat);
-    chat.chat_type === 'dm' ? this._service.emit('dm:message', data) : this._service.emit('group:message', data)
+   * @description This methos will send a request for creation of new conversation
+  */
+  public getNewCoversation(chat: CreateChat): void {
+    this._oneChatService.postNewChat(chat).pipe(takeUntil(this.destroy)).subscribe((res: CreateChat) => this.newChatId$ = of(res._id));
   }
 
   /**
-   * @name getNewConservation
-   * @param newChat 
-   * @description This method is called to post new chat data
+   * @name getEditMessageObj
+   * @param message 
+   * @description This method is used to emit the edit message into socket
    */
-  public getNewConservation(newChat: CreateChat): void {
-    this._service.postNewChat(newChat).subscribe((data: CreateChat) => this.newChatId$.next(data));
+  public getEditMessageObj(message): void {
+    let convertedMessage: MessageResponse = this._messageAdapter.toRequest(message);
+    convertedMessage._id = message._id;
+    this._oneChatService.emit('dm:messageEdit', convertedMessage);
   }
 
   /**
-   * @name getTypingId
-   * @param data
-   * @description This method is called to emit typing event
-   */
-  public getTypingId(data: Typing): void {
-    this._service.emit('typing', data);
+   * @name getSocketTypingInfo
+   * @param typingInfo 
+   * @description This method is used to emit the typing info into socket
+  */
+  public getSocketTypingInfo(typingInfo: Typing): void {
+    this._oneChatService.emit('typing', typingInfo);
   }
+
   /**
-   * @name getReadMessagesData
+   * @name getNewGroupDetails
    * @param data 
-   * @description This method will emit the message read data into socket
+   * @description This method will request a post api for creating a new group chat
    */
-  public getReadMessagesData(data: MessageRead) {
-    this._service.emit('dm:messageRead', data)
+  public getNewGroupDetails(groupDetails): void {
+    this._oneChatService.postNewGroup(groupDetails).pipe(takeUntil(this.destroy)).subscribe();
+    this.joinGroupChatById();
   }
+
   /**
-   * 
-   * @param messageData 
-   * @description this method will be emit message object into socket
+   * @name joinGroupChatById
+   * @description This method will emit the id in the socket of all the users to join the room 
    */
-  public editMessage(messageData: NewMessage) {
-    const data = this._NewEditAdaptor.toRequest(messageData);
-    this._service.emit('dm:messageEdit', data)
-  }
-
-  public replyMessageData(replyMessageObj: NewMessage) {
-    console.log(replyMessageObj);
-    // const data:replyMessage=this._newReplyAdaptor.toRequest(replyMessageObj);
-    // this._service.emit('dm:messageReply',data)
-  }
-
-
-  public createGroup(data: GroupDetails): void {
-    // console.log(data);
-    this._service.postNewGroup(data).pipe(takeUntil(this.destroy)).subscribe();
-    this._service.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: Conversation[]) => {
-      this.conversationUser$.next(users);
+  private joinGroupChatById(): void {
+    this._oneChatService.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: ConversationUsers[]) => {
+      this.getConversationUsers$ = of(users);
       var groupIds: string[] = [];
-      users.map((data: Conversation) => {
+      users.map((data: ConversationUsers) => {
         if (data.chat_type === 'group')
           groupIds.push(data._id)
       })
-      this._service.emit('group:join', groupIds)
+      this._oneChatService.emit('group:join', groupIds);
     })
+  }
+
+  /**
+   * @name getEodReport
+   * @param eod 
+   * @description This method used to emit the eod report into socket
+   */
+  public getEodReport(eod: EOD): void {
+    eod.chatId = this.currectChatId;
+    const eodResult: EODResponse = this._eodAdapter.toRequest(eod);
+    this._oneChatService.emit('eod:status', eodResult);
+  }
+
+  /**
+   * @name getEodTab
+   * @param id 
+   * @description This method is used to get all the EOD reports
+   */
+  public getEodTab(id: string): void {
+    this.eodReports$ = this._oneChatService.getEODReports(id);
   }
 
   /**
@@ -166,8 +222,8 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called the component is destroyed
    */
   public ngOnDestroy(): void {
+    this._oneChatService.disconnectSocket();
     this.destroy.next();
     this.destroy.unsubscribe();
-
   }
 }

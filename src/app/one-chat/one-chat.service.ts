@@ -1,35 +1,42 @@
 import { Injectable } from '@angular/core';
+import { SwPush } from "@angular/service-worker";
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { HttpService } from '../core/services/http/http.service';
-import { NewUser } from '../shared/models/user.model';
-import { Conversation, CreateChat, GroupDetails, NewMessage } from './models/chat.model';
-import { MessageAdaptor, allUserAdaptor } from './one-chat-adaptor/one-chat.adaptor';
-import { SwPush } from "@angular/service-worker";
+import { userAdaptor } from '../shared/adaptor/user.adaptor';
+import { User, UserResponse } from '../shared/models/user.model';
+import { ConversationUserResponse, ConversationUsers, CreateChat, GroupDetails, Message, MessageResponse } from './models/chat.model';
+import { EOD, EODResponse } from './models/eod.model';
+import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
 
 @Injectable()
 
 export class OneChatService {
 
-  // socket = io('wss://anonychat.onrender.com');
-  socket = io('http://172.16.3.107:2132');
   public api: string;
   public userId: string;
   public subscriber: any;
+  public socket: any;
 
   // Voluntary Application Server Identity to send push notification
   private readonly VAPID_PUBLIC_KEY: string = "BKX5wA9WxBSYJZWvQtdgD-1rknSL5ejHQd25tUxl5bM9QkNrQVms__OnS1cbRxsJ96E09gKruA8pOcEv7XTfSc4";
 
   constructor(
     private _http: HttpService,
-    private _allUserAdaptor: allUserAdaptor,
-    private _messageAdaptor: MessageAdaptor,
+    private _conversationAdapter: conversationUserAdapter,
+    private _userAdaptor: userAdaptor,
+    private _messageAdaptor: MessageAdapter,
     private swPush: SwPush,
+    private _eodAdapter: EODAdapter
   ) {
+    this.socket = io(environment.socketUrl);
     this.api = environment.baseURL;
-    // this.subscribeToPushNotification();
+    // window.addEventListener('load', () => {
+    //   console.log('trying to subscribe')
+    //   this.subscribeToPushNotification();
+    // })
   }
 
 
@@ -109,47 +116,55 @@ export class OneChatService {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response);
       })
-    }else {
+    } else {
       this.socket.emit(eventname, data);
     }
   }
 
   /**
-   * @name getAllUserData
-   * @returns 
-   * @description This api is called to get all the users data
-  */
-  public getAllUserData(): Observable<NewUser[]> {
+     * @name getAllUserData
+     * @returns 
+     * @description This api is called to get all the users data
+    */
+  public getAllUserData(): Observable<User[]> {
     const url: string = this.api + 'user/';
     return this._http.httpGetRequest(url).pipe(
-      map((res: any) => this._allUserAdaptor.toResponse(res.data.data))
+      map((res: any) => {
+        res.data.data = res.data.data.map((users: UserResponse) => this._userAdaptor.toResponse(users));
+        return res.data.data
+      })
     )
   }
 
-
   /**
-   * @name getConversationUser
-   * @returns observable
-   * @description This will return all the users who have started conversation with the sender
-  */
-  public getConversationUser(): Observable<Conversation[]> {
+     * @name getConversationUser
+     * @returns observable
+     * @description This will return all the users who have started conversation with the sender
+    */
+  public getConversationUser(): Observable<ConversationUsers[]> {
     this.userId = localStorage.getItem('userId')
     const url: string = this.api + `user/` + this.userId;
     return this._http.httpGetRequest(url).pipe(
-      map((res: any) => res.data.doc)
+      map((res: any) => {
+        res.data.doc = res.data.doc.map((user: ConversationUserResponse) => this._conversationAdapter.toResponse(user))
+        return res.data.doc
+      })
     )
   }
 
   /**
-   * @name getChatMessages
-   * @param chatId 
-   * @returns Observable
-   * @description This will get the data of all the messages as per the chatId
-   */
-  public getChatMessages(chatId: string): Observable<NewMessage[]> {
+     * @name getChatMessages
+     * @param chatId 
+     * @returns Observable
+     * @description This will get the data of all the messages as per the chatId
+     */
+  public getChatMessages(chatId: string): Observable<Message[]> {
     const url: string = this.api + `message?chat=` + chatId;
     return this._http.httpGetRequest(url).pipe(
-      map((res: any) => this._messageAdaptor.toResponse(res.data.data))
+      map((res: any) => {
+        res.data.data = res.data.data.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
+        return res.data.data;
+      })
     )
   }
 
@@ -175,6 +190,19 @@ export class OneChatService {
     return this._http.httpPostRequest(url, newGroup)
   }
 
+  /**
+   * @name getEODReports
+   * @param id 
+   * @returns This method is used to get EOD Reports
+   */
+  public getEODReports(id: string): Observable<EOD[]> {
+    const url: string = this.api + `eod/?chatId=` + id;
+    return this._http.httpGetRequest(url).pipe(
+      map((res) => {
+        res.data.data = res.data.data.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
+        return res.data.data;
+      }))
+  }
 
   /**
    * @name setMap
@@ -185,5 +213,9 @@ export class OneChatService {
     this.socket.on('connect', () => {
       this.socket.emit('dm:mapper', { userId: this.userId, socketId: this.socket.id })
     })
+  }
+
+  public disconnectSocket(): void {
+    this.socket.disconnect();
   }
 }

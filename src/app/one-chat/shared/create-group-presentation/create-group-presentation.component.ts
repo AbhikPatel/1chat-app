@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { OneChatPresentationBase } from '../../one-chat-container/one-chat-presentation-base/one-chat-presentation.base';
-import { Subject } from 'rxjs/internal/Subject';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { CreateGroupPresenterService } from '../create-group-presenter/create-group-presenter.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Subject } from 'rxjs/internal/Subject';
+import { FormGroup } from '@angular/forms';
 import { GroupDetails } from '../../models/chat.model';
 import { takeUntil } from 'rxjs';
+import { OneChatPresentationBase } from '../../one-chat-container/one-chat-presentation-base/one-chat-presentation.base';
 
 @Component({
   selector: 'app-create-group-presentation',
@@ -26,19 +26,25 @@ export class CreateGroupPresentationComponent implements OnInit, OnDestroy {
     return this._getUsers;
   }
 
-  @Output() public emitOverlayData:EventEmitter<GroupDetails> 
+  /** This variable will emit the new group information */
+  @Output() public newGroupInformation: EventEmitter<GroupDetails>;
 
+  /** Formgroup for the create group form */
   public groupChatFormGroup: FormGroup;
+  /** configs for the multiselect */
   public multiSelectConfig: any;
-  /** Stops the subscription on destroy */
+
+  /** stops the subscription on destroy */
   private destroy: Subject<void>;
+  /** getter setter */
   private _getUsers: any[];
 
   constructor(
     private _createGroupPresenterService: CreateGroupPresenterService
   ) {
-    this.groupChatFormGroup = this._createGroupPresenterService.createGroup();
-    this.emitOverlayData = new EventEmitter();
+    this.destroy = new Subject();
+    this.newGroupInformation = new EventEmitter();
+    this.groupChatFormGroup = _createGroupPresenterService.createGroup();
   }
 
   ngOnInit(): void {
@@ -67,15 +73,20 @@ export class CreateGroupPresentationComponent implements OnInit, OnDestroy {
       defaultOpen: false,
     };
 
-    this._createGroupPresenterService.GroupCreationData$.subscribe((data: GroupDetails) => this.emitOverlayData.emit(data))
+    this._createGroupPresenterService.GroupCreationData$.subscribe((groupData: GroupDetails) => this.newGroupInformation.emit(groupData));
   }
 
   public get getControls() {
     return this.groupChatFormGroup['controls'];
   }
 
+  /**
+   * @name onSubmit
+   * @description This method is called when the form is submitted
+   */
   public onSubmit(): void {
-    this._createGroupPresenterService.getGroupData(this.groupChatFormGroup.value)
+    if (this.groupChatFormGroup.valid)
+      this._createGroupPresenterService.getGroupData(this.groupChatFormGroup.value)
   }
 
   ngOnDestroy(): void {

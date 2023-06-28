@@ -40,15 +40,16 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <label for="password" class="form-label"> Password </label>
                                 <span class="text-danger fw-bold"
-                                *ngIf="getControls['password']?.errors?.['required'] && getControls['password'].touched"> This field is required </span>
+                                    *ngIf="getControls['password']?.errors?.['required'] && getControls['password'].touched">
+                                    This field is required </span>
                             </div>
                             <div class="position-relative">
-                                <input type="{{password}}" class="form-control" name="password" id="password"
+                                <input [type]="password" class="form-control" name="password" id="password"
                                     formControlName="password"
                                     [ngClass]="{'border-danger' : getControls['password'].invalid && getControls['password'].touched}">
                                 <div id="icon-eye" class="position-absolute" role="button" (click)="onClick()">
                                     <span class="icon-eye-slash" *ngIf="!show"></span>
-                                     <span class="icon-eye" *ngIf="show"></span>
+                                    <span class="icon-eye" *ngIf="show"></span>
                                 </div>
                             </div>
                         </div>
