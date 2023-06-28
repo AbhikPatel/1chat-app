@@ -84,6 +84,7 @@ export class OneChatPresenterService implements OnDestroy {
     this.currentChatId = new Subject();
     this.allUsers = new Subject();
     this.typingInfo = new Subject();
+    this.destroy = new Subject();
 
     this.conversationUser$ = this.conversationUser.asObservable();
     this.receiverConversation$ = this.receiverConversation.asObservable();
@@ -299,10 +300,20 @@ export class OneChatPresenterService implements OnDestroy {
    * @param eod 
    * @description This method will push the eod into the eod collection
    */
-  public eodFromSocket(eod:EOD): void {
-    let id:number = this.conversationList.findIndex((user:ConversationUsers) => user.chatId === eod.chatId);
+  public eodFromSocket(eod: EOD): void {
+    let id: number = this.conversationList.findIndex((user: ConversationUsers) => user.chatId === eod.chatId);
     this.conversationList[id].eodNotification = true;
-    console.log(this.conversationList);
+  }
+
+  /**
+   * @name getEditedMessage
+   * @param message 
+   * @description This method will update the chat list of the edit message
+   */
+  public getEditedMessage(message:Message): void {
+    let index:number = this.chats.findIndex((data:Message) => data._id === message._id);
+    this.chats[index] = message;
+    this.getChatMessagesArray(this.chats);
   }
 
   ngOnDestroy(): void {

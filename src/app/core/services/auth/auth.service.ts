@@ -4,22 +4,24 @@ import { Observable } from 'rxjs/internal/Observable';
 import { userAdaptor } from 'src/app/shared/adaptor/user.adaptor';
 import { environment } from 'src/environments/environment';
 import { HttpService } from '../http/http.service';
-import { ToasterService } from '../toaster/toaster.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  /** token for authentication */
   public userToken: any;
-  public api: string;
+  /** base URL for http request */
+  public baseUrl: string;
 
   constructor(
     private _http: HttpService,
     private _adapt: userAdaptor,
-    private _toaster:ToasterService
+    private _route: Router
   ) {
-    this.api = environment.baseURL
+    this.baseUrl = environment.baseURL;
   }
 
   /**
@@ -29,14 +31,15 @@ export class AuthService {
    * @description This method will call the post API for login to get user info
    */
   public loginUser(credentials: any): Observable<any> {
-    const url: string = this.api + 'user/log-in';
+    const url: string = this.baseUrl + 'user/log-in';
     return this._http.httpPostRequest(url, credentials).pipe(
       map((res) => {
-        localStorage.setItem('token', res.token)
-        localStorage.setItem('role', res.data.doc.role)
-        localStorage.setItem('userId', res.data.doc._id)
-        localStorage.setItem('fullName', res.data.doc.first_name + ' ' + res.data.doc.last_name)
-        return this._adapt.toResponse(res.data.doc)
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('role', res.data.doc.role);
+        localStorage.setItem('userId', res.data.doc._id);
+        localStorage.setItem('email', res.data.doc.email);
+        localStorage.setItem('fullName', res.data.doc.first_name + ' ' + res.data.doc.last_name);
+        return this._adapt.toResponse(res.data.doc);
       })
     )
   }
@@ -47,6 +50,29 @@ export class AuthService {
    */
   public getToken(): string {
     this.userToken = localStorage.getItem('token') ?? '';
-    return this.userToken
+    return this.userToken;
+  }
+
+  /**
+   * @name getLogOutEmail
+   * @param email 
+   * @description This method will log out the user
+   */
+  public getLogOutEmail(mail: string): void {
+    localStorage.clear();
+    this._route.navigateByUrl('/login');
+    this.logOutUser(mail).subscribe();
+  }
+
+  /**
+   * @name logOutUser
+   * @description This method is used to log out the user
+   */
+  public logOutUser(email: string): Observable<any> {
+    const url: string = this.baseUrl + `user/log-out`;
+    let requestBody = {
+      email:email
+    }
+    return this._http.httpPostRequest(url, requestBody);
   }
 }

@@ -9,6 +9,7 @@
     [getNewGeneratedChatId]="newChatId$ | async"
     [typingInfo]="typingInfo$ | async"
     [getMessageReadData]="chatReadData$ | async"
+    [getEditedMessage]="editMessageSocket$ | async"
     (logOutUser)="getLogOutUser($event)"
     (chatId)="getChatId($event)"
     [senderId]="senderId"

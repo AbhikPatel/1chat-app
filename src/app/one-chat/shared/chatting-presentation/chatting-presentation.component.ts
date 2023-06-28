@@ -86,7 +86,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
       this.editMessageObj.emit(this.editMessage);
     } else {
       if(this.isReplyMode)
-        this.repliedMessage.emit(this.replyMessage)
+        this.repliedMessage.emit(this.replyMessage);
       this._chattingPresenterService.getChatData(this.chatGroup.value.message);
     }
     this.chatGroup.get('message').reset();

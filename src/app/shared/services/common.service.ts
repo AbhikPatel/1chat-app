@@ -40,4 +40,12 @@ export class CommonService {
   public getUserRole(): string {
     return localStorage.getItem('role');
   }
+
+  /**
+   * @name getUserEmail
+   * @returns The email of the logged user
+   */
+  public getUserEmail(): string {
+    return localStorage.getItem('email');
+  }
 }

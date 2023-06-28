@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject, of, takeUntil } from 'rxjs';
 import { User } from 'src/app/shared/models/user.model';
@@ -7,12 +7,14 @@ import { ConversationUsers, CreateChat, Message, MessageRead, MessageResponse, O
 import { EODAdapter, MessageAdapter } from '../one-chat-adaptor/one-chat.adaptor';
 import { OneChatService } from '../one-chat.service';
 import { EOD, EODResponse } from '../models/eod.model';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 @Component({
   selector: 'app-one-chat-container',
   templateUrl: './one-chat-container.component.html',
 })
-export class OneChatContainerComponent implements OnInit {
+
+export class OneChatContainerComponent implements OnInit, OnDestroy {
 
   /** Observable for the details of online users */
   public getOnlineUsersData$: Observable<OnlineUser[]>;
@@ -36,22 +38,24 @@ export class OneChatContainerComponent implements OnInit {
   public eodReports$: Observable<EOD[]>;
   /** Observable for EOD Reports */
   public eodReportSocket$: Observable<EOD>;
+  /** Observable for edit message */
+  public editMessageSocket$: Observable<Message>;
   /** This varilable stores the Id of sender */
   public senderId: string;
   /** This varilable stores the Id of current chat */
   public currectChatId: string;
 
   /** stops the subscription on ngDestroy */
-  private destory: Subject<void>;
+  private destroy: Subject<void>;
 
   constructor(
     private _oneChatService: OneChatService,
     private _commonService: CommonService,
     private _messageAdapter: MessageAdapter,
-    private _eodAdapter:EODAdapter,
-    private _route: Router
+    private _eodAdapter: EODAdapter,
+    private _auth: AuthService
   ) {
-    this.destory = new Subject();
+    this.destroy = new Subject();
     this.getOnlineUsersData$ = new Observable();
     this.newChatId$ = new Observable();
     this.getAllUsers$ = new Observable();
@@ -75,18 +79,22 @@ export class OneChatContainerComponent implements OnInit {
     this.senderId = this._commonService.getUserId();
     this._oneChatService.setMap();
     this.getOnlineUsersData$ = this._oneChatService.listen('alive');
-    this._oneChatService.getAllUserData().pipe(takeUntil(this.destory)).subscribe((users: User[]) => {
+    this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
       this.getAllUsers$ = of(users);
       this.joinGroupChatById();
     })
-    this._oneChatService.listen('dm:message').pipe(takeUntil(this.destory)).subscribe((message: MessageResponse) => {
+    this._oneChatService.listen('dm:message').pipe(takeUntil(this.destroy)).subscribe((message: MessageResponse) => {
       const convertedMessage: Message = this._messageAdapter.toResponse(message);
       this.newSocketMessage$ = of(convertedMessage);
     });
-    this._oneChatService.listen('eod:status').pipe(takeUntil(this.destory)).subscribe((eod: EODResponse) => {
+    this._oneChatService.listen('eod:status').pipe(takeUntil(this.destroy)).subscribe((eod: EODResponse) => {
       const eodResult: EOD = this._eodAdapter.toResponse(eod);
       this.eodReportSocket$ = of(eodResult);
     });
+    this._oneChatService.listen('dm:messageEdit').subscribe((message: MessageResponse) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(message);
+      this.editMessageSocket$ = of(convertedMessage);
+    })
     this.chatReadData$ = this._oneChatService.listen('dm:messageRead');
     this.typingInfo$ = this._oneChatService.listen('typing');
   }
@@ -96,9 +104,8 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method will disconnect the user with the socket
    */
   public getLogOutUser(email: string): void {
-    localStorage.clear();
-    this._route.navigate(['/login']);
-    this._oneChatService.logOutUser(email).pipe(takeUntil(this.destory)).subscribe();
+    this._auth.getLogOutEmail(email);
+    this._oneChatService.disconnectSocket();
   }
 
   /**
@@ -141,7 +148,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This methos will send a request for creation of new conversation
   */
   public getNewCoversation(chat: CreateChat): void {
-    this._oneChatService.postNewChat(chat).pipe(takeUntil(this.destory)).subscribe((res: CreateChat) => this.newChatId$ = of(res._id));
+    this._oneChatService.postNewChat(chat).pipe(takeUntil(this.destroy)).subscribe((res: CreateChat) => this.newChatId$ = of(res._id));
   }
 
   /**
@@ -170,7 +177,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method will request a post api for creating a new group chat
    */
   public getNewGroupDetails(groupDetails): void {
-    this._oneChatService.postNewGroup(groupDetails).pipe(takeUntil(this.destory)).subscribe();
+    this._oneChatService.postNewGroup(groupDetails).pipe(takeUntil(this.destroy)).subscribe();
     this.joinGroupChatById();
   }
 
@@ -179,7 +186,7 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method will emit the id in the socket of all the users to join the room 
    */
   private joinGroupChatById(): void {
-    this._oneChatService.getConversationUser().pipe(takeUntil(this.destory)).subscribe((users: ConversationUsers[]) => {
+    this._oneChatService.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: ConversationUsers[]) => {
       this.getConversationUsers$ = of(users);
       var groupIds: string[] = [];
       users.map((data: ConversationUsers) => {
@@ -197,7 +204,7 @@ export class OneChatContainerComponent implements OnInit {
    */
   public getEodReport(eod: EOD): void {
     eod.chatId = this.currectChatId;
-    const eodResult:EODResponse = this._eodAdapter.toRequest(eod);
+    const eodResult: EODResponse = this._eodAdapter.toRequest(eod);
     this._oneChatService.emit('eod:status', eodResult);
   }
 
@@ -215,8 +222,8 @@ export class OneChatContainerComponent implements OnInit {
    * @description This method is called the component is destroyed
    */
   public ngOnDestroy(): void {
-    this.destory.next();
-    this.destory.unsubscribe();
-    this._oneChatService.emit('disconnect', '');
+    this._oneChatService.disconnectSocket();
+    this.destroy.next();
+    this.destroy.unsubscribe();
   }
 }
