@@ -174,8 +174,8 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
    * @description This method is used to get the chat data
    */
   public getChatData(chat: string): void {
-    // this._oneChatPresenterService.getChatData(chat, this.repliedToMessage);
-    // this.repliedToMessage = undefined;
+    this._oneChatPresenterService.getChatData(chat, this.repliedToMessage);
+    this.repliedToMessage = undefined;
   }
 
   /**

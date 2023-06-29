@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { OneChatPresentationBase } from '../../one-chat-container/one-chat-presentation-base/one-chat-presentation.base';
 import { ChattingPresenterService } from '../chatting-presenter/chatting-presenter.service';
 import { ConversationUsers, Message } from '../../models/chat.model';
+import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 
 @Component({
   selector: 'app-chatting-presentation',
@@ -12,16 +13,22 @@ import { ConversationUsers, Message } from '../../models/chat.model';
   viewProviders: [ChattingPresenterService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChattingPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy {
+export class ChattingPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy, AfterViewInit {
 
   /** Element DOM for message screen */
   @ViewChild('messageContainer') public messageScreen: ElementRef;
+  /** This element used for focus inputBox */
+  @ViewChild('inputTypeFocus') public inputTypeFocus: ElementRef;
 
   /** Input to get the receiver's data */
   @Input() public set receiversConversation(receiver: ConversationUsers) {
     if (receiver) {
       this._receiversConversation = receiver;
+      setTimeout(() => {
+        this.scrollUp();
+      }, 100);
     }
+    this.setFocusInputBox()
   }
   public get receiversConversation(): ConversationUsers {
     return this._receiversConversation;
@@ -29,7 +36,6 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
 
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
-
   /** FormGroup for chat */
   public chatGroup: FormGroup;
   /** Flag for message screen scroll */
@@ -48,13 +54,18 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public currentMessageId: string;
   /** Edit Message object */
   public editMessage: Message;
+  /** show and hide emojis model */
+  public showEmojiPicker: boolean;
+  /** This variable  show emojis in inputBox  */
+  public message: string;
+  ///** Show and hide close icon */
+  public closeIcon: string;
 
   /** This variable is used for getter setter */
   private _receiversConversation: ConversationUsers;
 
   /** stops the subscription on destroy */
   private destroy: Subject<void>;
-
   constructor(
     private _chattingPresenterService: ChattingPresenterService,
   ) {
@@ -68,13 +79,17 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     this.showMessageIcon = false;
     this.isEditMode = false;
     this.isReplyMode = false;
+    this.showEmojiPicker = false;
+    this.closeIcon = ' ';
+    this.message = ''
   }
-
+  ngAfterViewInit(): void {
+    this.scrollUp();
+  }
   ngOnInit(): void {
     this._chattingPresenterService.chat$.pipe(takeUntil(this.destroy)).subscribe((chat: string) => this.chatData.emit(chat));
     this.chatGroup.valueChanges.pipe(takeUntil(this.destroy)).subscribe(() => this.InputTyping.emit());
   }
-
   /**
    * @name onSubmit
    * @description This method will be called when the form is submitted
@@ -85,13 +100,16 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
       this.editMessage.is_edit = true;
       this.editMessageObj.emit(this.editMessage);
     } else {
-      if(this.isReplyMode)
-        this.repliedMessage.emit(this.replyMessage)
+      if (this.isReplyMode)
+      this.repliedMessage.emit(this.replyMessage)
       this._chattingPresenterService.getChatData(this.chatGroup.value.message);
     }
     this.chatGroup.get('message').reset();
     this.isEditMode = false;
     this.isReplyMode = false;
+    setTimeout(() => {
+      this.scrollUp();
+    },0);
   }
 
   /**
@@ -99,12 +117,8 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
    * @description Click arrow down icon got to up message
    */
   public scrollUp(): void {
-    setTimeout(() => {
-      this.messageScreen.nativeElement.scrollTo(
-        0,
-        this.messageScreen.nativeElement.scrollHeight
-      );
-    }, 0);
+                  const scrollHeight = this.messageScreen?.nativeElement.scrollHeight;
+                  this.messageScreen.nativeElement.scrollTop = scrollHeight;
   }
 
   /**
@@ -117,8 +131,8 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     const scrollHeight = messageContainer.scrollHeight;
     let scrollTop = messageContainer.scrollTop;
     const clientHeight = messageContainer.clientHeight;
-    const isScrolledToBottom = scrollHeight - scrollTop === clientHeight;
-    this.isScrolledToBottom = isScrolledToBottom;
+    const isScrolledToBottom = scrollHeight - (scrollTop + clientHeight);
+    this.isScrolledToBottom = isScrolledToBottom > 50;
   }
 
   /**
@@ -143,6 +157,8 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     this.messageModel = false;
     this.isEditMode = true;
     this.editMessage = message;
+    this.setFocusInputBox()
+
   }
 
   /**
@@ -169,10 +185,50 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
    * @description This method is used when the reply mode is activated
    */
   public onReplyMessage(message: Message): void {
+    this.setFocusInputBox();
     this.isEditMode = false;
     this.chatGroup.reset();
     this.isReplyMode = true;
     this.replyMessage = message;
+  }
+
+  /**
+   * @description this method add a emojis
+   * @param event
+   */
+  public addEmoji(event: EmojiEvent): void {
+    const { message } = this;
+    const text = `${message}${event.emoji.native}`;
+    this.message = text;
+  }
+  /**
+  * @description This method Open emojis model and show close icon
+ */
+  public openEmojiPicker(): void {
+    this.closeIcon = 'x-lg';
+    this.showEmojiPicker = true;
+  }
+  /**
+   * @description This method close emojis model and also hide close icon
+  */
+  public closeEmojiPicker(): void {
+    this.closeIcon = '';
+    this.showEmojiPicker = false;
+  }
+  /**
+   * @description This method print Today,Yesterday and full weeks then print full dates
+   * @param data 
+   * @param pre 
+   * @returns 
+  */
+  formatDate(data: Date, pre: Date) {
+    return this._chattingPresenterService.formatDate(data, pre);
+  }
+  /** 
+   * @description This method used for focus input box
+   * */
+  public setFocusInputBox(): void {
+    this.inputTypeFocus?.nativeElement.focus();
   }
 
   ngOnDestroy(): void {

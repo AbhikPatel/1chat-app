@@ -54,7 +54,7 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
     ReactiveFormsModule,
     conversationUserAdapter,
     MessageAdapter,
-    EODAdapter
+    EODAdapter,
   ]
 })
 export class OneChatModule { }

@@ -19,7 +19,8 @@
                 <i class='icon-bxs-user-plus text-info' role="button" title="users" (click)="onNewConversation()"></i>
                 <ul class="dropdown-menu" [ngClass]="{'show' : showModel}">
                     <li class="dropdown-item" (click)="onSearchUser()">New Chat</li>
-                    <li class="dropdown-item" [ngClass]="{'disabled' :  userRole === 'intern'}" (click)="onNewGroup()">New Group</li>
+                    <li class="dropdown-item" [ngClass]="{'disabled' :  userRole === 'intern'}" (click)="onNewGroup()">
+                        New Group</li>
                 </ul>
             </div>
 
@@ -33,17 +34,15 @@
 
     <!-- Start: List  -->
     <ul class="flex-grow-1 position-relative h-100 overflow-hidden m-0">
-
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
-
         <!-- Start: Search User  -->
         <div id="user" class="search-container position-absolute bg-white">
             <form class="p-3 bg-theme" [formGroup]="searchGroup">
                 <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
-                    placeholder="Search a User.." formControlName="search" #inputType>
+                    placeholder="Search a User.." formControlName="search" [(ngModel)]="searchText" #inputTypeFocus>
             </form>
             <ul class="border-end bg-white overflow-auto h-100">
-                <ng-container *ngFor="let user of allUsers">
+                <ng-container *ngFor="let user of allUsers | search:searchText">
                     <li role="button" class="user-container d-flex align-items-center p-2 border-bottom"
                         (click)="onNewChat(user)">
                         <div class="px-3 me-1 position-relative">
@@ -62,12 +61,12 @@
                         </div>
                     </li>
                 </ng-container>
-                <!-- <div class="h-100 d-flex justify-content-center align-items-center"
-                    *ngIf="(allUsers | search:searchText).length <= 0 ">
+                <!-- No user found section  -->
+                <div class="h-100 d-flex justify-content-center align-items-center"
+                    *ngIf="(allUsers | search:searchText)?.length <= 0 ">
                     <span class="text-info"> No User Found </span>
-                </div> -->
+                </div>
             </ul>
-
         </div>
 
         <div class="h-100 overflow-auto">
@@ -95,7 +94,7 @@
             <!-- Start: User Data  -->
             <div class="user-container d-flex align-items-center"
                 [ngClass]="{'bg-theme' : user.chatId === currentChatId}" role="button"
-                *ngFor="let user of conversationUsers" (click)="onUser(user)">
+                *ngFor="let user of conversationUsers" (click)="onUser(user)" >
                 <div class="px-3 me-1 position-relative">
                     <img [src]="user.profile" class="rounded-circle user-img shadow" alt="profile">
                     <span *ngIf="checkIfOnline(user.members[0]._id)"
@@ -129,7 +128,9 @@
                                 ''}} {{user.lastMessage}} </span>
                         </ng-template>
                         <ng-container *ngIf="user.notificationCount">
-                            <span class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center"> {{user.notificationCount}} </span>
+                            <span
+                                class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
+                                {{user.notificationCount}} </span>
                         </ng-container>
                         <ng-container *ngIf="user.eodNotification">
                             <span class="badge bg-danger"> EOD </span>

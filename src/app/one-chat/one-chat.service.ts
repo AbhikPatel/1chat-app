@@ -210,7 +210,10 @@ export class OneChatService {
      */
   public logOutUser(email: string): Observable<any> {
     const url: string = this.api + `user/log-out`;
-    return this._http.httpPostRequest(url, email);
+    let res = {
+      email:email
+    }
+    return this._http.httpPostRequest(url, res);
   }
 
 
