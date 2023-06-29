@@ -7,6 +7,7 @@ import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -101,7 +102,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.allChatIds = [];
     this.copyOfConnversationUsers = [];
     this._conversationUsers = [];
-
+    this.destroy = new Subject(); 
   }
 
   ngOnInit(): void {
@@ -113,13 +114,13 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is called in ngOnInit
    */
   private props() {
-    this._ChatListPresenterService.currentConversationUser$.subscribe((user: ConversationUsers) => this.currectConversation.emit(user));
-    this._ChatListPresenterService.messageRead$.subscribe((messages: MessageRead) => this.readedMessages.emit(messages));
-    this._ChatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
+    this._ChatListPresenterService.currentConversationUser$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUsers) => this.currectConversation.emit(user));
+    this._ChatListPresenterService.messageRead$.pipe(takeUntil(this.destroy)).subscribe((messages: MessageRead) => this.readedMessages.emit(messages));
+    this._ChatListPresenterService.newConversation$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUsers) => {
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
     })
-    this._ChatListPresenterService.newGroupData$.subscribe((groupDetails: GroupDetails) => this.newGroupDetails.emit(groupDetails))
+    this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails:GroupDetails) => this.newGroupDetails.emit(groupDetails))
   }
 
   /**

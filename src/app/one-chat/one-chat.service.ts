@@ -191,10 +191,10 @@ export class OneChatService {
   }
 
   /**
-     * @name getEODReports
-     * @param id 
-     * @returns This method is used to get EOD Reports
-     */
+   * @name getEODReports
+   * @param id 
+   * @returns This method is used to get EOD Reports
+   */
   public getEODReports(id: string): Observable<EOD[]> {
     const url: string = this.api + `eod/?chatId=` + id;
     return this._http.httpGetRequest(url).pipe(
@@ -226,5 +226,9 @@ export class OneChatService {
     this.socket.on('connect', () => {
       this.socket.emit('dm:mapper', { userId: this.userId, socketId: this.socket.id })
     })
+  }
+
+  public disconnectSocket(): void {
+    this.socket.disconnect();
   }
 }

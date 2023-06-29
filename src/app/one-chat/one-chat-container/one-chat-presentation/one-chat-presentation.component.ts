@@ -95,6 +95,17 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     return this._getEODfromSocket;
   }
 
+  /** This property will get the edited message from the container */
+  @Input() public set getEditedMessage(message: Message) {
+    if (message) {
+      this._getEditedMessage = message;
+      this._oneChatPresenterService.getEditedMessage(message);
+    }
+  }
+  public get getEditedMessage(): Message {
+    return this._getEditedMessage;
+  }
+
   /** This property is used to emit the current chat Id */
   @Output() public chatId: EventEmitter<string>;
   /** This property is used to emit the new message */
@@ -123,6 +134,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   private _getNewGeneratedChatId: string;
   private _getMessageReadData: MessageRead;
   private _getEODfromSocket: EOD;
+  private _getEditedMessage: Message;
 
   constructor(
     private _oneChatPresenterService: OneChatPresenterService,
@@ -138,6 +150,8 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this.newMessage = new EventEmitter();
     this.newConversationChat = new EventEmitter();
     this.socketTyping = new EventEmitter();
+
+    this.destroy = new Subject();
   }
 
   ngOnInit(): void {

@@ -72,6 +72,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   ) {
     super();
     this.chatData = new EventEmitter();
+    this.destroy = new Subject();
     this.senderName = this._commonService.getUserFullName();
     this.userRole = this._commonService.getUserRole();
     this.currentWindow = true;

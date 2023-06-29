@@ -1,6 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, finalize, of, tap } from 'rxjs';
+import { Observable, catchError, finalize, throwError } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { LoaderService } from '../loader/loader.service';
 import { ToasterService } from '../toaster/toaster.service';
 
@@ -9,7 +10,8 @@ export class TokenInterceptor implements HttpInterceptor {
 
   constructor(
     private _service: LoaderService,
-    private _toastr: ToasterService
+    private _toastr: ToasterService,
+    private _authService: AuthService
   ) { }
 
   /**
@@ -24,16 +26,29 @@ export class TokenInterceptor implements HttpInterceptor {
     this._service.loader.next(true)
     return next.handle(modifiedReq).pipe(
       finalize(() => this._service.loader.next(false)),
-      // tap((event: HttpEvent<any>) => {
-        
-      // }),
       catchError((errorResponse: HttpErrorResponse) => {
-        if (errorResponse.status === 404)
-          this._toastr.error(errorResponse.message)
-        if (errorResponse.status === 401)
-          this._toastr.error(errorResponse.error.message)
-        return of()
+
+        switch (errorResponse.status) {
+          case 404: this._toastr.error(errorResponse.message);
+            break;
+          case 401: this._toastr.error(errorResponse.error.message);
+            break;
+          case 500: this._toastr.error(errorResponse.error.message);
+                    this.logOut();
+            break;
+        }
+        return throwError(null)
       })
     )
+  }
+
+  /**
+   * @name logOut
+   * @description This method will log out the user
+   */
+  public logOut(): void {
+    let email: string = localStorage.getItem('email') ?? '';
+    if (email)
+      this._authService.getLogOutEmail(email);
   }
 }
