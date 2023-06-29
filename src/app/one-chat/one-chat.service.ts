@@ -205,6 +205,19 @@ export class OneChatService {
   }
 
   /**
+     * @name logOutUser
+     * @description This method is used to log out the user
+     */
+  public logOutUser(email: string): Observable<any> {
+    const url: string = this.api + `user/log-out`;
+    let res = {
+      email:email
+    }
+    return this._http.httpPostRequest(url, res);
+  }
+
+
+  /**
    * @name setMap
    * @description This method will setMapper for the socket
    */

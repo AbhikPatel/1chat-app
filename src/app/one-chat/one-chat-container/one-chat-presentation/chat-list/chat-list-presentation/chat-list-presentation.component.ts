@@ -19,6 +19,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
 
   /** This element is for toggle search */
   @ViewChild('toggle') public toggle: ElementRef;
+  /** This element is for focus of input box */
+  @ViewChild('inputTypeFocus') public inputTypeFocus: ElementRef;
 
   /** This property is used to get all the user details from container component */
   @Input() public set allUsers(users: User[]) {
@@ -53,7 +55,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   @Output() public currectConversation: EventEmitter<ConversationUsers>
 
   /** This variable will store the search text */
-  public searchText: string;
+  public searchText: any;
   /** This variable is formGroup for search users */
   public searchGroup: FormGroup;
   /** This variable will store the data of the current tab */
@@ -211,20 +213,30 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   public onSearchUser(): void {
     this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true
     this.showModel = false;
+    this.setFocusInputBox();
+    setTimeout(() => {
+      this.searchGroup.reset();
+      this.searchText = ''
+    }, 0);
   }
 
   /**
    * @name onNewGroup
    * @description This method is used to open overlay for create group form
    */
-  public onNewGroup():void{
+  public onNewGroup(): void {
     let userDetails: any[] = this.allUsers.map((user: User) => ({
       id: user._id,
       full_name: `${user.full_name} (${user.role})`,
     }))
     this._ChatListPresenterService.openCreateGroupForm(userDetails);
   }
-
+  /**
+  * @description This method set focus default
+  */
+  public setFocusInputBox(): void {
+    this.inputTypeFocus.nativeElement.focus();
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed
