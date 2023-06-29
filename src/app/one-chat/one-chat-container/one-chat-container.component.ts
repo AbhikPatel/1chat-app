@@ -40,6 +40,10 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   public eodReportSocket$: Observable<EOD>;
   /** Observable for edit message */
   public editMessageSocket$: Observable<Message>;
+  /** Observable for reply message */
+  public replyMessageSocket$: Observable<Message>;
+  /** Observable for recent Chat Id */
+  public recentChatId$: Observable<string>;
   /** This varilable stores the Id of sender */
   public senderId: string;
   /** This varilable stores the Id of current chat */
@@ -65,6 +69,8 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this.chatReadData$ = new Observable();
     this.eodReports$ = new Observable();
     this.eodReportSocket$ = new Observable();
+    this.replyMessageSocket$ = new Observable();
+    this.recentChatId$ = new Observable();
   }
 
   ngOnInit(): void {
@@ -78,6 +84,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   private props(): void {
     this.senderId = this._commonService.getUserId();
     this._oneChatService.setMap();
+    this.recentChatId$ = this._oneChatService.chatId;
     this.getOnlineUsersData$ = this._oneChatService.listen('alive');
     this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
       this.getAllUsers$ = of(users);
@@ -94,6 +101,10 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this._oneChatService.listen('dm:messageEdit').subscribe((message: MessageResponse) => {
       const convertedMessage: Message = this._messageAdapter.toResponse(message);
       this.editMessageSocket$ = of(convertedMessage);
+    })
+    this._oneChatService.listen('dm:messageReply').subscribe((message: MessageResponse) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(message);
+      this.newSocketMessage$ = of(convertedMessage);
     })
     this.chatReadData$ = this._oneChatService.listen('dm:messageRead');
     this.typingInfo$ = this._oneChatService.listen('typing');

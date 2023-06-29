@@ -201,6 +201,7 @@ export class OneChatPresenterService implements OnDestroy {
    */
   public newMessageFromSocket(message: Message): void {
     if (this.receiversConversation.chatId === message.chat) {
+      message.is_read = true;
       this.chats.push(message);
       this.chatArray.next(this.chats);
     } else {
@@ -310,9 +311,19 @@ export class OneChatPresenterService implements OnDestroy {
    * @param message 
    * @description This method will update the chat list of the edit message
    */
-  public getEditedMessage(message:Message): void {
-    let index:number = this.chats.findIndex((data:Message) => data._id === message._id);
+  public getEditedMessage(message: Message): void {
+    let index: number = this.chats.findIndex((data: Message) => data._id === message._id);
     this.chats[index] = message;
+    this.getChatMessagesArray(this.chats);
+  }
+
+  /**
+   * @name getRecentId
+   * @param id 
+   * @description This method is used to set the recent chat id
+   */
+  public getRecentId(id: string): void {
+    this.chats[this.chats.length - 1]._id = id;
     this.getChatMessagesArray(this.chats);
   }
 
