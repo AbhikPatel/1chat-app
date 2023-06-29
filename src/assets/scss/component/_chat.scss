@@ -125,3 +125,9 @@
     background-color: $primary;
     z-index: 999;
 }
+.down-arrow{
+    top: -50px;
+    right:180px;
+    transform: translateX(-50%);
+    cursor: pointer;
+}
