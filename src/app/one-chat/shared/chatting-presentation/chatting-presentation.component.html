@@ -2,7 +2,7 @@
 <div class="d-flex flex-column h-100 overflow-hidden">
 
     <!-- Start: Message Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto py-4" #messageContainer (scroll)="onMessageScroll()" >
+    <div class="chat-container flex-grow-1 overflow-auto py-4" #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
             <div class="chat d-flex flex-column my-3" *ngFor="let message of chatArray let i = index"
                 [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
@@ -13,18 +13,20 @@
                     </span>
                 </div>
                 <div class="chat">
-                    <!-- Edit Message  -->
-                    <ng-container *ngIf="message.is_edit">
-                        <span class="fs-7 text-info" [ngClass]="message.is_sender ? 'text-end': 'text-start'"> Edited
-                        </span>
-                    </ng-container>
 
                     <div class="d-flex" [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
+
 
                         <!-- Message Text  -->
                         <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow dropstart"
                             [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
+                            <!-- Edit Message  -->
+                            <ng-container *ngIf="message.is_edit">
+                                <span class="fs-7 text-info" [ngClass]="message.is_sender ? 'text-end': 'text-start'">
+                                    Edited
+                                </span>
+                            </ng-container>
 
                             <!-- Reply Message  -->
                             <div class="reply-wrapper text-white bg-info rounded-1 p-1" *ngIf="message.replied_to">
@@ -71,42 +73,47 @@
                     </p>
                 </div>
             </div>
-            
+
         </div>
-       
+
         <!-- Screen Message  -->
         <ng-container *ngIf="chatArray.length === 0">
             <div class="d-flex h-100 justify-content-center align-items-center">
                 <span class="text-info"> No Conversation Started </span>
             </div>
         </ng-container>
-      
+
     </div>
     <!-- End: Message Screen  -->
 
-    
+
     <!-- Start: Typer Container  -->
     <div id="typer" class="d-flex flex-column bg-theme py-2 position-relative">
-        <div class="icon-circle-down fs-4 text-info down-arrow position-absolute" id="icon" (click)="scrollUp()" *ngIf="isScrolledToBottom">
+        <div class="icon-circle-down fs-4 text-info down-arrow position-absolute" id="icon" (click)="scrollUp()"
+            *ngIf="isScrolledToBottom">
         </div>
         <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
+
             <!-- Reply Model -->
             <div class="reply-wrapper rounded-1 p-2 pe-3" *ngIf="isReplyMode">
                 <div class="mx-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <span> {{replyMessage.is_sender ? 'You' : receiversConversation.members[0].first_name}} </span>
-                        <span class="icon-bx-log-out fs-4 text-info" type="button" role="button"
-                            (click)="onCancelMode()"></span>
+                        <button class="btn-close" (click)="onCancelMode()" type="button"></button>
                     </div>
                     <span>{{replyMessage.content.text}}</span>
                 </div>
             </div>
+
+            <!-- Emoji Icon  -->
             <emoji-mart class="emoji-mart " *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
                 title="Pick your emoji…"></emoji-mart>
             <div class="d-flex align-items-center position-relative">
                 <input type="text" class="form-control py-2 rounded-1" name="message" formControlName="message"
                     autocomplete="off" placeholder="Type a new message" [(ngModel)]="message " #inputTypeFocus>
             </div>
+
+            <!-- Typer Dialog box  -->
             <div class="d-flex align-items-center justify-content-between py-1">
                 <div class="file-attach d-flex align-items-center gap-2">
                     <span class="icon-{{closeIcon}} cursor-pointer" (click)="closeEmojiPicker()"></span>
@@ -122,7 +129,8 @@
                         <span class="icon icon-x-lg fs-5" (click)="onCancelMode()" role="button"></span>
                     </ng-container>
 
-                    <button type="submit" class="border-0"><span class='icon icon-bxs-send fs-4 ' role="button"></span></button>
+                    <button type="submit" class="border-0" [disabled]="!chatGroup.valid"><span class='icon icon-bxs-send fs-4'
+                            role="button"></span></button>
                 </div>
             </div>
             <input type="file" id="file" class="d-none">

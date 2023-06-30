@@ -1,35 +1,43 @@
 #typer {
     flex: 0 0 60px;
 }
+
 .main-chat-container {
-    background: linear-gradient(rgba(255,255,255,0.7),rgba(255,255,255,0.7),rgba(255,255,255,0.7)), url('../../images/bg-image.jpg');
+    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('../../images/bg-image.jpg');
+
     // background-image: url('../../images//bg-image.jpg');
     .emojis-container {
         transition: 0.2s ease-in-out;
+
         .icon-circle-down {
             bottom: 14%;
             right: 0%;
             top: -30px;
+
             .count-message {
                 bottom: 80%;
                 left: 80%;
             }
         }
     }
+
     .chat-container {
         .chat {
             &-text {
                 max-width: 500px;
                 word-wrap: break-word;
             }
+
             .icon-down-arrow {
                 visibility: hidden;
             }
+
             .chat-text:hover .icon-down-arrow {
                 visibility: visible;
             }
         }
-        #openBox:checked + .box {
+
+        #openBox:checked+.box {
             margin-top: 30px;
             visibility: visible;
             width: 20%;
@@ -37,9 +45,11 @@
             z-index: 1000;
         }
     }
+
     .list-group {
         .list-group-item {
             transition: 0.5s ease-in-out;
+
             &:hover {
                 background-color: rgba(175, 174, 174, 0.247);
             }
@@ -47,32 +57,18 @@
     }
 }
 
-.Reply-wrapper {
-    display: none;
-}
-.Reply-wrapper {
-    background-color: #111b21da;
+.reply-wrapper {
     border-left: 10px solid $chat-color;
     border-right: 10px solid $chat-color;
     border-top: 2px solid $chat-color;
     border-bottom: 2px solid $chat-color;
     width: 98.9%;
-}
-.Message-wrapper {
-    background-color: #111b21da;
-    border-left: 10px solid $chat-color;
-    border-right: 10px solid $chat-color;
-    border-top: 2px solid $chat-color;
-    border-bottom: 2px solid $chat-color;
-    width: 98.9%;
-}
-#replyClose:checked + .Reply-wrapper {
-    display: block;
 }
 
 .emoji-mart {
     width: 100% !important;
 }
+
 .text-read {
     color: #00cbfd;
 }
@@ -105,6 +101,7 @@
 .search-container {
     z-index: 99;
 }
+
 .popup {
     width: 120px;
     top: 0px;
@@ -117,7 +114,7 @@
     margin-bottom: -1px;
 }
 
-.floating-btn{
+.floating-btn {
     bottom: 68px;
     right: 30px;
     width: 50px;
@@ -125,9 +122,10 @@
     background-color: $primary;
     z-index: 999;
 }
-.down-arrow{
+
+.down-arrow {
     top: -50px;
-    right:180px;
+    right: 50px;
     transform: translateX(-50%);
     cursor: pointer;
 }

@@ -1,15 +1,16 @@
 <!-- Start: User Message  -->
-<div class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3 position-relative">
+<div
+    class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3 position-relative">
     <ng-container *ngIf="receiversConversation else gif">
         <!-- Floating Label  -->
-        <div class="floating-btn position-absolute rounded-circle d-flex justify-content-center align-items-center shadow-lg pe-4 "
+        <div class="floating-btn position-absolute rounded-circle d-flex justify-content-center align-items-center shadow-lg"
             role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
             *ngIf="userRole === 'intern'">
             <span class="fs-4 text-white"> + </span>
         </div>
         <!-- Start: Header Section  -->
-        <div id="header" class="d-flex align-items-center">
-            <div   class="container d-flex align-items-center ps-5 justify-content-between ">
+        <div id="header" class="d-flex">
+            <div class="container d-flex align-items-center justify-content-between ">
                 <div class="d-flex align-items-center h-100">
                     <div class="d-flex align-items-center">
                         <figure class="m-0">
@@ -36,16 +37,18 @@
                             </ng-template>
                         </div>
                     </div>
-    
+
                     <!-- Tab view  -->
                     <div class="d-flex h-100 px-4">
-                        <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(true)"
-                            role="button" [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
-                        <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(false)"
-                            role="button" [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
+                        <span class="h-100 border-3 border-success d-flex align-items-center mx-2"
+                            (click)="onWindow(true)" role="button"
+                            [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
+                        <span class="h-100 border-3 border-success d-flex align-items-center mx-2"
+                            (click)="onWindow(false)" role="button"
+                            [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
                     </div>
                 </div>
-    
+
                 <!-- Group functionality -->
                 <div class="d-flex" *ngIf="receiversConversation.chat_type === 'group'">
                     <span role="button" class="icon icon-bxs-user-plus fs-3" title="View group members"
@@ -53,7 +56,7 @@
                 </div>
             </div>
         </div>
-       
+
         <!-- End: Header Section  -->
 
         <!-- Start: EOD Form  -->

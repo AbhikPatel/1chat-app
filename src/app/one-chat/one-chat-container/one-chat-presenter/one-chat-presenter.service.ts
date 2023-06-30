@@ -150,6 +150,24 @@ export class OneChatPresenterService implements OnDestroy {
   }
 
   /**
+   * @name updateConversationList
+   * @param message 
+   * @description This method will update the list of conversation users
+   */
+  public updateConversationList(message: string, chatId: string, increaseCount?: boolean): void {
+    let latestConversation: ConversationUsers = this.conversationList.find((user: ConversationUsers) => user.chatId === chatId);
+    latestConversation.lastMessage = message;
+    latestConversation.time = new Date();
+    latestConversation.standardTime = this._formatter.Formatter(new Date());
+    let index:number = this.conversationList.indexOf(latestConversation);
+    this.conversationList.splice(index,1);
+    this.conversationList.unshift(latestConversation);
+    if (increaseCount)
+      latestConversation.notificationCount++;
+    this.getConversationUsers(this.conversationList);
+  }
+
+  /**
    * @name getChatData
    * @param message 
    * @description This method is used to add new chat in the chat array
@@ -189,7 +207,7 @@ export class OneChatPresenterService implements OnDestroy {
       this.newMessage.next(messageObj);
       this.chats.push(messageObj);
       this.getChatMessagesArray(this.chats);
-      this.updateConversationList(message, this.receiversConversation.chatId);
+      this.updateConversationList(message, this.receiversConversation.chatId, false);
       this.messageText = null;
     }
   }
@@ -240,21 +258,6 @@ export class OneChatPresenterService implements OnDestroy {
       }
     }
     this.updateConversationList(message.content.text, message.chat);
-  }
-
-  /**
-   * @name updateConversationList
-   * @param message 
-   * @description This method will update the list of conversation users
-   */
-  public updateConversationList(message: string, chatId: string, increaseCount?: boolean): void {
-    let latestConversation: ConversationUsers = this.conversationList.find((user: ConversationUsers) => user.chatId === chatId);
-    latestConversation.lastMessage = message;
-    latestConversation.time = new Date();
-    latestConversation.standardTime = this._formatter.Formatter(new Date());
-    if (increaseCount)
-      latestConversation.notificationCount++;
-    this.getConversationUsers(this.conversationList);
   }
 
   /**

@@ -24,6 +24,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   @Input() public set receiversConversation(receiver: ConversationUsers) {
     if (receiver) {
       this._receiversConversation = receiver;
+      this.closeEmojiPicker();
       setTimeout(() => {
         this.scrollUp();
       }, 100);
@@ -101,15 +102,16 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
       this.editMessageObj.emit(this.editMessage);
     } else {
       if (this.isReplyMode)
-      this.repliedMessage.emit(this.replyMessage)
+        this.repliedMessage.emit(this.replyMessage)
       this._chattingPresenterService.getChatData(this.chatGroup.value.message);
+      setTimeout(() => {
+        this.scrollUp();
+      }, 0);
     }
     this.chatGroup.get('message').reset();
     this.isEditMode = false;
     this.isReplyMode = false;
-    setTimeout(() => {
-      this.scrollUp();
-    },0);
+    this.closeEmojiPicker();
   }
 
   /**
@@ -117,8 +119,8 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
    * @description Click arrow down icon got to up message
    */
   public scrollUp(): void {
-                  const scrollHeight = this.messageScreen?.nativeElement.scrollHeight;
-                  this.messageScreen.nativeElement.scrollTop = scrollHeight;
+    const scrollHeight = this.messageScreen?.nativeElement.scrollHeight;
+    this.messageScreen.nativeElement.scrollTop = scrollHeight;
   }
 
   /**

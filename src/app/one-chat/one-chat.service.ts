@@ -96,6 +96,9 @@ export class OneChatService {
         if (eventname === 'dm:messageReply') {
           fn('reply')
         }
+        if (eventname === 'eod:status') {
+          fn('eod')
+        }
         subscriber.next(data);
       })
     })
@@ -121,6 +124,10 @@ export class OneChatService {
         console.log(response);
       })
     } else if (eventname === 'dm:messageReply') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
+      })
+    } else if (eventname === 'eod:status') {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response);
       })
@@ -213,11 +220,11 @@ export class OneChatService {
   }
 
   /**
-     * @name logOutUser
-     * @description This method is used to log out the user
-     */
+   * @name logOutUser
+   * @description This method is used to log out the user
+   */
   public logOutUser(email: string): Observable<any> {
-    const url: string = this.api + `user/log-out`;
+    const url: string = this.baseUrl + `user/log-out`;
     let res = {
       email:email
     }
@@ -236,6 +243,11 @@ export class OneChatService {
     })
   }
 
+  /**
+   * @name getRecentChatId
+   * @param response 
+   * @description This method is used to get the recent chat Id through socket
+   */
   public getRecentChatId(response: string): void {
     let splitData: string[] = response.split(' ');
     if (splitData.length === 3)
