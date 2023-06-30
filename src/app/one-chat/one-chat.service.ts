@@ -41,10 +41,7 @@ export class OneChatService {
     this.socket = io(environment.socketUrl);
     this.baseUrl = environment.baseURL;
     this.chatId = new Subject();
-    // window.addEventListener('load', () => {
-    //   console.log('trying to subscribe')
-    //   this.subscribeToPushNotification();
-    // })
+    this.subscribeToPushNotification();
   }
 
 
@@ -85,7 +82,7 @@ export class OneChatService {
       this.socket.on(eventname, (data: any, fn: any) => {
         if (eventname === 'dm:message') {
           fn('received')
-          // this.sendPushNotification(this.subscriber, data).subscribe();
+          this.sendPushNotification(this.subscriber, data).subscribe();
         }
         if (eventname === 'dm:messageRead') {
           fn('read')
