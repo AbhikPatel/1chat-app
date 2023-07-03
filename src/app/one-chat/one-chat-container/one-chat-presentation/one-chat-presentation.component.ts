@@ -106,6 +106,17 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     return this._getEditedMessage;
   }
 
+  /** This property will get the recent chat Id from the container */
+  @Input() public set getRecentChatId(id: string) {
+    if (id) {
+      this._getRecentChatId = id;
+      this._oneChatPresenterService.getRecentId(id);
+    }
+  }
+  public get getRecentChatId(): string {
+    return this._getRecentChatId;
+  }
+
   /** This property is used to emit the current chat Id */
   @Output() public chatId: EventEmitter<string>;
   /** This property is used to emit the new message */
@@ -135,6 +146,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   private _getMessageReadData: MessageRead;
   private _getEODfromSocket: EOD;
   private _getEditedMessage: Message;
+  private _getRecentChatId:string;
 
   constructor(
     private _oneChatPresenterService: OneChatPresenterService,

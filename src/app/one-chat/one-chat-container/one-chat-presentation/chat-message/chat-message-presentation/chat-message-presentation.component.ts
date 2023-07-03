@@ -79,7 +79,6 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.showMembersModal = false;
     this.showEODSummary = false;
     this.eodFormGroup = this._chatMessagePresenterService.getEodGroup();
-    
   }
 
   ngOnInit(): void {

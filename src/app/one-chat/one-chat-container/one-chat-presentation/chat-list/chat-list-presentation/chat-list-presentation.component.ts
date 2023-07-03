@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs/internal/Subject';
 
@@ -39,7 +39,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
-      this.copyOfConnversationUsers = [...users];
+      this.copyOfConversationUsers = [...users];
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
       if (this.tabFlag) {
         this.tabFlag = false;
@@ -69,7 +69,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   /** This variable will store the details of the sender */
   public senderDetails: User;
   /** This variable will store copy of all the conversation users */
-  public copyOfConnversationUsers: ConversationUsers[];
+  public copyOfConversationUsers: ConversationUsers[];
   /** This variable will store all the chat Ids of conversation users */
   public allChatIds: string[];
   /** This variable will store id of the user */
@@ -88,7 +88,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
 
   constructor(
     private _ChatListPresenterService: ChatListPresenterService,
-    private _commonService: CommonService
+    private _commonService: CommonService,
+    private _cdr:ChangeDetectorRef
   ) {
     super();
     this.searchGroup = this._ChatListPresenterService.getGroup();
@@ -100,7 +101,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.userId = this._commonService.getUserId();
     this.senderDetails = {} as User;
     this.allChatIds = [];
-    this.copyOfConnversationUsers = [];
+    this.copyOfConversationUsers = [];
     this._conversationUsers = [];
     this.destroy = new Subject(); 
   }
@@ -162,13 +163,13 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    */
   public checkNonConversationUsers(): void {
     let nonConversationUser: number[] = [];
-    this.copyOfConnversationUsers.forEach((user: ConversationUsers) => {
+    this.copyOfConversationUsers.forEach((user: ConversationUsers) => {
       if (!this.allChatIds.includes(user.chatId))
         nonConversationUser.push(this.conversationUsers.indexOf(user));
     });
 
     setTimeout(() => {
-      this.conversationUsers = this.copyOfConnversationUsers.filter((user: ConversationUsers, index: number) => !nonConversationUser.includes(index));
+      this.conversationUsers = this.copyOfConversationUsers.filter((user: ConversationUsers, index: number) => !nonConversationUser.includes(index));
     }, 500);
   }
 
@@ -179,7 +180,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    */
   public onTabSwitch(data: boolean): void {
     this.tabData = data;
-    this._conversationUsers = this.copyOfConnversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' : users.chat_type === 'group');
+    this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' : users.chat_type === 'group');
     const sortbyTime = (a, b) => {
       const timestampA = a.time.getTime();
       const timestampB = b.time.getTime();

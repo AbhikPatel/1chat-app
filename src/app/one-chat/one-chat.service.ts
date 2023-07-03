@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { SwPush } from "@angular/service-worker";
-import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -10,17 +9,25 @@ import { User, UserResponse } from '../shared/models/user.model';
 import { ConversationUserResponse, ConversationUsers, CreateChat, GroupDetails, Message, MessageResponse } from './models/chat.model';
 import { EOD, EODResponse } from './models/eod.model';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
+import { Subject } from 'rxjs/internal/Subject';
+import { map } from 'rxjs/internal/operators/map';
 
 @Injectable()
 
 export class OneChatService {
 
-  public api: string;
+  /** variable for base url */
+  public baseUrl: string;
+  /** variable for user Id */
   public userId: string;
+  /** variable for subscriber of service worker */
   public subscriber: any;
+  /** variable for socket */
   public socket: any;
+  /** Subject for recent chat Id */
+  public chatId: Subject<string>;
 
-  // Voluntary Application Server Identity to send push notification
+  /** Voluntary Application Server Identity to send push notification */
   private readonly VAPID_PUBLIC_KEY: string = "BKX5wA9WxBSYJZWvQtdgD-1rknSL5ejHQd25tUxl5bM9QkNrQVms__OnS1cbRxsJ96E09gKruA8pOcEv7XTfSc4";
 
   constructor(
@@ -32,11 +39,9 @@ export class OneChatService {
     private _eodAdapter: EODAdapter
   ) {
     this.socket = io(environment.socketUrl);
-    this.api = environment.baseURL;
-    // window.addEventListener('load', () => {
-    //   console.log('trying to subscribe')
-    //   this.subscribeToPushNotification();
-    // })
+    this.baseUrl = environment.baseURL;
+    this.chatId = new Subject();
+    this.subscribeToPushNotification();
   }
 
 
@@ -62,7 +67,7 @@ export class OneChatService {
  * @description This method is used to send push notification to client
  */
   private sendPushNotification(sub: any, data: any): Observable<any> {
-    const url: string = this.api + `push-notification`;
+    const url: string = this.baseUrl + `push-notification`;
     return this._http.httpPostRequest(url, { sub, data })
   }
 
@@ -77,7 +82,7 @@ export class OneChatService {
       this.socket.on(eventname, (data: any, fn: any) => {
         if (eventname === 'dm:message') {
           fn('received')
-          // this.sendPushNotification(this.subscriber, data).subscribe();
+          this.sendPushNotification(this.subscriber, data).subscribe();
         }
         if (eventname === 'dm:messageRead') {
           fn('read')
@@ -87,6 +92,9 @@ export class OneChatService {
         }
         if (eventname === 'dm:messageReply') {
           fn('reply')
+        }
+        if (eventname === 'eod:status') {
+          fn('eod')
         }
         subscriber.next(data);
       })
@@ -102,7 +110,7 @@ export class OneChatService {
   public emit(eventname: string, data: any): void {
     if (eventname === 'dm:message') {
       this.socket.emit(eventname, data, (response: any) => {
-        console.log(response);
+        this.getRecentChatId(response)
       })
     } else if (eventname === 'dm:messageRead') {
       this.socket.emit(eventname, data, (response: any) => {
@@ -116,6 +124,10 @@ export class OneChatService {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response);
       })
+    } else if (eventname === 'eod:status') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
+      })
     } else {
       this.socket.emit(eventname, data);
     }
@@ -124,10 +136,10 @@ export class OneChatService {
   /**
      * @name getAllUserData
      * @returns 
-     * @description This api is called to get all the users data
+     * @description This method is called to get all the users data
     */
   public getAllUserData(): Observable<User[]> {
-    const url: string = this.api + 'user/';
+    const url: string = this.baseUrl + 'user/';
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
         res.data.data = res.data.data.map((users: UserResponse) => this._userAdaptor.toResponse(users));
@@ -143,7 +155,7 @@ export class OneChatService {
     */
   public getConversationUser(): Observable<ConversationUsers[]> {
     this.userId = localStorage.getItem('userId')
-    const url: string = this.api + `user/` + this.userId;
+    const url: string = this.baseUrl + `user/` + this.userId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
         res.data.doc = res.data.doc.map((user: ConversationUserResponse) => this._conversationAdapter.toResponse(user))
@@ -159,7 +171,7 @@ export class OneChatService {
      * @description This will get the data of all the messages as per the chatId
      */
   public getChatMessages(chatId: string): Observable<Message[]> {
-    const url: string = this.api + `message?chat=` + chatId;
+    const url: string = this.baseUrl + `message?chat=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
         res.data.data = res.data.data.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
@@ -174,7 +186,7 @@ export class OneChatService {
    * @returns This method will post the data when the user will start the conversation with another new user
    */
   public postNewChat(newChat: CreateChat): Observable<CreateChat> {
-    const url: string = this.api + `chat`
+    const url: string = this.baseUrl + `chat`
     return this._http.httpPostRequest(url, newChat).pipe(
       map((res: any) => res.data.data)
     )
@@ -186,7 +198,7 @@ export class OneChatService {
    * @returns This method will post the data of new
    */
   public postNewGroup(newGroup: GroupDetails): Observable<GroupDetails> {
-    const url: string = this.api + `chat`
+    const url: string = this.baseUrl + `chat`
     return this._http.httpPostRequest(url, newGroup)
   }
 
@@ -196,7 +208,7 @@ export class OneChatService {
    * @returns This method is used to get EOD Reports
    */
   public getEODReports(id: string): Observable<EOD[]> {
-    const url: string = this.api + `eod/?chatId=` + id;
+    const url: string = this.baseUrl + `eod/?chatId=` + id;
     return this._http.httpGetRequest(url).pipe(
       map((res) => {
         res.data.data = res.data.data.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
@@ -205,11 +217,11 @@ export class OneChatService {
   }
 
   /**
-     * @name logOutUser
-     * @description This method is used to log out the user
-     */
+   * @name logOutUser
+   * @description This method is used to log out the user
+   */
   public logOutUser(email: string): Observable<any> {
-    const url: string = this.api + `user/log-out`;
+    const url: string = this.baseUrl + `user/log-out`;
     let res = {
       email:email
     }
@@ -228,6 +240,21 @@ export class OneChatService {
     })
   }
 
+  /**
+   * @name getRecentChatId
+   * @param response 
+   * @description This method is used to get the recent chat Id through socket
+   */
+  public getRecentChatId(response: string): void {
+    let splitData: string[] = response.split(' ');
+    if (splitData.length === 3)
+      this.chatId.next(splitData[2])
+  }
+
+  /**
+   * @name disconnectSocket
+   * @description This method will disconnect the socket
+   */
   public disconnectSocket(): void {
     this.socket.disconnect();
   }
