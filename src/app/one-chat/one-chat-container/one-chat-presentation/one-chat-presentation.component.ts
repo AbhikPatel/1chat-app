@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable, of } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { User } from 'src/app/shared/models/user.model';
 import { ConversationUsers, CreateChat, Message, MessageRead, Typing } from '../../models/chat.model';
 import { OneChatPresentationBase } from '../one-chat-presentation-base/one-chat-presentation.base';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 import { EOD } from '../../models/eod.model';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-one-chat-presentation',
@@ -15,6 +16,18 @@ import { EOD } from '../../models/eod.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OneChatPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy {
+
+  /** This property will get the data form notification click */
+  @Input() public set notificationClick(data: any) {
+    if (data) {
+      this._notificationClick = data;
+      this._oneChatPresenterService.newMessageFromSocket(data);
+    }
+  }
+
+  public get notificationClick(): any {
+    return this._notificationClick;
+  }
 
   /** This property is used to get the message read chat Id */
   @Input() public set getMessageReadData(message: MessageRead) {
@@ -134,7 +147,8 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   public receiverConversationData$: Observable<ConversationUsers>;
   /** Observable for details of all the users */
   public allUsers$: Observable<User[]>;
-
+  /** Observable for notification click data */
+  public notificationClickData$: Observable<ConversationUsers>;
   /** Stops the subcription on ngDestroy */
   private destroy: Subject<void>;
   /** This property is used for getter setter */
@@ -146,10 +160,14 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   private _getMessageReadData: MessageRead;
   private _getEODfromSocket: EOD;
   private _getEditedMessage: Message;
-  private _getRecentChatId:string;
+  private _getRecentChatId: string;
+  private _notificationClick: any;
+  
 
   constructor(
+    private _cs: CommonService,
     private _oneChatPresenterService: OneChatPresenterService,
+    private _cdr: ChangeDetectorRef
   ) {
     super();
 
@@ -157,6 +175,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this.conversationUser$ = new Observable();
     this.chatArray$ = new Observable();
     this.allUsers$ = new Observable();
+    this.notificationClickData$ = new Observable();
 
     this.chatId = new EventEmitter();
     this.newMessage = new EventEmitter();
@@ -183,6 +202,12 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this._oneChatPresenterService.currentChatId$.subscribe((id: string) => this.chatId.emit(id));
     this.allUsers$ = this._oneChatPresenterService.allUsers$;
     this._oneChatPresenterService.typingInfo$.subscribe((typing: Typing) => this.socketTyping.emit(typing));
+
+    this._oneChatPresenterService.conversationUser$.subscribe(val => {
+      if (this._notificationClick && this._notificationClick._id === val[0].lastMessageId) {
+        this._cs.notificationDataNext(val[0]);
+      }
+    })
   }
 
   /**

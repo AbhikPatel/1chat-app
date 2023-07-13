@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -8,14 +8,25 @@ import { User } from '../models/user.model';
 
 export class CommonService {
 
+  public notificationData$: Observable<any>;
+  private notificationData: Subject<any>
+
   /** This Subject will store the user details */
   public user$: Subject<User>;
   public closeModel: Subject<boolean>;
 
   constructor() {
+    this.notificationData = new Subject<any>();
+    this.notificationData$ = new Observable<any>();
+    this.notificationData$ = this.notificationData.asObservable();
     this.user$ = new Subject();
     this.closeModel = new Subject();
   }
+
+  
+  public notificationDataNext(val: any) {
+    this.notificationData.next(val);
+}
 
   /**
    * @name getUserId

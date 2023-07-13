@@ -11,6 +11,7 @@
     [getMessageReadData]="chatReadData$ | async"
     [getEditedMessage]="editMessageSocket$ | async"
     [getRecentChatId]="recentChatId$ | async"
+    [notificationClick]="notificationClick$ | async"
     (logOutUser)="getLogOutUser($event)"
     (chatId)="getChatId($event)"
     [senderId]="senderId"

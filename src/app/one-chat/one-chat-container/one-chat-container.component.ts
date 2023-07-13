@@ -48,6 +48,8 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   public senderId: string;
   /** This varilable stores the Id of current chat */
   public currectChatId: string;
+  /** Observable for notification click */
+  public notificationClick$: Observable<any>
 
   /** stops the subscription on ngDestroy */
   private destroy: Subject<void>;
@@ -71,6 +73,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this.eodReportSocket$ = new Observable();
     this.replyMessageSocket$ = new Observable();
     this.recentChatId$ = new Observable();
+    this.notificationClick$ = new Observable(); 
   }
 
   ngOnInit(): void {
@@ -85,6 +88,10 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this.senderId = this._commonService.getUserId();
     this._oneChatService.setMap();
     this.recentChatId$ = this._oneChatService.chatId;
+    this._oneChatService.notificationClick$.subscribe((message: MessageResponse) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(message);
+      this.notificationClick$ = of(convertedMessage);
+    });
     this.getOnlineUsersData$ = this._oneChatService.listen('alive');
     this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
       this.getAllUsers$ = of(users);
@@ -108,6 +115,8 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     })
     this.chatReadData$ = this._oneChatService.listen('dm:messageRead');
     this.typingInfo$ = this._oneChatService.listen('typing');
+
+    
   }
 
   /**

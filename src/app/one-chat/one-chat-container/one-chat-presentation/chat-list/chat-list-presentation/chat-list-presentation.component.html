@@ -96,12 +96,12 @@
                 [ngClass]="{'bg-theme' : user.chatId === currentChatId}" role="button"
                 *ngFor="let user of conversationUsers" (click)="onUser(user)" >
                 <div class="px-3 me-1 position-relative">
-                    <img [src]="user.profile" class="rounded-circle user-img shadow" alt="profile">
+                    <img [src]="user.profile" class="rounded-circle user-img" alt="profile">
                     <span *ngIf="checkIfOnline(user.members[0]._id)"
                         class="online position-absolute translate-middle bg-success border border-light rounded-circle">
                     </span>
                 </div>
-                <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
+                <div class="py-3 flex-grow-1 flex-column d-flex pe-3">
                     <div class="d-flex justify-content-between">
                         <div class="d-flex align-items-center">
                             <span class="fw-semibold text-truncate"> {{user.displayName}} </span>

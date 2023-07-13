@@ -26,6 +26,10 @@ export class OneChatService {
   public socket: any;
   /** Subject for recent chat Id */
   public chatId: Subject<string>;
+  /** Observable for notification click */
+  public notificationClick$: Observable<any>;
+  /** Subject for notification click */
+  private notificationClick: Subject<any>;
 
   /** Voluntary Application Server Identity to send push notification */
   private readonly VAPID_PUBLIC_KEY: string = "BKX5wA9WxBSYJZWvQtdgD-1rknSL5ejHQd25tUxl5bM9QkNrQVms__OnS1cbRxsJ96E09gKruA8pOcEv7XTfSc4";
@@ -42,6 +46,12 @@ export class OneChatService {
     this.baseUrl = environment.baseURL;
     this.chatId = new Subject();
     this.subscribeToPushNotification();
+    
+    this.notificationClick$ = new Observable();
+    this.notificationClick = new Subject();
+    this.notificationClick$ = this.notificationClick.asObservable();
+
+    this.swPush.notificationClicks.subscribe((val)=> this.notificationClick.next(val.notification.data.message))
   }
 
 
@@ -110,6 +120,7 @@ export class OneChatService {
   public emit(eventname: string, data: any): void {
     if (eventname === 'dm:message') {
       this.socket.emit(eventname, data, (response: any) => {
+        console.log(response)
         this.getRecentChatId(response)
       })
     } else if (eventname === 'dm:messageRead') {
@@ -142,7 +153,7 @@ export class OneChatService {
     const url: string = this.baseUrl + 'user/';
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
-        res.data.data = res.data.data.map((users: UserResponse) => this._userAdaptor.toResponse(users));
+        res.data.data = res.data.docs.map((users: UserResponse) => this._userAdaptor.toResponse(users));
         return res.data.data
       })
     )
@@ -174,7 +185,7 @@ export class OneChatService {
     const url: string = this.baseUrl + `message?chat=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
-        res.data.data = res.data.data.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
+        res.data.data = res.data.docs.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
         return res.data.data;
       })
     )
@@ -211,7 +222,7 @@ export class OneChatService {
     const url: string = this.baseUrl + `eod/?chatId=` + id;
     return this._http.httpGetRequest(url).pipe(
       map((res) => {
-        res.data.data = res.data.data.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
+        res.data.data = res.data.docs.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
         return res.data.data;
       }))
   }

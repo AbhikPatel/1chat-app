@@ -35,7 +35,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   public get allUsers(): User[] {
     return this._allUsers;
   }
-
+  
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
@@ -82,7 +82,6 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   /**This properties are used for getter setter */
   private _conversationUsers: ConversationUsers[];
   private _allUsers: User[];
-
   /** Stops the subscription on ngOnDestory */
   private destroy: Subject<void>;
 
@@ -120,7 +119,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this._ChatListPresenterService.newConversation$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUsers) => {
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
-    })
+    });
+    this._commonService.notificationData$.subscribe(val => this.onUser(val))
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails:GroupDetails) => this.newGroupDetails.emit(groupDetails))
   }
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from "@angular/core";
 
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { GroupDetails, Message, MessageRead, OnlineUser, Typing } from "../../models/chat.model";
 import { EOD } from "../../models/eod.model";
 
@@ -88,7 +88,7 @@ export class OneChatPresentationBase {
     private _chatArray: Message[];
     private _onlineUsers: OnlineUser[];
     private _typingInfo: Typing;
-    private _getReports:EOD[];
+    private _getReports: EOD[];
 
     constructor(
     ) {
