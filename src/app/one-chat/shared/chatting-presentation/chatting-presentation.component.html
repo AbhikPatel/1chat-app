@@ -18,8 +18,8 @@
 
 
                         <!-- Message Text  -->
-                        <div class="chat-text rounded-3 py-1 px-2 border placeholder-glow dropstart"
-                            [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
+                        <div class="chat-text py-1 px-2  placeholder-glow dropstart"
+                            [ngClass]="message.is_sender ? 'bg-secondary chat-rt-border' : 'bg-theme chat-lt-border'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
                             <!-- Edit Message  -->
                             <ng-container *ngIf="message.is_edit">

@@ -25,7 +25,7 @@
                         <ng-template #status>
                             <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
                         </ng-template> -->
-                            <span class="fw-semibold"> {{receiversConversation.displayName}} </span>
+                            <span class="fw-semibold text-nowrap"> {{receiversConversation.displayName}} </span>
                             <div class="fs-7"
                                 *ngIf="typingIds.includes(receiversConversation.members[0]._id) && showTypingText | async else online">
                                 Typing </div>

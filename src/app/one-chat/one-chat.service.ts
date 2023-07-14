@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SwPush } from "@angular/service-worker";
+import { SwPush, SwUpdate, VersionReadyEvent } from "@angular/service-worker";
 import { Observable } from 'rxjs/internal/Observable';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -11,6 +11,7 @@ import { EOD, EODResponse } from './models/eod.model';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
 import { Subject } from 'rxjs/internal/Subject';
 import { map } from 'rxjs/internal/operators/map';
+import { filter, interval } from 'rxjs';
 
 @Injectable()
 
@@ -40,20 +41,73 @@ export class OneChatService {
     private _userAdaptor: userAdaptor,
     private _messageAdaptor: MessageAdapter,
     private swPush: SwPush,
-    private _eodAdapter: EODAdapter
+    private _eodAdapter: EODAdapter,
+    public updates: SwUpdate
   ) {
     this.socket = io(environment.socketUrl);
     this.baseUrl = environment.baseURL;
     this.chatId = new Subject();
-    this.subscribeToPushNotification();
-    
+    this.requestNotificationPermission();
     this.notificationClick$ = new Observable();
     this.notificationClick = new Subject();
     this.notificationClick$ = this.notificationClick.asObservable();
-
-    this.swPush.notificationClicks.subscribe((val)=> this.notificationClick.next(val.notification.data.message))
+    // if (updates.isEnabled) {
+    //   interval(6 * 60 * 60).subscribe(() => updates.checkForUpdate()
+    //     .then(() => console.log('checking for updates')));
+    // }
+    this.checkForUpdates()
   }
 
+  public checkForUpdates(): void {
+    this.updates.versionUpdates.
+    pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+      map(evt => ({
+        type: 'UPDATE_AVAILABLE',
+        current: evt.currentVersion,
+        available: evt.latestVersion,
+      }))).subscribe(evt => {
+        this.promptUser();
+      });
+  }
+
+  private promptUser(): void {
+    console.log('updating to new version');
+
+    this.updates.activateUpdate().then((res) => { 
+      alert('here!');
+      document.location.reload()
+    });
+  }
+
+  /**
+   * @name requestNotificationPermission
+   * @description 
+   */
+  private requestNotificationPermission(): void {
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission()
+        .then(permission => {
+          // Handle permission result
+          console.log('inside then')
+          this.subscribeToPushNotification();
+          this.subscribeToPushNotificationClick();
+        })
+        .catch(error => {
+          // Handle error
+        });
+    } else {
+      this.subscribeToPushNotification();
+      this.subscribeToPushNotificationClick();
+    }
+  }
+  
+  /**
+   * @name subscribeToPushNotificationClick
+   * @description This method is used to subscribe notificationclick event
+   */
+  private subscribeToPushNotificationClick(): void {
+    this.swPush.notificationClicks.subscribe((val)=> this.notificationClick.next(val.notification.data.message));
+  }
 
   /**
    * @name subscribeToPushNotification
@@ -65,7 +119,7 @@ export class OneChatService {
     })
       .then(sub => {
         console.log(sub);
-        this.subscriber = sub
+        this.subscriber = sub;
       })
       .catch(err => console.error("Could not subscribe to notifications", err));
   }

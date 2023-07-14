@@ -103,6 +103,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.copyOfConversationUsers = [];
     this._conversationUsers = [];
     this.destroy = new Subject(); 
+    // setTimeout(()=> {this.onTabSwitch(false),this.(this.allUsers[0])}, 10000)
   }
 
   ngOnInit(): void {
@@ -187,6 +188,11 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       return timestampB - timestampA;
     };
     this._conversationUsers.sort(sortbyTime);
+    if(!data){
+      setTimeout(() => {
+        this.onUser(this.conversationUsers[0])
+      }, 10000);
+    }
   }
 
   /**
