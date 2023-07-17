@@ -1,0 +1,61 @@
+<ng-container [formGroup]="eodFormGroup">
+    <td>
+        <input type="text" class="form-control" name="title" id="title" formControlName="name"
+            placeholder="Enter Task Title">
+        <div
+            *ngIf="validator['name'].invalid && (isSubmitted || validator['name'].touched || validator['name'].dirty )">
+            <div *ngIf="validator['name'].errors?.['required']" class="text-danger fs-8 ms-2">
+                Task Title is Required
+            </div>
+        </div>
+    </td>
+    <td>
+        <input type="number" class="form-control" name="hours" id="hours" formControlName="hours"
+            placeholder="Enter Work Hours">
+        <div
+            *ngIf="validator['hours'].invalid && (isSubmitted || validator['hours'].touched || validator['hours'].dirty )">
+            <div *ngIf="validator['hours'].errors?.['required']" class="text-danger fs-8 ms-2">
+                Work Hours is Required
+            </div>
+        </div>
+    </td>
+    <td>
+        <input hours="description" id="description" cols="0" rows="0" class="form-control" formControlName="description"
+            placeholder="Enter Description ">
+        <div
+            *ngIf="validator['description'].invalid && (isSubmitted || validator['description'].touched || validator['description'].dirty )">
+            <div *ngIf="validator['description'].errors?.['required']" class="text-danger fs-8 ms-2">
+                Description is Required
+            </div>
+        </div>
+    </td>
+    <td>
+        <input type="text" class="form-control" name="blocker" id="blocker" formControlName="blocker"
+            placeholder="Enter blocker">
+    </td>
+    <td>
+        <select class="form-select" formControlName="type">
+            <option disabled value="">Select Status Type </option>
+            <option value="InProgress"> In Progress Tasks</option>
+            <option value="completed"> Completed Tasks</option>
+            <option value="newLearning"> New Learning</option>
+        </select>
+        <div
+            *ngIf="validator['type'].invalid && (isSubmitted || validator['type'].touched || validator['type'].dirty )">
+            <div *ngIf="validator['type'].errors?.['required']" class="text-danger fs-8 ms-2">
+                Type is Required
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="d-flex">
+            <button  *ngIf="!getEditData"class="btn btn-dark" type="submit"   (click)="addEodTasks()"><span class=" text-white fs-6"
+                  >Save</span>
+            </button>
+            <button   *ngIf="getEditData" class="btn btn-dark" type="submit"  (click)="addEodTasks()"><span class=" text-white fs-6"
+               >Update</span>
+        </button>
+            <button class="btn btn-danger ms-2" type="submit" *ngIf="getEditData"  (click)="cancelEdit(false)"><span class=" text-white fs-6" >Cancel</span></button>
+        </div>
+    </td>
+</ng-container>
