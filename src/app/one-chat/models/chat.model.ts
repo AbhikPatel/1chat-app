@@ -94,6 +94,7 @@ export class Message {
     content: Text
     is_sender: boolean
     displayTime: string
+    chat_type: string
     replied_to?: any
     
     constructor(
@@ -108,6 +109,7 @@ export class Message {
         content: Text,
         is_sender: boolean,
         displayTime: string,
+        chat_type: string,
         replied_to?: any
     ) {
         this._id = _id
@@ -121,6 +123,7 @@ export class Message {
         this.content = content
         this.is_sender = is_sender
         this.displayTime = displayTime
+        this.chat_type = chat_type
         this.replied_to = replied_to
     }
 }

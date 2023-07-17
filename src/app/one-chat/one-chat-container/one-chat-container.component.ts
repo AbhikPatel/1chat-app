@@ -152,12 +152,14 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
    * @description This method is used to send new message into socket
    */
   public getNewMessage(message: Message): void {
+    console.log(message);
+    
     const convertMessage: MessageResponse = this._messageAdapter.toRequest(message);
     if (message.replied_to) {
       convertMessage.replied_to = message.replied_to._id;
-      this._oneChatService.emit('dm:messageReply', convertMessage);
+      message.chat_type === 'dm' ? this._oneChatService.emit('dm:messageReply', convertMessage) : this._oneChatService.emit('group:messageReply', convertMessage)
     } else {
-      this._oneChatService.emit('dm:message', convertMessage);
+      message.chat_type === 'dm' ? this._oneChatService.emit('dm:message', convertMessage) : this._oneChatService.emit('group:message', convertMessage)
     }
   }
 
