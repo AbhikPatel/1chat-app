@@ -121,7 +121,12 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
     });
-    this._commonService.notificationData$.subscribe(val => this.onUser(val))
+    this._commonService.notificationData$.subscribe(val => {
+      console.log("final_destination", val)
+      if(val.notification_type.chat_type === 'dm' && this.tabData !== true) this.onTabSwitch(true)
+      if(val.notification_type.chat_type ==='group' && this.tabData !== false) this.onTabSwitch(false)
+      this.onUser(val)
+    })
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails:GroupDetails) => this.newGroupDetails.emit(groupDetails))
   }
 
@@ -188,11 +193,6 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       return timestampB - timestampA;
     };
     this._conversationUsers.sort(sortbyTime);
-    if(!data){
-      setTimeout(() => {
-        this.onUser(this.conversationUsers[0])
-      }, 10000);
-    }
   }
 
   /**

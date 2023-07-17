@@ -26,8 +26,10 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   public getMessages$: Observable<Message[]>;
   /** Observable for the sender details */
   public senderDetails$: Observable<User>;
-  /** Observable for the sender details */
+  /** Observable for the new direct message */
   public newSocketMessage$: Observable<Message>;
+  /** Observable for the new group message */
+  public newGroupMessage$: Observable<Message>;
   /** Observable for new Chat Id */
   public newChatId$: Observable<string>;
   /** Observable for new Chat Id */
@@ -73,7 +75,8 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this.eodReportSocket$ = new Observable();
     this.replyMessageSocket$ = new Observable();
     this.recentChatId$ = new Observable();
-    this.notificationClick$ = new Observable(); 
+    this.notificationClick$ = new Observable();
+    this.newGroupMessage$ = new Observable();
   }
 
   ngOnInit(): void {
@@ -88,9 +91,10 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this.senderId = this._commonService.getUserId();
     this._oneChatService.setMap();
     this.recentChatId$ = this._oneChatService.chatId;
-    this._oneChatService.notificationClick$.subscribe((message: MessageResponse) => {
-      const convertedMessage: Message = this._messageAdapter.toResponse(message);
-      this.notificationClick$ = of(convertedMessage);
+    // change data type "any"
+    this._oneChatService.notificationClick$.subscribe((data: any) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(data.message);
+      this.notificationClick$ = of({message_type: data.message_type, message: convertedMessage});
     });
     this.getOnlineUsersData$ = this._oneChatService.listen('alive');
     this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
@@ -101,6 +105,10 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
       const convertedMessage: Message = this._messageAdapter.toResponse(message);
       this.newSocketMessage$ = of(convertedMessage);
     });
+    this._oneChatService.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((message: MessageResponse) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(message);
+      this.newGroupMessage$ = of(convertedMessage)
+    })
     this._oneChatService.listen('eod:status').pipe(takeUntil(this.destroy)).subscribe((eod: EODResponse) => {
       const eodResult: EOD = this._eodAdapter.toResponse(eod);
       this.eodReportSocket$ = of(eodResult);
@@ -174,7 +182,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   /**
    * @name getEditMessageObj
    * @param message 
-   * @description This method is used to emit the edit message into socket
+   * @description  
    */
   public getEditMessageObj(message): void {
     let convertedMessage: MessageResponse = this._messageAdapter.toRequest(message);

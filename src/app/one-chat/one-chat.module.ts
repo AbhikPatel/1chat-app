@@ -43,7 +43,7 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
     SharedModule,
     PickerModule,
     FormsModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:60000' }),
+    // ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:60000' }),
     OverlayModule,
     NgMultiSelectDropDownModule
   ],

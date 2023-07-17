@@ -21,7 +21,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   @Input() public set notificationClick(data: any) {
     if (data) {
       this._notificationClick = data;
-      this._oneChatPresenterService.newMessageFromSocket(data);
+      this._oneChatPresenterService.newMessageFromSocket(data.message);
     }
   }
 
@@ -204,8 +204,9 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this._oneChatPresenterService.typingInfo$.subscribe((typing: Typing) => this.socketTyping.emit(typing));
 
     this._oneChatPresenterService.conversationUser$.subscribe(val => {
-      if (this._notificationClick && this._notificationClick._id === val[0].lastMessageId) {
-        this._cs.notificationDataNext(val[0]);
+      if (this._notificationClick && this._notificationClick.message._id === val[0].lastMessageId) {
+        console.log(val, this.notificationClick.message_type)
+        this._cs.notificationDataNext({notificationData: val[0], notification_type: this.notificationClick.message_type});
       }
     })
   }

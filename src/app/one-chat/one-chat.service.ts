@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SwPush, SwUpdate, VersionReadyEvent } from "@angular/service-worker";
+import { SwPush } from "@angular/service-worker";
 import { Observable } from 'rxjs/internal/Observable';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -11,7 +11,6 @@ import { EOD, EODResponse } from './models/eod.model';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
 import { Subject } from 'rxjs/internal/Subject';
 import { map } from 'rxjs/internal/operators/map';
-import { filter, interval } from 'rxjs';
 
 @Injectable()
 
@@ -42,7 +41,6 @@ export class OneChatService {
     private _messageAdaptor: MessageAdapter,
     private swPush: SwPush,
     private _eodAdapter: EODAdapter,
-    public updates: SwUpdate
   ) {
     this.socket = io(environment.socketUrl);
     this.baseUrl = environment.baseURL;
@@ -51,32 +49,6 @@ export class OneChatService {
     this.notificationClick$ = new Observable();
     this.notificationClick = new Subject();
     this.notificationClick$ = this.notificationClick.asObservable();
-    // if (updates.isEnabled) {
-    //   interval(6 * 60 * 60).subscribe(() => updates.checkForUpdate()
-    //     .then(() => console.log('checking for updates')));
-    // }
-    this.checkForUpdates()
-  }
-
-  public checkForUpdates(): void {
-    this.updates.versionUpdates.
-    pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-      map(evt => ({
-        type: 'UPDATE_AVAILABLE',
-        current: evt.currentVersion,
-        available: evt.latestVersion,
-      }))).subscribe(evt => {
-        this.promptUser();
-      });
-  }
-
-  private promptUser(): void {
-    console.log('updating to new version');
-
-    this.updates.activateUpdate().then((res) => { 
-      alert('here!');
-      document.location.reload()
-    });
   }
 
   /**
@@ -106,7 +78,7 @@ export class OneChatService {
    * @description This method is used to subscribe notificationclick event
    */
   private subscribeToPushNotificationClick(): void {
-    this.swPush.notificationClicks.subscribe((val)=> this.notificationClick.next(val.notification.data.message));
+    this.swPush.notificationClicks.subscribe((val)=> this.notificationClick.next({message_type: val.notification.data.message_type, message: val.notification.data.message}));
   }
 
   /**
