@@ -43,6 +43,8 @@ export class OneChatPresenterService implements OnDestroy {
   public allDbUsers: User[];
   /** variable for storing the details of sender */
   public senderDetails: User;
+  /** variable for current chat type */
+  public currentChatType: string;
 
   /** Subject for conversation users */
   private conversationUser: Subject<ConversationUsers[]>;
@@ -144,6 +146,7 @@ export class OneChatPresenterService implements OnDestroy {
    * @description This method is used to get the receivers details
    */
   public getReceiversConversation(receivers: ConversationUsers): void {
+    this.currentChatType = receivers.chat_type;
     this.receiversConversation = receivers;
     this.receiverConversation.next(receivers);
     this.allChatIds.includes(receivers.chatId) ? this.currentChatId.next(receivers.chatId) : this.conversationList.unshift(receivers)
@@ -159,8 +162,8 @@ export class OneChatPresenterService implements OnDestroy {
     latestConversation.lastMessage = message;
     latestConversation.time = new Date();
     latestConversation.standardTime = this._formatter.Formatter(new Date());
-    let index:number = this.conversationList.indexOf(latestConversation);
-    this.conversationList.splice(index,1);
+    let index: number = this.conversationList.indexOf(latestConversation);
+    this.conversationList.splice(index, 1);
     this.conversationList.unshift(latestConversation);
     if (increaseCount)
       latestConversation.notificationCount++;
@@ -202,7 +205,8 @@ export class OneChatPresenterService implements OnDestroy {
         },
         is_sender: true,
         displayTime: this._formatter.Formatter(currentTime),
-        replied_to: replied || undefined
+        replied_to: replied || undefined,
+        chat_type: this.currentChatType
       };
       this.newMessage.next(messageObj);
       this.chats.push(messageObj);
