@@ -127,3 +127,28 @@ textarea {
 .members-modal{
     z-index: 999;
 }
+.color-completed {
+   color: #beffbe;
+}
+
+.color-progress {
+    color: #ffb7b7;
+}
+
+.color-learning {
+ color: #f9ffac;
+}
+// Overlay backdrop styling
+.overlay-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  // Overlay panel styling
+  .overlay-panel {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    padding: 20px;
+  }
+  .modal{
+    z-index: 5000;
+  }

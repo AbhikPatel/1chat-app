@@ -5,7 +5,7 @@
         <!-- Floating Label  -->
         <div class="floating-btn position-absolute rounded-circle d-flex justify-content-center align-items-center shadow-lg"
             role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
-            *ngIf="userRole === 'intern'">
+            *ngIf="userRole === 'intern'" (click)="resetEodForm()">
             <span class="fs-4 text-white"> + </span>
         </div>
         <!-- Start: Header Section  -->
@@ -50,26 +50,35 @@
                 </div>
 
                 <!-- Group functionality -->
-                <div class="d-flex" *ngIf="receiversConversation.chat_type === 'group'">
-                    <span role="button" class="icon icon-bxs-user-plus fs-3" title="View group members"
+                <div class="d-flex align-items-center" *ngIf="receiversConversation.chat_type === 'group'">
+                    <span role="button" class="icon icon-user fs-3" title="View group members"
                         (click)="viewMembers()"></span>
+                    <span class="fs-6 text-info">{{receiversConversation.members.length}}</span>
                 </div>
             </div>
         </div>
 
         <!-- End: Header Section  -->
 
-        <!-- Start: EOD Form  -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" data-bs-backdrop="static"
+        <!-- Start: offcanvas start -->
+        <div class="offcanvas offcanvas-end w-75" tabindex="-1" id="offcanvasRight" data-bs-backdrop="static"
             aria-labelledby="offcanvasRightLabel">
+            <!-- title -->
             <div class="offcanvas-header d-flex justify-content-center">
-                <h5 class="offcanvas-title" id="offcanvasRightLabel"> Eod Report </h5>
+                <h5 class="offcanvas-title fs-2" id="offcanvasRightLabel"> EOD REPORT</h5>
             </div>
             <div class="offcanvas-body position-relative">
-
-                <!-- Start: EOD Report Summary -->
-                <div class="eod-container bg-white position-absolute shadow h-100 py-4"
-                    [ngClass]="showEODSummary ? 'eod-open' : 'eod-close'">
+                <!-- start Eod form -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h3 class="text-uppercase">Add Eod Details</h3>
+                    <div class="button">
+                        <button class="btn btn-outline-dark" *ngIf="openForm" (click)="onCancelEodFrom()"> Cancel
+                        </button>
+                        <button class="btn btn-info" (click)="onAddEodFrom()" *ngIf="!openForm"> Add </button>
+                    </div>
+                </div>
+                <!-- Start: EOD Report Summary table -->
+                <div class="bg-white h-100 ">
                     <div class="d-flex justify-content-between align-items-center pb-3">
                         <div>
                             <span class="fw-bold"> Name: </span>
@@ -80,257 +89,86 @@
                             <span> {{eodDate}} </span>
                         </div>
                     </div>
-                    <div class="table-container pb-3">
-                        <table class="w-100">
-                            <thead>
-                                <tr>
-                                    <th> Task </th>
-                                    <th> Hours </th>
-                                    <th> Description </th>
-                                    <th> Blocker </th>
-                                    <th> Status </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let task of allTasks">
-                                    <td> {{task.name}} </td>
-                                    <td> {{task.hours}} </td>
-                                    <td> {{task.description}} </td>
-                                    <td> {{task.blocker || '-'}} </td>
-                                    <td [ngClass]="task.type.className"> {{task.type.displayName}} </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="w-100">
+                        <thead>
+                            <tr>
+                                <th> Task </th>
+                                <th> Hours </th>
+                                <th> Description </th>
+                                <th> Blocker </th>
+                                <th> Status </th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Add eod Form  -->
+                            <tr eod-table-form-ui *ngIf="openForm" (eodDetails)="getEodDetails($event)">
+                            </tr>
 
-                    <!-- EOD Summary buttons  -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button class="btn btn-danger text-white" type="button" (click)="backToEod()"> Edit Eod
+                            <ng-container *ngFor="let data of allTasks let i=index">
+                                <tr *ngIf="!data.isEdit">
+
+                                    <td>
+                                        {{data.name}}
+                                    </td>
+                                    <td>
+                                        {{data.hours}}
+                                    </td>
+                                    <td>
+                                        {{data.description}}
+                                    </td>
+                                    <td>
+                                        {{data.blocker || '-'}}
+                                    </td>
+                                    <td>
+                                        {{data.type}}
+                                    </td>
+                                    <td>
+                                        <label for="index" class="d-flex flex-column fs-2 fw-bold icon-Dote "
+                                            (click)="openEditDeleteModel(i)">
+                                            <div *ngIf="showModel && activeEditDeleteTab === i"
+                                                (appOnClickOutside)="clickOutside()">
+                                                <div class="dropdown ">
+                                                    <ul class="dropdown-content ">
+                                                        <li class="dropdown-item fs-6 text-nowrap pb-2"
+                                                            (click)="onEditEod(i)">Edit</li>
+                                                        <li class="dropdown-item fs-6 text-nowrap"
+                                                            (click)="onDeleteEod(i)">Delete</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <!-- edit eod Form  -->
+                                <tr eod-table-form-ui *ngIf="data.isEdit" [getEditData]="toEditData"
+                                    (openFormEmitter)="openFormEmitter($event)" (eodDetails)="getEodDetails($event)">
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-danger text-white" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" (click)="onCancel()"> Cancel
                         </button>
-                        <button class="btn btn-success text-white" type="button" data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" (click)="onEodSubmit()">
-                            Submit
+                        <button class="btn btn-info text-dark" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
+                            [disabled]="!submitBtnDisabled" type="submit" (click)="onEodSubmit(true)"> Submit
                         </button>
+                        <!-- data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" -->
                     </div>
                 </div>
                 <!-- End: EOD Report Summary -->
 
-                <!-- Start: Accordion  -->
-                <div class="accordion" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                In Progress tasks
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
-                            aria-labelledby="headingOne">
-                            <div class="accordion-body">
-                                <!-- Start: EOD Form  -->
-                                <form [formGroup]="eodFormGroup">
-                                    <div class="border p-4 border-1 rounded-3 my-3 position-relative"
-                                        formArrayName="InProgress"
-                                        *ngFor="let m of this.formTaskArray('InProgress').controls; let i = index">
-
-                                        <!-- Delete Task button  -->
-                                        <div class="model-close-btn position-absolute"
-                                            (click)="onDeleteTask(i, 'InProgress')">
-                                            <button class="btn-close" type="button"></button>
-                                        </div>
-
-                                        <ng-container [formGroupName]="i">
-                                            <div class="row g-4">
-                                                <!-- Task Title  -->
-                                                <div class="col-6">
-                                                    <label for="title" class="form-label required"> Task Title</label>
-                                                    <input type="text" class="form-control" name="title" id="title"
-                                                        formControlName="name">
-                                                </div>
-
-                                                <!-- Work Hours  -->
-                                                <div class="col-6">
-                                                    <label for="hours" class="form-label required">Work Hours</label>
-                                                    <input type="number" class="form-control" name="hours" id="hours"
-                                                        formControlName="hours">
-                                                </div>
-
-                                                <!-- Description  -->
-                                                <div class="col-12">
-                                                    <label for="description"
-                                                        class="form-label required">Description</label>
-                                                    <textarea name="description" id="description" cols="30" rows="8"
-                                                        class="form-control" formControlName="description"></textarea>
-                                                </div>
-
-                                                <!-- Blocker  -->
-                                                <div class="col-12">
-                                                    <label for="blocker" class="form-label"> Blocker </label>
-                                                    <input type="text" class="form-control" name="blocker" id="blocker"
-                                                        formControlName="blocker">
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </form>
-                                <button class="btn btn-primary w-100 mt-3" type="button"
-                                    [disabled]="eodFormGroup.get('InProgress').invalid"
-                                    (click)="onAddTask('InProgress')">
-                                    + Add Task </button>
-                                <!-- End: EOD Form  -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Completed Tasks
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-
-                                <!-- Start: EOD Form  -->
-                                <form [formGroup]="eodFormGroup">
-                                    <div class="border p-4 border-1 rounded-3 my-3 position-relative"
-                                        formArrayName="completed"
-                                        *ngFor="let m of this.formTaskArray('completed').controls; let i = index">
-                                        <div class="model-close-btn position-absolute"
-                                            (click)="onDeleteTask(i, 'completed')">
-                                            <button class="btn-close" type="button"></button>
-                                        </div>
-                                        <ng-container [formGroupName]="i">
-                                            <div class="row g-4">
-
-                                                <!-- Task Title  -->
-                                                <div class="col-6">
-                                                    <label for="title" class="form-label required">Task Title</label>
-                                                    <input type="text" class="form-control" name="title" id="title"
-                                                        formControlName="name">
-                                                </div>
-
-                                                <!-- Work Hours  -->
-                                                <div class="col-6">
-                                                    <label for="hours" class="form-label required">Work Hours</label>
-                                                    <input type="number" class="form-control" name="hours" id="hours"
-                                                        formControlName="hours">
-                                                </div>
-
-                                                <!-- Description  -->
-                                                <div class="col-12">
-                                                    <label for="description"
-                                                        class="form-label required">Description</label>
-                                                    <textarea name="description" id="description" cols="30" rows="8"
-                                                        class="form-control" formControlName="description"></textarea>
-                                                </div>
-
-                                                <!-- Blocker  -->
-                                                <div class="col-12">
-                                                    <label for="blocker" class="form-label"> Blocker </label>
-                                                    <input type="text" class="form-control" name="blocker" id="blocker"
-                                                        formControlName="blocker">
-                                                </div>
-
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </form>
-                                <button class="btn btn-primary w-100 mt-3"
-                                    [disabled]="eodFormGroup.get('completed').invalid" (click)="onAddTask('completed')">
-                                    + Add
-                                    Task
-                                </button>
-                                <!-- End: EOD Form  -->
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                New Learning
-                            </button>
-                        </h2>
-                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                            data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-
-                                <!-- Start: EOD Form  -->
-                                <form [formGroup]="eodFormGroup">
-                                    <div class="border border-1 p-4 rounded-3 my-3 position-relative"
-                                        formArrayName="newLearning"
-                                        *ngFor="let m of this.formTaskArray('newLearning').controls; let i = index">
-                                        <div class="model-close-btn position-absolute"
-                                            (click)="onDeleteTask(i, 'newLearning')">
-                                            <button class="btn-close" type="button"></button>
-                                        </div>
-                                        <ng-container [formGroupName]="i">
-                                            <div class="row g-4">
-
-                                                <!-- Task Title  -->
-                                                <div class="col-6">
-                                                    <label for="title" class="form-label required">Task Title</label>
-                                                    <input type="text" class="form-control" name="title" id="title"
-                                                        formControlName="name">
-                                                </div>
-
-                                                <!-- Work Hours  -->
-                                                <div class="col-6">
-                                                    <label for="hours" class="form-label required">Work Hours</label>
-                                                    <input type="number" class="form-control" name="hours" id="hours"
-                                                        formControlName="hours">
-                                                </div>
-
-                                                <!-- Description  -->
-                                                <div class="col-12">
-                                                    <label for="description" class="form-label"> Description </label>
-                                                    <textarea name="description" id="description" cols="30" rows="8"
-                                                        class="form-control" formControlName="description"></textarea>
-                                                </div>
-
-                                                <!-- Blocker  -->
-                                                <div class="col-12">
-                                                    <label for="blocker" class="form-label"> Blocker </label>
-                                                    <input type="text" class="form-control" name="blocker" id="blocker"
-                                                        formControlName="blocker">
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </form>
-                                <button class="btn btn-primary w-100 mt-3"
-                                    [disabled]="eodFormGroup.get('newLearning').invalid"
-                                    (click)="onAddTask('newLearning')">
-                                    +
-                                    Add Task
-                                </button>
-                                <!-- End: EOD Form  -->
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- End: Accordion  -->
-
-                <div class="d-flex justify-content-between pt-3">
-                    <button class="btn btn-danger text-white" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" (click)="onCancel()"> Cancel
-                    </button>
-                    <button class="btn btn-success text-white" type="submit" [disabled]="!eodFormGroup.valid"
-                        (click)="onEodSummary()"> Submit
-                    </button>
-                </div>
             </div>
-        </div>
-        <!-- End: EOD Form  -->
 
+        </div>
+
+        <!-- End:  Start: offcanvas start -->
         <!-- Start: Chat Screen -->
         <div class="flex-grow-1 overflow-hidden position-relative">
-
             <!-- Group Members Modal  -->
             <div class="members-modal position-absolute shadow-lg py-2 rounded-1 bg-white top-0 end-0"
                 *ngIf="receiversConversation.chat_type === 'group' && showMembersModal">
@@ -367,8 +205,7 @@
     <ng-template #gif>
         <div class="d-flex flex-column h-100 justify-content-center align-items-center">
             <figure>
-                <img src="assets/icons/981-consultation-lineal.gif" alt="user-conversation-image"
-                    class="w-75">
+                <img src="assets/icons/981-consultation-lineal.gif" alt="user-conversation-image" class="w-75">
             </figure>
             <h4 class="text-center"> Select any user to start the conversation </h4>
         </div>

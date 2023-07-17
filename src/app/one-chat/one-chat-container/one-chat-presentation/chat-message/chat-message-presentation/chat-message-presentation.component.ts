@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject, findIndex } from 'rxjs';
 import { ConversationUsers } from 'src/app/one-chat/models/chat.model';
 import { EOD, Task } from 'src/app/one-chat/models/eod.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
-import { taskBgColor, taskTypeFormat } from 'src/app/core/utilities/constants';
+import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
+import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
+import { EodModelComponent } from 'src/app/one-chat/shared/eod-model/eod-model.component';
 
 @Component({
   selector: 'app-chat-message-presentation',
@@ -18,7 +20,6 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
 
   /** Input to get the receiver's data */
   @Input() public set receiversConversation(receiver: ConversationUsers) {
-
     if (receiver) {
       this._receiversConversation = receiver;
       this._chatMessagePresenterService.receiversId = receiver.members[0]._id;
@@ -34,7 +35,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   @Output() public chatData: EventEmitter<string>;
 
   /** variable to create form group */
-  public eodFormGroup: FormGroup;
+  public arrayEodForm: FormArray;
   /** variable to display the current window on messages */
   public currentWindow: boolean;
   /** variable for receiver's full name */
@@ -43,10 +44,10 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public accordionConfig: any[];
   /** Flag for showing members modal */
   public showMembersModal: boolean;
-  /** Flag for showing EOD Summary */
+  /** Flag for showing showEODSummary Summary */
   public showEODSummary: boolean;
-  /** variable for all the EOD Tasks */
-  public allTasks: Task[];
+  /** Flag for showing showModel edit and delete model Summary */
+  public showModel: boolean;
   /** variable for the name of the sender */
   public senderName: string;
   /** variable for date of the EOD report */
@@ -58,17 +59,30 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   /** variable for tasks color code */
   public taskColorCode: string;
   /** variable for tasks display name */
-  public taskDisplayName: string;
-
   /** This variable is used for getter setter */
   private _receiversConversation: ConversationUsers;
   /** Stops the subscription on ngOnDestroy */
   private destroy: Subject<void>;
+  /** This variable count task with key va */
+  public activeEditDeleteTab: number;
+  /** Flag for showing form */
+  public openForm: boolean;
+  /** input variable toEditData */
+  public toEditData: any;
+  /**  variable for DISABLED*/
+  public submitBtnDisabled: boolean;
+  /** Variable for current edit index */
+  public currentEditIndex: number;
+  /** Variable for delete Index */
+  public currentDeleteIndex: number;
+  /** variable for all the EOD Tasks */
+  public allTasks: Task[];
 
   constructor(
     private _chatMessagePresenterService: ChatMessagePresenterService,
-    private _fb: FormBuilder,
-    private _commonService: CommonService
+    private _commonService: CommonService,
+    private _overlayService: OverlayService,
+    private _changeDetector: ChangeDetectorRef
   ) {
     super();
     this.chatData = new EventEmitter();
@@ -78,25 +92,55 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.currentWindow = true;
     this.showMembersModal = false;
     this.showEODSummary = false;
-    this.eodFormGroup = this._chatMessagePresenterService.getEodGroup();
+    this.toEditData = {};
+    this.allTasks = []
+    this.submitBtnDisabled = false;
+    this.openForm = true
+    this.currentEditIndex = 0;
   }
-
   ngOnInit(): void {
     this.props();
-  }
 
+  }
   /**
    * @name props
    * @description This method is called in ngOnInit
    */
   private props(): void {
+    this._commonService.eodChatOpen.subscribe((data: ConversationUsers) => {
+      this.receiversConversation = data
+      this.onWindow(false)
+    })
     this._chatMessagePresenterService.eodDetails$.subscribe((eodData: EOD) => {
       this.eodReportDetails = eodData;
       this.onWindow(false);
       this.eodReport.emit(eodData);
     })
-  }
+    this.eodDate = new Date().getDate() + '/' + new Date().getMonth() + '/' + new Date().getFullYear();
+    // Delete eod using confirm box 
+    this._commonService.statusDelete.subscribe((res: any) => {
+      if (res) {
+        this.allTasks.splice(this.currentDeleteIndex, 1);
+        this._overlayService.close()
+        this.showModel = false;
+        this._changeDetector.detectChanges()
+      }
+    })
+    // submit eod using confirm box 
+    // this._commonService.submitEod.subscribe((res: any) => {
+    //   if (res) {
+    //     this._chatMessagePresenterService.getEodTasks(this.allTasks, this.senderName, this.senderId)
+    //     this._overlayService.close()
+    //     this.openForm = false
+    //     this._changeDetector.detectChanges()
+    //   }
+    // })
 
+  }
+  /**
+   * 
+   * @param data 
+   */
   public onWindow(data: boolean): void {
     this.currentWindow = data;
     if (!data)
@@ -122,83 +166,153 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   }
 
   /**
-   * @name formTaskArray
-   * @param arrName 
-   * @returns formarray for eod report
-   */
-  public formTaskArray(arrName: string): FormArray {
-    return this.eodFormGroup.controls[arrName] as FormArray
-  }
-
-  /**
-   * @name onAddTask
-   * @param taskType type of the task
-   * @description This method will add the task 
-   */
-  public onAddTask(taskType: string): void {
-
-    if (this.formTaskArray(taskType).length < 6) {
-
-      this.formTaskArray(taskType).push(
-        this._fb.group({
-          name: ['', [Validators.required]],
-          hours: ['', [Validators.required]],
-          description: ['', [Validators.required]],
-          blocker: [''],
-          type: {
-            displayName: taskTypeFormat[taskType],
-            className: taskBgColor[taskType]
-          }
-        })
-      );
-    }
-  }
-
-  /**
-   * @name onDeleteTask
-   * @param index index of the task
-   * @param taskType type of the task
-   * @description This method will delete the task as per the params
-   */
-  public onDeleteTask(index: number, taskType: string): void {
-    this.formTaskArray(taskType).removeAt(index);
-  }
-
-  /**
-   * @name onEodSubmit
-   * @description This method will submit the data for eod report
-   */
-  public onEodSummary(): void {
-    this.allTasks = [...this.eodFormGroup.value.completed, ...this.eodFormGroup.value.InProgress, ...this.eodFormGroup.value.newLearning];
-    this.eodDate = new Date().getDate() + '/' + new Date().getMonth() + '/' + new Date().getFullYear();
-    this.showEODSummary = true;
-  }
-
-  /**
-   * @name backToEod
-   * @description This method is called when the user wants to edit to EOD report
-   */
-  public backToEod(): void {
-    this.allTasks = [];
-    this.showEODSummary = false;
-  }
-
-  /**
    * @name onEodSubmit
    * @description This method is called when the user wants to submit the EOD report
    */
-  public onEodSubmit(): void {
+  public onEodSubmit(data: boolean): void {
+    const component = this._overlayService.open(ConfirmationModelComponent);
+    component.instance.submitConformationBox = data
     this._chatMessagePresenterService.getEodTasks(this.allTasks, this.senderName, this.senderId)
-  }
+    this.openForm = true
 
+  }
   /**
    * @name onCancel
    * @description This method is used to close the EOD report and resets the EOD form
    */
   public onCancel(): void {
-    this.eodFormGroup.reset();
+    this.allTasks = [];
+    this.openForm = true;
+  }
+  /**
+   * @description This Method reset eod form
+   */
+  public resetEodForm(): void {
+    // this._overlayService.open(EodModelComponent)
+    this.allTasks = [];
+    this.submitBtnDisabled = false;
+
   }
 
+  /**
+ * @name onAdd
+ * @description This method is used to add data into the user array
+ */
+  public onAddEodFrom(): void {
+    this.allEodTaskFalse();
+    this.openForm = true;
+    this.submitBtnDisabled = false;
+
+  }
+
+  /**
+   * @name onCancel
+   * @description This method is used to close the form
+   */
+  public onCancelEodFrom(): void {
+    this.openForm = false;
+    this.submitBtnDisabled = true;
+  }
+
+  /**  @description This method set default isEdit false */
+  public allEodTaskFalse(): void {
+    this.allTasks.map((res: any) => res.isEdit = false)
+  }
+
+  /**
+   * @Name getEodDetails
+   * @param data 
+   * @description
+   */
+  public getEodDetails(data: Task) {
+    this.submitBtnDisabled = true
+    console.log('task  start', this.allTasks);
+    if (data.isEdit) {
+      data.isEdit = false
+      this.allTasks[this.currentEditIndex] = data
+    }
+    else {
+      this.allTasks.unshift(data)
+    }
+    this.openForm = false
+  }
+
+  /**
+   * @name onEditEod
+   * @param index 
+   * @description This method 
+   */
+  public onEditEod(index: number): void {
+    this.allEodTaskFalse();
+    this.submitBtnDisabled = false
+    this.currentEditIndex = index;
+    this.toEditData = this.allTasks[index];
+    this.allTasks[index].isEdit = true;
+    this.openForm = false;
+    this.showModel = false;
+  }
+
+  /**
+   * @name onDeleteEod
+   * @param index index of the current selected user
+   * @description This method is used to delete the data from the table
+   */
+
+  public onDeleteEod(index: number): void {
+    this.currentDeleteIndex = index
+    this._overlayService.open(ConfirmationModelComponent)
+  }
+
+  /**
+     * @name onNewConversation
+     * @description This method will open a model to start  edit and delete 
+     */
+  public openEditDeleteModel(index: any): void {
+    if (this.activeEditDeleteTab !== index && this.activeEditDeleteTab
+      || this.activeEditDeleteTab !== index && this.activeEditDeleteTab === 0) {
+      this.activeEditDeleteTab = index;
+      this.showModel = true;
+    }
+    else {
+      this.activeEditDeleteTab = index;
+      this.showModel = !this.showModel
+    }
+  }
+
+  /**
+   * @name clickOutside
+   * @description This method close model click on outside.
+   */
+  public clickOutside(): void {
+    this.showModel = false;
+  }
+  /**
+   * 
+   * @param status 
+   * @returns 
+   * @description This method change status color
+   */
+  getColorClass(status: any) {
+    switch (status) {
+      case 'InProgress':
+        return 'bg-progress';
+      case 'completed':
+        return 'bg-completed ';
+      case 'newLearning':
+        return 'bg-learning';
+      default:
+        return '';
+    }
+  }
+  /**
+   * @name openFormEmitter
+   * @param data 
+   * @description This method close edit form
+   */
+  public openFormEmitter(data: boolean) {
+    this.allTasks[this.currentEditIndex].isEdit = data;
+    this.submitBtnDisabled = true;
+  }
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed
@@ -207,4 +321,5 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.destroy.next();
     this.destroy.unsubscribe();
   }
+
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs/internal/Subject';
 
@@ -89,7 +89,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   constructor(
     private _ChatListPresenterService: ChatListPresenterService,
     private _commonService: CommonService,
-    private _cdr:ChangeDetectorRef
+    private _cdr: ChangeDetectorRef
   ) {
     super();
     this.searchGroup = this._ChatListPresenterService.getGroup();
@@ -103,7 +103,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.allChatIds = [];
     this.copyOfConversationUsers = [];
     this._conversationUsers = [];
-    this.destroy = new Subject(); 
+    this.destroy = new Subject();
   }
 
   ngOnInit(): void {
@@ -121,7 +121,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
     })
-    this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails:GroupDetails) => this.newGroupDetails.emit(groupDetails))
+    this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupDetails.emit(groupDetails))
   }
 
   /**
@@ -204,8 +204,21 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method will open a model to start any new conversation
    */
   public onNewConversation(): void {
-    this.showModel ? this.showModel = false : this.showModel = true;
+    this.showModel = !this.showModel
   }
+  /**
+   * @description This method close model click on outside.
+   */
+  public clickOutside() :void{
+    this.showModel = false;
+    console.log("clicked outside");
+  }
+  // @HostListener('document:click', ['$event.target'])
+  // onClickOutside(targetElement: any) {
+  //   if (!targetElement.closest('.dropdown')) {
+  //     this.showModel = false;
+  //   }
+  // }
 
   /**
    * @name onSearchUser
@@ -213,7 +226,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    */
   public onSearchUser(): void {
     this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true
-    this.showModel = false;
+    this.showModel = true;
     this.setFocusInputBox();
     setTimeout(() => {
       this.searchGroup.reset();
@@ -239,6 +252,12 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.inputTypeFocus.nativeElement.focus();
   }
   /**
+   * @description This method pass user single user data
+   */
+  public eodChatOpen(event: any, user: ConversationUsers) {
+    this._commonService.eodChatOpen.next(user)
+  }
+  /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed
    */
@@ -246,4 +265,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.destroy.next();
     this.destroy.unsubscribe();
   }
+
+ 
+  
 }

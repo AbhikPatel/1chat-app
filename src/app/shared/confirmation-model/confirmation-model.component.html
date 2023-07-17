@@ -1,0 +1,20 @@
+<!-- delete model -->
+<div class="position-absolute translate-middle start-50 top-50">
+  <div class="bg-white border-2">
+    <div class="d-flex justify-content-between align-items-center border-bottom border-top border-info p-2">
+      <h6 class="me-4">Please confirm..</h6>
+      <span type="button" class="icon-close fs-2" (click)="dismiss()"></span>
+    </div>
+    <div class="p-2" *ngIf="!submitConformationBox">
+      <h4 class="my-4">Do you really want to ... ?</h4>
+    </div>
+    <div class="p-2" *ngIf="submitConformationBox">
+      <h4 class="my-4">Do you really want to submit... ? </h4>
+    </div>
+    <div class="mt-3 d-flex justify-content-end border-bottom border-top border-info p-2">
+      <button type="button" class="btn btn-info  me-3" (click)="decline()">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="accept(true)" *ngIf="!submitConformationBox">Yes</button>
+      <button type="button" class="btn btn-danger" (click)="submit(true)" *ngIf="submitConformationBox">Yes</button>
+    </div>
+  </div>
+</div>

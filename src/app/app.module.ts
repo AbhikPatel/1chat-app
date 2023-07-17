@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
-
 @NgModule({
   declarations: [
     AppComponent
