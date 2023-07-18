@@ -176,6 +176,7 @@ export class OneChatService {
       map((res: any) => {
         res.data.data = res.data.docs.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
         return res.data.data;
+  
       })
     )
   }
@@ -213,6 +214,7 @@ export class OneChatService {
       map((res) => {
         res.data.data = res.data.docs.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
         return res.data.data;
+    
       }))
   }
 

@@ -81,6 +81,7 @@ export class MessageAdapter implements Adapter<Message>{
             message.content,
             message.sender === this.userId,
             this._formatter.Formatter(new Date(message.time)),
+            message.chat === message.receiver ? 'group' : 'dm',
             message.replied_to
         )
         return newMessage
