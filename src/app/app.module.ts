@@ -17,11 +17,11 @@ import { environment } from 'src/environments/environment.prod';
     BrowserModule,
     AppRoutingModule,
     CoreModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
+    ServiceWorkerModule.register('/ngsw-worker.js', {
       // enabled: environment.production,
       /** Register the ServiceWorker as soon as the application is stable */
       /** or after 30 seconds (whichever comes first). */
-      registrationStrategy: 'registerWhenStable:60000'
+      registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
   providers: [

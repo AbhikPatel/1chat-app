@@ -120,6 +120,10 @@ export class OneChatService {
           fn('received')
           this.sendPushNotification(this.subscriber, data).subscribe();
         }
+        if (eventname === 'group:message') {
+          fn('group message')
+          this.sendPushNotification(this.subscriber, data).subscribe();
+        }
         if (eventname === 'dm:messageRead') {
           fn('read')
         }
@@ -148,6 +152,10 @@ export class OneChatService {
       this.socket.emit(eventname, data, (response: any) => {
         console.log(response)
         this.getRecentChatId(response)
+      })
+    } else if (eventname === 'group:message') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
       })
     } else if (eventname === 'dm:messageRead') {
       this.socket.emit(eventname, data, (response: any) => {

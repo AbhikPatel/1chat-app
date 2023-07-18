@@ -152,8 +152,6 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
    * @description This method is used to send new message into socket
    */
   public getNewMessage(message: Message): void {
-    console.log(message);
-    
     const convertMessage: MessageResponse = this._messageAdapter.toRequest(message);
     if (message.replied_to) {
       convertMessage.replied_to = message.replied_to._id;
@@ -221,7 +219,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
       var groupIds: string[] = [];
       users.map((data: ConversationUsers) => {
         if (data.chat_type === 'group')
-          groupIds.push(data._id)
+          groupIds.push(data.chatId)
       })
       this._oneChatService.emit('group:join', groupIds);
     })

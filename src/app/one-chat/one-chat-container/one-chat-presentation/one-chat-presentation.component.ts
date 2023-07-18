@@ -86,6 +86,17 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     return this._getNewSocketMessage;
   }
 
+  /** This property will receive new message of group category from the container */
+  @Input() public set newGroupMessage(message: Message) {
+    if (message) {
+      this._newGroupMessage = message;
+      this._oneChatPresenterService.newMessageFromSocket(message)
+    }
+  }
+  public get newGroupMessage(): Message {
+    return this._newGroupMessage;
+  }
+
   /** This property will get the conversation users from the container */
   @Input() public set getConversationUsers(users: ConversationUsers[]) {
     if (users) {
@@ -155,6 +166,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   private _getMessages: Message[];
   private _getConversationUsers: ConversationUsers[];
   private _getNewSocketMessage: Message;
+  private _newGroupMessage: Message;
   private _allUsers: User[];
   private _getNewGeneratedChatId: string;
   private _getMessageReadData: MessageRead;
@@ -205,7 +217,6 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
 
     this._oneChatPresenterService.conversationUser$.subscribe(val => {
       if (this._notificationClick && this._notificationClick.message._id === val[0].lastMessageId) {
-        console.log(val, this.notificationClick.message_type)
         this._cs.notificationDataNext({notificationData: val[0], notification_type: this.notificationClick.message_type});
       }
     })

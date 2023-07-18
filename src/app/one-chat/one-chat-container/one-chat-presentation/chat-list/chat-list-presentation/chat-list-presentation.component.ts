@@ -103,7 +103,6 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.copyOfConversationUsers = [];
     this._conversationUsers = [];
     this.destroy = new Subject(); 
-    // setTimeout(()=> {this.onTabSwitch(false),this.(this.allUsers[0])}, 10000)
   }
 
   ngOnInit(): void {
@@ -122,10 +121,9 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       this.currentChatId = user.chatId;
     });
     this._commonService.notificationData$.subscribe(val => {
-      console.log("final_destination", val)
       if(val.notification_type.chat_type === 'dm' && this.tabData !== true) this.onTabSwitch(true)
       if(val.notification_type.chat_type ==='group' && this.tabData !== false) this.onTabSwitch(false)
-      this.onUser(val)
+      this.onUser(val.notificationData)
     })
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails:GroupDetails) => this.newGroupDetails.emit(groupDetails))
   }
