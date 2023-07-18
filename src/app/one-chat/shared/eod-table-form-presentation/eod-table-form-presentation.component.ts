@@ -13,7 +13,7 @@ export class EodTableFormPresentationComponent {
 
   @Input() public set getEditData(data: Task) {
     this._getEditData=data;
-    this.eodFormGroup.patchValue(data)
+    this.eodFormGroup.patchValue(data);
   }
   public get getEditData(): any {
     return this._getEditData
@@ -36,7 +36,7 @@ export class EodTableFormPresentationComponent {
     this.eodFormGroup = _EodTableFormPresenterService.getEodGroup();
     this.isSubmitted = false;
     this.eodDetails = new EventEmitter()
-    this.openFormEmitter = new EventEmitter()
+    this.openFormEmitter = new EventEmitter();
   }
 /**
  * @name addEodTasks

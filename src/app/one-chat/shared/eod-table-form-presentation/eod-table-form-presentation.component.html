@@ -1,3 +1,4 @@
+<!-- Eod Form  start-->
 <ng-container [formGroup]="eodFormGroup">
     <td>
         <input type="text" class="form-control" name="title" id="title" formControlName="name"
@@ -49,13 +50,12 @@
     </td>
     <td>
         <div class="d-flex">
-            <button  *ngIf="!getEditData"class="btn btn-dark" type="submit"   (click)="addEodTasks()"><span class=" text-white fs-6"
-                  >Save</span>
+            <button class="btn btn-dark" type="submit"   (click)="addEodTasks()"><span class=" text-white fs-6" [textContent]="getEditData ?'Update':'Save'"
+                  ></span>
             </button>
-            <button   *ngIf="getEditData" class="btn btn-dark" type="submit"  (click)="addEodTasks()"><span class=" text-white fs-6"
-               >Update</span>
-        </button>
+ 
             <button class="btn btn-danger ms-2" type="submit" *ngIf="getEditData"  (click)="cancelEdit(false)"><span class=" text-white fs-6" >Cancel</span></button>
         </div>
     </td>
 </ng-container>
+<!-- Eod Form  start-->

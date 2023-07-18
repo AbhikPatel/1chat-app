@@ -170,8 +170,8 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @description This method is called when the user wants to submit the EOD report
    */
   public onEodSubmit(data: boolean): void {
-    const component = this._overlayService.open(ConfirmationModelComponent);
-    component.instance.submitConformationBox = data
+    // const component = this._overlayService.open(ConfirmationModelComponent);
+    // component.instance.submitConformationBox = data
     this._chatMessagePresenterService.getEodTasks(this.allTasks, this.senderName, this.senderId)
     this.openForm = true
 
@@ -188,7 +188,6 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @description This Method reset eod form
    */
   public resetEodForm(): void {
-    // this._overlayService.open(EodModelComponent)
     this.allTasks = [];
     this.submitBtnDisabled = false;
 
