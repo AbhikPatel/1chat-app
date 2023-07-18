@@ -22,6 +22,10 @@ import { CreateGroupPresentationComponent } from './shared/create-group-presenta
 import { EodPresentationComponent } from './shared/eod-presentation/eod-presentation.component';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
 import { userAdaptor } from '../shared/adaptor/user.adaptor';
+import { OnClickOutsideDirective } from './shared/Directive/on-click-outside.directive';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { EodTableFormPresentationComponent } from './shared/eod-table-form-presentation/eod-table-form-presentation.component';
+import { EodModelComponent } from './shared/eod-model/eod-model.component';
 
 
 @NgModule({
@@ -34,7 +38,10 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
     ScrollDistanceDirective,
     CreateGroupPresentationComponent,
     ChattingPresentationComponent,
-    EodPresentationComponent
+    EodPresentationComponent,
+    OnClickOutsideDirective,
+    EodTableFormPresentationComponent,
+    EodModelComponent,
   ],
   imports: [
     CommonModule,
@@ -45,7 +52,9 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
     FormsModule,
     // ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:60000' }),
     OverlayModule,
-    NgMultiSelectDropDownModule
+    NgMultiSelectDropDownModule,
+    BsDropdownModule.forRoot(),
+ 
   ],
   providers:[
     OneChatService,
@@ -55,6 +64,7 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
     conversationUserAdapter,
     MessageAdapter,
     EODAdapter,
-  ]
+  ],
+  exports:[OnClickOutsideDirective]
 })
 export class OneChatModule { }

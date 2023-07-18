@@ -1,3 +1,4 @@
+
 /**
  * This is a global adapter interface which will be implement by every adapter
  * @name Adapter 

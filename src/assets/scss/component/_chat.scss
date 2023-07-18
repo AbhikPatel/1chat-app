@@ -143,3 +143,25 @@
     transform: translateX(-50%);
     cursor: pointer;
 }
+.count-task {
+    width: 25px;
+    height: 25px;
+}
+  .dropdown-content {
+    position: absolute;
+    right: 15px;
+    border: 1px solid rgb(175, 173, 172);
+    background-color:white;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 5555;
+    .dropdown-item{
+        padding: 10px;
+        &:hover{
+            background-color: rgba(221, 217, 217, 0.315);
+      }
+    }
+    
+  }
+
+  
+

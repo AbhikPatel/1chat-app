@@ -88,7 +88,7 @@ export class Task{
     description:string
     blocker:string
     type:TaskType
-    
+    isEdit?:boolean;
     constructor(
         name:string,
         hours:number,

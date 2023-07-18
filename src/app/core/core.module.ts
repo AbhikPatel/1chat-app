@@ -13,6 +13,8 @@ import { CustomToastrComponent } from './components/custom-toastr/custom-toastr.
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToasterService } from './services/toaster/toaster.service';
+import { OverlayService } from './services/overlay/overlay.service';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 
 
@@ -35,6 +37,7 @@ import { ToasterService } from './services/toaster/toaster.service';
       timeOut: 5000,
       extendedTimeOut:2000
     }),
+    OverlayModule,
     BrowserAnimationsModule
   ],
   providers:[
@@ -42,7 +45,8 @@ import { ToasterService } from './services/toaster/toaster.service';
     AuthGuard,
     HttpService,
     userAdaptor,
-    ToasterService
+    ToasterService,
+    OverlayService
   ]
 })
 export class CoreModule { }

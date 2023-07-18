@@ -16,5 +16,8 @@ $badge-font-weight                      : 500;
 $offcanvas-horizontal-width             : 800px;
 $offcanvas-padding-x                    : 50px;
 
-// accordion 
-$accordion-button-focus-box-shadow      : 0px;
+
+$input-focus-box-shadow: none;
+$form-select-box-shadow:none;
+$form-select-focus-box-shadow:none;
+$input-focus-border-color:          blue;

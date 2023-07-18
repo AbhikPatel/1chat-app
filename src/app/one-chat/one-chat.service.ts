@@ -187,8 +187,8 @@ export class OneChatService {
     const url: string = this.baseUrl + 'user/';
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
-        res.data.docs = res.data.docs.map((users: UserResponse) => this._userAdaptor.toResponse(users));
-        return res.data.docs
+        res.data.data = res.data.docs.map((users: UserResponse) => this._userAdaptor.toResponse(users));
+        return res.data.data
       })
     )
   }
@@ -219,8 +219,9 @@ export class OneChatService {
     const url: string = this.baseUrl + `message?chat=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
-        res.data.docs = res.data.docs.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
-        return res.data.docs;
+        res.data.data = res.data.docs.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
+        return res.data.data;
+  
       })
     )
   }
@@ -256,8 +257,9 @@ export class OneChatService {
     const url: string = this.baseUrl + `eod/?chatId=` + id;
     return this._http.httpGetRequest(url).pipe(
       map((res) => {
-        res.data.docs = res.data.docs.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
-        return res.data.docs;
+        res.data.data = res.data.docs.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
+        return res.data.data;
+    
       }))
   }
 
