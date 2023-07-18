@@ -59,7 +59,7 @@ export class EodTableFormPresentationComponent {
     this.openFormEmitter.emit(data)
   }
   /**
-  * @description  This is a getter method to short a validation
+  * @description  This is a getter method to short  validation
   */
   get validator(): { [key: string]: AbstractControl<any> } {
     return this.eodFormGroup.controls;

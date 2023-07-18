@@ -142,7 +142,7 @@
                                 </tr>
                                 <!-- edit eod Form  -->
                                 <tr eod-table-form-ui *ngIf="data.isEdit" [getEditData]="toEditData"
-                                    (openFormEmitter)="openFormEmitter($event)" (eodDetails)="getEodDetails($event)">
+                                    (openFormEmitter)="closeForm($event)" (eodDetails)="getEodDetails($event)">
                                 </tr>
                             </ng-container>
                         </tbody>

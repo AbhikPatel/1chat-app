@@ -221,11 +221,10 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   /**
    * @Name getEodDetails
    * @param data 
-   * @description
+   * @description This method get eod form Details to push allTasks 
    */
   public getEodDetails(data: Task) {
     this.submitBtnDisabled = true
-    console.log('task  start', this.allTasks);
     if (data.isEdit) {
       data.isEdit = false
       this.allTasks[this.currentEditIndex] = data
@@ -239,7 +238,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   /**
    * @name onEditEod
    * @param index 
-   * @description This method 
+   * @description This method get index and pass particular  index data value in toEditData variable 
    */
   public onEditEod(index: number): void {
     this.allEodTaskFalse();
@@ -308,7 +307,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @param data 
    * @description This method close edit form
    */
-  public openFormEmitter(data: boolean) {
+  public  closeForm(data: boolean) {
     this.allTasks[this.currentEditIndex].isEdit = data;
     this.submitBtnDisabled = true;
   }
