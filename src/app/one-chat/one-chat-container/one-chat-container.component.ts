@@ -216,6 +216,8 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
    * @description This method used to emit the eod report into socket
    */
   public getEodReport(eod: EOD): void {
+    console.log(eod);
+    
     eod.chatId = this.currectChatId;
     const eodResult: EODResponse = this._eodAdapter.toRequest(eod);
     this._oneChatService.emit('eod:status', eodResult);

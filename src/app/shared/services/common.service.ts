@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -11,10 +11,16 @@ export class CommonService {
   /** This Subject will store the user details */
   public user$: Subject<User>;
   public closeModel: Subject<boolean>;
+  public statusDelete: BehaviorSubject<boolean>;
+  public submitEod: BehaviorSubject<boolean>;
+  public eodChatOpen: Subject<any>;
 
   constructor() {
     this.user$ = new Subject();
     this.closeModel = new Subject();
+    this.statusDelete = new BehaviorSubject(false);
+    this.submitEod = new BehaviorSubject(false);
+    this.eodChatOpen = new Subject();
   }
 
   /**
