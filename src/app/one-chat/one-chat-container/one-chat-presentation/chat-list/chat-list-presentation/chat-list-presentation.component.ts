@@ -38,10 +38,13 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   /** This property is used to get all the user details from container component */
   @Input() public set notificationClickData(data: any) {
     if (data) {
-      console.log("data", data)
-      if(data.notification_type.chat_type === 'dm' && this.tabData !== true) this.onTabSwitch(true)
-      if(data.notification_type.chat_type ==='group' && this.tabData !== false) this.onTabSwitch(false)
-      this.onUser(data.notificationData)
+      if(data.notification_type === 'eod') {
+        this.eodChatOpen(event, this.copyOfConversationUsers[data.notificationData])
+      } else {
+        if(data.notification_type.chat_type === 'dm' && this.tabData !== true) this.onTabSwitch(true)
+        if(data.notification_type.chat_type ==='group' && this.tabData !== false) this.onTabSwitch(false)
+        this.onUser(data.notificationData)
+      }
     }
   }
 
@@ -297,6 +300,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method pass user single user data
    */
   public eodChatOpen(event: any, user: ConversationUsers) {
+    console.log(user)
     user.eodNotification = false;
     this._commonService.eodChatOpen.next(user)
   }

@@ -35,7 +35,9 @@ export class UtilityService {
    * @description This method is used to subscribe notificationclick event
    */
     private subscribeToPushNotificationClick(): void {
-      this.swPush.notificationClicks.subscribe((val)=> this.notificationClick.next({message_type: val.notification.data.message_type, message: val.notification.data.message}));
+      this.swPush.notificationClicks.subscribe((val)=> {
+        this.notificationClick.next({message_type: val.notification.data.message_type, message: val.notification.data.message});
+      });
     }
   
     /**

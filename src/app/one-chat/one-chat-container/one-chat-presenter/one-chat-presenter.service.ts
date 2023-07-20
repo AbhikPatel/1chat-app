@@ -309,9 +309,10 @@ export class OneChatPresenterService implements OnDestroy {
    * @param eod 
    * @description This method will push the eod into the eod collection
    */
-  public eodFromSocket(eod: EOD): void {
+  public eodFromSocket(eod: EOD): number {
     let id: number = this.conversationList.findIndex((user: ConversationUsers) => user.chatId === eod.chatId);
     this.conversationList[id].eodNotification = true;
+    return id
   }
 
   /**

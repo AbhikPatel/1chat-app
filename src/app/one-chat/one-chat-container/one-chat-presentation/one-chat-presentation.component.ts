@@ -21,7 +21,12 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   @Input() public set notificationClick(data: any) {
     if (data) {
       this._notificationClick = data;
-      this._oneChatPresenterService.newMessageFromSocket(data.message);
+      if(data.message_type === 'eod') {
+        const chatIndex = this._oneChatPresenterService.eodFromSocket(data.message);
+        this.notificationClickData$ = of({notificationData: chatIndex, notification_type: data.message_type});
+      } else {
+        this._oneChatPresenterService.newMessageFromSocket(data.message);
+      }
     }
   }
 
@@ -218,7 +223,6 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this._oneChatPresenterService.conversationUser$.subscribe(val => {
       if (this._notificationClick && this._notificationClick.message._id === val[0].lastMessageId) {
         this.notificationClickData$ = of({notificationData: val[0], notification_type: this.notificationClick.message_type})
-        // this._cs.notificationDataNext({notificationData: val[0], notification_type: this.notificationClick.message_type});
       }
     })
   }

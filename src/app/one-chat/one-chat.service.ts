@@ -103,9 +103,9 @@ export class OneChatService {
           fn('reply')
         }
         if (eventname === 'eod:status') {
+          fn('eod')
           if(this._utilityService.subscriber !== null)
           this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
-          fn('eod')
         }
         subscriber.next(data);
       })

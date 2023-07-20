@@ -94,8 +94,13 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this._oneChatService.setMap();
     this.recentChatId$ = this._oneChatService.chatId;
     this._utilityService.notificationClick$.subscribe((data: any) => {
-      const convertedMessage: Message = this._messageAdapter.toResponse(data.message);
-      this.notificationClick$ = of({message_type: data.message_type, message: convertedMessage});
+      if(data.message_type === 'eod') {
+        const eodResult: EOD = this._eodAdapter.toResponse(data.message);
+        this.notificationClick$ = of({message_type: data.message_type, message: eodResult});
+      } else {
+        const convertedMessage: Message = this._messageAdapter.toResponse(data.message);
+        this.notificationClick$ = of({message_type: data.message_type, message: convertedMessage});
+      }
     });
     this.getOnlineUsersData$ = this._oneChatService.listen('alive');
     this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
