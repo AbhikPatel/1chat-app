@@ -12,6 +12,7 @@
             [typingInfo]="typingInfo"
             [onlineUsers]="onlineUsers"
             (newGroupDetails)="getNewGroupDetails($event)"
+            [notificationClickData]="notificationClickData$ | async"
             ></app-chat-list-presentation>
         </div>
         <!-- [notificationClick]="notificationClick" -->

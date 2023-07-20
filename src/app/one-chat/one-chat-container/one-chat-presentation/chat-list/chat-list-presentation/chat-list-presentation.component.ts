@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs/internal/Subject';
-
 import { ConversationUsers, GroupDetails, MessageRead, OnlineUser } from 'src/app/one-chat/models/chat.model';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { UtilityService } from 'src/app/shared/services/utility.service';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -35,6 +35,19 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   public get allUsers(): User[] {
     return this._allUsers;
   }
+  /** This property is used to get all the user details from container component */
+  @Input() public set notificationClickData(data: any) {
+    if (data) {
+      console.log("data", data)
+      if(data.notification_type.chat_type === 'dm' && this.tabData !== true) this.onTabSwitch(true)
+      if(data.notification_type.chat_type ==='group' && this.tabData !== false) this.onTabSwitch(false)
+      this.onUser(data.notificationData)
+    }
+  }
+
+  public get notificationClickData(): any {
+    return this._notificationClickData;
+  }
   
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
@@ -45,6 +58,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
         this.tabFlag = false;
         this.onTabSwitch(true);
       }
+      console.log(this.allChatIds);
+      
     }
   }
   public get conversationUsers(): ConversationUsers[] {
@@ -53,7 +68,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
 
   /** This property is used to emit the current conversation user */
   @Output() public currectConversation: EventEmitter<ConversationUsers>
-
+  /** This variable stores boolean value for notification access flag */
+  public notificationFlag: boolean;
   /** This variable will store the search text */
   public searchText: any;
   /** This variable is formGroup for search users */
@@ -78,7 +94,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   public userRole: string;
   /** Flag for showing model */
   public showModel: boolean;
-
+  private _notificationClickData: any;
   /**This properties are used for getter setter */
   private _conversationUsers: ConversationUsers[];
   private _allUsers: User[];
@@ -88,6 +104,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   constructor(
     private _ChatListPresenterService: ChatListPresenterService,
     private _commonService: CommonService,
+    private _utilityService: UtilityService,
     private _cdr: ChangeDetectorRef
   ) {
     super();
@@ -103,6 +120,10 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.copyOfConversationUsers = [];
     this._conversationUsers = [];
     this.destroy = new Subject();
+    if(Notification.permission === 'granted') {
+      this.notificationFlag = true; 
+      this._utilityService.notificationAccess();
+    } else this.notificationFlag = false;
   }
 
   ngOnInit(): void {
@@ -120,12 +141,22 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
     });
-    this._commonService.notificationData$.subscribe(val => {
-      if(val.notification_type.chat_type === 'dm' && this.tabData !== true) this.onTabSwitch(true)
-      if(val.notification_type.chat_type ==='group' && this.tabData !== false) this.onTabSwitch(false)
-      this.onUser(val.notificationData)
-    })
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupDetails.emit(groupDetails))
+  }
+
+  /**
+   * @name checkNotificationAccess
+   * @description This method is called for allowing/denying notification Access
+   */
+  public checkNotificationAccess(): void {
+    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(persmission => {
+        this.notificationFlag = true;
+        this._utilityService.notificationAccess();
+      })
+    } else {
+      alert('Please Reset Notification Permission from browser setting!')
+    }
   }
 
   /**
@@ -156,6 +187,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is used to display the chats of the selected user
    */
   public onUser(user: ConversationUsers): void {
+    console.log('debug')
     this.checkNonConversationUsers();
     this.currentChatId = user.chatId;
     this._ChatListPresenterService.getCurrentConversation(user, this.userId);
@@ -171,9 +203,16 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       if (!this.allChatIds.includes(user.chatId))
         nonConversationUser.push(this.conversationUsers.indexOf(user));
     });
-
+    console.log(nonConversationUser);
+    console.log(this.copyOfConversationUsers);
+    console.log(this.allChatIds);
+    
+    
     setTimeout(() => {
       this.conversationUsers = this.copyOfConversationUsers.filter((user: ConversationUsers, index: number) => !nonConversationUser.includes(index));
+      this._cdr.markForCheck();
+      console.log('update');
+      
     }, 500);
   }
 
@@ -215,7 +254,6 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    */
   public clickOutside() :void{
     this.showModel = false;
-    console.log("clicked outside");
   }
   // @HostListener('document:click', ['$event.target'])
   // onClickOutside(targetElement: any) {
@@ -259,6 +297,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method pass user single user data
    */
   public eodChatOpen(event: any, user: ConversationUsers) {
+    user.eodNotification = false;
     this._commonService.eodChatOpen.next(user)
   }
   /**

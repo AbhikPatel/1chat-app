@@ -8,6 +8,7 @@ import { EODAdapter, MessageAdapter } from '../one-chat-adaptor/one-chat.adaptor
 import { OneChatService } from '../one-chat.service';
 import { EOD, EODResponse } from '../models/eod.model';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { UtilityService } from 'src/app/shared/services/utility.service';
 
 @Component({
   selector: 'app-one-chat-container',
@@ -61,7 +62,8 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     private _commonService: CommonService,
     private _messageAdapter: MessageAdapter,
     private _eodAdapter: EODAdapter,
-    private _auth: AuthService
+    private _auth: AuthService,
+    private _utilityService: UtilityService
   ) {
     this.destroy = new Subject();
     this.getOnlineUsersData$ = new Observable();
@@ -91,8 +93,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     this.senderId = this._commonService.getUserId();
     this._oneChatService.setMap();
     this.recentChatId$ = this._oneChatService.chatId;
-    // change data type "any"
-    this._oneChatService.notificationClick$.subscribe((data: any) => {
+    this._utilityService.notificationClick$.subscribe((data: any) => {
       const convertedMessage: Message = this._messageAdapter.toResponse(data.message);
       this.notificationClick$ = of({message_type: data.message_type, message: convertedMessage});
     });
@@ -231,8 +232,6 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
    * @description This method used to emit the eod report into socket
    */
   public getEodReport(eod: EOD): void {
-    console.log(eod);
-    
     eod.chatId = this.currectChatId;
     const eodResult: EODResponse = this._eodAdapter.toRequest(eod);
     this._oneChatService.emit('eod:status', eodResult);

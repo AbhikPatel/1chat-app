@@ -11,6 +11,7 @@ import { EOD, EODResponse } from './models/eod.model';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
 import { Subject } from 'rxjs/internal/Subject';
 import { map } from 'rxjs/internal/operators/map';
+import { UtilityService } from '../shared/services/utility.service';
 
 @Injectable()
 
@@ -20,35 +21,24 @@ export class OneChatService {
   public baseUrl: string;
   /** variable for user Id */
   public userId: string;
-  /** variable for subscriber of service worker */
-  public subscriber: any;
   /** variable for socket */
   public socket: any;
   /** Subject for recent chat Id */
   public chatId: Subject<string>;
-  /** Observable for notification click */
-  public notificationClick$: Observable<any>;
-  /** Subject for notification click */
-  private notificationClick: Subject<any>;
 
-  /** Voluntary Application Server Identity to send push notification */
-  private readonly VAPID_PUBLIC_KEY: string = "BKX5wA9WxBSYJZWvQtdgD-1rknSL5ejHQd25tUxl5bM9QkNrQVms__OnS1cbRxsJ96E09gKruA8pOcEv7XTfSc4";
 
   constructor(
     private _http: HttpService,
     private _conversationAdapter: conversationUserAdapter,
     private _userAdaptor: userAdaptor,
     private _messageAdaptor: MessageAdapter,
-    private swPush: SwPush,
     private _eodAdapter: EODAdapter,
+    private _utilityService: UtilityService
   ) {
     this.socket = io(environment.socketUrl);
     this.baseUrl = environment.baseURL;
     this.chatId = new Subject();
-    this.requestNotificationPermission();
-    this.notificationClick$ = new Observable();
-    this.notificationClick = new Subject();
-    this.notificationClick$ = this.notificationClick.asObservable();
+    // this.requestNotificationPermission();
   }
 
   /**
@@ -61,39 +51,16 @@ export class OneChatService {
         .then(permission => {
           // Handle permission result
           console.log('inside then')
-          this.subscribeToPushNotification();
-          this.subscribeToPushNotificationClick();
+          // this.subscribeToPushNotification();
+          // this.subscribeToPushNotificationClick();
         })
         .catch(error => {
           // Handle error
         });
     } else {
-      this.subscribeToPushNotification();
-      this.subscribeToPushNotificationClick();
+      // this.subscribeToPushNotification();
+      // this.subscribeToPushNotificationClick();
     }
-  }
-  
-  /**
-   * @name subscribeToPushNotificationClick
-   * @description This method is used to subscribe notificationclick event
-   */
-  private subscribeToPushNotificationClick(): void {
-    this.swPush.notificationClicks.subscribe((val)=> this.notificationClick.next({message_type: val.notification.data.message_type, message: val.notification.data.message}));
-  }
-
-  /**
-   * @name subscribeToPushNotification
-   * @description This method is used to subscribe client to push notification
-  */
-  private subscribeToPushNotification(): void {
-    this.swPush.requestSubscription({
-      serverPublicKey: this.VAPID_PUBLIC_KEY
-    })
-      .then(sub => {
-        console.log(sub);
-        this.subscriber = sub;
-      })
-      .catch(err => console.error("Could not subscribe to notifications", err));
   }
 
   /**
@@ -118,11 +85,13 @@ export class OneChatService {
       this.socket.on(eventname, (data: any, fn: any) => {
         if (eventname === 'dm:message') {
           fn('received')
-          this.sendPushNotification(this.subscriber, data).subscribe();
+          if(this._utilityService.subscriber !== null)
+          this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
         }
         if (eventname === 'group:message') {
           fn('group message')
-          this.sendPushNotification(this.subscriber, data).subscribe();
+          if(this._utilityService.subscriber !== null)
+          this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
         }
         if (eventname === 'dm:messageRead') {
           fn('read')
@@ -134,6 +103,8 @@ export class OneChatService {
           fn('reply')
         }
         if (eventname === 'eod:status') {
+          if(this._utilityService.subscriber !== null)
+          this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
           fn('eod')
         }
         subscriber.next(data);

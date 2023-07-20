@@ -23,10 +23,8 @@ import { EodPresentationComponent } from './shared/eod-presentation/eod-presenta
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
 import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { OnClickOutsideDirective } from './shared/Directive/on-click-outside.directive';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { EodTableFormPresentationComponent } from './shared/eod-table-form-presentation/eod-table-form-presentation.component';
 import { EodModelComponent } from './shared/eod-model/eod-model.component';
-
 
 @NgModule({
   declarations: [
@@ -52,9 +50,7 @@ import { EodModelComponent } from './shared/eod-model/eod-model.component';
     FormsModule,
     // ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:60000' }),
     OverlayModule,
-    NgMultiSelectDropDownModule,
-    BsDropdownModule.forRoot(),
- 
+    NgMultiSelectDropDownModule, 
   ],
   providers:[
     OneChatService,

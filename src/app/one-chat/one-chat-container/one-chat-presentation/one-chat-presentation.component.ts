@@ -159,7 +159,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   /** Observable for details of all the users */
   public allUsers$: Observable<User[]>;
   /** Observable for notification click data */
-  public notificationClickData$: Observable<ConversationUsers>;
+  public notificationClickData$: Observable<any>;
   /** Stops the subcription on ngDestroy */
   private destroy: Subject<void>;
   /** This property is used for getter setter */
@@ -217,7 +217,8 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
 
     this._oneChatPresenterService.conversationUser$.subscribe(val => {
       if (this._notificationClick && this._notificationClick.message._id === val[0].lastMessageId) {
-        this._cs.notificationDataNext({notificationData: val[0], notification_type: this.notificationClick.message_type});
+        this.notificationClickData$ = of({notificationData: val[0], notification_type: this.notificationClick.message_type})
+        // this._cs.notificationDataNext({notificationData: val[0], notification_type: this.notificationClick.message_type});
       }
     })
   }
