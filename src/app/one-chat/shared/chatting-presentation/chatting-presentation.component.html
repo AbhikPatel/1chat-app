@@ -2,7 +2,7 @@
 <div class="d-flex flex-column h-100 overflow-hidden">
 
     <!-- Start: Message Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto py-4" #messageContainer (scroll)="onMessageScroll()">
+    <div class="chat-container flex-grow-1 overflow-auto py-4"  #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
             <div class="chat d-flex flex-column my-3" *ngFor="let message of chatArray let i = index"
                 [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
@@ -18,7 +18,7 @@
 
 
                         <!-- Message Text  -->
-                        <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow dropstart"
+                        <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
                             [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
                             <!-- Edit Message  -->
@@ -40,10 +40,10 @@
                             </div>
 
                             <!-- Message Dropdown  -->
-                            
+
                             <div class="dropdown">
                                 <span> {{message.content.text}} </span>
-                                <span class="icon-circle-down text-info" data-bs-toggle="dropdown" aria-expanded="false"
+                                <!-- <span class="icon-circle-down text-info" data-bs-toggle="dropdown" aria-expanded="false"
                                     role="button"
                                     [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'"
                                     (click)="openModel()"></span>
@@ -52,11 +52,29 @@
                                     <li class="dropdown-item" (click)="onEditMessage(message)"
                                         *ngIf="message.is_sender"> Edit </li>
                                     <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
+                                </ul> -->
+                                
+                                <!-- ngDropdown -->
+                            <div ngbDropdown class="d-inline-block">
+                                <div [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'">
+                                    <span   id="dropdownBasic1" ngbDropdownToggle  
+                                    class="icon-circle-down text-info fs-6">
+                                </span>
+                                </div>
+                              
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                    <ul class=" justify-content-end"
+                                    [ngClass]="{'show' : messageModel && currentMessageId === message._id}">
+                                    <li class="dropdown-item" (click)="onEditMessage(message)"
+                                        *ngIf="message.is_sender"> Edit </li>
+                                    <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
                                 </ul>
+                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>
-
+                 
                     <!-- Message Details  -->
                     <p class="fs-8 text-info d-flex align-items-center"
                         [ngClass]="message.is_sender ? 'justify-content-end' : 'justify-content-start'">
@@ -130,8 +148,8 @@
                         <span class="icon icon-x-lg fs-5" (click)="onCancelMode()" role="button"></span>
                     </ng-container>
 
-                    <button type="submit" class="border-0" [disabled]="!chatGroup.valid"><span class='icon icon-bxs-send fs-4'
-                            role="button"></span></button>
+                    <button type="submit" class="border-0" [disabled]="!chatGroup.valid"><span
+                            class='icon icon-bxs-send fs-4' role="button"></span></button>
                 </div>
             </div>
             <input type="file" id="file" class="d-none">

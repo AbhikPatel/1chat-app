@@ -124,10 +124,14 @@
 }
 
 .down-arrow {
-    top: -50px;
-    right: 50px;
+    top: -60px;
+    right: 35px;
     transform: translateX(-50%);
     cursor: pointer;
+}
+.down-arrow-position{
+    right: 40px;
+    bottom: 25px;
 }
 .count-task {
     width: 25px;
