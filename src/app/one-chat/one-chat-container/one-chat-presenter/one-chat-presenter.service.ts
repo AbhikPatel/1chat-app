@@ -96,7 +96,6 @@ export class OneChatPresenterService implements OnDestroy {
     this.currentChatId$ = this.currentChatId.asObservable();
     this.allUsers$ = this.allUsers.asObservable();
     this.typingInfo$ = this.typingInfo.asObservable();
-
     this.senderId = this._commonService.getUserId();
 
     this.chats = [];

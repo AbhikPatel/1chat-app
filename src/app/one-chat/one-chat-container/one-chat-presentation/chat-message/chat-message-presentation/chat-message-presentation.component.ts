@@ -140,6 +140,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   /**
    * 
    * @param data 
+   * @description This method show current window
    */
   public onWindow(data: boolean): void {
     this.currentWindow = data;
@@ -156,14 +157,6 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.chatData.emit(chat)
   }
 
-  /**
-   * @name viewMembers
-   * @description This method is show the group members modal 
-   */
-  public viewMembers(): void {
-    this.showMembersModal ? this.showMembersModal = false : this.showMembersModal = true;
-
-  }
 
   /**
    * @name onEodSubmit
@@ -185,6 +178,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.openForm = true;
   }
   /**
+   * @name resetEodForm
    * @description This Method reset eod form
    */
   public resetEodForm(): void {
@@ -261,29 +255,23 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this._overlayService.open(ConfirmationModelComponent)
   }
 
-  /**
-     * @name onNewConversation
-     * @description This method will open a model to start  edit and delete 
-     */
-  public openEditDeleteModel(index: any): void {
-    if (this.activeEditDeleteTab !== index && this.activeEditDeleteTab
-      || this.activeEditDeleteTab !== index && this.activeEditDeleteTab === 0) {
-      this.activeEditDeleteTab = index;
-      this.showModel = true;
-    }
-    else {
-      this.activeEditDeleteTab = index;
-      this.showModel = !this.showModel
-    }
-  }
+//  /**
+//    * @name onNewConversation
+//      * @description This method will open a model to start  edit and delete 
+//   *  @param index 
+//   */
+//   public openEditDeleteModel(index: any): void {
+//     if (this.activeEditDeleteTab !== index && this.activeEditDeleteTab
+//       || this.activeEditDeleteTab !== index && this.activeEditDeleteTab === 0) {
+//       this.activeEditDeleteTab = index;
+//       this.showModel = true;
+//     }
+//     else {
+//       this.activeEditDeleteTab = index;
+//       this.showModel = !this.showModel
+//     }
+//   }
 
-  /**
-   * @name clickOutside
-   * @description This method close model click on outside.
-   */
-  public clickOutside(): void {
-    this.showModel = false;
-  }
   /**
    * 
    * @param status 

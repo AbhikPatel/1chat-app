@@ -1,11 +1,15 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+
+//------------------------------------------------------------------------------- //
 import { environment } from 'src/environments/environment.prod';
 import { FormatTime } from '../core/utilities/formatTime';
 import { SharedModule } from '../shared/shared.module';
@@ -25,6 +29,8 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { OnClickOutsideDirective } from './shared/Directive/on-click-outside.directive';
 import { EodTableFormPresentationComponent } from './shared/eod-table-form-presentation/eod-table-form-presentation.component';
 import { EodModelComponent } from './shared/eod-model/eod-model.component';
+
+
 
 @NgModule({
   declarations: [
@@ -50,7 +56,10 @@ import { EodModelComponent } from './shared/eod-model/eod-model.component';
     FormsModule,
     // ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:60000' }),
     OverlayModule,
-    NgMultiSelectDropDownModule, 
+    NgMultiSelectDropDownModule,
+    BsDropdownModule.forRoot(),
+    NgbDropdownModule ,
+    InfiniteScrollModule
   ],
   providers:[
     OneChatService,

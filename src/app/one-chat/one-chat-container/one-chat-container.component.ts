@@ -54,6 +54,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   /** Observable for notification click */
   public notificationClick$: Observable<any>
 
+public emitData:any;
   /** stops the subscription on ngDestroy */
   private destroy: Subject<void>;
 
@@ -195,7 +196,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
     convertedMessage._id = message._id;
     this._oneChatService.emit('dm:messageEdit', convertedMessage);
   }
-
+  
   /**
    * @name getSocketTypingInfo
    * @param typingInfo 
@@ -236,7 +237,7 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
    * @param eod 
    * @description This method used to emit the eod report into socket
    */
-  public getEodReport(eod: EOD): void {
+  public getEodReport(eod: EOD): void {  
     eod.chatId = this.currectChatId;
     const eodResult: EODResponse = this._eodAdapter.toRequest(eod);
     this._oneChatService.emit('eod:status', eodResult);

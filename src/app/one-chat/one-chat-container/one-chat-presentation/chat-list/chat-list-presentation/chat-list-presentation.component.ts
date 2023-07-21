@@ -257,6 +257,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    */
   public clickOutside() :void{
     this.showModel = false;
+
   }
   // @HostListener('document:click', ['$event.target'])
   // onClickOutside(targetElement: any) {
