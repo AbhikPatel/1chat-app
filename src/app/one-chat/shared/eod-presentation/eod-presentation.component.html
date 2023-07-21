@@ -1,13 +1,14 @@
 <div class="icon-circle-down fs-4 text-info position-absolute down-arrow-position  " (click)="scrollUp()"  *ngIf="isScrolledToBottom" >
 </div>
-<div class="h-100 overflow-auto" #eodScreen  (scroll)="onMessageScroll()">
+<div class="h-100 overflow-auto" #eodScreen >
     <div class="container  py-5"  >
+        <!-- (scroll)="onMessageScroll()" -->
         <div class="d-flex justify-content-center align-items-center h-100" *ngIf="getReports.length === 0">
             <span class="text-info fs-4"> No EOD Records </span>
         </div>
         <div class="d-flex justify-content-center flex-column mb-4">
             <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3" *ngFor="let eod of getReports">
-                <!-- {{scrollUp()}} -->
+                {{scrollUp()}}
                 <div class="d-flex justify-content-between pb-3">
                     <div class="d-flex align-items-center">
                         <div>
