@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
@@ -16,7 +16,7 @@ import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 export class ChattingPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy, AfterViewInit {
 
   /** Element DOM for message screen */
-  @ViewChild('messageContainer') public messageScreen: ElementRef;
+  @ViewChild('messageContainer') public messageContainer: ElementRef;
   /** This element used for focus inputBox */
   @ViewChild('inputTypeFocus') public inputTypeFocus: ElementRef;
 
@@ -37,6 +37,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
 
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
+   
   /** FormGroup for chat */
   public chatGroup: FormGroup;
   /** Flag for message screen scroll */
@@ -61,18 +62,20 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public message: string;
   ///** Show and hide close icon */
   public closeIcon: string;
-
   /** This variable is used for getter setter */
   private _receiversConversation: ConversationUsers;
-
   /** stops the subscription on destroy */
   private destroy: Subject<void>;
+  public distance: number;
+  public limit: number;
+  public pageSize: number;
   constructor(
     private _chattingPresenterService: ChattingPresenterService,
   ) {
     super();
     this.destroy = new Subject();
     this.chatData = new EventEmitter();
+
     this.replyMessage = {} as Message;
     this.chatGroup = this._chattingPresenterService.getGroup();
     this.isScrolledToBottom = false;
@@ -82,7 +85,10 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     this.isReplyMode = false;
     this.showEmojiPicker = false;
     this.closeIcon = ' ';
-    this.message = ''
+    this.message = '';
+    this.distance = 1;
+    this.limit = 5;
+    this.pageSize = 1;
   }
   ngAfterViewInit(): void {
     this.scrollUp();
@@ -91,6 +97,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     this._chattingPresenterService.chat$.pipe(takeUntil(this.destroy)).subscribe((chat: string) => this.chatData.emit(chat));
     this.chatGroup.valueChanges.pipe(takeUntil(this.destroy)).subscribe(() => this.InputTyping.emit());
   }
+
   /**
    * @name onSubmit
    * @description This method will be called when the form is submitted
@@ -116,11 +123,13 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
 
   /**
    * @name scrollUp
-   * @description Click arrow down icon got to up message
+   * @description Scroll to the bottom of the message container
    */
   public scrollUp(): void {
-    const scrollHeight = this.messageScreen?.nativeElement.scrollHeight;
-    this.messageScreen.nativeElement.scrollTop = scrollHeight;
+    const scrollHeight = this.messageContainer?.nativeElement.scrollHeight;
+    this.messageContainer.nativeElement.scrollTop = scrollHeight;
+ 
+    
   }
 
   /**
@@ -129,13 +138,14 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
    * @description Down arrow icon show and hide as per scroll
    */
   public onMessageScroll(): void {
-    const messageContainer = this.messageScreen.nativeElement;
+    const messageContainer = this.messageContainer.nativeElement;
     const scrollHeight = messageContainer.scrollHeight;
     let scrollTop = messageContainer.scrollTop;
     const clientHeight = messageContainer.clientHeight;
     const isScrolledToBottom = scrollHeight - (scrollTop + clientHeight);
     this.isScrolledToBottom = isScrolledToBottom > 50;
   }
+
 
   /**
    * @name onMessageModel
@@ -195,6 +205,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   }
 
   /**
+   * @name addEmoji
    * @description this method add a emojis
    * @param event
    */
@@ -211,6 +222,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     this.showEmojiPicker = true;
   }
   /**
+   * @name closeEmojiPicker
    * @description This method close emojis model and also hide close icon
   */
   public closeEmojiPicker(): void {

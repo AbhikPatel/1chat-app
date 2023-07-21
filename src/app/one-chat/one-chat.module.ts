@@ -26,6 +26,9 @@ import { OnClickOutsideDirective } from './shared/Directive/on-click-outside.dir
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { EodTableFormPresentationComponent } from './shared/eod-table-form-presentation/eod-table-form-presentation.component';
 import { EodModelComponent } from './shared/eod-model/eod-model.component';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+
 
 
 @NgModule({
@@ -54,7 +57,8 @@ import { EodModelComponent } from './shared/eod-model/eod-model.component';
     OverlayModule,
     NgMultiSelectDropDownModule,
     BsDropdownModule.forRoot(),
- 
+    NgbDropdownModule ,
+    InfiniteScrollModule
   ],
   providers:[
     OneChatService,

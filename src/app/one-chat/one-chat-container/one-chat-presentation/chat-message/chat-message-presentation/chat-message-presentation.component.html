@@ -48,12 +48,23 @@
                             [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
                     </div>
                 </div>
-
-                <!-- Group functionality -->
-                <div class="d-flex align-items-center" *ngIf="receiversConversation.chat_type === 'group'">
-                    <span role="button" class="icon icon-user fs-3" title="View group members"
-                        (click)="viewMembers()"></span>
-                    <span class="fs-6 text-info">{{receiversConversation.members.length}}</span>
+                <div ngbDropdown class="d-inline-block" *ngIf="receiversConversation.chat_type === 'group'">
+                    <div class="d-flex align-items-center">
+                        <span type="button" id="dropdownBasic1" ngbDropdownToggle
+                            class="icon-user text-info fs-3">
+                        </span> <span class="fs-6 text-info">{{receiversConversation.members.length}}</span>
+                    </div>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <ul class="list-unstyled m-0" >
+                            <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem 
+                                *ngFor="let members of receiversConversation.members">
+                                <figure class="m-0">
+                                    <img [src]="members.photo" alt="avatar" class="rounded-circle shadow profile-img">
+                                </figure>
+                                <span class="ps-3"> {{members.full_name}} </span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,7 +135,7 @@
                                         {{data.type}}
                                     </td>
                                     <td>
-                                        <label for="index" class="d-flex flex-column fs-2 fw-bold icon-Dote "
+                                        <!-- <label for="index" class="d-flex flex-column fs-2 fw-bold icon-Dote "
                                             (click)="openEditDeleteModel(i)">
                                             <div *ngIf="showModel && activeEditDeleteTab === i"
                                                 (appOnClickOutside)="clickOutside()">
@@ -137,7 +148,22 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                        </label>
+                                        </label> -->
+                                        <div ngbDropdown class="d-inline-block">
+                                                <span type="button" id="dropdownBasic1" ngbDropdownToggle
+                                                    class="icon-Dote text-info fs-3 fw-bold"> </span>
+                                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                                <ul class="list-unstyled m-0" >
+                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem (click)="onEditEod(i)">
+                                                        Edit
+                                                    </li>
+                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem (click)="onDeleteEod(i)">
+                                                        Delete
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                               
+                                        </div>
                                     </td>
                                 </tr>
                                 <!-- edit eod Form  -->
@@ -167,26 +193,13 @@
         <!-- End:  Start: offcanvas start -->
         <!-- Start: Chat Screen -->
         <div class="flex-grow-1 overflow-hidden position-relative">
-            <!-- Group Members Modal  -->
-            <div class="members-modal position-absolute shadow-lg py-2 rounded-1 bg-white top-0 end-0"
-                *ngIf="receiversConversation.chat_type === 'group' && showMembersModal">
-                <ul class="list-unstyled m-0">
-                    <li class="d-flex align-items-center px-3 py-2"
-                        *ngFor="let members of receiversConversation.members">
-                        <figure class="m-0">
-                            <img [src]="members.photo" alt="avatar" class="rounded-circle shadow profile-img">
-                        </figure>
-                        <span class="ps-3"> {{members.full_name}} </span>
-                    </li>
-                </ul>
-            </div>
 
             <!-- Chatting  -->
             <ng-container *ngIf="currentWindow else eod">
                 <app-chatting-presentation [chatArray]="chatArray" [senderId]="senderId"
                     (chatData)="getChatData($event)" (InputTyping)="getInputTyping()"
                     (editMessageObj)="getEditMessageObj($event)" (repliedMessage)="getRepliedMessage($event)"
-                    [receiversConversation]="receiversConversation"></app-chatting-presentation>
+                    [receiversConversation]="receiversConversation" ></app-chatting-presentation>
             </ng-container>
 
             <!-- Eod Status Reaport  -->

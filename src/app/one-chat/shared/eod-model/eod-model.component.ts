@@ -197,7 +197,6 @@ export class EodModelComponent {
    */
   public getEodDetails(data: Task) {
     this.submitBtnDisabled = true
-    console.log('task  start', this.allTasks);
     if (data.isEdit) {
       data.isEdit = false
       this.allTasks[this.currentEditIndex] = data
