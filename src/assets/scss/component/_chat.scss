@@ -3,7 +3,8 @@
 }
 
 .main-chat-container {
-    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('../../images/bg-image.jpg');
+    background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+        url("../../images/bg-image.jpg");
 
     // background-image: url('../../images//bg-image.jpg');
     .emojis-container {
@@ -37,7 +38,7 @@
             }
         }
 
-        #openBox:checked+.box {
+        #openBox:checked + .box {
             margin-top: 30px;
             visibility: visible;
             width: 20%;
@@ -54,6 +55,9 @@
                 background-color: rgba(175, 174, 174, 0.247);
             }
         }
+    }
+    .dropdownBasic1 {
+        max-height: 400px;
     }
 }
 
@@ -129,7 +133,7 @@
     transform: translateX(-50%);
     cursor: pointer;
 }
-.down-arrow-position{
+.down-arrow-position {
     right: 40px;
     bottom: 25px;
 }
@@ -137,21 +141,17 @@
     width: 25px;
     height: 25px;
 }
-  .dropdown-content {
+.dropdown-content {
     position: absolute;
     right: 15px;
     border: 1px solid rgb(175, 173, 172);
-    background-color:white;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    background-color: white;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 5555;
-    .dropdown-item{
+    .dropdown-item {
         padding: 10px;
-        &:hover{
+        &:hover {
             background-color: rgba(221, 217, 217, 0.315);
-      }
+        }
     }
-    
-  }
-
-  
-
+}
