@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -14,13 +14,23 @@ export class CommonService {
   public statusDelete: BehaviorSubject<boolean>;
   public submitEod: BehaviorSubject<boolean>;
   public eodChatOpen: Subject<any>;
-
+  public closeOverlaySubject:Subject<void>
+  public closeOverlayS$:Observable<any>
   constructor() {
     this.user$ = new Subject();
     this.closeModel = new Subject();
     this.statusDelete = new BehaviorSubject(false);
     this.submitEod = new BehaviorSubject(false);
     this.eodChatOpen = new Subject();
+    this.closeOverlaySubject = new Subject();
+    this.closeOverlayS$=this.closeOverlaySubject.asObservable()
+  }
+  /**
+   * @name closeOverlay
+   * @description This method net closeOverlaySubject
+   */
+  closeOverlay() {
+    this.closeOverlaySubject.next();
   }
 
   /**
