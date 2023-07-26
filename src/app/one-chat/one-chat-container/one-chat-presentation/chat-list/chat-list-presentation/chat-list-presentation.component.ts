@@ -126,7 +126,10 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     if(Notification.permission === 'granted') {
       this.notificationFlag = true; 
       this._utilityService.notificationAccess();
-    } else this.notificationFlag = false;
+    } else {
+      this.notificationFlag = false;
+      this._utilityService.removeNotificationAccess();
+    }
   }
 
   ngOnInit(): void {
@@ -190,7 +193,6 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is used to display the chats of the selected user
    */
   public onUser(user: ConversationUsers): void {
-    console.log('debug')
     this.checkNonConversationUsers();
     this.currentChatId = user.chatId;
     this._ChatListPresenterService.getCurrentConversation(user, this.userId);
@@ -206,16 +208,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       if (!this.allChatIds.includes(user.chatId))
         nonConversationUser.push(this.conversationUsers.indexOf(user));
     });
-    console.log(nonConversationUser);
-    console.log(this.copyOfConversationUsers);
-    console.log(this.allChatIds);
-    
-    
     setTimeout(() => {
       this.conversationUsers = this.copyOfConversationUsers.filter((user: ConversationUsers, index: number) => !nonConversationUser.includes(index));
-      this._cdr.markForCheck();
-      console.log('update');
-      
     }, 500);
   }
 
@@ -300,8 +294,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   /**
    * @description This method pass user single user data
    */
-  public eodChatOpen(event: any, user: ConversationUsers) {
-    console.log(user)
+  public eodChatOpen( _, user: ConversationUsers) {
     user.eodNotification = false;
     this._commonService.eodChatOpen.next(user)
   }
@@ -313,7 +306,4 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.destroy.next();
     this.destroy.unsubscribe();
   }
-
- 
-  
 }
