@@ -28,6 +28,20 @@
                 word-wrap: break-word;
             }
 
+            &-rt-border {
+                border: 2px solid lighten($info, 30);
+                border-top-left-radius: 1rem;
+                border-top-right-radius: 1rem;
+                border-bottom-right-radius: 1rem;
+            }
+
+            &-lt-border {
+                border: 2px solid lighten($info, 30);
+                border-top-left-radius: 1rem;
+                border-top-right-radius: 1rem;
+                border-bottom-left-radius: 1rem;
+            }
+
             .icon-down-arrow {
                 visibility: hidden;
             }

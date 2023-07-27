@@ -270,18 +270,15 @@ export class Member {
 
 export class MessageRead {
     chatId: string
-    sender: string
     receiver: string
     count: number
 
     constructor(
         chatId: string,
-        sender: string,
         receiver: string,
         count: number
     ) {
         this.chatId = chatId
-        this.sender = sender
         this.receiver = receiver
         this.count = count
     }

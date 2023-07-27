@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable, of } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { User } from 'src/app/shared/models/user.model';
 import { ConversationUsers, CreateChat, Message, MessageRead, Typing } from '../../models/chat.model';
 import { OneChatPresentationBase } from '../one-chat-presentation-base/one-chat-presentation.base';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 import { EOD } from '../../models/eod.model';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-one-chat-presentation',
@@ -15,6 +16,23 @@ import { EOD } from '../../models/eod.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OneChatPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy {
+
+  /** This property will get the data form notification click */
+  @Input() public set notificationClick(data: any) {
+    if (data) {
+      this._notificationClick = data;
+      if(data.message_type === 'eod') {
+        const chatIndex = this._oneChatPresenterService.eodFromSocket(data.message);
+        this.notificationClickData$ = of({notificationData: chatIndex, notification_type: data.message_type});
+      } else {
+        this._oneChatPresenterService.newMessageFromSocket(data.message);
+      }
+    }
+  }
+
+  public get notificationClick(): any {
+    return this._notificationClick;
+  }
 
   /** This property is used to get the message read chat Id */
   @Input() public set getMessageReadData(message: MessageRead) {
@@ -71,6 +89,17 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   }
   public get getNewSocketMessage(): Message {
     return this._getNewSocketMessage;
+  }
+
+  /** This property will receive new message of group category from the container */
+  @Input() public set newGroupMessage(message: Message) {
+    if (message) {
+      this._newGroupMessage = message;
+      this._oneChatPresenterService.newMessageFromSocket(message)
+    }
+  }
+  public get newGroupMessage(): Message {
+    return this._newGroupMessage;
   }
 
   /** This property will get the conversation users from the container */
@@ -134,22 +163,28 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   public receiverConversationData$: Observable<ConversationUsers>;
   /** Observable for details of all the users */
   public allUsers$: Observable<User[]>;
-
+  /** Observable for notification click data */
+  public notificationClickData$: Observable<any>;
   /** Stops the subcription on ngDestroy */
   private destroy: Subject<void>;
   /** This property is used for getter setter */
   private _getMessages: Message[];
   private _getConversationUsers: ConversationUsers[];
   private _getNewSocketMessage: Message;
+  private _newGroupMessage: Message;
   private _allUsers: User[];
   private _getNewGeneratedChatId: string;
   private _getMessageReadData: MessageRead;
   private _getEODfromSocket: EOD;
   private _getEditedMessage: Message;
-  private _getRecentChatId:string;
+  private _getRecentChatId: string;
+  private _notificationClick: any;
+  
 
   constructor(
+    private _cs: CommonService,
     private _oneChatPresenterService: OneChatPresenterService,
+    private _cdr: ChangeDetectorRef
   ) {
     super();
 
@@ -157,6 +192,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this.conversationUser$ = new Observable();
     this.chatArray$ = new Observable();
     this.allUsers$ = new Observable();
+    this.notificationClickData$ = new Observable();
 
     this.chatId = new EventEmitter();
     this.newMessage = new EventEmitter();
@@ -183,6 +219,12 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this._oneChatPresenterService.currentChatId$.subscribe((id: string) => this.chatId.emit(id));
     this.allUsers$ = this._oneChatPresenterService.allUsers$;
     this._oneChatPresenterService.typingInfo$.subscribe((typing: Typing) => this.socketTyping.emit(typing));
+
+    this._oneChatPresenterService.conversationUser$.subscribe(val => {
+      if (this._notificationClick && this._notificationClick.message._id === val[0].lastMessageId) {
+        this.notificationClickData$ = of({notificationData: val[0], notification_type: this.notificationClick.message_type})
+      }
+    })
   }
 
   /**

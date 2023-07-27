@@ -156,9 +156,10 @@ export class OneChatPresenterService implements OnDestroy {
    * @param message 
    * @description This method will update the list of conversation users
    */
-  public updateConversationList(message: string, chatId: string, increaseCount?: boolean): void {
+  public updateConversationList(message: string, chatId: string, increaseCount?: boolean, id?:string): void {
     let latestConversation: ConversationUsers = this.conversationList.find((user: ConversationUsers) => user.chatId === chatId);
     latestConversation.lastMessage = message;
+    latestConversation.lastMessageId = id;
     latestConversation.time = new Date();
     latestConversation.standardTime = this._formatter.Formatter(new Date());
     let index: number = this.conversationList.indexOf(latestConversation);
@@ -227,7 +228,7 @@ export class OneChatPresenterService implements OnDestroy {
       this.chatArray.next(this.chats);
     } else {
       if (this.allChatIds.includes(message.chat))
-        this.updateConversationList(message.content.text, message.chat, true);
+        this.updateConversationList(message.content.text, message.chat, true, message._id);
       else {
         this.allChatIds.push(message.chat);
         let generateNewConversationUser: ConversationUsers = {
@@ -246,7 +247,7 @@ export class OneChatPresenterService implements OnDestroy {
           receiver: message.receiver,
           time: message.time,
           lastMessage: message.content.text,
-          lastMessageId: '',
+          lastMessageId: message._id,
           isRead: false,
           isEdit: false,
           standardTime: message.displayTime,
@@ -260,7 +261,7 @@ export class OneChatPresenterService implements OnDestroy {
         this.getConversationUsers(this.conversationList);
       }
     }
-    this.updateConversationList(message.content.text, message.chat);
+    // this.updateConversationList(message.content.text, message.chat);
   }
 
   /**
@@ -307,9 +308,10 @@ export class OneChatPresenterService implements OnDestroy {
    * @param eod 
    * @description This method will push the eod into the eod collection
    */
-  public eodFromSocket(eod: EOD): void {
+  public eodFromSocket(eod: EOD): number {
     let id: number = this.conversationList.findIndex((user: ConversationUsers) => user.chatId === eod.chatId);
     this.conversationList[id].eodNotification = true;
+    return id
   }
 
   /**

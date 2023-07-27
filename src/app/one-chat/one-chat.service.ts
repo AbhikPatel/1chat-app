@@ -11,6 +11,7 @@ import { EOD, EODResponse } from './models/eod.model';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-adaptor/one-chat.adaptor';
 import { Subject } from 'rxjs/internal/Subject';
 import { map } from 'rxjs/internal/operators/map';
+import { UtilityService } from '../shared/services/utility.service';
 
 @Injectable()
 
@@ -20,44 +21,46 @@ export class OneChatService {
   public baseUrl: string;
   /** variable for user Id */
   public userId: string;
-  /** variable for subscriber of service worker */
-  public subscriber: any;
   /** variable for socket */
   public socket: any;
   /** Subject for recent chat Id */
   public chatId: Subject<string>;
 
-  /** Voluntary Application Server Identity to send push notification */
-  private readonly VAPID_PUBLIC_KEY: string = "BKX5wA9WxBSYJZWvQtdgD-1rknSL5ejHQd25tUxl5bM9QkNrQVms__OnS1cbRxsJ96E09gKruA8pOcEv7XTfSc4";
 
   constructor(
     private _http: HttpService,
     private _conversationAdapter: conversationUserAdapter,
     private _userAdaptor: userAdaptor,
     private _messageAdaptor: MessageAdapter,
-    private swPush: SwPush,
-    private _eodAdapter: EODAdapter
+    private _eodAdapter: EODAdapter,
+    private _utilityService: UtilityService
   ) {
     this.socket = io(environment.socketUrl);
     this.baseUrl = environment.baseURL;
     this.chatId = new Subject();
-    this.subscribeToPushNotification();
+    // this.requestNotificationPermission();
   }
 
-
   /**
-   * @name subscribeToPushNotification
-   * @description This method is used to subscribe client to push notification
-  */
-  private subscribeToPushNotification(): void {
-    this.swPush.requestSubscription({
-      serverPublicKey: this.VAPID_PUBLIC_KEY
-    })
-      .then(sub => {
-        console.log(sub);
-        this.subscriber = sub
-      })
-      .catch(err => console.error("Could not subscribe to notifications", err));
+   * @name requestNotificationPermission
+   * @description 
+   */
+  private requestNotificationPermission(): void {
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission()
+        .then(permission => {
+          // Handle permission result
+          console.log('inside then')
+          // this.subscribeToPushNotification();
+          // this.subscribeToPushNotificationClick();
+        })
+        .catch(error => {
+          // Handle error
+        });
+    } else {
+      // this.subscribeToPushNotification();
+      // this.subscribeToPushNotificationClick();
+    }
   }
 
   /**
@@ -82,7 +85,13 @@ export class OneChatService {
       this.socket.on(eventname, (data: any, fn: any) => {
         if (eventname === 'dm:message') {
           fn('received')
-          this.sendPushNotification(this.subscriber, data).subscribe();
+          if(this._utilityService.subscriber !== null)
+          this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
+        }
+        if (eventname === 'group:message') {
+          fn('group message')
+          if(this._utilityService.subscriber !== null)
+          this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
         }
         if (eventname === 'dm:messageRead') {
           fn('read')
@@ -95,6 +104,8 @@ export class OneChatService {
         }
         if (eventname === 'eod:status') {
           fn('eod')
+          if(this._utilityService.subscriber !== null)
+          this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
         }
         subscriber.next(data);
       })
@@ -110,7 +121,12 @@ export class OneChatService {
   public emit(eventname: string, data: any): void {
     if (eventname === 'dm:message') {
       this.socket.emit(eventname, data, (response: any) => {
+        console.log(response)
         this.getRecentChatId(response)
+      })
+    } else if (eventname === 'group:message') {
+      this.socket.emit(eventname, data, (response: any) => {
+        console.log(response);
       })
     } else if (eventname === 'dm:messageRead') {
       this.socket.emit(eventname, data, (response: any) => {
@@ -189,7 +205,7 @@ export class OneChatService {
   public postNewChat(newChat: CreateChat): Observable<CreateChat> {
     const url: string = this.baseUrl + `chat`
     return this._http.httpPostRequest(url, newChat).pipe(
-      map((res: any) => res.data.data)
+      map((res: any) => res.data.doc)
     )
   }
 

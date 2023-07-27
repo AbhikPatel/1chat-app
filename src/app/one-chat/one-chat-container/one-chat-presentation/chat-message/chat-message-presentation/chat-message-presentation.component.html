@@ -1,6 +1,6 @@
 <!-- Start: User Message  -->
 <div
-    class="main-chat-container h-100 d-flex flex-column overflow-hidden border-bottom border-primary border-3 position-relative">
+    class="main-chat-container h-100 d-flex flex-column overflow-hidden border-3 border-bottom border-primary position-relative">
     <ng-container *ngIf="receiversConversation else gif">
         <!-- Floating Label  -->
         <div class="floating-btn position-absolute rounded-circle d-flex justify-content-center align-items-center shadow-lg"
@@ -14,7 +14,7 @@
                 <div class="d-flex align-items-center h-100">
                     <div class="d-flex align-items-center">
                         <figure class="m-0">
-                            <img [src]="receiversConversation.profile" class="rounded-circle shadow border profile-img"
+                            <img [src]="receiversConversation.profile" class="rounded-circle profile-img"
                                 alt="profile">
                         </figure>
                         <div class="ms-3 d-flex flex-column">
@@ -25,7 +25,7 @@
                         <ng-template #status>
                             <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
                         </ng-template> -->
-                            <span class="fw-semibold"> {{receiversConversation.displayName}} </span>
+                            <span class="fw-semibold text-nowrap"> {{receiversConversation.displayName}} </span>
                             <div class="fs-7"
                                 *ngIf="typingIds.includes(receiversConversation.members[0]._id) && showTypingText | async else online">
                                 Typing </div>

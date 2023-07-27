@@ -8,6 +8,7 @@ import { EODAdapter, MessageAdapter } from '../one-chat-adaptor/one-chat.adaptor
 import { OneChatService } from '../one-chat.service';
 import { EOD, EODResponse } from '../models/eod.model';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { UtilityService } from 'src/app/shared/services/utility.service';
 
 @Component({
   selector: 'app-one-chat-container',
@@ -26,8 +27,10 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   public getMessages$: Observable<Message[]>;
   /** Observable for the sender details */
   public senderDetails$: Observable<User>;
-  /** Observable for the sender details */
+  /** Observable for the new direct message */
   public newSocketMessage$: Observable<Message>;
+  /** Observable for the new group message */
+  public newGroupMessage$: Observable<Message>;
   /** Observable for new Chat Id */
   public newChatId$: Observable<string>;
   /** Observable for new Chat Id */
@@ -48,6 +51,9 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   public senderId: string;
   /** This varilable stores the Id of current chat */
   public currectChatId: string;
+  /** Observable for notification click */
+  public notificationClick$: Observable<any>
+
 public emitData:any;
   /** stops the subscription on ngDestroy */
   private destroy: Subject<void>;
@@ -57,7 +63,8 @@ public emitData:any;
     private _commonService: CommonService,
     private _messageAdapter: MessageAdapter,
     private _eodAdapter: EODAdapter,
-    private _auth: AuthService
+    private _auth: AuthService,
+    private _utilityService: UtilityService
   ) {
     this.destroy = new Subject();
     this.getOnlineUsersData$ = new Observable();
@@ -71,6 +78,8 @@ public emitData:any;
     this.eodReportSocket$ = new Observable();
     this.replyMessageSocket$ = new Observable();
     this.recentChatId$ = new Observable();
+    this.notificationClick$ = new Observable();
+    this.newGroupMessage$ = new Observable();
   }
 
   ngOnInit(): void {
@@ -85,6 +94,15 @@ public emitData:any;
     this.senderId = this._commonService.getUserId();
     this._oneChatService.setMap();
     this.recentChatId$ = this._oneChatService.chatId;
+    this._utilityService.notificationClick$.subscribe((data: any) => {
+      if(data.message_type === 'eod') {
+        const eodResult: EOD = this._eodAdapter.toResponse(data.message);
+        this.notificationClick$ = of({message_type: data.message_type, message: eodResult});
+      } else {
+        const convertedMessage: Message = this._messageAdapter.toResponse(data.message);
+        this.notificationClick$ = of({message_type: data.message_type, message: convertedMessage});
+      }
+    });
     this.getOnlineUsersData$ = this._oneChatService.listen('alive');
     this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
       this.getAllUsers$ = of(users);
@@ -94,6 +112,10 @@ public emitData:any;
       const convertedMessage: Message = this._messageAdapter.toResponse(message);
       this.newSocketMessage$ = of(convertedMessage);
     });
+    this._oneChatService.listen('group:message').pipe(takeUntil(this.destroy)).subscribe((message: MessageResponse) => {
+      const convertedMessage: Message = this._messageAdapter.toResponse(message);
+      this.newGroupMessage$ = of(convertedMessage)
+    })
     this._oneChatService.listen('eod:status').pipe(takeUntil(this.destroy)).subscribe((eod: EODResponse) => {
       const eodResult: EOD = this._eodAdapter.toResponse(eod);
       this.eodReportSocket$ = of(eodResult);
@@ -108,6 +130,8 @@ public emitData:any;
     })
     this.chatReadData$ = this._oneChatService.listen('dm:messageRead');
     this.typingInfo$ = this._oneChatService.listen('typing');
+
+    
   }
 
   /**
@@ -165,7 +189,7 @@ public emitData:any;
   /**
    * @name getEditMessageObj
    * @param message 
-   * @description This method is used to emit the edit message into socket
+   * @description  
    */
   public getEditMessageObj(message): void {
     let convertedMessage: MessageResponse = this._messageAdapter.toRequest(message);
@@ -202,7 +226,7 @@ public emitData:any;
       var groupIds: string[] = [];
       users.map((data: ConversationUsers) => {
         if (data.chat_type === 'group')
-          groupIds.push(data._id)
+          groupIds.push(data.chatId)
       })
       this._oneChatService.emit('group:join', groupIds);
     })
