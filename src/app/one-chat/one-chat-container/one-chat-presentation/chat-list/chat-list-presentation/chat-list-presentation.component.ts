@@ -57,10 +57,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     if (users) {
       this.copyOfConversationUsers = [...users];
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
-      if (this.tabFlag) {
-        this.tabFlag = false;
-        this.onTabSwitch(true);
-      }
+      if(this.tabData) this.onTabSwitch(true);
+      else this.onTabSwitch(false);
     }
   }
   public get conversationUsers(): ConversationUsers[] {
@@ -220,21 +218,34 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     }, 500);
   }
 
-  /**
-   * @name onTabSwitch
-   * @param data 
-   * @description This method is used to show the chats which depend on the data
+/**
+   * @name isEmptyString
+   * @param str 
+   * @description method is used for checking whether string empty or not
+   * @returns method return boolean value
    */
-  public onTabSwitch(data: boolean): void {
-    this.tabData = data;
-    this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' : users.chat_type === 'group');
-    const sortbyTime = (a, b) => {
-      const timestampA = a.time.getTime();
-      const timestampB = b.time.getTime();
-      return timestampB - timestampA;
-    };
-    this._conversationUsers.sort(sortbyTime);
-  }
+private isEmptyString(str: String) {
+  return str.trim().length === 0;
+}
+
+
+/**
+ * @name onTabSwitch
+ * @param data 
+ * @description This method is used to show the chats which depend on the data
+ */
+public onTabSwitch(data: boolean): void {
+  this.tabData = data;
+  this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && !this.isEmptyString(users.standardTime) : users.chat_type === 'group' && !this.isEmptyString(users.standardTime));
+  const clearedConversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && this.isEmptyString(users.standardTime) : users.chat_type === 'group' && this.isEmptyString(users.standardTime));
+  const sortbyTime = (a, b) => {
+    const timestampA = a.time.getTime();
+    const timestampB = b.time.getTime();
+    return timestampB - timestampA;
+  };
+  this._conversationUsers.sort(sortbyTime);
+  this._conversationUsers = this._conversationUsers.concat(clearedConversationUsers)
+}
 
   /**
    * @name checkIfOnline
