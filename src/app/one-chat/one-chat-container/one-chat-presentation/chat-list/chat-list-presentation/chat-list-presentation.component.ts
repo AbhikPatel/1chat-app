@@ -61,8 +61,6 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
         this.tabFlag = false;
         this.onTabSwitch(true);
       }
-      console.log(this.allChatIds);
-      
     }
   }
   public get conversationUsers(): ConversationUsers[] {
@@ -123,13 +121,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.copyOfConversationUsers = [];
     this._conversationUsers = [];
     this.destroy = new Subject();
-    if(Notification.permission === 'granted') {
-      this.notificationFlag = true; 
-      this._utilityService.notificationAccess();
-    } else {
-      this.notificationFlag = false;
-      this._utilityService.removeNotificationAccess();
-    }
+    this.checkNotificationAccess();
   }
 
   ngOnInit(): void {
@@ -152,16 +144,31 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
 
   /**
    * @name checkNotificationAccess
-   * @description This method is called for allowing/denying notification Access
+   * @description This method allowed to check whether notfication access has granted or not and subsribe to notifications.
    */
-  public checkNotificationAccess(): void {
+  private checkNotificationAccess():void  {
+    if(Notification.permission === 'granted') {
+      this.notificationFlag = true; 
+      this._utilityService.subscribeToPushNotification();
+      this._utilityService.subscribeToPushNotificationClick();
+    } else if(Notification.permission === 'denied') {
+      this.notificationFlag = true;
+    } else {
+      this.notificationFlag = false;
+    }
+  }
+
+  /**
+   * @name grantNotificationAccess
+   * @description This method is called for allowing notification Access and subscribing to notification click
+   */
+  public grantNotificationAccess(): void {
     if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
       Notification.requestPermission().then(persmission => {
         this.notificationFlag = true;
-        this._utilityService.notificationAccess();
+        this._utilityService.subscribeToPushNotification();
+        this._utilityService.subscribeToPushNotificationClick();
       })
-    } else {
-      alert('Please Reset Notification Permission from browser setting!')
     }
   }
 

@@ -40,15 +40,6 @@
                 </div>
             </div>
 
-            <div class="fs-4 ms-2" role="button" title="Notifcation Access" (click)="checkNotificationAccess()">
-                <ng-template [ngIf]="notificationFlag" [ngIfElse]="notificationAccessDenied">
-                    <i class='icon-notifications_on text-info'></i>
-                </ng-template>
-                <ng-template #notificationAccessDenied>
-                    <i class='icon-notifications_off text-info'></i>
-                </ng-template>
-            </div>
-
             <div class="fs-4 ms-2" role="button" title="Log-Out" (click)="onLogOut(senderDetails.email)">
                 <i class='icon-bx-log-out text-info'></i>
             </div>
@@ -94,6 +85,18 @@
                 </div>
             </ul>
         </div>
+
+        <ng-template [ngIf]="!notificationFlag">
+            <div class="d-flex justify-content-evenly align-items-center p-3 tick-color" (click)="grantNotificationAccess()">
+                <div class="bg-white fs-3 border border-1 rounded-circle p-4 position-relative">
+                    <i class='icon-notifications_off text-info position-absolute top-50 start-50 translate-middle'></i>
+                </div>
+                <div>
+                    <h6>Get Notified of New Messages</h6>
+                    <p class="text-info m-0"><u>Turn on desktop notifications</u></p>
+                </div>
+            </div>
+        </ng-template>
 
         <div class="flex-grow-1 overflow-hidden d-flex flex-column">
             <!-- Tab Switch  -->

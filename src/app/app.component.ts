@@ -42,7 +42,7 @@ export class AppComponent implements AfterViewInit {
     console.log('updating to new version');
 
     this.serviceWorkerUpdates.activateUpdate().then((res) => { 
-      alert('here!');
+      alert('updating to new version!');
       document.location.reload()
     });
   }
