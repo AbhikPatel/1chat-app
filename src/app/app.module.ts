@@ -7,7 +7,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
+import { environment } from 'src/environments/environment.prod';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -16,8 +18,8 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     BrowserModule,
     AppRoutingModule,
     CoreModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
+    ServiceWorkerModule.register('/ngsw-worker.js', {
+      enabled: environment.production,
       /** Register the ServiceWorker as soon as the application is stable */
       /** or after 30 seconds (whichever comes first). */
       registrationStrategy: 'registerWhenStable:30000'

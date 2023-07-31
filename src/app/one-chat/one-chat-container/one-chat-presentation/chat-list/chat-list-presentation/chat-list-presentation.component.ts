@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs/internal/Subject';
-
 import { ConversationUsers, GroupDetails, MessageRead, OnlineUser } from 'src/app/one-chat/models/chat.model';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { UtilityService } from 'src/app/shared/services/utility.service';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -35,16 +35,30 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   public get allUsers(): User[] {
     return this._allUsers;
   }
+  /** This property is used to get all the user details from container component */
+  @Input() public set notificationClickData(data: any) {
+    if (data) {
+      if(data.notification_type === 'eod') {
+        this.eodChatOpen(event, this.copyOfConversationUsers[data.notificationData])
+      } else {
+        if(data.notification_type.chat_type === 'dm' && this.tabData !== true) this.onTabSwitch(true)
+        if(data.notification_type.chat_type ==='group' && this.tabData !== false) this.onTabSwitch(false)
+        this.onUser(data.notificationData)
+      }
+    }
+  }
 
+  public get notificationClickData(): any {
+    return this._notificationClickData;
+  }
+  
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
       this.copyOfConversationUsers = [...users];
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
-      if (this.tabFlag) {
-        this.tabFlag = false;
-        this.onTabSwitch(true);
-      }
+      if(this.tabData) this.onTabSwitch(true);
+      else this.onTabSwitch(false);
     }
   }
   public get conversationUsers(): ConversationUsers[] {
@@ -53,7 +67,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
 
   /** This property is used to emit the current conversation user */
   @Output() public currectConversation: EventEmitter<ConversationUsers>
-
+  /** This variable stores boolean value for notification access flag */
+  public notificationFlag: boolean;
   /** This variable will store the search text */
   public searchText: any;
   /** This variable is formGroup for search users */
@@ -78,17 +93,17 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   public userRole: string;
   /** Flag for showing model */
   public showModel: boolean;
-
+  private _notificationClickData: any;
   /**This properties are used for getter setter */
   private _conversationUsers: ConversationUsers[];
   private _allUsers: User[];
-
   /** Stops the subscription on ngOnDestory */
   private destroy: Subject<void>;
 
   constructor(
     private _ChatListPresenterService: ChatListPresenterService,
     private _commonService: CommonService,
+    private _utilityService: UtilityService,
     private _cdr: ChangeDetectorRef
   ) {
     super();
@@ -104,6 +119,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.copyOfConversationUsers = [];
     this._conversationUsers = [];
     this.destroy = new Subject();
+    this.checkNotificationAccess();
   }
 
   ngOnInit(): void {
@@ -120,8 +136,38 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this._ChatListPresenterService.newConversation$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUsers) => {
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
-    })
+    });
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupDetails.emit(groupDetails))
+  }
+
+  /**
+   * @name checkNotificationAccess
+   * @description This method allowed to check whether notfication access has granted or not and subsribe to notifications.
+   */
+  private checkNotificationAccess():void  {
+    if(Notification.permission === 'granted') {
+      this.notificationFlag = true; 
+      this._utilityService.subscribeToPushNotification();
+      this._utilityService.subscribeToPushNotificationClick();
+    } else if(Notification.permission === 'denied') {
+      this.notificationFlag = true;
+    } else {
+      this.notificationFlag = false;
+    }
+  }
+
+  /**
+   * @name grantNotificationAccess
+   * @description This method is called for allowing notification Access and subscribing to notification click
+   */
+  public grantNotificationAccess(): void {
+    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(persmission => {
+        this.notificationFlag = true;
+        this._utilityService.subscribeToPushNotification();
+        this._utilityService.subscribeToPushNotificationClick();
+      })
+    }
   }
 
   /**
@@ -167,27 +213,39 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       if (!this.allChatIds.includes(user.chatId))
         nonConversationUser.push(this.conversationUsers.indexOf(user));
     });
-
     setTimeout(() => {
       this.conversationUsers = this.copyOfConversationUsers.filter((user: ConversationUsers, index: number) => !nonConversationUser.includes(index));
     }, 500);
   }
 
-  /**
-   * @name onTabSwitch
-   * @param data 
-   * @description This method is used to show the chats which depend on the data
+/**
+   * @name isEmptyString
+   * @param str 
+   * @description method is used for checking whether string empty or not
+   * @returns method return boolean value
    */
-  public onTabSwitch(data: boolean): void {
-    this.tabData = data;
-    this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' : users.chat_type === 'group');
-    const sortbyTime = (a, b) => {
-      const timestampA = a.time.getTime();
-      const timestampB = b.time.getTime();
-      return timestampB - timestampA;
-    };
-    this._conversationUsers.sort(sortbyTime);
-  }
+private isEmptyString(str: String) {
+  return str.trim().length === 0;
+}
+
+
+/**
+ * @name onTabSwitch
+ * @param data 
+ * @description This method is used to show the chats which depend on the data
+ */
+public onTabSwitch(data: boolean): void {
+  this.tabData = data;
+  this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && !this.isEmptyString(users.standardTime) : users.chat_type === 'group' && !this.isEmptyString(users.standardTime));
+  const clearedConversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && this.isEmptyString(users.standardTime) : users.chat_type === 'group' && this.isEmptyString(users.standardTime));
+  const sortbyTime = (a, b) => {
+    const timestampA = a.time.getTime();
+    const timestampB = b.time.getTime();
+    return timestampB - timestampA;
+  };
+  this._conversationUsers.sort(sortbyTime);
+  this._conversationUsers = this._conversationUsers.concat(clearedConversationUsers)
+}
 
   /**
    * @name checkIfOnline
@@ -254,7 +312,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   /**
    * @description This method pass user single user data
    */
-  public eodChatOpen(event: any, user: ConversationUsers) {
+  public eodChatOpen( _, user: ConversationUsers) {
+    user.eodNotification = false;
     this._commonService.eodChatOpen.next(user)
   }
   /**
@@ -265,7 +324,4 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.destroy.next();
     this.destroy.unsubscribe();
   }
-
- 
-  
 }

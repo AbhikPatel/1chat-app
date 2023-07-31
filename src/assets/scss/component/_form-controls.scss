@@ -1,6 +1,10 @@
-.required{
-    &:after{
-        content:'*';
+.required {
+    &:after {
+        content: '*';
         color: $danger;
     }
+}
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
 }

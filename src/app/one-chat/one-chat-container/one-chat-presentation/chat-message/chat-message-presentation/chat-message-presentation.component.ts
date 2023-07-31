@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, findIndex } from 'rxjs';
-import { ConversationUsers } from 'src/app/one-chat/models/chat.model';
+import { ConversationUsers, Message } from 'src/app/one-chat/models/chat.model';
 import { EOD, Task } from 'src/app/one-chat/models/eod.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one-chat-presentation.base';
@@ -30,7 +30,16 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public get receiversConversation(): ConversationUsers {
     return this._receiversConversation;
   }
+  /** This property is used to get chat array */
+  @Input() public set chatArray(messages: Message[]) {
+    if (messages)
+      this._chatArray = messages;
+  }
 
+  public get chatArray(): Message[] {
+    return this._chatArray;
+  }
+  private _chatArray: Message[];
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
 
@@ -255,22 +264,22 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this._overlayService.open(ConfirmationModelComponent)
   }
 
-//  /**
-//    * @name onNewConversation
-//      * @description This method will open a model to start  edit and delete 
-//   *  @param index 
-//   */
-//   public openEditDeleteModel(index: any): void {
-//     if (this.activeEditDeleteTab !== index && this.activeEditDeleteTab
-//       || this.activeEditDeleteTab !== index && this.activeEditDeleteTab === 0) {
-//       this.activeEditDeleteTab = index;
-//       this.showModel = true;
-//     }
-//     else {
-//       this.activeEditDeleteTab = index;
-//       this.showModel = !this.showModel
-//     }
-//   }
+  //  /**
+  //    * @name onNewConversation
+  //      * @description This method will open a model to start  edit and delete 
+  //   *  @param index 
+  //   */
+  //   public openEditDeleteModel(index: any): void {
+  //     if (this.activeEditDeleteTab !== index && this.activeEditDeleteTab
+  //       || this.activeEditDeleteTab !== index && this.activeEditDeleteTab === 0) {
+  //       this.activeEditDeleteTab = index;
+  //       this.showModel = true;
+  //     }
+  //     else {
+  //       this.activeEditDeleteTab = index;
+  //       this.showModel = !this.showModel
+  //     }
+  //   }
 
   /**
    * 
@@ -295,7 +304,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @param data 
    * @description This method close edit form
    */
-  public  closeForm(data: boolean) {
+  public closeForm(data: boolean) {
     this.allTasks[this.currentEditIndex].isEdit = data;
     this.submitBtnDisabled = true;
   }

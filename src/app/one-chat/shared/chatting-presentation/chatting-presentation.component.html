@@ -4,23 +4,25 @@
     <!-- Start: Message Screen  -->
     <div class="chat-container flex-grow-1 overflow-auto py-4"  #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
-            <div class="chat d-flex flex-column my-3" *ngFor="let message of chatArray let i = index"
+            <div class="chat d-flex flex-column my-3" *ngFor="let message of NewChatArray let i = index"
                 [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
                 <div class="d-flex justify-content-center">
                     <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7"
-                        *ngIf="formatDate(message.time,chatArray[i-1]?.time)">
-                        {{formatDate(message.time,chatArray[i-1]?.time) }}
-                    </span>
-                </div>
+                    *ngIf="formatDate(message.time,chatArray[i-1]?.time)">
+                    {{formatDate(message.time,chatArray[i-1]?.time) }}
+                </span>
+            </div>
+            <span *ngIf="receiversConversation.chat_type ==='group' && userId !== message.sender " class="fs-7" > {{message.ownerName}} </span>
                 <div class="chat">
 
                     <div class="d-flex" [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
-
-
                         <!-- Message Text  -->
-                        <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
-                            [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
+                        <div class="chat-text py-1 px-2  placeholder-glow dropstart"
+                            [ngClass]="message.is_sender ? 'bg-secondary chat-rt-border' : 'bg-theme chat-lt-border'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
+                        <!-- <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
+                            [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
+                            (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)"> -->
                             <!-- Edit Message  -->
                             <ng-container *ngIf="message.is_edit">
                                 <span class="fs-7 text-info" [ngClass]="message.is_sender ? 'text-end': 'text-start'">

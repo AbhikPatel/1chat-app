@@ -73,11 +73,10 @@ export class ChatListPresenterService implements OnDestroy {
    * @param user 
    * @description This methosd will get the current  conversation
    */
-  public getCurrentConversation(user: ConversationUsers, senderId: string): void {
+  public getCurrentConversation(user: ConversationUsers, userId: string): void {
     let readMessages: MessageRead = {
       chatId: user.chatId,
-      sender: senderId,
-      receiver: user.members[0]._id,
+      receiver: userId,
       count: user.notificationCount
     };
     user.notificationCount = 0;

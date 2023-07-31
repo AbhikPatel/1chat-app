@@ -95,7 +95,8 @@ export class Message {
     is_sender: boolean
     displayTime: string
     chat_type: string
-    replied_to?: any
+    replied_to?: any;
+    ownerName?:string;
     
     constructor(
         _id: string,
@@ -270,18 +271,15 @@ export class Member {
 
 export class MessageRead {
     chatId: string
-    sender: string
     receiver: string
     count: number
 
     constructor(
         chatId: string,
-        sender: string,
         receiver: string,
         count: number
     ) {
         this.chatId = chatId
-        this.sender = sender
         this.receiver = receiver
         this.count = count
     }
