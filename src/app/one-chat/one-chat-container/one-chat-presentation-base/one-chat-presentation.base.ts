@@ -33,16 +33,7 @@ export class OneChatPresentationBase {
     }
 
 
-    /** This property is used to get chat array */
-    @Input() public set chatArray(messages: Message[]) {
-        if (messages)
-            this._chatArray = messages;
-
-    }
-
-    public get chatArray(): Message[] {
-        return this._chatArray;
-    }
+ 
 
     /** This property is used to get all the EOD Reports */
     @Input() public set getReports(eodReports: EOD[]) {
@@ -85,7 +76,8 @@ export class OneChatPresentationBase {
     public repliedToMessage: Message;
 
     /** This variable is used for setter getter */
-    private _chatArray: Message[];
+    // private _chatArray: Message[];
+    public chatArrayData: Message[];
     private _onlineUsers: OnlineUser[];
     private _typingInfo: Typing;
     private _getReports: EOD[];
@@ -100,7 +92,7 @@ export class OneChatPresentationBase {
         this.repliedMessage = new EventEmitter();
         this.eodReport = new EventEmitter();
         this.onEodTab = new EventEmitter();
-        this._chatArray = [];
+        // this._chatArray = [];
         this.showTypingText = new BehaviorSubject(false);
         this.typingIds = [];
         this._onlineUsers = [];
