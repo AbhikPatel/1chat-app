@@ -6,13 +6,13 @@
         <div class="container position-relative">
             <div class="chat d-flex flex-column my-3" *ngFor="let message of NewChatArray let i = index"
                 [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
-                <span *ngIf="receiversConversation.chat_type ==='group' && userId !== message.sender " class="fs-7" > {{message.ownerName}} </span>
                 <div class="d-flex justify-content-center">
                     <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7"
-                        *ngIf="formatDate(message.time,chatArray[i-1]?.time)">
-                        {{formatDate(message.time,chatArray[i-1]?.time) }}
-                    </span>
-                </div>
+                    *ngIf="formatDate(message.time,chatArray[i-1]?.time)">
+                    {{formatDate(message.time,chatArray[i-1]?.time) }}
+                </span>
+            </div>
+            <span *ngIf="receiversConversation.chat_type ==='group' && userId !== message.sender " class="fs-7" > {{message.ownerName}} </span>
                 <div class="chat">
 
                     <div class="d-flex" [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
