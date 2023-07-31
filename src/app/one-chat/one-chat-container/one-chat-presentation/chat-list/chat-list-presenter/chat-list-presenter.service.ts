@@ -9,6 +9,7 @@ import { User } from 'src/app/shared/models/user.model';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { CreateGroupPresentationComponent } from 'src/app/one-chat/shared/create-group-presentation/create-group-presentation.component';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Injectable()
 
@@ -36,7 +37,8 @@ export class ChatListPresenterService implements OnDestroy {
 
   constructor(
     private _fb: FormBuilder,
-    private _overlay: Overlay
+    private _overlay: Overlay,
+    private _commonService: CommonService
   ) {
     this.currentConversationUser$ = new Observable();
     this.messageRead$ = new Observable();
@@ -124,12 +126,10 @@ export class ChatListPresenterService implements OnDestroy {
       hasBackdrop: true,
       positionStrategy: this._overlay.position().global().centerHorizontally().centerVertically(),
     })
-
     const component = new ComponentPortal(CreateGroupPresentationComponent);
     const overlayRef = overlay.attach(component);
-
     overlay.backdropClick().pipe(takeUntil(this.destroy)).subscribe(() => overlay.detach());
-
+    this._commonService.closeOverlayS$.pipe(takeUntil(this.destroy)).subscribe(() => overlay.detach());
     overlayRef.instance.getUsers = users;
     overlayRef.instance.newGroupInformation.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupData.next(groupDetails));
   }

@@ -5,6 +5,8 @@ import { FormGroup } from '@angular/forms';
 import { GroupDetails } from '../../models/chat.model';
 import { takeUntil } from 'rxjs';
 import { OneChatPresentationBase } from '../../one-chat-container/one-chat-presentation-base/one-chat-presentation.base';
+import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-create-group-presentation',
@@ -40,11 +42,13 @@ export class CreateGroupPresentationComponent implements OnInit, OnDestroy {
   private _getUsers: any[];
 
   constructor(
-    private _createGroupPresenterService: CreateGroupPresenterService
+    private _createGroupPresenterService: CreateGroupPresenterService,
+  private _commonService:CommonService
   ) {
     this.destroy = new Subject();
     this.newGroupInformation = new EventEmitter();
     this.groupChatFormGroup = _createGroupPresenterService.createGroup();
+    
   }
 
   ngOnInit(): void {
@@ -86,9 +90,17 @@ export class CreateGroupPresentationComponent implements OnInit, OnDestroy {
    */
   public onSubmit(): void {
     if (this.groupChatFormGroup.valid)
-      this._createGroupPresenterService.getGroupData(this.groupChatFormGroup.value)
+      this._createGroupPresenterService.getGroupData(this.groupChatFormGroup.value);
+      this._commonService.closeOverlay()
   }
-
+  /**
+   * @name closeModel
+   * @description This method close model click on close button
+   */
+  public closeModel(){
+    this._commonService.closeOverlay()
+  }
+  
   ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
