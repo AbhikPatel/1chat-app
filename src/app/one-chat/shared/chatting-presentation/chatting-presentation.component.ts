@@ -25,8 +25,6 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   /** Input to get the receiver's data */
   @Input() public set receiversConversation(receiver: ConversationUsers) {
     if (receiver) {
-      console.log(receiver);
-      
       this._receiversConversation = receiver;
       this.closeEmojiPicker();
       setTimeout(() => {
