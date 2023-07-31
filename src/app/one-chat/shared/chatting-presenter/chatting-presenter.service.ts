@@ -2,6 +2,8 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs/internal/Observable';
 import { Subject } from 'rxjs/internal/Subject';
+import { ConversationUsers, Message } from '../../models/chat.model';
+import { animate } from '@angular/animations';
 
 @Injectable()
 
@@ -14,16 +16,21 @@ export class ChattingPresenterService implements OnDestroy {
   private chat: Subject<string>;
   /** Stops the subcription */
   private destroy: Subject<void>;
-
+  public senderId: number;
+  private chatArray: Subject<Message[]>;
+  public chatArray$: Observable<any>;
   constructor(
     private _fb: FormBuilder
   ) {
     this.chat$ = new Observable();
+    this.chatArray$ = new Observable();
 
     this.chat = new Subject();
+    this.chatArray = new Subject();
     this.destroy = new Subject();
 
     this.chat$ = this.chat.asObservable();
+    this.chatArray$ = this.chatArray.asObservable();
   }
 
   /**
@@ -44,6 +51,29 @@ export class ChattingPresenterService implements OnDestroy {
    */
   public getChatData(chatData: string): void {
     this.chat.next(chatData)
+  }
+  /**
+   * @name getChatArray
+   * @param chatArray 
+   * @param conversationUser 
+   * @description  This Method add ownName field in ChatArray find in conversationUser 
+   */
+  public getChatArray(chatArray: Message[], conversationUser: ConversationUsers) {
+    chatArray = chatArray.map((message:any) => {
+      if (message.sender) {
+        const groupMember = conversationUser.members.find((item: any, index: number) => item._id == message.sender);
+        return {
+          ...message,
+          ownerName: groupMember ? groupMember.full_name : ''
+        }
+      }
+      else {
+        return chatArray
+      }
+    })
+    console.log(chatArray);
+    
+    this.chatArray.next(chatArray)
   }
   /**
    * @description

@@ -6,6 +6,8 @@ import { OneChatPresentationBase } from '../../one-chat-container/one-chat-prese
 import { ChattingPresenterService } from '../chatting-presenter/chatting-presenter.service';
 import { ConversationUsers, Message } from '../../models/chat.model';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { animate } from '@angular/animations';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-chatting-presentation',
@@ -23,6 +25,8 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   /** Input to get the receiver's data */
   @Input() public set receiversConversation(receiver: ConversationUsers) {
     if (receiver) {
+      console.log(receiver);
+      
       this._receiversConversation = receiver;
       this.closeEmojiPicker();
       setTimeout(() => {
@@ -34,10 +38,21 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public get receiversConversation(): ConversationUsers {
     return this._receiversConversation;
   }
+  /** This property is used to get chat array */
+  @Input() public set chatArray(messages: Message[]) {
+    if (messages)
+      this._chatArray = messages
+      this._chattingPresenterService.getChatArray(this._chatArray, this.receiversConversation)
+  }
+  public get chatArray(): Message[] {
+    return this._chatArray;
+  }
 
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
-   
+  private _chatArray: Message[];
+    /** This Variable store chartArray[] */
+  public NewChatArray: Message[];
   /** FormGroup for chat */
   public chatGroup: FormGroup;
   /** Flag for message screen scroll */
@@ -69,8 +84,10 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public distance: number;
   public limit: number;
   public pageSize: number;
+  public userId:string;
   constructor(
     private _chattingPresenterService: ChattingPresenterService,
+    private _commonService:CommonService
   ) {
     super();
     this.destroy = new Subject();
@@ -89,6 +106,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     this.distance = 1;
     this.limit = 5;
     this.pageSize = 1;
+    this._chatArray = []
   }
   ngAfterViewInit(): void {
     this.scrollUp();
@@ -96,6 +114,12 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   ngOnInit(): void {
     this._chattingPresenterService.chat$.pipe(takeUntil(this.destroy)).subscribe((chat: string) => this.chatData.emit(chat));
     this.chatGroup.valueChanges.pipe(takeUntil(this.destroy)).subscribe(() => this.InputTyping.emit());
+    this._chattingPresenterService.chatArray$.pipe(takeUntil(this.destroy)).subscribe((res: Message[]) => this.NewChatArray = res
+    )
+    /**
+     * Get UserId
+     */
+     this.userId= this._commonService.getUserId()
   }
 
   /**
@@ -128,8 +152,8 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public scrollUp(): void {
     const scrollHeight = this.messageContainer?.nativeElement.scrollHeight;
     this.messageContainer.nativeElement.scrollTop = scrollHeight;
- 
-    
+
+
   }
 
   /**
