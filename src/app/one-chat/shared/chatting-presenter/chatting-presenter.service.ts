@@ -71,8 +71,7 @@ export class ChattingPresenterService implements OnDestroy {
         return chatArray
       }
     })
-    console.log(chatArray);
-    
+
     this.chatArray.next(chatArray)
   }
   /**
