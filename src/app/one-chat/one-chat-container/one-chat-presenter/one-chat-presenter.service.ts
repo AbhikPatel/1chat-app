@@ -261,7 +261,7 @@ export class OneChatPresenterService implements OnDestroy {
         this.getConversationUsers(this.conversationList);
       }
     }
-    // this.updateConversationList(message.content.text, message.chat);
+    this.updateConversationList(message.content.text, message.chat);
   }
 
   /**
