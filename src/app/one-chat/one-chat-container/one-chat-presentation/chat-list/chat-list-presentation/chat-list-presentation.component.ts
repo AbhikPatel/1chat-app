@@ -198,6 +198,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is used to display the chats of the selected user
    */
   public onUser(user: ConversationUsers): void {
+    this._commonService.isReplyModeFalse.next(false)
     this.checkNonConversationUsers();
     this.currentChatId = user.chatId;
     this._ChatListPresenterService.getCurrentConversation(user, this.userId);
@@ -269,15 +270,8 @@ public onTabSwitch(data: boolean): void {
    * @description This method close model click on outside.
    */
   public clickOutside() :void{
-    this.showModel = false;
-
+    this.toggle.nativeElement.checked=false
   }
-  // @HostListener('document:click', ['$event.target'])
-  // onClickOutside(targetElement: any) {
-  //   if (!targetElement.closest('.dropdown')) {
-  //     this.showModel = false;
-  //   }
-  // }
 
   /**
    * @name onSearchUser

@@ -118,10 +118,9 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
      * Get UserId
      */
      this.userId= this._commonService.getUserId()
-
      this._commonService.isReplyModeFalse.subscribe((data:boolean)=>{
-      this._changeDetector.markForCheck()
-      this.isReplyMode=data
+      this._changeDetector.markForCheck();
+      this.isReplyMode=data;
      });
   }
 
