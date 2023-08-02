@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
@@ -13,7 +13,7 @@ import { CommonService } from 'src/app/shared/services/common.service';
   selector: 'app-chatting-presentation',
   templateUrl: './chatting-presentation.component.html',
   viewProviders: [ChattingPresenterService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChattingPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy, AfterViewInit {
 
@@ -45,7 +45,6 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public get chatArray(): Message[] {
     return this._chatArray;
   }
-
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
   private _chatArray: Message[];
@@ -85,7 +84,8 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public userId:string;
   constructor(
     private _chattingPresenterService: ChattingPresenterService,
-    private _commonService:CommonService
+    private _commonService:CommonService,
+    private _changeDetector: ChangeDetectorRef
   ) {
     super();
     this.destroy = new Subject();
@@ -118,6 +118,11 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
      * Get UserId
      */
      this.userId= this._commonService.getUserId()
+
+     this._commonService.isReplyModeFalse.subscribe((data:boolean)=>{
+      this._changeDetector.markForCheck()
+      this.isReplyMode=data
+     });
   }
 
   /**

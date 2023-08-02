@@ -235,6 +235,7 @@ private isEmptyString(str: String) {
  * @description This method is used to show the chats which depend on the data
  */
 public onTabSwitch(data: boolean): void {
+  this._commonService.isReplyModeFalse.next(false)
   this.tabData = data;
   this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && !this.isEmptyString(users.standardTime) : users.chat_type === 'group' && !this.isEmptyString(users.standardTime));
   const clearedConversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && this.isEmptyString(users.standardTime) : users.chat_type === 'group' && this.isEmptyString(users.standardTime));

@@ -16,9 +16,14 @@ export class CommonService {
   public eodChatOpen: Subject<any>;
   public closeOverlaySubject:Subject<void>
   public closeOverlayS$:Observable<any>
+  /**
+   * This Variable false replay message click on tab
+   */
+   public isReplyModeFalse:Subject<boolean>
   constructor() {
     this.user$ = new Subject();
-    this.closeModel = new Subject();
+    this.closeModel = new Subject();          
+    this.isReplyModeFalse = new Subject();          
     this.statusDelete = new BehaviorSubject(false);
     this.submitEod = new BehaviorSubject(false);
     this.eodChatOpen = new Subject();
