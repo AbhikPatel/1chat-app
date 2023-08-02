@@ -14,7 +14,6 @@
             </div>
             <span *ngIf="receiversConversation.chat_type ==='group' && userId !== message.sender " class="fs-7" > {{message.ownerName}} </span>
                 <div class="chat">
-
                     <div class="d-flex" [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
                         <!-- Message Text  -->
                         <div class="chat-text py-1 px-2  placeholder-glow dropstart"
@@ -35,14 +34,12 @@
                                 <div class="mx-3">
                                     <div class="d-flex align-items-center justify-content-between mb-1 ">
                                         <span class="fs-9 text-nowrap"> {{message.replied_to.is_sender ? 'You' :
-                                            receiversConversation.members[0].first_name}} </span>
+                                            message.replied_to.ownerName}} </span>
                                     </div>
                                     <div class="fs-7 text-nowrap"> {{message.replied_to.content.text}} </div>
                                 </div>
                             </div>
-
                             <!-- Message Dropdown  -->
-
                             <div class="dropdown">
                                 <span> {{message.content.text}} </span>
                                 <!-- <span class="icon-circle-down text-info" data-bs-toggle="dropdown" aria-expanded="false"
@@ -119,7 +116,7 @@
             <div class="reply-wrapper rounded-1 p-2 pe-3" *ngIf="isReplyMode">
                 <div class="mx-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <span> {{replyMessage.is_sender ? 'You' : receiversConversation.members[0].first_name}} </span>
+                        <span> {{replyMessage.is_sender ? 'You' : this.replyMessage.ownerName}} </span>
                         <button class="btn-close" (click)="onCancelMode()" type="button"></button>
                     </div>
                     <span>{{replyMessage.content.text}}</span>
@@ -133,7 +130,6 @@
                 <input type="text" class="form-control py-2 rounded-1" name="message" formControlName="message"
                     autocomplete="off" placeholder="Type a new message" [(ngModel)]="message " #inputTypeFocus>
             </div>
-
             <!-- Typer Dialog box  -->
             <div class="d-flex align-items-center justify-content-between py-1">
                 <div class="file-attach d-flex align-items-center gap-2">
