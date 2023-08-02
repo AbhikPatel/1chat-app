@@ -198,6 +198,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is used to display the chats of the selected user
    */
   public onUser(user: ConversationUsers): void {
+    this._commonService.isReplyModeFalse.next(false)
     this.checkNonConversationUsers();
     this.currentChatId = user.chatId;
     this._ChatListPresenterService.getCurrentConversation(user, this.userId);
@@ -235,6 +236,7 @@ private isEmptyString(str: String) {
  * @description This method is used to show the chats which depend on the data
  */
 public onTabSwitch(data: boolean): void {
+  this._commonService.isReplyModeFalse.next(false)
   this.tabData = data;
   this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && !this.isEmptyString(users.standardTime) : users.chat_type === 'group' && !this.isEmptyString(users.standardTime));
   const clearedConversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && this.isEmptyString(users.standardTime) : users.chat_type === 'group' && this.isEmptyString(users.standardTime));
@@ -268,15 +270,8 @@ public onTabSwitch(data: boolean): void {
    * @description This method close model click on outside.
    */
   public clickOutside() :void{
-    this.showModel = false;
-
+    this.toggle.nativeElement.checked=false
   }
-  // @HostListener('document:click', ['$event.target'])
-  // onClickOutside(targetElement: any) {
-  //   if (!targetElement.closest('.dropdown')) {
-  //     this.showModel = false;
-  //   }
-  // }
 
   /**
    * @name onSearchUser
