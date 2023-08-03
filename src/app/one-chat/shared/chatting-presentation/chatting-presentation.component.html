@@ -2,7 +2,7 @@
 <div class="d-flex flex-column h-100 overflow-hidden">
 
     <!-- Start: Message Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto py-4"  #messageContainer (scroll)="onMessageScroll()">
+    <div class="chat-container flex-grow-1 overflow-auto p-5"  #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
             <div class="chat d-flex flex-column my-3" *ngFor="let message of NewChatArray let i = index"
                 [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">

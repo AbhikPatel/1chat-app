@@ -1,5 +1,5 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule, isDevMode } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
 import { environment } from 'src/environments/environment.prod';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -20,8 +19,6 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     CoreModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
-      /** Register the ServiceWorker as soon as the application is stable */
-      /** or after 30 seconds (whichever comes first). */
       registrationStrategy: 'registerWhenStable:30000'
     }),
   ],

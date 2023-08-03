@@ -99,6 +99,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
   private _allUsers: User[];
   /** Stops the subscription on ngOnDestory */
   private destroy: Subject<void>;
+  /** Service Worker Update Flag */
+  public serviceWorkerUpdateFlag: boolean;
 
   constructor(
     private _ChatListPresenterService: ChatListPresenterService,
@@ -111,6 +113,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.showModel = false;
     this.tabData = true;
     this.tabFlag = true;
+    this.serviceWorkerUpdateFlag = false;
     this.currectConversation = new EventEmitter();
     this.userRole = this._commonService.getUserRole();
     this.userId = this._commonService.getUserId();
@@ -138,6 +141,16 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       this.currentChatId = user.chatId;
     });
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupDetails.emit(groupDetails))
+    this._utilityService.checkForServiceWorkerUpdates().subscribe(res => {
+      if (res.type === 'NO_NEW_VERSION_DETECTED') this.serviceWorkerUpdateFlag = false;
+      else if(res.type === 'VERSION_READY') {this.serviceWorkerUpdateFlag = true; console.log(this.serviceWorkerUpdateFlag)};
+    })
+  }
+
+  public checkForSWUpdates(): void {
+    console.log(this.serviceWorkerUpdateFlag)
+    if(this.serviceWorkerUpdateFlag)
+      this._utilityService.activateUpdate();
   }
 
   /**

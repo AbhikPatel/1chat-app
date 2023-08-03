@@ -38,29 +38,6 @@ export class OneChatService {
     this.socket = io(environment.socketUrl);
     this.baseUrl = environment.baseURL;
     this.chatId = new Subject();
-    // this.requestNotificationPermission();
-  }
-
-  /**
-   * @name requestNotificationPermission
-   * @description 
-   */
-  private requestNotificationPermission(): void {
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission()
-        .then(permission => {
-          // Handle permission result
-          console.log('inside then')
-          // this.subscribeToPushNotification();
-          // this.subscribeToPushNotificationClick();
-        })
-        .catch(error => {
-          // Handle error
-        });
-    } else {
-      // this.subscribeToPushNotification();
-      // this.subscribeToPushNotificationClick();
-    }
   }
 
   /**
