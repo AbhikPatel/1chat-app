@@ -8,6 +8,7 @@ import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one
 import { ChatListPresenterService } from '../chat-list-presenter/chat-list-presenter.service';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { UtilityService } from 'src/app/shared/services/utility.service';
+import { SwPush } from '@angular/service-worker';
 
 @Component({
   selector: 'app-chat-list-presentation',
@@ -106,7 +107,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     private _ChatListPresenterService: ChatListPresenterService,
     private _commonService: CommonService,
     private _utilityService: UtilityService,
-    private _cdr: ChangeDetectorRef
+    private _cdr: ChangeDetectorRef,
+    private _swPush: SwPush
   ) {
     super();
     this.searchGroup = this._ChatListPresenterService.getGroup();
@@ -122,6 +124,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this.copyOfConversationUsers = [];
     this._conversationUsers = [];
     this.destroy = new Subject();
+    this.notificationFlag = true;
     this.checkNotificationAccess();
   }
 
@@ -142,13 +145,11 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     });
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupDetails.emit(groupDetails))
     this._utilityService.checkForServiceWorkerUpdates().subscribe(res => {
-      if (res.type === 'NO_NEW_VERSION_DETECTED') this.serviceWorkerUpdateFlag = false;
-      else if(res.type === 'VERSION_READY') {this.serviceWorkerUpdateFlag = true; console.log(this.serviceWorkerUpdateFlag)};
+      if(res.type === 'VERSION_READY') {this.serviceWorkerUpdateFlag = true;};
     })
   }
 
   public checkForSWUpdates(): void {
-    console.log(this.serviceWorkerUpdateFlag)
     if(this.serviceWorkerUpdateFlag)
       this._utilityService.activateUpdate();
   }
@@ -158,11 +159,11 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method allowed to check whether notfication access has granted or not and subsribe to notifications.
    */
   private checkNotificationAccess():void  {
-    if(Notification.permission === 'granted') {
+    if(this._swPush.isEnabled && Notification.permission === 'granted') {
       this.notificationFlag = true; 
       this._utilityService.subscribeToPushNotification();
       this._utilityService.subscribeToPushNotificationClick();
-    } else if(Notification.permission === 'denied') {
+    } else if(this._swPush.isEnabled && Notification.permission === 'denied') {
       this.notificationFlag = true;
     } else {
       this.notificationFlag = false;
@@ -174,7 +175,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is called for allowing notification Access and subscribing to notification click
    */
   public grantNotificationAccess(): void {
-    if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+    if (this._swPush.isEnabled && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
       Notification.requestPermission().then(persmission => {
         this.notificationFlag = true;
         this._utilityService.subscribeToPushNotification();

@@ -30,9 +30,9 @@
             </i> -->
 
             <ng-template [ngIf]="serviceWorkerUpdateFlag">
-                <a class="bg-danger bg-gradient rounded-1 text-white fs-6  px-2 fw-bolder" title="Click to Update App!" type="button" (click)="checkForSWUpdates()">
-                    <span class='icon-info1 me-1'></span>
-                    <span>UPDATE!</span>
+                <a class="d-flex align-items-center bg-danger bg-gradient rounded-1 text-white fs-6 px-1" title="Click to Update App!" type="button" (click)="checkForSWUpdates()">
+                    <span>UPDATE</span>
+                    <span class='icon-info1 rotate-180 ms-1'></span>
                 </a>
             </ng-template>
             
@@ -61,12 +61,12 @@
     <ul class="d-flex flex-column flex-grow-1 position-relative h-100 overflow-hidden m-0">
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
         <!-- Start: Search User  -->
-        <div id="user" class="search-container position-absolute bg-white">
+        <div id="user" class="d-flex flex-column search-container position-absolute bg-white">
             <form class="p-3 bg-theme" [formGroup]="searchGroup">
                 <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
                     placeholder="Search a User.." formControlName="search" [(ngModel)]="searchText" #inputTypeFocus>
             </form>
-            <ul class="border-end bg-white overflow-auto h-100">
+            <ul class="flex-grow-1 border-end bg-white overflow-auto">
                 <ng-container *ngFor="let user of allUsers | search:searchText">
                     <li role="button" class="user-container d-flex align-items-center p-2 border-bottom"
                         (click)="onNewChat(user)">

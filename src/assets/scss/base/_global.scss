@@ -18,7 +18,7 @@ body {
 }
 
 .login-container {
-    min-width: 500px;
+    width: 500px;
 }
 
 .bx {
@@ -154,4 +154,12 @@ textarea {
 
 .modal {
     z-index: 5000;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.backdrop-blur {
+    backdrop-filter: blur(10px);
 }

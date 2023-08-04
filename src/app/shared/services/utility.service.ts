@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/internal/Subject';
-import { SwPush, SwUpdate, VersionEvent, VersionReadyEvent } from "@angular/service-worker";
+import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import { Observable } from 'rxjs/internal/Observable';
-import { Subscription, filter, map } from 'rxjs';
-import { NavigationExtras, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -73,7 +71,6 @@ export class UtilityService {
     public async activateUpdate(): Promise<void> {
       this.serviceWorkerUpdateFlag.next(true);
       await this.serviceWorkerUpdates.activateUpdate();
-      console.log('service worker update activates');
       setTimeout(async () => {
         this.serviceWorkerUpdateFlag.next(false);
         document.location.reload();
