@@ -159,14 +159,16 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method allowed to check whether notfication access has granted or not and subsribe to notifications.
    */
   private checkNotificationAccess():void  {
-    if(this._swPush.isEnabled && Notification.permission === 'granted') {
-      this.notificationFlag = true; 
-      this._utilityService.subscribeToPushNotification();
-      this._utilityService.subscribeToPushNotificationClick();
-    } else if(this._swPush.isEnabled && Notification.permission === 'denied') {
-      this.notificationFlag = true;
-    } else {
-      this.notificationFlag = false;
+    if(this._swPush.isEnabled) {
+      if(Notification.permission === 'granted') {
+        this.notificationFlag = true; 
+        this._utilityService.subscribeToPushNotification();
+        this._utilityService.subscribeToPushNotificationClick();
+      } else if(Notification.permission === 'denied') {
+        this.notificationFlag = true;
+      } else {
+        this.notificationFlag = false;
+      }
     }
   }
 
