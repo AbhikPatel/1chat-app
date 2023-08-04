@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject, findIndex } from 'rxjs';
+import { Subject, findIndex, flatMap } from 'rxjs';
 import { ConversationUsers, Message } from 'src/app/one-chat/models/chat.model';
 import { EOD, Task } from 'src/app/one-chat/models/eod.model';
 import { CommonService } from 'src/app/shared/services/common.service';
@@ -86,6 +86,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public currentDeleteIndex: number;
   /** variable for all the EOD Tasks */
   public allTasks: Task[];
+  
 
   constructor(
     private _chatMessagePresenterService: ChatMessagePresenterService,
