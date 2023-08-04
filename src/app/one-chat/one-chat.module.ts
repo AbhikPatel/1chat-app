@@ -2,7 +2,6 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ServiceWorkerModule } from '@angular/service-worker';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
@@ -10,7 +9,6 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 //------------------------------------------------------------------------------- //
-import { environment } from 'src/environments/environment.prod';
 import { FormatTime } from '../core/utilities/formatTime';
 import { SharedModule } from '../shared/shared.module';
 import { OneChatContainerComponent } from './one-chat-container/one-chat-container.component';

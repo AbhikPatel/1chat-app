@@ -176,6 +176,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is called to start a new dm conversation
    */
   public onNewChat(user: User) {
+    this.onTabSwitch(true)
     const chatIdArr = this.conversationUsers.map((user: ConversationUsers) => user.chatId);
     const resultArr = user.chats.reduce((acc, sub) => {
       if (chatIdArr.includes(sub)) {
@@ -187,7 +188,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
       this._ChatListPresenterService.createNewConversation(user);
     } else {
       let findConversation: ConversationUsers = this.conversationUsers.find((user: ConversationUsers) => user.chatId === resultArr[0]);
-      this.onUser(findConversation);
+                 this.onUser(findConversation);
     }
     this.toggle.nativeElement.checked = false;
   }

@@ -13,7 +13,7 @@ import { CommonService } from 'src/app/shared/services/common.service';
   selector: 'app-chatting-presentation',
   templateUrl: './chatting-presentation.component.html',
   viewProviders: [ChattingPresenterService],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChattingPresentationComponent extends OneChatPresentationBase implements OnInit, OnDestroy, AfterViewInit {
 
@@ -27,7 +27,7 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     if (receiver) {
       this._receiversConversation = receiver;
       this.closeEmojiPicker();
-      setTimeout(() => {
+      setTimeout(() => { 
         this.scrollUp();
       }, 100);
     }
@@ -39,16 +39,20 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   /** This property is used to get chat array */
   @Input() public set chatArray(messages: Message[]) {
     if (messages)
+
       this._chatArray = messages
-      this._chattingPresenterService.getChatArray(this._chatArray, this.receiversConversation)
+    this._chattingPresenterService.getChatArray(this._chatArray, this.receiversConversation)
+ 
+    
   }
   public get chatArray(): Message[] {
     return this._chatArray;
   }
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
+  /** This variable store all  message */
   private _chatArray: Message[];
-    /** This Variable store chartArray[] */
+  /** This Variable store chartArray[] */
   public NewChatArray: Message[];
   /** FormGroup for chat */
   public chatGroup: FormGroup;
@@ -81,10 +85,10 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
   public distance: number;
   public limit: number;
   public pageSize: number;
-  public userId:string;
+  public userId: string;
   constructor(
     private _chattingPresenterService: ChattingPresenterService,
-    private _commonService:CommonService,
+    private _commonService: CommonService,
     private _changeDetector: ChangeDetectorRef
   ) {
     super();
@@ -117,11 +121,12 @@ export class ChattingPresentationComponent extends OneChatPresentationBase imple
     /**
      * Get UserId
      */
-     this.userId= this._commonService.getUserId()
-     this._commonService.isReplyModeFalse.subscribe((data:boolean)=>{
+    this.userId = this._commonService.getUserId()
+    this._commonService.isReplyModeFalse.subscribe((data: boolean) => {
       this._changeDetector.markForCheck();
-      this.isReplyMode=data;
-     });
+       this.isReplyMode = data;
+    });
+   
   }
 
   /**

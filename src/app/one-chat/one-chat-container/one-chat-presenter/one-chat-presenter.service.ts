@@ -145,6 +145,8 @@ export class OneChatPresenterService implements OnDestroy {
    * @description This method is used to get the receivers details
    */
   public getReceiversConversation(receivers: ConversationUsers): void {
+    console.log(receivers);
+    
     this.currentChatType = receivers.chat_type;
     this.receiversConversation = receivers;
     this.receiverConversation.next(receivers);

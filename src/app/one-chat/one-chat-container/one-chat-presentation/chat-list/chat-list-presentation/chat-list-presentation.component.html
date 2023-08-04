@@ -33,7 +33,7 @@
                 <span type="button" id="dropdownBasic1" ngbDropdownToggle class="icon-bxs-user-plus text-info fs-3">
                 </span>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                    <div ngbDropdownItem (click)="onSearchUser()">New Chat</div>
+                    <div ngbDropdownItem (click)="onSearchUser()" (appOnClickOutside)="clickOutside()">New Chat</div>
                     <div ngbDropdownItem (click)="onNewGroup()" [disabled]="userRole === 'intern'">
                         <span>New Group</span>
                     </div>

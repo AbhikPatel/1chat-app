@@ -2,24 +2,25 @@
 <div class="d-flex flex-column h-100 overflow-hidden">
 
     <!-- Start: Message Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto py-4"  #messageContainer (scroll)="onMessageScroll()">
+    <div class="chat-container flex-grow-1 overflow-auto py-4" #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
             <div class="chat d-flex flex-column my-3" *ngFor="let message of NewChatArray let i = index"
                 [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
                 <div class="d-flex justify-content-center">
                     <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7"
-                    *ngIf="formatDate(message.time,chatArray[i-1]?.time)">
-                    {{formatDate(message.time,chatArray[i-1]?.time) }}
-                </span>
-            </div>
-            <span *ngIf="receiversConversation.chat_type ==='group' && userId !== message.sender " class="fs-7" > {{message.ownerName}} </span>
+                        *ngIf="formatDate(message.time,chatArray[i-1]?.time)">
+                        {{formatDate(message.time,chatArray[i-1]?.time) }}
+                    </span>
+                </div>
+                <span *ngIf="receiversConversation.chat_type ==='group' && userId !== message.sender " class="fs-7">
+                    {{message.ownerName}} </span>
                 <div class="chat">
                     <div class="d-flex" [ngClass]="message.is_sender ? 'justify-content-end': 'justify-content-start'">
                         <!-- Message Text  -->
                         <div class="chat-text py-1 px-2  placeholder-glow dropstart"
                             [ngClass]="message.is_sender ? 'bg-secondary chat-rt-border' : 'bg-theme chat-lt-border'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
-                        <!-- <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
+                            <!-- <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
                             [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)"> -->
                             <!-- Edit Message  -->
@@ -52,28 +53,29 @@
                                         *ngIf="message.is_sender"> Edit </li>
                                     <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
                                 </ul> -->
-                                
+
                                 <!-- ngDropdown -->
-                            <div ngbDropdown class="d-inline-block">
-                                <div [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'">
-                                    <span   id="dropdownBasic1" ngbDropdownToggle  
-                                    class="icon-circle-down text-info fs-6">
-                                </span>
+                                <div ngbDropdown class="d-inline-block">
+                                    <div
+                                        [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'">
+                                        <span id="dropdownBasic1" ngbDropdownToggle
+                                            class="icon-circle-down text-info fs-6">
+                                        </span>
+                                    </div>
+
+                                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                        <ul class=" justify-content-end"
+                                            [ngClass]="{'show' : messageModel && currentMessageId === message._id}">
+                                            <li class="dropdown-item" (click)="onEditMessage(message)"
+                                                *ngIf="message.is_sender"> Edit </li>
+                                            <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                              
-                                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                                    <ul class=" justify-content-end"
-                                    [ngClass]="{'show' : messageModel && currentMessageId === message._id}">
-                                    <li class="dropdown-item" (click)="onEditMessage(message)"
-                                        *ngIf="message.is_sender"> Edit </li>
-                                    <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
-                                </ul>
-                                </div>
-                            </div>
                             </div>
                         </div>
                     </div>
-                 
+
                     <!-- Message Details  -->
                     <p class="fs-8 text-info d-flex align-items-center"
                         [ngClass]="message.is_sender ? 'justify-content-end' : 'justify-content-start'">
