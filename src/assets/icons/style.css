@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?sgvknc');
-  src:  url('fonts/icomoon.eot?sgvknc#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?sgvknc') format('truetype'),
-    url('fonts/icomoon.woff?sgvknc') format('woff'),
-    url('fonts/icomoon.svg?sgvknc#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?u68ihh');
+  src:  url('fonts/icomoon.eot?u68ihh#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?u68ihh') format('truetype'),
+    url('fonts/icomoon.woff?u68ihh') format('woff'),
+    url('fonts/icomoon.svg?u68ihh#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-info1:before {
+  content: "\e915";
+}
+.icon-power:before {
+  content: "\e916";
+}
+.icon-log-out1:before {
+  content: "\e917";
+}
+.icon-user-plus:before {
+  content: "\e913";
+}
+.icon-user:before {
+  content: "\e907";
+}
+.icon-notifications_on:before {
+  content: "\e911";
+}
+.icon-notifications_off:before {
+  content: "\e912";
+}
 .icon-Dote:before {
   content: "\e910";
 }
@@ -81,13 +102,4 @@
 }
 .icon-circle-down:before {
   content: "\ea43";
-}
-.icon-user:before {
-  content: "\e907";
-}
-.icon-notifications_on:before {
-  content: "\e911";
-}
-.icon-notifications_off:before {
-  content: "\e912";
 }

@@ -14,7 +14,7 @@
                 <span class="fw-semibold"> {{senderDetails.full_name}} </span>
             </div>
         </div>
-        <div class="fs-3 d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-center h-icon-size">
             <!-- <i class='icon-bxs-user-plus text-info position-relative' role="button" title="users"
                 (click)="onNewConversation()">
                 <div *ngIf="showModel" (appOnClickOutside)="clickOutside()">
@@ -28,9 +28,17 @@
                     </div>
                 </div>
             </i> -->
+
+            <ng-template [ngIf]="serviceWorkerUpdateFlag">
+                <a class="d-flex align-items-center bg-danger bg-gradient rounded-1 text-white fs-6 px-1" title="Click to Update App!" type="button" (click)="checkForSWUpdates()">
+                    <span>UPDATE</span>
+                    <span class='icon-info1 rotate-180 ms-1'></span>
+                </a>
+            </ng-template>
+            
             <!-- ngDropdown -->
-            <div ngbDropdown class="d-inline-block">
-                <span type="button" id="dropdownBasic1" ngbDropdownToggle class="icon-bxs-user-plus text-info fs-3">
+            <div ngbDropdown class="d-inline-block ms-3">
+                <span type="button" id="dropdownBasic1" ngbDropdownToggle class="icon-user-plus text-info">
                 </span>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
                     <div ngbDropdownItem (click)="onSearchUser()">New Chat</div>
@@ -39,9 +47,9 @@
                     </div>
                 </div>
             </div>
-
-            <div class="fs-4 ms-2" role="button" title="Log-Out" (click)="onLogOut(senderDetails.email)">
-                <i class='icon-bx-log-out text-info'></i>
+            
+            <div class="ms-3" role="button" title="Log-Out" (click)="onLogOut(senderDetails.email)">
+                <span class='icon-power text-info'></span>
             </div>
 
         </div>
@@ -53,12 +61,12 @@
     <ul class="d-flex flex-column flex-grow-1 position-relative h-100 overflow-hidden m-0">
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
         <!-- Start: Search User  -->
-        <div id="user" class="search-container position-absolute bg-white">
+        <div id="user" class="d-flex flex-column search-container position-absolute bg-white">
             <form class="p-3 bg-theme" [formGroup]="searchGroup">
                 <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
                     placeholder="Search a User.." formControlName="search" [(ngModel)]="searchText" #inputTypeFocus>
             </form>
-            <ul class="border-end bg-white overflow-auto h-100">
+            <ul class="flex-grow-1 border-end bg-white overflow-auto">
                 <ng-container *ngFor="let user of allUsers | search:searchText">
                     <li role="button" class="user-container d-flex align-items-center p-2 border-bottom"
                         (click)="onNewChat(user)">
@@ -100,10 +108,10 @@
 
         <div class="flex-grow-1 overflow-hidden d-flex flex-column">
             <!-- Tab Switch  -->
-            <div class="row border m-0">
+            <div class="row border-5 m-0">
                 <div class="col-6 p-0 border-end" role="button" (click)="onTabSwitch(true)">
                     <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 border-3 border-bottom"
-                        [ngClass]="tabData ? 'border-success' : 'border-transparent'">
+                        [ngClass]="tabData ? 'border-primary' : 'border-transparent'">
                         <span class="fw-bold"> Chat </span>
                         <!-- <span class="badge rounded-circle bg-success text-white"
                             *ngIf="notificationCount?.chat > 0">{{notificationCount.chat}}</span> -->
@@ -111,7 +119,7 @@
                 </div>
                 <div class="col-6 p-0" role="button" (click)="onTabSwitch(false)">
                     <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 border-3 border-bottom"
-                        [ngClass]="!tabData ? 'border-success' : 'border-transparent'">
+                        [ngClass]="!tabData ? 'border-primary' : 'border-transparent'">
                         <span class="fw-bold"> Groups </span>
                         <!-- <span class="badge rounded-circle bg-success text-white"
                             *ngIf="notificationCount?.group > 0">{{notificationCount.group}}</span> -->
@@ -126,9 +134,11 @@
                     *ngFor="let user of conversationUsers" (click)="onUser(user)">
                     <div class="px-3 me-1 position-relative">
                         <img [src]="user.profile" class="border rounded-circle user-img" alt="profile">
-                        <span *ngIf="checkIfOnline(user.members[0]._id)"
-                            class="online position-absolute translate-middle bg-success border border-light rounded-circle">
-                        </span>
+                        <ng-template [ngIf]="user.chat_type !== 'group'">
+                            <span *ngIf="checkIfOnline(user.members[0]._id)"
+                                class="online position-absolute translate-middle bg-success border border-light rounded-circle">
+                            </span>
+                        </ng-template>
                     </div>
                     <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
                         <div class="d-flex justify-content-between">
@@ -156,11 +166,13 @@
                                     [ngClass]="{'fw-bold' : user.notificationCount}"> {{senderId === user.sender ? 'You: ' :
                                     ''}} {{user.lastMessage}} </span>
                             </ng-template>
-                            <ng-container *ngIf="user.notificationCount">
-                                <span
-                                    class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
-                                    {{user.notificationCount}} </span>
-                            </ng-container>
+                            <ng-template [ngIf]="user.chat_type !== 'group'">
+                                <ng-container *ngIf="user.notificationCount">
+                                    <span
+                                        class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
+                                        {{user.notificationCount}} </span>
+                                </ng-container>
+                            </ng-template>
                             <ng-container *ngIf="user.eodNotification">
                                 <span class="badge bg-danger" (click)="eodChatOpen($event.stopPropagation(),user)"> EOD
                                 </span>

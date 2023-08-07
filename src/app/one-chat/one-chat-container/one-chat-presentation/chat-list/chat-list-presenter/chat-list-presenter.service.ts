@@ -82,7 +82,8 @@ export class ChatListPresenterService implements OnDestroy {
     user.notificationCount = 0;
     user.eodNotification = false;
     this.currentConversationUser.next(user);
-    this.messageRead.next(readMessages);
+    if(user.chat_type !== 'group')
+      this.messageRead.next(readMessages);
   }
 
   /**

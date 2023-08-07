@@ -1,11 +1,23 @@
-.profile-img{
+.profile-img {
     width: 40px;
 }
 
-.user-img{
+.user-img {
     width: 50px;
 }
 
-.tick-img{
+.tick-img {
     width: 15px;
+}
+
+.brand-gif-width {
+    min-width: 225px;
+}
+
+.brand-image {
+    background-image: url("./../../images/1chat-brand-image.jpg");
+    background-attachment: fixed;
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: cover;
 }

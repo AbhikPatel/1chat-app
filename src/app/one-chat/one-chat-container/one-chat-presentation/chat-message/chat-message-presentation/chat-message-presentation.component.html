@@ -1,6 +1,6 @@
 <!-- Start: User Message  -->
 <div
-    class="main-chat-container h-100 d-flex flex-column overflow-hidden border-3 border-bottom border-primary position-relative">
+    class="main-chat-container h-100 d-flex flex-column overflow-hidden border-5 border-bottom border-primary position-relative">
     <ng-container *ngIf="receiversConversation else gif">
         <!-- Floating Label  -->
         <div class="floating-btn position-absolute rounded-circle d-flex justify-content-center align-items-center shadow-lg"
@@ -215,10 +215,10 @@
     <!-- If no conversation started message -->
     <ng-template #gif>
         <div class="d-flex flex-column h-100 justify-content-center align-items-center">
-            <figure>
-                <img src="assets/icons/981-consultation-lineal.gif" alt="user-conversation-image" class="w-75">
+            <figure class="d-flex justify-content-center align-items-center">
+                <img src="assets/icons/981-consultation-lineal.gif" alt="user-conversation-image" class="brand-gif-width">
             </figure>
-            <h4 class="text-center"> Select any user to start the conversation </h4>
+            <h3 class="text-center fst-italic text-muted"> Aspire to Inspire. </h3>
         </div>
     </ng-template>
 </div>

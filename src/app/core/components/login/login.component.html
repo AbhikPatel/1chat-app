@@ -1,11 +1,12 @@
 <!-- Start: Login Page  -->
-<div class="d-flex row h-100">
+<div class="d-flex row h-100 position-relative">
+    <div class="h-100 bg-info brand-image position-absolute"></div>
     <div class="col-4">
-        <div class="h-100 bg-info"></div>
+        <!-- <div class="h-100 bg-info"></div> -->
     </div>
 
     <!-- Start: Login Container  -->
-    <div class="col-8">
+    <div class="col-8 backdrop-blur">
         <div class="h-100 d-flex flex-column justify-content-between p-5">
 
             <!-- Logo Title  -->
@@ -15,9 +16,6 @@
             <div class="d-flex justify-content-center">
                 <div class="login-container">
                     <h1> Welcome Back </h1>
-                    <div class="py-4">
-                        <span class="text-info"> Welcome Back! Please enter your credentials </span>
-                    </div>
                     <form [formGroup]="loginGroup" (ngSubmit)="onSubmit()">
 
                         <!-- Email  -->

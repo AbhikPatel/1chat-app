@@ -7,7 +7,7 @@ import { ConversationUsers, CreateChat, Message, MessageRead, Typing } from '../
 import { OneChatPresentationBase } from '../one-chat-presentation-base/one-chat-presentation.base';
 import { OneChatPresenterService } from '../one-chat-presenter/one-chat-presenter.service';
 import { EOD } from '../../models/eod.model';
-import { CommonService } from 'src/app/shared/services/common.service';
+import { UtilityService } from 'src/app/shared/services/utility.service';
 
 @Component({
   selector: 'app-one-chat-presentation',
@@ -155,6 +155,8 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   /** This property is used to emit the typing data into socket*/
   @Output() public socketTyping: EventEmitter<Typing>;
 
+  /** property for service worker loader flag */
+  public serviceWorkerLoaderFlag: boolean;
   /** Observable for conversation users */
   public conversationUser$: Observable<ConversationUsers[]>;
   /** Observable for chat messages array */
@@ -182,12 +184,11 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   
 
   constructor(
-    private _cs: CommonService,
     private _oneChatPresenterService: OneChatPresenterService,
-    private _cdr: ChangeDetectorRef
+    private _utilityService: UtilityService,
   ) {
     super();
-
+    this.serviceWorkerLoaderFlag = false;
     this.receiverConversationData$ = new Observable();
     this.conversationUser$ = new Observable();
     this.chatArray$ = new Observable();
@@ -225,6 +226,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
         this.notificationClickData$ = of({notificationData: val[0], notification_type: this.notificationClick.message_type})
       }
     })
+    this._utilityService.serviceWorkerUpdateFlag$.subscribe(res => this.serviceWorkerLoaderFlag = res);
   }
 
   /**

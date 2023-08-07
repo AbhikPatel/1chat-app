@@ -4,18 +4,17 @@
 /** CDK SCSS */
 @import '@angular/cdk/overlay-prebuilt.css';
 
-/** Toastr scss */
-@import 'ngx-toastr/toastr';
-// Project base and component style import
-@import "assets/icons/style.css";
-@import 'src/assets/scss/base/index';
+@import './src/assets/scss/base/index';
 
-// Project Specific Components
+@import 'src/assets/scss/vendors/index';
+
+@import "assets/icons/style.css";
+
 @import 'src/assets/scss/component/index';
 
-// Now other style import
 @import 'src/assets/scss/layout/index';
 
 @import 'src/assets/scss/utilities/index';
 
-@import 'src/assets/scss/vendors/index';
+/** Toastr scss */
+@import 'ngx-toastr/toastr';
