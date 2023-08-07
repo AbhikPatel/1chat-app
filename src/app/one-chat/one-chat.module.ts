@@ -54,7 +54,6 @@ import { EodModelComponent } from './shared/eod-model/eod-model.component';
     SharedModule,
     PickerModule,
     FormsModule,
-    // ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:60000' }),
     OverlayModule,
     NgMultiSelectDropDownModule,
     BsDropdownModule.forRoot(),

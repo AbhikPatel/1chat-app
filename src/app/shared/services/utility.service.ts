@@ -60,6 +60,10 @@ export class UtilityService {
         .catch(err => console.error("Could not subscribe to notifications", err));
     }
 
+    /**
+     * @name checkForServiceWorkerUpdates
+     * @returns observable of type VersionEvent
+     */
     public checkForServiceWorkerUpdates(): Observable<VersionEvent> {
       return this.serviceWorkerUpdates.versionUpdates
     }
