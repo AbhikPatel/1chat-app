@@ -149,6 +149,10 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     })
   }
 
+  /**
+   * @name checkForSWUpdates
+   * @description activation of service worker on availibity of update
+   */
   public checkForSWUpdates(): void {
     if(this.serviceWorkerUpdateFlag)
       this._utilityService.activateUpdate();

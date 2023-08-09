@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { SwPush } from "@angular/service-worker";
 import { Observable } from 'rxjs/internal/Observable';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -229,7 +228,8 @@ export class OneChatService {
    * @description This method will setMapper for the socket
    */
   public setMap(): void {
-    this.userId = localStorage.getItem('userId')
+    this.userId = localStorage.getItem('userId');
+    if(!this.socket.connected) this.socket.connect();
     this.socket.on('connect', () => {
       this.socket.emit('dm:mapper', { userId: this.userId, socketId: this.socket.id })
     })
