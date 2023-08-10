@@ -3,6 +3,8 @@ import { Subject } from 'rxjs/internal/Subject';
 import { OneChatPresentationBase } from '../../one-chat-container/one-chat-presentation-base/one-chat-presentation.base';
 import { EodPresenterService } from '../eod-presenter/eod-presenter.service';
 import { EOD } from '../../models/eod.model';
+import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
+import { TaskFormPresentationComponent } from '../task-form-presentation/task-form-presentation.component';
 
 @Component({
   selector: 'app-eod-presentation',
@@ -17,17 +19,17 @@ export class EodPresentationComponent extends OneChatPresentationBase implements
   /** TO get the EOD from offcanvas */
   @Input() public set getEodDetails(data: EOD) {
     if(data){
+      console.log(data);
+      
       this._getEodDetails = data;
       this.scrollUp();
       setTimeout(() => {
       }, 100);
     }
   }
-
   public get getEodDetails(): EOD {
     return this._getEodDetails;
   }
-
   /** Flag for message screen scroll */
   public isScrolledToBottom: boolean;
   private _getEodDetails: EOD;
@@ -35,10 +37,12 @@ export class EodPresentationComponent extends OneChatPresentationBase implements
   private destroy: Subject<void>;
   constructor(
     private _eodPresenterService: EodPresenterService,
+    private _overlayService: OverlayService,
   ) {
     super();
     this.destroy = new Subject();
     this.isScrolledToBottom=false
+
   }
   ngAfterViewInit(): void {
     this.scrollUp();
@@ -47,6 +51,48 @@ export class EodPresentationComponent extends OneChatPresentationBase implements
   ngOnInit(): void {
     this.scrollUp();
   }
+// New eod Create 
+/**
+ * @name openTaskForm
+ * @description This method open task form
+ */
+public openTaskForm(){
+  this._overlayService.open(TaskFormPresentationComponent)
+
+}
+
+
+
+
+
+
+
+// End New eod Create 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
    * @name scrollUp
    * @description Click arrow down icon got to up message

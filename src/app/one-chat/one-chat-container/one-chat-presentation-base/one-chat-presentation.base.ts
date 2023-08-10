@@ -38,7 +38,11 @@ export class OneChatPresentationBase {
     /** This property is used to get all the EOD Reports */
     @Input() public set getReports(eodReports: EOD[]) {
         if (eodReports)
+        console.log(eodReports);
+        
             this._getReports = eodReports;
+            console.log( this._getReports);
+            
 
     }
 

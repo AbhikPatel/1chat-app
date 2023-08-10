@@ -2,29 +2,15 @@
 <div
     class="main-chat-container h-100 d-flex flex-column overflow-hidden border-5 border-bottom border-primary position-relative">
     <ng-container *ngIf="receiversConversation else gif">
-        <!-- Floating Label  -->
-        <div class="floating-btn position-absolute rounded-circle d-flex justify-content-center align-items-center shadow-lg"
-            role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
-            *ngIf="userRole === 'intern'" (click)="resetEodForm()">
-            <span class="fs-4 text-white"> + </span>
-        </div>
         <!-- Start: Header Section  -->
         <div id="header" class="d-flex">
             <div class="container d-flex align-items-center justify-content-between ">
                 <div class="d-flex align-items-center h-100">
                     <div class="d-flex align-items-center">
                         <figure class="m-0">
-                            <img [src]="receiversConversation.profile" class="rounded-circle profile-img"
-                                alt="profile">
+                            <img [src]="receiversConversation.profile" class="rounded-circle profile-img" alt="profile">
                         </figure>
                         <div class="ms-3 d-flex flex-column">
-                            <!-- <span class="fw-semibold"> {{getReceiverData?.full_name}} </span>
-                        <ng-container *ngIf="showTyping | async else status">
-                            <span [ngClass]="(showTyping | async) ? 'visible' : 'invisible'" class="fs-8"> Typing... </span>
-                        </ng-container>
-                        <ng-template #status>
-                            <span class="fs-7"> {{showStatus ? 'Online' : 'Offline'}} </span>
-                        </ng-template> -->
                             <span class="fw-semibold text-nowrap"> {{receiversConversation.displayName}} </span>
                             <div class="fs-7"
                                 *ngIf="typingIds.includes(receiversConversation.members[0]._id) && showTypingText | async else online">
@@ -37,7 +23,6 @@
                             </ng-template>
                         </div>
                     </div>
-
                     <!-- Tab view  -->
                     <div class="d-flex h-100 px-4">
                         <span class="h-100 border-3 border-success d-flex align-items-center mx-2"
@@ -47,16 +32,17 @@
                             (click)="onWindow(false)" role="button"
                             [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
                     </div>
+                    <!-- End Tab view  -->
                 </div>
+                <!-- Member of group name display -->
                 <div ngbDropdown class="d-inline-block" *ngIf="receiversConversation.chat_type === 'group'">
                     <div class="d-flex align-items-center">
-                        <span type="button" id="dropdownBasic1" ngbDropdownToggle
-                            class="icon-user text-info fs-3">
+                        <span type="button" id="dropdownBasic1" ngbDropdownToggle class="icon-user text-info fs-3">
                         </span> <span class="fs-6 text-info">{{receiversConversation.members.length}}</span>
                     </div>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="dropdownBasic1 overflow-auto">
-                        <ul class="list-unstyled m-0" >
-                            <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem 
+                        <ul class="list-unstyled m-0">
+                            <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem
                                 *ngFor="let members of receiversConversation.members">
                                 <figure class="m-0">
                                     <img [src]="members.photo" alt="avatar" class="rounded-circle shadow profile-img">
@@ -66,157 +52,34 @@
                         </ul>
                     </div>
                 </div>
+                <!-- End Member of group name display -->
             </div>
         </div>
-
         <!-- End: Header Section  -->
-
-        <!-- Start: offcanvas start -->
-        <div class="offcanvas offcanvas-end w-75" tabindex="-1" id="offcanvasRight" data-bs-backdrop="static"
-            aria-labelledby="offcanvasRightLabel">
-            <!-- title -->
-            <div class="offcanvas-header d-flex justify-content-center">
-                <h5 class="offcanvas-title fs-2" id="offcanvasRightLabel"> EOD REPORT</h5>
-            </div>
-            <div class="offcanvas-body position-relative">
-                <!-- start Eod form -->
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h3 class="text-uppercase">Add Eod Details</h3>
-                    <div class="button">
-                        <button class="btn btn-outline-dark" *ngIf="openForm" (click)="onCancelEodFrom()"> Cancel
-                        </button>
-                        <button class="btn btn-info" (click)="onAddEodFrom()" *ngIf="!openForm"> Add </button>
-                    </div>
-                </div>
-                <!-- Start: EOD Report Summary table -->
-                <div class="bg-white h-100 ">
-                    <div class="d-flex justify-content-between align-items-center pb-3">
-                        <div>
-                            <span class="fw-bold"> Name: </span>
-                            <span> {{senderName}} </span>
-                        </div>
-                        <div>
-                            <span class="fw-bold"> Date: </span>
-                            <span> {{eodDate}} </span>
-                        </div>
-                    </div>
-                    <table class="w-100">
-                        <thead>
-                            <tr>
-                                <th> Task </th>
-                                <th> Hours </th>
-                                <th> Description </th>
-                                <th> Blocker </th>
-                                <th> Status </th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Add eod Form  -->
-                            <tr eod-table-form-ui *ngIf="openForm" (eodDetails)="getEodDetails($event)">
-                            </tr>
-
-                            <ng-container *ngFor="let data of allTasks let i=index">
-                                <tr *ngIf="!data.isEdit">
-
-                                    <td>
-                                        {{data.name}}
-                                    </td>
-                                    <td>
-                                        {{data.hours}}
-                                    </td>
-                                    <td>
-                                        {{data.description}}
-                                    </td>
-                                    <td>
-                                        {{data.blocker || '-'}}
-                                    </td>
-                                    <td>
-                                        {{data.type}}
-                                    </td>
-                                    <td>
-                                        <!-- <label for="index" class="d-flex flex-column fs-2 fw-bold icon-Dote "
-                                            (click)="openEditDeleteModel(i)">
-                                            <div *ngIf="showModel && activeEditDeleteTab === i"
-                                                (appOnClickOutside)="clickOutside()">
-                                                <div class="dropdown ">
-                                                    <ul class="dropdown-content ">
-                                                        <li class="dropdown-item fs-6 text-nowrap pb-2"
-                                                            (click)="onEditEod(i)">Edit</li>
-                                                        <li class="dropdown-item fs-6 text-nowrap"
-                                                            (click)="onDeleteEod(i)">Delete</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </label> -->
-                                        <div ngbDropdown class="d-inline-block">
-                                                <span type="button" id="dropdownBasic1" ngbDropdownToggle
-                                                    class="icon-Dote text-info fs-3 fw-bold"> </span>
-                                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                                                <ul class="list-unstyled m-0" >
-                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem (click)="onEditEod(i)">
-                                                        Edit
-                                                    </li>
-                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem (click)="onDeleteEod(i)">
-                                                        Delete
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                               
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- edit eod Form  -->
-                                <tr eod-table-form-ui *ngIf="data.isEdit" [getEditData]="toEditData"
-                                    (openFormEmitter)="closeForm($event)" (eodDetails)="getEodDetails($event)">
-                                </tr>
-                            </ng-container>
-                        </tbody>
-                    </table>
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-danger text-white" type="button" data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" (click)="onCancel()"> Cancel
-                        </button>
-                        <button class="btn btn-info text-dark" data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
-                            [disabled]="!submitBtnDisabled" type="submit" (click)="onEodSubmit(true)"> Submit
-                        </button>
-                        <!-- data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" -->
-                    </div>
-                </div>
-                <!-- End: EOD Report Summary -->
-
-            </div>
-
-        </div>
-
-        <!-- End:  Start: offcanvas start -->
         <!-- Start: Chat Screen -->
         <div class="flex-grow-1 overflow-hidden position-relative">
-
-            <!-- Chatting  -->
+            <!-- app-chatting-presentation -->
             <ng-container *ngIf="currentWindow else eod">
                 <app-chatting-presentation [chatArray]="chatArray" [senderId]="senderId"
                     (chatData)="getChatData($event)" (InputTyping)="getInputTyping()"
                     (editMessageObj)="getEditMessageObj($event)" (repliedMessage)="getRepliedMessage($event)"
-                    [receiversConversation]="receiversConversation" ></app-chatting-presentation>
+                    [receiversConversation]="receiversConversation"></app-chatting-presentation>
             </ng-container>
-
-            <!-- Eod Status Reaport  -->
+            <!-- End app-chatting-presentation -->
+            <!-- Eod Status Report  -->
             <ng-template #eod>
                 <app-eod-presentation [getEodDetails]="eodReportDetails"
                     [getReports]="getReports"></app-eod-presentation>
             </ng-template>
         </div>
         <!-- End: Chat Screen -->
-
     </ng-container>
-
     <!-- If no conversation started message -->
     <ng-template #gif>
         <div class="d-flex flex-column h-100 justify-content-center align-items-center">
             <figure class="d-flex justify-content-center align-items-center">
-                <img src="assets/icons/981-consultation-lineal.gif" alt="user-conversation-image" class="brand-gif-width">
+                <img src="assets/icons/981-consultation-lineal.gif" alt="user-conversation-image"
+                    class="brand-gif-width">
             </figure>
             <h3 class="text-center fst-italic text-muted"> Aspire to Inspire. </h3>
         </div>

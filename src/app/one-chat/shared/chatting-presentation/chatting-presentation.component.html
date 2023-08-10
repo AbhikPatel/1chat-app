@@ -1,6 +1,5 @@
 <!-- Start: Chat Container  -->
 <div class="d-flex flex-column h-100 overflow-hidden">
-
     <!-- Start: Message Screen  -->
     <div class="chat-container flex-grow-1 overflow-auto p-5"  #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
@@ -28,7 +27,6 @@
                                     Edited
                                 </span>
                             </ng-container>
-
                             <!-- Reply Message  -->
                             <div class="reply-wrapper text-white bg-info rounded-1 p-1" *ngIf="message.replied_to">
                                 <div class="mx-3">
@@ -103,7 +101,6 @@
 
     </div>
     <!-- End: Message Screen  -->
-
 
     <!-- Start: Typer Container  -->
     <div id="typer" class="d-flex flex-column bg-theme py-2 position-relative">

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --live-reload false",
+    "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -24,6 +24,8 @@
     "@angular/service-worker": "^15.2.8",
     "@ctrl/ngx-emoji-mart": "^7.1.0",
     "@ng-bootstrap/ng-bootstrap": "^14.0.0-rc.0",
+    "@ng-select/ng-select": "^9.1.0",
+    "@tinymce/tinymce-angular": "^7.0.0",
     "@types/socket.io-client": "^3.0.0",
     "angular-emoji-picker": "^0.2.0",
     "bootstrap": "^5.2.3",

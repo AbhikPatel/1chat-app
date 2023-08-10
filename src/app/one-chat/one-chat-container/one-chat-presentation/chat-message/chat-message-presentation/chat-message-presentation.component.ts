@@ -8,7 +8,6 @@ import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
-import { EodModelComponent } from 'src/app/one-chat/shared/eod-model/eod-model.component';
 
 @Component({
   selector: 'app-chat-message-presentation',
@@ -86,7 +85,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public currentDeleteIndex: number;
   /** variable for all the EOD Tasks */
   public allTasks: Task[];
-  
+
 
   constructor(
     private _chatMessagePresenterService: ChatMessagePresenterService,
@@ -123,6 +122,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     })
     this._chatMessagePresenterService.eodDetails$.subscribe((eodData: EOD) => {
       this.eodReportDetails = eodData;
+
       this.onWindow(false);
       this.eodReport.emit(eodData);
     })

@@ -28,7 +28,9 @@ import { EODAdapter, MessageAdapter, conversationUserAdapter } from './one-chat-
 import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { OnClickOutsideDirective } from './shared/Directive/on-click-outside.directive';
 import { EodTableFormPresentationComponent } from './shared/eod-table-form-presentation/eod-table-form-presentation.component';
-import { EodModelComponent } from './shared/eod-model/eod-model.component';
+import { TaskFormPresentationComponent } from './shared/task-form-presentation/task-form-presentation.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { EditorModule } from '@tinymce/tinymce-angular';
 
 
 
@@ -45,7 +47,7 @@ import { EodModelComponent } from './shared/eod-model/eod-model.component';
     EodPresentationComponent,
     OnClickOutsideDirective,
     EodTableFormPresentationComponent,
-    EodModelComponent,
+    TaskFormPresentationComponent,
   ],
   imports: [
     CommonModule,
@@ -59,7 +61,10 @@ import { EodModelComponent } from './shared/eod-model/eod-model.component';
     NgMultiSelectDropDownModule,
     BsDropdownModule.forRoot(),
     NgbDropdownModule ,
-    InfiniteScrollModule
+    // InfiniteScrollModule,
+    NgSelectModule,
+    EditorModule
+  
   ],
   providers:[
     OneChatService,

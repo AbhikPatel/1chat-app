@@ -250,6 +250,9 @@ public emitData:any;
    */
   public getEodTab(id: string): void {
     this.eodReports$ = this._oneChatService.getEODReports(id);
+    const f = this._oneChatService.getEODReports(id);
+    console.log(f);
+    
   }
 
   /**

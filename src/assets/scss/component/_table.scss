@@ -1,17 +1,29 @@
-table{
-    thead, tbody{
-        tr{
-            th,td{
+table {
+    thead,
+    tbody {
+        tr {
+            th,
+            td {
                 text-align: center;
                 vertical-align: baseline;
-                padding: 10px;
-                border: 1px solid black;
+                padding: 15px 0px;
             }
-
-            th{
-                background-color: $info ;
-                color:black;
+            th {
+                background-color: rgb(240 240 240);
             }
         }
     }
+}
+tbody {
+    tr {
+        transition: 0.5s ease;
+        border: 2px solid rgb(240 240 240);
+        &:hover {
+            background-color: rgba(240, 240, 240, 0.493);
+        }
+    }
+}
+table thead tr td,
+table tbody tr td {
+    border: none;
 }

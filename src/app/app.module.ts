@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
 import { environment } from 'src/environments/environment';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -17,10 +18,13 @@ import { environment } from 'src/environments/environment';
     BrowserModule,
     AppRoutingModule,
     CoreModule,
+    NgSelectModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
       registrationStrategy: 'registerWhenStable:30000'
     }),
+    
+    
   ],
   providers: [
     {

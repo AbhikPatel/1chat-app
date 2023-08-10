@@ -1,55 +1,77 @@
-<div class="icon-circle-down fs-4 text-info position-absolute down-arrow-position  " (click)="scrollUp()"  *ngIf="isScrolledToBottom" >
-</div>
-<div class="h-100 overflow-auto" #eodScreen >
-    <div class="container  py-5"  >
-        <!-- (scroll)="onMessageScroll()" -->
-        <div class="d-flex justify-content-center align-items-center h-100" *ngIf="getReports.length === 0">
-            <span class="text-info fs-4"> No EOD Records </span>
-        </div>
+<!-- <div class="icon-circle-down fs-4 text-info position-absolute down-arrow-position  " (click)="scrollUp()"  *ngIf="isScrolledToBottom" >
+</div> -->
+<div class="h-100 overflow-auto" #eodScreen>
+    <div class="container py-5">
         <div class="d-flex justify-content-center flex-column mb-4">
-            <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3" *ngFor="let eod of getReports">
-                {{scrollUp()}}
-                <div class="d-flex justify-content-between pb-3">
+            <span class="heading fs-2 fw-bold ">EOD LIST</span>
+            <!-- Start Eod list -->
+            <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3">
+                <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center">
                         <div>
-                            <span class="fw-bold"> Name: </span>
-                            {{eod.employeeName}}
+                            <span class="fw-bold"> Date : </span>
+                            <span>8/08/2023</span>
                         </div>
                     </div>
-
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <span class="fw-bold"> Date: </span>
-                            25/05/2023
-                        </div>
+                    <button class="btn btn-primary text-white" (click)="openTaskForm()"> Add Task</button>
+                </div>
+                <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3">
+                    <span class="d-flex text-info justify-content-center"> No Record Found</span>
+                </div>
+                <!-- <div class="my-3">
+                    <div class="tbody">
+                        <table class="w-100 bordered-table">
+                            <thead>
+                                <tr class="rounded-row">
+                                    <th> Task Title </th>
+                                    <th> Description </th>
+                                    <th> Blocker </th>
+                                    <th> Activity </th>
+                                    <th> Original Estimation </th>
+                                    <th> Remaining </th>
+                                    <th> Completed </th>
+                                    <th> Status </th>
+                                    <th> Action </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let i of [1,2,3,4]" class="">
+                                    <td>Task1</td>
+                                    <td>This is a Task</td>
+                                    <td>-</td>
+                                    <td>Design</td>
+                                    <td>25</td>
+                                    <td>10</td>
+                                    <td>15</td>
+                                    <td>active</td>
+                                    <td>
+                                        <div ngbDropdown class="d-inline-block">
+                                            <div class="d-flex align-items-center">
+                                                <span type="button" id="dropdownBasic1" ngbDropdownToggle
+                                                    class="icon-Dote text-info fw-bold fs-3">
+                                                </span>
+                                            </div>
+                                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1"
+                                                class="dropdownBasic1 overflow-auto">
+                                                <ul class="list-unstyled m-0">
+                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem>
+                                                        EDIT </li>
+                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem>
+                                                        DELETE </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="table-container">
-                    
-                    <table class="w-100">
-                        <thead>
-                            <tr>
-                                <th> Task </th>
-                                <th> Hours </th>
-                                <th> Description </th>
-                                <th> Blocker </th>
-                                <th> Status </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let task of eod.status">
-                                <td> {{task.name}} </td>
-                                <td> {{task.hours}} </td>
-                                <td> {{task.description}} </td>
-                                <td> {{task.blocker || '-'}} </td>
-                                <td [ngClass]="task.type.className"> {{task.type.displayName}} </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button class="btn btn-info text-black " > Send</button>
+                    </div>
+                </div> -->
             </div>
+            <!-- End Start Eod list -->
         </div>
-        
     </div>
-
 </div>

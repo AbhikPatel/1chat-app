@@ -6,9 +6,7 @@ import { OneChatPresentationBase } from '../../one-chat-container/one-chat-prese
 import { ChattingPresenterService } from '../chatting-presenter/chatting-presenter.service';
 import { ConversationUsers, Message } from '../../models/chat.model';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
-import { animate } from '@angular/animations';
 import { CommonService } from 'src/app/shared/services/common.service';
-
 @Component({
   selector: 'app-chatting-presentation',
   templateUrl: './chatting-presentation.component.html',

@@ -13,3 +13,40 @@ ul {
 .dropdown-toggle:empty::after{
 display: none;
 }
+// rich text editor
+.tox-statusbar{
+    display:  none !important;
+}
+.tox-menubar{
+    display: none !important;
+}
+.tox{
+    height: 180px !important;
+  
+   
+}
+.tox-tinymce-focus{
+    
+    border-color: $primary !important;
+}
+
+.ng-select-container{
+    border: none !important;
+    background-color: transparent !important;
+}
+.ng-select{
+    border: 1px solid $info;
+    border-radius: 6px;
+}
+.ng-select.ng-select-focused:not(.ng-select-opened)>.ng-select-container{
+    border-color:$primary ;
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: none;
+}
+.ng-select .ng-clear-wrapper{
+    display: none;
+}
+.tox-tinymce {
+    border: none !important;
+}

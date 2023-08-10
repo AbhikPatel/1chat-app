@@ -12,6 +12,7 @@ body {
     overflow: hidden;
 }
 
+// helper class
 #icon-eye {
     right: 10px;
     top: 25%;
@@ -24,7 +25,10 @@ body {
 .bx {
     color: #7e7e7e;
 }
-
+.text-color{
+    color: rgb(240 240 240) ;
+}
+// fontSize 
 .fs-7 {
     font-size: 0.8rem;
 }
@@ -43,7 +47,6 @@ body {
 
 .user-container {
     background-color: $white;
-
     &:hover {
         background-color: $user-hover-bg;
     }
@@ -123,10 +126,6 @@ textarea {
     background-color: #f9ffac;
 }
 
-.members-modal {
-    z-index: 999;
-}
-
 .color-completed {
     color: #beffbe;
 }
@@ -139,19 +138,6 @@ textarea {
     color: #f9ffac;
 }
 
-// Overlay backdrop styling
-.overlay-backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-// Overlay panel styling
-.overlay-panel {
-    display: flex;
-    flex-direction: column;
-    background-color: #ffffff;
-    padding: 20px;
-}
-
 .modal {
     z-index: 5000;
 }
@@ -159,7 +145,25 @@ textarea {
 .rotate-180 {
     transform: rotate(180deg);
 }
-
 .backdrop-blur {
     backdrop-filter: blur(10px);
+}
+
+
+.border-danger{
+    color: rad;
+}
+// Overlay backdrop styling
+.overlay-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+// Overlay panel styling
+.overlay-panel {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    padding: 20px;
+}
+.tox-statusbar__path-item{
+    display: none !important;
 }

@@ -17,6 +17,10 @@ export class CommonService {
   public closeOverlaySubject:Subject<void>
   public closeOverlayS$:Observable<any>
   /**
+   * global apiKey used
+   */
+  apiKey: string = 'nbvxyjop6cfnwep4rinhtqdblzpm7y1hv0d2lqwrvtax4sd8';
+  /**
    * This Variable false replay message click on tab
    */
    public isReplyModeFalse:Subject<boolean>
