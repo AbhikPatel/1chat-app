@@ -15,6 +15,7 @@ export class CommonService {
   public submitEod: BehaviorSubject<boolean>;
   public eodChatOpen: Subject<any>;
   public closeOverlaySubject:Subject<void>
+  public stateActivityType:Subject<string>
   public closeOverlayS$:Observable<any>
   /**
    * global apiKey used
