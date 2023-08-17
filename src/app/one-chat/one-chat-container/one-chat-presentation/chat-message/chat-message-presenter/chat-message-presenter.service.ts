@@ -10,6 +10,8 @@ export class ChatMessagePresenterService implements OnDestroy {
 
   /** Observble for EOD Report details */
   public eodDetails$: Observable<EOD>;
+     /** Observable for  getActivityType */
+     public getActivityTypes$: Observable<any>
   /** variable to store the ID of the receiver */
   public receiversId: string;
 
@@ -17,14 +19,18 @@ export class ChatMessagePresenterService implements OnDestroy {
   private eodDetails: Subject<EOD>;
   /** Stops the subcription on destroy */
   private destroy: Subject<void>;
-
+  /** Subject for get all activity type*/
+  private  getActivityTypes: Subject<any>;
   constructor(
     private _fb: FormBuilder
   ) {
     this.eodDetails$ = new Observable();
+    this.getActivityTypes$ = new Observable();
     this.eodDetails = new Subject();
+    this.getActivityTypes = new Subject();
     this.destroy = new Subject();
     this.eodDetails$ = this.eodDetails.asObservable();
+    this.getActivityTypes$  = this.getActivityTypes.asObservable();
     this.receiversId = '';
   }
 
@@ -42,6 +48,15 @@ export class ChatMessagePresenterService implements OnDestroy {
     }
     this.eodDetails.next(eodObj)
   }
+  /**
+   * 
+   * @param data 
+   */
+  public getActivityType(data:any){
+      this.getActivityTypes.next(data)
+  }
+
+
 
   ngOnDestroy(): void {
     this.destroy.next();

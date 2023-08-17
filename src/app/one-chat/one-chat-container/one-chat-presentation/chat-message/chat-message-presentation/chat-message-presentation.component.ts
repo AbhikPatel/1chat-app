@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject, findIndex, flatMap } from 'rxjs';
+import { Observable, Subject, findIndex, flatMap } from 'rxjs';
 import { ConversationUsers, Message } from 'src/app/one-chat/models/chat.model';
 import { EOD, Task } from 'src/app/one-chat/models/eod.model';
 import { CommonService } from 'src/app/shared/services/common.service';
@@ -8,7 +8,7 @@ import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
-
+import { EodModule } from 'src/app/eod/eod.module';
 @Component({
   selector: 'app-chat-message-presentation',
   templateUrl: './chat-message-presentation.component.html',
@@ -16,7 +16,8 @@ import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/co
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatMessagePresentationComponent extends OneChatPresentationBase implements OnInit {
-
+@ViewChild('targetDiv',{read:ViewContainerRef})targetDiv!:ViewContainerRef
+  selectedTab: number;
   /** Input to get the receiver's data */
   @Input() public set receiversConversation(receiver: ConversationUsers) {
     if (receiver) {
@@ -38,7 +39,20 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public get chatArray(): Message[] {
     return this._chatArray;
   }
+  /** This property getActivityTypes*/
+  @Input() public set getActivityTypes(data: any) {
+    if (data)
+      this._getActivityTypes = data;
+    this._chatMessagePresenterService.getActivityType(data)
+    
+  }
+
+  public get getActivityTypes(): Message[] {
+    return this._getActivityTypes;
+  }
   private _chatArray: Message[];
+  /** This variable getActivityTypes*/
+  private _getActivityTypes:any;
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
 
@@ -85,16 +99,19 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
   public currentDeleteIndex: number;
   /** variable for all the EOD Tasks */
   public allTasks: Task[];
-
+    /** This Variable getStateActivityTypeData */
+    public getStateActivityTypeData:any;
+    @Output()  public getStateActivityData :EventEmitter<boolean>
 
   constructor(
     private _chatMessagePresenterService: ChatMessagePresenterService,
     private _commonService: CommonService,
     private _overlayService: OverlayService,
-    private _changeDetector: ChangeDetectorRef
+    private _changeDetector: ChangeDetectorRef,
   ) {
     super();
     this.chatData = new EventEmitter();
+    this.getStateActivityData = new EventEmitter();
     this.destroy = new Subject();
     this.senderName = this._commonService.getUserFullName();
     this.userRole = this._commonService.getUserRole();
@@ -102,7 +119,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.showMembersModal = false;
     this.showEODSummary = false;
     this.toEditData = {};
-    this.allTasks = []
+    this.allTasks = [];
     this.submitBtnDisabled = false;
     this.openForm = true
     this.currentEditIndex = 0;
@@ -116,6 +133,10 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @description This method is called in ngOnInit
    */
   private props(): void {
+    this._chatMessagePresenterService.getActivityTypes$.subscribe((res:any)=>{
+               this.getStateActivityTypeData=res;
+          })
+    
     this._commonService.eodChatOpen.subscribe((data: ConversationUsers) => {
       this.receiversConversation = data
       this.onWindow(false)
@@ -152,11 +173,14 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
    * @param data 
    * @description This method show current window
    */
-  public onWindow(data: boolean): void {
+  public onWindow(data: any): void {
+    this.getStateActivityData.next(data);
+    if(data==false){
+    }
     this.currentWindow = data;
     if (!data)
       this.onEodTab.emit(this.receiversConversation.chatId);
-  }
+    }
 
   /**
    * @name getChatData
@@ -262,7 +286,7 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
 
   public onDeleteEod(index: number): void {
     this.currentDeleteIndex = index
-    this._overlayService.open(ConfirmationModelComponent)
+    // this._overlayService.open(ConfirmationModelComponent,true)
   }
 
   //  /**
@@ -309,6 +333,14 @@ export class ChatMessagePresentationComponent extends OneChatPresentationBase im
     this.allTasks[this.currentEditIndex].isEdit = data;
     this.submitBtnDisabled = true;
   }
+  /**
+   * 
+   * @param data 
+   */
+  public getStateActivity(data:boolean){
+   this.getStateActivityData.next(data)
+  }
+
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

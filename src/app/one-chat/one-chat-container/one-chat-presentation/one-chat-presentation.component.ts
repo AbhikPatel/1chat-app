@@ -145,6 +145,15 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   public get getRecentChatId(): string {
     return this._getRecentChatId;
   }
+  /** This property will get getActivityType */
+  @Input() public set getStateActivityType(data: any) {
+    if (data) {
+      this._oneChatPresenterService.getActivityType(data)
+    }
+  }
+  public get getStateActivityType(): any {
+    return this._getStateActivityType;
+  }
 
   /** This property is used to emit the current chat Id */
   @Output() public chatId: EventEmitter<string>;
@@ -169,6 +178,9 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   public notificationClickData$: Observable<any>;
   /** Stops the subcription on ngDestroy */
   private destroy: Subject<void>;
+     /** Observable for  getActivityType */
+     public getStateActivityType$: Observable<any>
+     @Output()  public getStateActivity :EventEmitter<boolean>
   /** This property is used for getter setter */
   private _getMessages: Message[];
   private _getConversationUsers: ConversationUsers[];
@@ -181,6 +193,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   private _getEditedMessage: Message;
   private _getRecentChatId: string;
   private _notificationClick: any;
+  private _getStateActivityType: any;
   
 
   constructor(
@@ -194,11 +207,13 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
     this.chatArray$ = new Observable();
     this.allUsers$ = new Observable();
     this.notificationClickData$ = new Observable();
+    this.getStateActivityType$ = new Observable();
 
     this.chatId = new EventEmitter();
     this.newMessage = new EventEmitter();
     this.newConversationChat = new EventEmitter();
     this.socketTyping = new EventEmitter();
+    this.getStateActivity = new EventEmitter();
 
     this.destroy = new Subject();
   }
@@ -212,6 +227,7 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
    * @description This method is called in ngOnInit
    */
   private props(): void {
+    this.getStateActivityType$=this._oneChatPresenterService.getActivityTypes$
     this.chatArray$ = this._oneChatPresenterService.chatArray$;
     this.receiverConversationData$ = this._oneChatPresenterService.receiverConversation$;
     this.conversationUser$ = this._oneChatPresenterService.conversationUser$;
@@ -250,12 +266,19 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
 
   /**
    * @name getMessageTyping
-   * @description This method is used to 
+   * @description This method is used to getMessageTyping
    */
   public getMessageTyping(): void {
     this._oneChatPresenterService.getMessageTyping();
   }
-
+  /**
+   * @name getMessageTyping
+   * @description This method is used to  getStateActivityData boolean value
+   */
+  public getStateActivityData(data:boolean){
+       this.getStateActivity.next(data)
+  }
+  
   /**
    * @name ngOnDestroy
    * @description This method is called the component is destroyed

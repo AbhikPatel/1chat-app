@@ -19,7 +19,7 @@
                                 <span class="fs-7">{{groupTyperNames.join(', ') + ' is typing'}}</span>
                             </ng-container>
                             <ng-template #online>
-                                <span class="fs-7"> Online </span>
+                                <span class="fs-7 "> Online </span>
                             </ng-template>
                         </div>
                     </div>
@@ -29,8 +29,8 @@
                             (click)="onWindow(true)" role="button"
                             [ngClass]="{'border-bottom fw-semibold' : currentWindow}"> Chat </span>
                         <span class="h-100 border-3 border-success d-flex align-items-center mx-2"
-                            (click)="onWindow(false)" role="button"
-                            [ngClass]="{'border-bottom fw-semibold' : !currentWindow}"> EOD </span>
+                           role="button"   (click)="onWindow(false)"> EOD </span>
+                           <!-- routerLink="eod" -->
                     </div>
                     <!-- End Tab view  -->
                 </div>
@@ -67,9 +67,15 @@
             </ng-container>
             <!-- End app-chatting-presentation -->
             <!-- Eod Status Report  -->
-            <ng-template #eod>
-                <app-eod-presentation [getEodDetails]="eodReportDetails"
-                    [getReports]="getReports"></app-eod-presentation>
+          
+              <ng-template #eod>
+                <div>
+                    <app-eod-presentation [getEodDetails]="eodReportDetails"
+                    [getReports]="getReports" [getActivityTypes]="getStateActivityTypeData" ></app-eod-presentation>
+     
+               
+                </div>
+                           
             </ng-template>
         </div>
         <!-- End: Chat Screen -->

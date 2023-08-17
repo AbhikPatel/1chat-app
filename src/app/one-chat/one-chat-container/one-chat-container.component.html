@@ -24,4 +24,6 @@
     (newGroupDetails)="getNewGroupDetails($event)"
     (eodReport)="getEodReport($event)"
     (onEodTab)="getEodTab($event)"
+    [getStateActivityType]="getStateActivityType$ | async"
+    (getStateActivity)="getStateActivity($event)"
 ></app-one-chat-presentation>

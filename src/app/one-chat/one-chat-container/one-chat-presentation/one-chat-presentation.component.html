@@ -25,11 +25,12 @@
 
     <!-- Start: Chat Screen  -->
     <div class="flex-grow-1">
+        <!-- <router-outlet></router-outlet> -->
         <app-chat-message-presentation [chatArray]="chatArray$ | async" [senderId]="senderId"
             [receiversConversation]="receiverConversationData$ | async" (chatData)="getChatData($event)"
             (InputTyping)="getMessageTyping()" [typingInfo]="typingInfo" (editMessageObj)="getEditMessageObj($event)"
             (repliedMessage)="getRepliedMessage($event)" (eodReport)="getEodReport($event)"
-            (onEodTab)="getEodTab($event)" [getReports]="getReports"></app-chat-message-presentation>
+            (onEodTab)="getEodTab($event)" [getReports]="getReports" [getActivityTypes]="getStateActivityType$ |async" (getStateActivityData)="getStateActivityData($event)"></app-chat-message-presentation>
     </div>
     <!-- End: Chat Screen  -->
 </div>

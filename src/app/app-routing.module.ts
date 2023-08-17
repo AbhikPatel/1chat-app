@@ -18,13 +18,15 @@ const routes: Routes = [
         path:'',
         loadChildren: () => import('./one-chat/one-chat.module').then(m => m.OneChatModule),
       },
+      { path: 'eod', loadChildren: () => import('./eod/eod.module').then(m => m.EodModule) },
     ]
   },
   {
     path:'',
     redirectTo:'home',
     pathMatch:'full'
-  }
+  },
+ 
 ];
 
 @NgModule({

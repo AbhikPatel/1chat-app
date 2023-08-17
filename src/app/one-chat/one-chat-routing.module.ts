@@ -5,8 +5,13 @@ import { OneChatContainerComponent } from './one-chat-container/one-chat-contain
 const routes: Routes = [
   {
     path:'',
-    component:OneChatContainerComponent
-  }
+    component:OneChatContainerComponent,
+    // children:[
+    //   { path: 'eod', loadChildren: () => import('./../eod/eod.module').then(m => m.EodModule) },
+
+    // ]
+  },
+ 
 ];
 
 @NgModule({

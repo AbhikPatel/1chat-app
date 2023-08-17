@@ -53,6 +53,8 @@ export class OneChatContainerComponent implements OnInit, OnDestroy {
   public currectChatId: string;
   /** Observable for notification click */
   public notificationClick$: Observable<any>
+  /** Observable for  getActivityType */
+  public getStateActivityType$: Observable<any>
 
 public emitData:any;
   /** stops the subscription on ngDestroy */
@@ -80,6 +82,7 @@ public emitData:any;
     this.recentChatId$ = new Observable();
     this.notificationClick$ = new Observable();
     this.newGroupMessage$ = new Observable();
+    this.getStateActivityType$ = new Observable();
   }
 
   ngOnInit(): void {
@@ -92,6 +95,8 @@ public emitData:any;
    */
   private props(): void {
     this.senderId = this._commonService.getUserId();
+    // this.getStateActivityType$=this._oneChatService.getStateActivityType()
+    
     this._oneChatService.setMap();
     this.recentChatId$ = this._oneChatService.chatId;
     this._utilityService.notificationClick$.subscribe((data: any) => {
@@ -250,9 +255,15 @@ public emitData:any;
    */
   public getEodTab(id: string): void {
     this.eodReports$ = this._oneChatService.getEODReports(id);
-    const f = this._oneChatService.getEODReports(id);
-    console.log(f);
-    
+ this._oneChatService.getEODReports(id);
+
+  }
+
+  public getStateActivity(data:boolean){ 
+    console.log(data);
+    if(data == true){
+      this.getStateActivityType$=this._oneChatService.getStateActivityType()
+    }
   }
 
   /**

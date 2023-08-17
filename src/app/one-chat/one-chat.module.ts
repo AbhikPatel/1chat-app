@@ -31,7 +31,9 @@ import { EodTableFormPresentationComponent } from './shared/eod-table-form-prese
 import { TaskFormPresentationComponent } from './shared/task-form-presentation/task-form-presentation.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { CKEditorModule } from 'ckeditor4-angular';
 
+import { TooltipModule } from 'ngx-bootstrap/tooltip'
 
 
 @NgModule({
@@ -63,8 +65,10 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     NgbDropdownModule ,
     // InfiniteScrollModule,
     NgSelectModule,
-    EditorModule
-  
+    EditorModule,
+    CKEditorModule,
+    TooltipModule
+
   ],
   providers:[
     OneChatService,

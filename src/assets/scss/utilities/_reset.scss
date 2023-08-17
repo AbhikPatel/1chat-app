@@ -13,23 +13,8 @@ ul {
 .dropdown-toggle:empty::after{
 display: none;
 }
-// rich text editor
-.tox-statusbar{
-    display:  none !important;
-}
-.tox-menubar{
-    display: none !important;
-}
-.tox{
-    height: 180px !important;
-  
-   
-}
-.tox-tinymce-focus{
-    
-    border-color: $primary !important;
-}
 
+// ng select
 .ng-select-container{
     border: none !important;
     background-color: transparent !important;
@@ -49,4 +34,19 @@ display: none;
 }
 .tox-tinymce {
     border: none !important;
+}
+
+// ckEditor
+.cke_bottom {
+    display: none !important;
+}
+.cke_contents{
+    height: 120px !important;
+}
+.accordion-button{
+    background-color: transparent !important;
+    box-shadow: none !important;    
+}
+.accordion-button::after{
+    display: none !important;
 }

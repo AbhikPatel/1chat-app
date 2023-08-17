@@ -1,8 +1,9 @@
 <!-- <div class="icon-circle-down fs-4 text-info position-absolute down-arrow-position  " (click)="scrollUp()"  *ngIf="isScrolledToBottom" >
 </div> -->
+
 <div class="h-100 overflow-auto" #eodScreen>
     <div class="container py-5">
-        <div class="d-flex justify-content-center flex-column mb-4">
+        <div class="d-flex justify-content-center flex-column mb-4 overflow-auto">
             <span class="heading fs-2 fw-bold ">EOD LIST</span>
             <!-- Start Eod list -->
             <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3">
@@ -10,68 +11,138 @@
                     <div class="d-flex align-items-center">
                         <div>
                             <span class="fw-bold"> Date : </span>
-                            <span>8/08/2023</span>
+                            <span>8.08.2023</span>
                         </div>
                     </div>
                     <button class="btn btn-primary text-white" (click)="openTaskForm()"> Add Task</button>
                 </div>
-                <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3">
+                <!-- <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3">
                     <span class="d-flex text-info justify-content-center"> No Record Found</span>
-                </div>
-                <!-- <div class="my-3">
-                    <div class="tbody">
-                        <table class="w-100 bordered-table">
-                            <thead>
-                                <tr class="rounded-row">
-                                    <th> Task Title </th>
-                                    <th> Description </th>
-                                    <th> Blocker </th>
-                                    <th> Activity </th>
-                                    <th> Original Estimation </th>
-                                    <th> Remaining </th>
-                                    <th> Completed </th>
-                                    <th> Status </th>
-                                    <th> Action </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let i of [1,2,3,4]" class="">
-                                    <td>Task1</td>
-                                    <td>This is a Task</td>
-                                    <td>-</td>
-                                    <td>Design</td>
-                                    <td>25</td>
-                                    <td>10</td>
-                                    <td>15</td>
-                                    <td>active</td>
-                                    <td>
-                                        <div ngbDropdown class="d-inline-block">
-                                            <div class="d-flex align-items-center">
-                                                <span type="button" id="dropdownBasic1" ngbDropdownToggle
-                                                    class="icon-Dote text-info fw-bold fs-3">
-                                                </span>
-                                            </div>
-                                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1"
-                                                class="dropdownBasic1 overflow-auto">
-                                                <ul class="list-unstyled m-0">
-                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem>
-                                                        EDIT </li>
-                                                    <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem>
-                                                        DELETE </li>
-                                                </ul>
+                </div> -->
+                <div class="mt-3">
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-2 fw-bold text-center">Task title</div>
+                        <div class="col-2 fw-bold text-center">ActivityType</div>
+                        <div class="col-2 fw-bold text-center">OriginalEstimation</div>
+                        <div class="col-2 fw-bold text-center">Remaining</div>
+                        <div class="col-1 fw-bold text-center">ActualTime</div>
+                        <div class="col-1 fw-bold text-center">Status</div>
+                        <div class="col-1 fw-bold text-center">Action</div>
+                    </div>
+                    <div class="my-3">
+                        <div *ngFor="let i of [1,2,3,4]" let i=index>
+                            <div class="mt-1">
+                                <div class="accordion" id="accordionExample d-flex">
+                                    <div class="accordion-item">
+                                        <div class="w-100">
+                                            <div class="row align-items-center">
+                                                <div class="col-1">
+                                                    <h2 class="accordion-header" id="headingOne{{i}}">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse"
+                                                            aria-expanded="false"
+                                                            (click)="toggleAccordion(i)"
+                                                            [attr.data-bs-target]="'#collapseOne' + i"
+                                                            [attr.aria-controls]="'collapseOne' + i">
+                                                            {{ i === openIndex ? '▼' : '►' }}
+                                                        </button>
+                                                    </h2>
+                                                </div>
+                                                <div class="col-2 text-center">task 1</div>
+                                                <div class="col-2 text-center">Development</div>
+                                                <div class="col-2 text-center">25</div>
+                                                <div class="col-2 text-center">10</div>
+                                                <div class="col-1 text-center">15</div>
+                                                <div class="col-1 text-center">active</div>
+                                                <div class="col-1 text-center">
+                                                    <div ngbDropdown class="d-inline-block">
+                                                        <div class="d-flex align-items-center">
+                                                            <span type="button" id="dropdownBasic1" ngbDropdownToggle
+                                                                class="icon-Dote text-info fw-bold fs-3">
+                                                            </span>
+                                                        </div>
+                                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1"
+                                                            class="dropdownBasic1 overflow-auto">
+                                                            <ul class="list-unstyled m-0">
+                                                                <li class="d-flex align-items-center px-3 py-2"
+                                                                    ngbDropdownItem>
+                                                                    Edit </li>
+                                                                <li class="d-flex align-items-center px-3 py-2"
+                                                                    ngbDropdownItem>
+                                                                    Delete </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        <div [id]="'collapseOne' + i " class="accordion-collapse collapse show"
+                                            [class.show]="i === openIndex" [attr.data-bs-parent]="'#accordionExample'">
+                                            <div class="accordion-body p-4">
+                                                <div class="">
+                                                    <div class="row">
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                        
+                                                                        <h5>Task Title</h5>
+                                                                    <span>Lorem . Culpa inventore architecto eligendi
+                                                                        magni, nam impedit esse
+                                                                        Lorem . 
+                                                                    </span>
+                                                                 
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                   
+                                            
+                                                <div class="mt-3">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <h5>Description</h5>
+                                                            <span>Lorem . Culpa inventore architecto eligendi
+                                                                magni, nam impedit esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h5>Blocker</h5>
+                                                            <span>Lorem . Culpa inventore architecto eligendi
+                                                                magni, nam impedit esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                                Lorem . Culpa inventore architecto eligendi magni, nam impedit
+                                                                esse
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <button class="btn btn-info text-black "> Send</button>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-end mt-3">
-                        <button class="btn btn-info text-black " > Send</button>
-                    </div>
-                </div> -->
+                </div>
             </div>
             <!-- End Start Eod list -->
         </div>
     </div>
-</div>

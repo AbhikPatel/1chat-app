@@ -25,6 +25,8 @@ export class OneChatPresenterService implements OnDestroy {
   public currentChatId$: Observable<string>;
   /** Observable for details of all the users */
   public allUsers$: Observable<User[]>;
+   /** Observable for  getActivityType */
+   public getActivityTypes$: Observable<any>
   /** Observable for typing info */
   public typingInfo$: Observable<Typing>;
   /** variable for sender Id */
@@ -60,10 +62,13 @@ export class OneChatPresenterService implements OnDestroy {
   private currentChatId: Subject<string>;
   /** Subject for details of all the users */
   private allUsers: Subject<User[]>;
+  /** Subject for get all activity type*/
+  private  getActivityTypes: Subject<any>;
   /** Subject for details typing info */
   private typingInfo: Subject<Typing>;
   /** stops the subscription on destroy */
   private destroy: Subject<void>;
+ 
 
   constructor(
     private _commonService: CommonService,
@@ -77,6 +82,7 @@ export class OneChatPresenterService implements OnDestroy {
     this.currentChatId$ = new Observable();
     this.allUsers$ = new Observable();
     this.typingInfo$ = new Observable();
+    this.getActivityTypes$ = new Observable();
 
     this.conversationUser = new Subject();
     this.receiverConversation = new Subject();
@@ -87,6 +93,7 @@ export class OneChatPresenterService implements OnDestroy {
     this.allUsers = new Subject();
     this.typingInfo = new Subject();
     this.destroy = new Subject();
+    this.getActivityTypes = new Subject();
 
     this.conversationUser$ = this.conversationUser.asObservable();
     this.receiverConversation$ = this.receiverConversation.asObservable();
@@ -97,6 +104,7 @@ export class OneChatPresenterService implements OnDestroy {
     this.allUsers$ = this.allUsers.asObservable();
     this.typingInfo$ = this.typingInfo.asObservable();
     this.senderId = this._commonService.getUserId();
+    this.getActivityTypes$ =this.getActivityTypes.asObservable();
 
     this.chats = [];
     this.allDbUsers = [];
@@ -333,6 +341,14 @@ export class OneChatPresenterService implements OnDestroy {
   public getRecentId(id: string): void {
     this.chats[this.chats.length - 1]._id = id;
     this.getChatMessagesArray(this.chats);
+  }
+  /**
+   * @name getActivityType
+   * @param data
+   * @description This method is used to getActivityType
+   */
+  public getActivityType(data: any): void {
+     this.getActivityTypes.next(data)
   }
 
   ngOnDestroy(): void {

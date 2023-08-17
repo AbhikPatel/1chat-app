@@ -210,6 +210,15 @@ export class OneChatService {
     
       }))
   }
+   /**
+   * @name getStateActivityType
+   * @returns This method is used to getStateActivityType
+   */
+   public getStateActivityType(): Observable<any> {
+    const url: string = this.baseUrl + `primeData`;
+       return this._http.httpGetRequest(url)
+      
+  }
 
   /**
    * @name logOutUser
