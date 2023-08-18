@@ -8,7 +8,6 @@ import { OneChatPresentationBase } from '../../../one-chat-presentation-base/one
 import { ChatMessagePresenterService } from '../chat-message-presenter/chat-message-presenter.service';
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
-import { EodModule } from 'src/app/eod/eod.module';
 @Component({
   selector: 'app-chat-message-presentation',
   templateUrl: './chat-message-presentation.component.html',
