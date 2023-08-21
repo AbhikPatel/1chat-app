@@ -14,17 +14,20 @@ const routes: Routes = [
     component:MasterComponent,
     canActivate:[AuthGuard],
     children:[
-      {
-        path:'',
-        loadChildren: () => import('./one-chat/one-chat.module').then(m => m.OneChatModule),
-      },
+      // {
+      //   path:'',
+      //   loadChildren: () => import('./one-chat/one-chat.module').then(m => m.OneChatModule),
+      // },
+      { path: '', loadChildren: () => import('./onechat/onechat.module').then(m => m.OnechatModule) },
     ]
   },
   {
     path:'',
     redirectTo:'home',
     pathMatch:'full'
-  }
+  },
+
+
 ];
 
 @NgModule({
