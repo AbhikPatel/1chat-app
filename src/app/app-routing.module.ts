@@ -10,7 +10,7 @@ const routes: Routes = [
     component:LoginComponent
   },
   {
-    path:'home',
+    path:'1Chat',
     component:MasterComponent,
     canActivate:[AuthGuard],
     children:[
@@ -18,14 +18,15 @@ const routes: Routes = [
       //   path:'',
       //   loadChildren: () => import('./one-chat/one-chat.module').then(m => m.OneChatModule),
       // },
-      { path: '', loadChildren: () => import('./onechat/onechat.module').then(m => m.OnechatModule) },
+          { path: '', loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule) },
     ]
   },
   {
     path:'',
-    redirectTo:'home',
+    redirectTo:'1chat',
     pathMatch:'full'
   },
+ 
 
 
 ];
