@@ -29,7 +29,7 @@
                                     *ngIf="getControls['email']?.errors?.['maxLength'] && getControls['email'].touched">
                                     Max 25 Characters </span>
                             </div>
-                            <input type="email" class="form-control" name="email" id="email" formControlName="email"
+                            <input type="email" class="form-control" name="email" id="email" formControlName="email" placeholder="Enter Email"
                                 [ngClass]="{'border-danger' : getControls['email'].invalid && getControls['email'].touched}">
                         </div>
 
@@ -43,7 +43,7 @@
                             </div>
                             <div class="position-relative">
                                 <input [type]="password" class="form-control" name="password" id="password"
-                                    formControlName="password"
+                                    formControlName="password" placeholder="Enter Password"
                                     [ngClass]="{'border-danger' : getControls['password'].invalid && getControls['password'].touched}">
                                 <div id="icon-eye" class="position-absolute" role="button" (click)="onClick()">
                                     <span class="icon-eye-slash" *ngIf="!show"></span>

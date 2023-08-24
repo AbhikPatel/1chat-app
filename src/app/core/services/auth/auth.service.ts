@@ -34,11 +34,16 @@ export class AuthService {
     const url: string = this.baseUrl + 'user/log-in';
     return this._http.httpPostRequest(url, credentials).pipe(
       map((res) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('role', res.data.doc.role);
-        localStorage.setItem('userId', res.data.doc._id);
-        localStorage.setItem('email', res.data.doc.email);
-        localStorage.setItem('fullName', res.data.doc.first_name + ' ' + res.data.doc.last_name);
+      console.log(res)
+        localStorage.setItem('token',res.token)
+        const userLocalStorageData={
+            role:res.data.doc.role,
+            userId:res.data.doc._id,
+            email:res.data.doc.email,
+            photo:res.data.doc.photo,
+            fullName:res.data.doc.first_name + ' ' + res.data.doc.last_name
+        }
+    localStorage.setItem('userLocalStorageData',JSON.stringify(userLocalStorageData))
         return this._adapt.toResponse(res.data.doc);
       })
     )

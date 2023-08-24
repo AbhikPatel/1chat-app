@@ -21,6 +21,7 @@ export class CommonService {
    */
    public isReplyModeFalse:Subject<boolean>
   constructor() {
+
     this.user$ = new Subject();
     this.closeModel = new Subject();          
     this.isReplyModeFalse = new Subject();          
@@ -68,5 +69,12 @@ export class CommonService {
    */
   public getUserEmail(): string {
     return localStorage.getItem('email');
+  }
+  public getLoginDetails(){
+   const storedUserLocalStorageDataJSON= localStorage.getItem('userLocalStorageData');
+   const storedUserLocalStorageData=JSON.parse(storedUserLocalStorageDataJSON);
+   return storedUserLocalStorageData
+
+
   }
 }

@@ -10,6 +10,8 @@ import { ConfirmationModelComponent } from './confirmation-model/confirmation-mo
   imports: [
     CommonModule,
  
-  ]
+  ],
+  
+  
 })
 export class SharedModule { }

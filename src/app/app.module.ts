@@ -5,7 +5,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
-//------------------------------------------------------------------------------- //
 import { environment } from 'src/environments/environment';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
 

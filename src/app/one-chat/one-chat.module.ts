@@ -19,8 +19,7 @@ import { OneChatPresentationComponent } from './one-chat-container/one-chat-pres
 import { OneChatRoutingModule } from './one-chat-routing.module';
 import { OneChatService } from './one-chat.service';
 import { ScrollDistanceDirective } from './pipe/scroll-distance.directive';
-import { SearchPipe } from './pipe/search.pipe';
-import { OnClickOutsideDirective } from './shared/Directive/on-click-outside.directive';
+import { SearchPipe } from '../chat/shared/pipe/search.pipe';
 import { ChattingPresentationComponent } from './shared/chatting-presentation/chatting-presentation.component';
 import { CreateGroupPresentationComponent } from './shared/create-group-presentation/create-group-presentation.component';
 import { EodModelComponent } from './shared/eod-model/eod-model.component';
@@ -40,7 +39,6 @@ import { EodTableFormPresentationComponent } from './shared/eod-table-form-prese
     CreateGroupPresentationComponent,
     ChattingPresentationComponent,
     EodPresentationComponent,
-    OnClickOutsideDirective,
     EodTableFormPresentationComponent,
     EodModelComponent,
   ],
@@ -66,6 +64,6 @@ import { EodTableFormPresentationComponent } from './shared/eod-table-form-prese
     MessageAdapter,
     EODAdapter,
   ],
-  exports:[OnClickOutsideDirective]
+
 })
 export class OneChatModule { }

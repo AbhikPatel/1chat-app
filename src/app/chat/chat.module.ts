@@ -11,6 +11,12 @@ import { UserListContainerComponent } from './user-list-container/user-list-cont
 import { UserListPresentationComponent } from './user-list-container/user-list-presentation/user-list-presentation.component';
 import { CreateGroupFormContainerComponent } from './create-group-form-container/create-group-form-container.component';
 import { CreateGroupFormPresentationComponent } from './create-group-form-container/create-group-form-presentation/create-group-form-presentation.component';
+import { ChatService } from './chat.service';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { OverlayService } from '../core/services/overlay/overlay.service';
+import { OnClickOutsideDirective } from './directive/on-click-outside.directive';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SearchPipe } from './shared/pipe/search.pipe';
 
 
 @NgModule({
@@ -24,11 +30,20 @@ import { CreateGroupFormPresentationComponent } from './create-group-form-contai
     UserListPresentationComponent,
     CreateGroupFormContainerComponent,
     CreateGroupFormPresentationComponent,
+    OnClickOutsideDirective,
+    SearchPipe
+
 
   ],
   imports: [
     CommonModule,
-    ChatRoutingModule
-  ]
+    ChatRoutingModule,
+    NgbDropdownModule,
+    FormsModule,
+    ReactiveFormsModule
+    
+    
+  ],
+  providers:[ChatService]
 })
 export class ChatModule { }

@@ -9,10 +9,4 @@ export class MasterComponent {
   constructor(private _commonService:CommonService){
     
   }
-  
-  public backDropClick():void{
-    // setTimeout(() => {
-    this._commonService.closeModel.next(false)
-  // }, 0);
-}
 }

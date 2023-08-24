@@ -1,1 +1,41 @@
-<p>chat-list-header works!</p>
+
+<div class=" d-flex flex-column h-100">
+    <!-- Start: Header Section  -->
+    <div id="header" class="d-flex align-items-center justify-content-between px-3">
+        <div class="d-flex align-items-center">
+            <!-- Profile Image  -->
+            <figure class="m-0">
+                <img [src]="imageUrl + getLoginDetails.photo" alt="profile" class="border profile-img rounded-circle">
+            </figure>
+            <!-- Users Name  -->
+            <div class="ms-3">
+                <span class="fw-semibold"> {{getLoginDetails.fullName}} </span>
+            </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-center h-icon-size">
+            <ng-template>
+                <a class="d-flex align-items-center bg-danger bg-gradient rounded-1 text-white fs-6 px-1"
+                    title="Click to Update App!" type="button">
+                    <span>UPDATE</span>
+                    <span class='icon-info1 rotate-180 ms-1'></span>
+                </a>
+            </ng-template>
+            <!-- ngDropdown -->
+            <div ngbDropdown class="d-inline-block ms-3">
+                <span type="button" id="dropdownBasic1" ngbDropdownToggle class="icon-user-plus text-info">
+                </span>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <div ngbDropdownItem (click)="onSearchUser()" (appOnClickOutside)="clickOutside()">New Chat</div>
+                    <div ngbDropdownItem>
+                        <span>New Group</span>
+                    </div>  
+                </div>
+            </div>
+            <div class="ms-3" role="button" title="Log-Out" (click)="onLogOut(getLoginDetails.email)">
+                <span class='icon-power text-info'></span>
+            </div>
+        </div>
+    </div>
+   
+</div>
+<!-- End: User Data  -->

@@ -18,7 +18,7 @@ export class OverlayService {
     // Create the overlay with customizable options
     this.overlayRef = this.overlay.create({
       positionStrategy,
-      backdropClass: 'overlay-backdrop',
+     
       hasBackdrop: true,
     });
     const portal = new ComponentPortal(component);
@@ -32,3 +32,5 @@ export class OverlayService {
     this.overlayRef.detach()
   }
 }
+// isTrue:boolean
+// backdropClass:isTrue ? 'overlay-backdrop' :'',

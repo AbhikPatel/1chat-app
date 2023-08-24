@@ -104,6 +104,7 @@ public emitData:any;
       }
     });
     this.getOnlineUsersData$ = this._oneChatService.listen('alive');
+    
     this._oneChatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
       this.getAllUsers$ = of(users);
       this.joinGroupChatById();
@@ -242,7 +243,7 @@ public emitData:any;
     const eodResult: EODResponse = this._eodAdapter.toRequest(eod);
     this._oneChatService.emit('eod:status', eodResult);
   }
-
+  
   /**
    * @name getEodTab
    * @param id 
