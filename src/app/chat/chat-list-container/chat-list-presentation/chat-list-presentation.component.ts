@@ -1,5 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { flatMap } from 'rxjs';
 import { User } from 'src/app/shared/models/user.model';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-chat-list-presentation-ui',
@@ -10,18 +12,21 @@ export class ChatListPresentationComponent implements OnInit {
   @ViewChild('toggle') public toggle: ElementRef;
   /** This variable will store the data of the current tab */
   public tabData: boolean;
-  constructor() {
+  constructor(private _commonService:CommonService) {
     this.tabData = true;
   }
-
   ngOnInit(): void {
   }
   /**
 * @name onSearchUser
 * @description This method is used to show Aside bar
 */
-  public openAsideBar(boolean: boolean) {
-    this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true
+  public openAsideBar() {
+    this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true;
+    // const data=this.toggle.nativeElement.checked = false;
+    // console.log(data);
+    
+    // this._commonService.userApiCall.next(data)
   }
 
   /**
