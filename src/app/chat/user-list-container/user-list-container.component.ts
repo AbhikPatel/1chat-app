@@ -36,19 +36,20 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   * @description This method will be invoked on ngOnInit
   */
   private props(): void {
-    // this._commonService.userApiCall.subscribe((data:any)=>{
-    //   console.log(data);
+    this._commonService.userApiCall.subscribe((data:any)=>{
+      if(data == true)
+      this._chatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
+        if(users){
+          this.getAllUsers = users;
+          const senderDetails = users.find((user:User)=> user._id == this.getLoginDetails.userId);
+          const senderIndex=users.indexOf(senderDetails);
+          users.splice(senderIndex,1);
+          this.getAllUsers=this.getLoginDetails.role === 'intern' ? users.filter((user:User)=> user.role !=='intern' ) :users;
+        }
+    })
       
-    // })
-    this._chatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
-      if(users){
-        this.getAllUsers = users;
-        const senderDetails = users.find((user:User)=> user._id == this.getLoginDetails.userId);
-        const senderIndex=users.indexOf(senderDetails);
-        users.splice(senderIndex,1);
-        this.getAllUsers=this.getLoginDetails.role === 'intern' ? users.filter((user:User)=> user.role !=='intern' ) :users;
-      }
-  })
+    })
+   
 }
 
 
@@ -67,5 +68,6 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.unsubscribe();
+    
   }
 }

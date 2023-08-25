@@ -1,10 +1,12 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, EventEmitter, Host, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Host, Input, OnInit, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { UserListPresenterService } from '../User-list-presenter/user-list-presenter.service';
+import { LoaderService } from 'src/app/core/services/loader/loader.service';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-user-list-presentation-ui',
@@ -13,7 +15,7 @@ import { UserListPresenterService } from '../User-list-presenter/user-list-prese
   viewProviders: [UserListPresenterService]
 
 })
-export class UserListPresentationComponent implements OnInit {
+export class UserListPresentationComponent implements OnInit,AfterViewInit {
 
   /** This property is used to get all the user details from container component */
   @Input() public set allUsers(users: User[]) {
@@ -43,16 +45,18 @@ export class UserListPresentationComponent implements OnInit {
 
   /** This property is used for getter setter */
   private _allUsers: User[];
-
+//  This variable is use to show loader  
+  public showLoader: Boolean = false;
   constructor(
     private _overlayServices: OverlayService,
     private _commonService: CommonService,
-    private _UserListPresenterService: UserListPresenterService
+    private _UserListPresenterService: UserListPresenterService,
+    private _service: LoaderService,
   ) {
     this.userId = this._commonService.getUserId();
     this.userRole = this._commonService.getUserRole();
     this.searchGroup = this._UserListPresenterService.getGroup();
-    this.closeAsideBar = new EventEmitter()
+    this.closeAsideBar = new EventEmitter();
   }
   ngOnInit(): void {
   }
@@ -63,7 +67,11 @@ export class UserListPresentationComponent implements OnInit {
    * @description This method is called to start a new dm conversation
    */
   public onNewChat(user: User) {
-    this.closeAsideBar.next(false)
+    this.closeAsideBar.next(false);
     console.log(user);
   }
+  public ngAfterViewInit(): void {
+    this._service.loader.pipe(delay(100)).subscribe((data: Boolean) => this.showLoader = data);
+  }
+
 }

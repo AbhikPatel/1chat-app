@@ -21,12 +21,20 @@
                         [ngClass]="{'text-danger' : user.role === 'lead', 'text-warning' : user.role === 'mentor', 'text-success' : user.role === 'intern'}">
                         ({{user.role}}) </span>
                 </div>
-            </li>
+            </li> <!-- Start: Loader Section  -->
+            <div id="loader" *ngIf="showLoader" class="position-absolute d-flex align-items-center justify-content-center">
+                <!-- Loader -->
+                <figure>
+                    <img src="assets/icons/105-loader-1.gif" alt="loader">
+                </figure>
+            </div>
+            <!-- End: Loader Section  -->
+            
         </ng-container>
         <!-- No user found section  -->
-        <div class="h-100 d-flex justify-content-center align-items-center"
+        <!-- <div class="h-100 d-flex justify-content-center align-items-center"
             *ngIf="(allUsers | search:searchText)?.length <= 0 ">
             <span class="text-info"> No User Found </span>
-        </div>
+        </div> -->
     </ul>
 </div>
