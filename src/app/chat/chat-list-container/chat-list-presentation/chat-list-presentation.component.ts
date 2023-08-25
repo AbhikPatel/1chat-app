@@ -23,10 +23,8 @@ export class ChatListPresentationComponent implements OnInit {
 */
   public openAsideBar() {
     this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true;
-    // const data=this.toggle.nativeElement.checked = false;
-    // console.log(data);
-    
-    // this._commonService.userApiCall.next(data)
+    const data=this.toggle.nativeElement.checked ;
+    this._commonService.userApiCall.next(data)
   }
 
   /**
