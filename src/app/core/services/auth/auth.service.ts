@@ -40,7 +40,7 @@ export class AuthService {
             role:res.data.doc.role,
             userId:res.data.doc._id,
             email:res.data.doc.email,
-            photo:res.data.doc.photo,
+            profile:res.data.doc.photo,
             fullName:res.data.doc.first_name + ' ' + res.data.doc.last_name
         }
     localStorage.setItem('userLocalStorageData',JSON.stringify(userLocalStorageData))

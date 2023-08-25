@@ -36,6 +36,10 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   * @description This method will be invoked on ngOnInit
   */
   private props(): void {
+    // this._commonService.userApiCall.subscribe((data:any)=>{
+    //   console.log(data);
+      
+    // })
     this._chatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
       if(users){
         this.getAllUsers = users;

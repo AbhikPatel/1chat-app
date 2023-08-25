@@ -8,6 +8,9 @@ import { User } from '../models/user.model';
 
 export class CommonService {
 
+    /** This Subject will be api call  */
+    public userApiCall: Subject<any>;
+
   /** This Subject will store the user details */
   public user$: Subject<User>;
   public closeModel: Subject<boolean>;
@@ -22,6 +25,7 @@ export class CommonService {
    public isReplyModeFalse:Subject<boolean>
   constructor() {
 
+    this.userApiCall = new Subject();
     this.user$ = new Subject();
     this.closeModel = new Subject();          
     this.isReplyModeFalse = new Subject();          

@@ -13,7 +13,7 @@ export class ChatListHeaderComponent implements OnInit {
   /** This element is for toggle search */
   @ViewChild('toggle') public toggle: ElementRef;
   /** This property is used to emit boolean value */
-  @Output() public openAsideBar: EventEmitter<boolean>
+  @Output() public openAsideBar: EventEmitter<void>
   /** This property is used to emit boolean value */
   @Output() public closeAsideBar: EventEmitter<boolean>
 
@@ -57,7 +57,7 @@ export class ChatListHeaderComponent implements OnInit {
    * @description This method is used to show modal
    */
   public onSearchUser(): void {
-    this.openAsideBar.next(true)
+    this.openAsideBar.next()
   }
   /**
   * @description This method close model click on outside.
