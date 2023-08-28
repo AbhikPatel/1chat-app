@@ -1,40 +1,52 @@
-<div class="h-100 d-flex flex-column overflow-auto">
-    <form class="p-3 bg-theme" [formGroup]="searchGroup">
-        <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
-            placeholder="Search a User.." formControlName="search" [(ngModel)]="searchText" #inputTypeFocus>
-    </form>
-    <ul class="flex-grow-1 border-end bg-white overflow-auto">
-        <ng-container *ngFor="let user of allUsers | search:searchText" >
-            <li role="button" class="user-container d-flex align-items-center p-2 border-bottom"
+<div class="h-100 d-flex flex-column ">
+  <form class="p-3 bg-theme" [formGroup]="searchGroup">
+    <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
+      placeholder="Search a User.." formControlName="search" [(ngModel)]="searchText" #inputTypeFocus>
+  </form>
+  <div class="flex-grow-1 border-end bg-white overflow-auto">
+    <!-- Skeleton Loading -->
+    <div *ngIf="showLoader; else data">
+      <div class="container border-bottom" *ngFor="let user of [1,2,3,4,5,6,7,8,9,10]">
+        <div class="skeleton">
+          <div class="skeleton-left ">
+            <div class="square circle"></div>
+          </div>
+          <div class="skeleton-right ">
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Skeleton Loading -->
+    <!-- all user list  -->
+    <ul>
+      <ng-template #data>
+        <ng-container *ngFor="let user of allUsers | search:searchText">
+          <li role="button" class="user-container d-flex align-items-center p-2 border-bottom"
             (click)="onNewChat(user)">
-                <div class="px-3 me-1 position-relative">
-                    <figure class="m-0">
-                        <img [src]="user.photo" class="border rounded-circle user-img" alt="profile">
-                    </figure>
-                    <!-- <span 
-                        class="online position-absolute translate-middle bg-success border border-light rounded-circle">
-                    </span> -->
-                </div>
-                <div class="ms-2">
-                    <span class="fw-semibold"> {{user.full_name}} </span>
-                    <span class="fw-semibold"
-                        [ngClass]="{'text-danger' : user.role === 'lead', 'text-warning' : user.role === 'mentor', 'text-success' : user.role === 'intern'}">
-                        ({{user.role}}) </span>
-                </div>
-            </li> <!-- Start: Loader Section  -->
-            <div id="loader" *ngIf="showLoader" class="position-absolute d-flex align-items-center justify-content-center">
-                <!-- Loader -->
-                <figure>
-                    <img src="assets/icons/105-loader-1.gif" alt="loader">
-                </figure>
+            <div class="px-3 me-1 position-relative">
+              <figure class="m-0">
+                <img [src]="user.photo" class="border rounded-circle user-img" alt="profile">
+              </figure>
             </div>
-            <!-- End: Loader Section  -->
-            
+            <div class="ms-2">
+              <span class="fw-semibold"> {{user.full_name}} </span>
+              <span class="fw-semibold"
+                [ngClass]="{'text-danger' : user.role === 'lead', 'text-warning' : user.role === 'mentor', 'text-success' : user.role === 'intern'}">
+                ({{user.role}}) </span>
+            </div>
+          </li>
         </ng-container>
         <!-- No user found section  -->
-        <!-- <div class="h-100 d-flex justify-content-center align-items-center"
-            *ngIf="(allUsers | search:searchText)?.length <= 0 ">
-            <span class="text-info"> No User Found </span>
-        </div> -->
+        <div class="h-100 d-flex justify-content-center align-items-center"
+          *ngIf="(allUsers | search:searchText)?.length <= 0 ">
+          <span class="text-info"> No User Found </span>
+        </div>
+        <!-- End  No user found section  -->
+      </ng-template>
     </ul>
+    <!-- End all user  list -->
+  </div>
+
+
 </div>

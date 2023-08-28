@@ -199,7 +199,7 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     const chatIdArr = this.conversationUsers.map((user: ConversationUsers) => user.chatId);
     const resultArr = user.chats.reduce((acc, sub) => {
       if (chatIdArr.includes(sub)) {
-        acc.push(sub)
+           acc.push(sub)
       }
       return acc
     }, []);

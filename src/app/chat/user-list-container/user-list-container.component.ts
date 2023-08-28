@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Observable, Subject, of, takeUntil } from 'rxjs';
+import { Observable, Subject, flatMap, of, takeUntil } from 'rxjs';
 import { ChatService } from '../chat.service';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
@@ -20,6 +20,8 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
     public getLoginDetails:any
   /** stops the subscription on ngDestroy */
   private destroy: Subject<void>;
+  //  This variable is use to show loader  
+  public showLoader: Boolean;
   constructor(private _chatService: ChatService,
     private _commonService: CommonService
   ) {
@@ -27,6 +29,7 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
     this.destroy = new Subject();
     this.getAllUsers = [];
     this.getLoginDetails=this._commonService.getLoginDetails()
+    this.showLoader=true
   }
   ngOnInit(): void {
     this.props()
