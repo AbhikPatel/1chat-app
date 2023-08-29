@@ -9,15 +9,16 @@ const routes: Routes = [
    children:[
     { path: 'message', loadChildren: () => import('./message/message.module').then(m => m.MessageModule) }, 
     { path: 'eod', loadChildren: () => import('./eod/eod.module').then(m => m.EodModule) },
+    { path:'no-conversation',component:NoConversationComponent},
+    {
+      path:'',
+      redirectTo:'no-conversation',
+      pathMatch:'full'
+  }, 
    
    ],
   },
-  { path:'no-conversation',component:NoConversationComponent},
-  {
-    path:'',
-    redirectTo:'no-conversation',
-    pathMatch:'full'
-}, 
+ 
 ];
 
 @NgModule({

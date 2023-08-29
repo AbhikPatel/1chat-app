@@ -63,6 +63,8 @@ export class UserListPresentationComponent implements OnInit,AfterViewInit {
    */
   public onNewChat(user: User) {
     this.closeAsideBar.next(false);  
+    this._router.navigate( ['1Chat/message'],{ queryParams: { data: user } })
+    
     
 
   }
