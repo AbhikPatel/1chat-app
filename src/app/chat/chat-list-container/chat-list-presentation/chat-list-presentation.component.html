@@ -1,11 +1,10 @@
-<div class="h-100 d-flex flex-column "> 
-    <app-chat-list-header-ui (openAsideBar)="openAsideBar()" ></app-chat-list-header-ui>
+<div class="h-100 d-flex flex-column ">
+    <app-chat-list-header-ui (openAsideBar)="openAsideBar()"></app-chat-list-header-ui>
     <div class="flex-grow-1 overflow-hidden d-flex flex-column position-relative">
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
-        <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100" >
-                <app-user-list-container   (closeAsideBarEmitter)="closeAsideBar($event)"></app-user-list-container>
+        <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100">
+            <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)"></app-user-list-container>
         </div>
-
         <div class="row border-5 m-0">
             <div class="col-6 p-0 border-end" role="button" (click)="onTabSwitch(true)">
                 <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 border-3 border-bottom"
@@ -22,31 +21,32 @@
         </div>
         <div class="flex-grow-1 overflow-auto">
             <div class="user-container d-flex align-items-center" role="button">
-                <div class="px-3 me-1 position-relative">
-                    <img class="border rounded-circle user-img" alt="profile">
-                    <ng-template>
-                        <span
-                            class="online position-absolute translate-middle bg-success border border-light rounded-circle">
-                        </span>
-                    </ng-template>
-                </div>
-                <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <span class="fw-semibold text-truncate"> amresh </span>
-                            <span class="badge ms-2"></span>
-                        </div>
-                        <span class="text-chat fs-7">
-                            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="px-3 me-1 position-relative">
+                        <img class="border rounded-circle user-img" alt="profile" *ngIf="conversationUser"
+                            [src]="conversationUser.photo">
+                        <ng-template>
+                            <span
+                                class="online position-absolute translate-middle bg-success border border-light rounded-circle">
 
+                            </span>
+                        </ng-template>
+                    </div>
+                    <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="fw-semibold text-truncate"> </span>
+                                <span class="badge ms-2"></span>
                             </div>
+                            <span class="text-chat fs-7">
+                                <div class="d-flex justify-content-between">
 
-                        </span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-       
 </div>

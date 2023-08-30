@@ -6,27 +6,27 @@ import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   {
-    path:'login',
-    component:LoginComponent
+    path: 'login',
+    component: LoginComponent
   },
   {
-    path:'1Chat',
-    component:MasterComponent,
-    canActivate:[AuthGuard],
-    children:[
+    path: '1Chat',
+    component: MasterComponent,
+    canActivate: [AuthGuard],
+    children: [
       // {
       //   path:'',
       //   loadChildren: () => import('./one-chat/one-chat.module').then(m => m.OneChatModule),
       // },
-          { path: '', loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule) },
+      { path: '', loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule) },
     ]
   },
   {
-    path:'',
-    redirectTo:'1Chat',
-    pathMatch:'full'
+    path: '',
+    redirectTo: '1Chat',
+    pathMatch: 'full'
   },
- 
+
 
 
 ];
@@ -34,5 +34,5 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
-})  
+})
 export class AppRoutingModule { }

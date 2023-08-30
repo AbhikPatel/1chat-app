@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   viewProviders: [UserListPresenterService]
 
 })
-export class UserListPresentationComponent implements OnInit,AfterViewInit {
+export class UserListPresentationComponent implements OnInit, AfterViewInit {
 
   /** This property is used to get all the user details from container component */
   @Input() public set allUsers(users: User[]) {
@@ -39,19 +39,19 @@ export class UserListPresentationComponent implements OnInit,AfterViewInit {
   public searchText: string;
   /** This property is used for getter setter */
   private _allUsers: User[];
-//  This variable is use to show loader  
+  //  This variable is use to show loader  
   public showLoader: Boolean;
   constructor(
     private _commonService: CommonService,
     private _UserListPresenterService: UserListPresenterService,
     private _loaderService: LoaderService,
-    private _router:Router
+    private _router: Router
   ) {
     this.userId = this._commonService.getUserId();
     this.userRole = this._commonService.getUserRole();
     this.searchGroup = this._UserListPresenterService.getGroup();
     this.closeAsideBar = new EventEmitter();
-    this.showLoader=true
+    this.showLoader = true
   }
   ngOnInit(): void {
   }
@@ -62,16 +62,14 @@ export class UserListPresentationComponent implements OnInit,AfterViewInit {
    * @description This method is called to start a new dm conversation
    */
   public onNewChat(user: User) {
-    this.closeAsideBar.next(false);  
-    this._router.navigate( ['1Chat/message'],{ queryParams: { data: user } })
-    
-    
-
+    this.closeAsideBar.next(false);
+    const userJsonString = JSON.stringify(user);
+    this._router.navigate(['1Chat/message/', user._id], { queryParams: { data: userJsonString } })
   }
 
   public ngAfterViewInit(): void {
-    this._loaderService.loader.subscribe((data: Boolean) =>  {
-      this.showLoader= data
+    this._loaderService.loader.subscribe((data: Boolean) => {
+      this.showLoader = data
     });
   }
 

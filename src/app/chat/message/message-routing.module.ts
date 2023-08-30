@@ -4,16 +4,17 @@ import { MessageComponent } from './message.component';
 import { ChattingMessageContainerComponent } from './chatting-message-container/chatting-message-container.component';
 
 const routes: Routes = [
-  { path: '', component: MessageComponent,
-  children:[
-    {
-   path:'',
-   redirectTo:'chatting-message',
-   pathMatch:'full'
-    },
-    {path:'chatting-message',component:ChattingMessageContainerComponent}
-  ]
-}
+  {
+    path: '', component: MessageComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'chat',
+        pathMatch: 'full'
+      },
+      { path: 'chat', component: ChattingMessageContainerComponent }
+    ]
+  }
 ];
 
 @NgModule({

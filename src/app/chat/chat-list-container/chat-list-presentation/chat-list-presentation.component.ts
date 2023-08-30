@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { flatMap } from 'rxjs';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
@@ -12,10 +13,20 @@ export class ChatListPresentationComponent implements OnInit {
   @ViewChild('toggle') public toggle: ElementRef;
   /** This variable will store the data of the current tab */
   public tabData: boolean;
-  constructor(private _commonService:CommonService) {
+
+  public conversationUser: any
+  constructor(private _commonService: CommonService,
+    private _activatedRoute: ActivatedRoute) {
     this.tabData = true;
   }
   ngOnInit(): void {
+    // get user object uisng activateRoute
+    this._activatedRoute.queryParamMap.subscribe((params: any) => {
+      this.conversationUser = JSON.parse(params.get('data'))
+
+      console.log(this.conversationUser);
+
+    })
   }
   /**
 * @name onSearchUser
@@ -23,7 +34,7 @@ export class ChatListPresentationComponent implements OnInit {
 */
   public openAsideBar() {
     this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true;
-    const data=this.toggle.nativeElement.checked ;
+    const data = this.toggle.nativeElement.checked;
     this._commonService.userApiCall.next(data)
   }
 

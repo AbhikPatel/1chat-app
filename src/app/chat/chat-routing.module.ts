@@ -4,21 +4,22 @@ import { ChatComponent } from './chat.component';
 import { NoConversationComponent } from './no-conversation/no-conversation.component';
 
 const routes: Routes = [
-  { path: '', component: ChatComponent,
+  {
+    path: '', component: ChatComponent,
 
-   children:[
-    { path: 'message', loadChildren: () => import('./message/message.module').then(m => m.MessageModule) }, 
-    { path: 'eod', loadChildren: () => import('./eod/eod.module').then(m => m.EodModule) },
-    { path:'no-conversation',component:NoConversationComponent},
-    {
-      path:'',
-      redirectTo:'no-conversation',
-      pathMatch:'full'
-  }, 
-   
-   ],
+    children: [
+      { path: 'message/:id', loadChildren: () => import('./message/message.module').then(m => m.MessageModule) },
+      { path: 'eod', loadChildren: () => import('./eod/eod.module').then(m => m.EodModule) },
+      { path: 'no-conversation', component: NoConversationComponent },
+      {
+        path: '',
+        redirectTo: 'no-conversation',
+        pathMatch: 'full'
+      },
+
+    ],
   },
- 
+
 ];
 
 @NgModule({
