@@ -3,7 +3,7 @@
     <div class="flex-grow-1 overflow-hidden d-flex flex-column position-relative">
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
         <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100">
-            <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)"></app-user-list-container>
+            <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)" (userConversation)="getConversation($event)"></app-user-list-container>
         </div>
         <div class="row border-5 m-0">
             <div class="col-6 p-0 border-end" role="button" (click)="onTabSwitch(true)">
@@ -20,30 +20,54 @@
             </div>
         </div>
         <div class="flex-grow-1 overflow-auto">
-            <div class="user-container d-flex align-items-center" role="button">
-                <div>
-                    <div class="px-3 me-1 position-relative">
-                        <img class="border rounded-circle user-img" alt="profile" *ngIf="conversationUser"
-                            [src]="conversationUser.photo">
-                        <ng-template>
-                            <span
-                                class="online position-absolute translate-middle bg-success border border-light rounded-circle">
-
-                            </span>
-                        </ng-template>
-                    </div>
-                    <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
-                        <div class="d-flex justify-content-between">
-                            <div class="d-flex align-items-center">
-                                <span class="fw-semibold text-truncate"> </span>
-                                <span class="badge ms-2"></span>
-                            </div>
-                            <span class="text-chat fs-7">
-                                <div class="d-flex justify-content-between">
-
-                                </div>
-                            </span>
+            <div class="user-container d-flex align-items-center"
+                role="button"
+               >
+                <div class="px-3 me-1 position-relative">
+                    <img *ngIf="conversationUser"  [src]="conversationUser.photo" class="border rounded-circle user-img" alt="profile">
+                    <ng-template >
+                        <span
+                            class="online position-absolute translate-middle bg-success border border-light rounded-circle">
+                        </span>
+                    </ng-template>
+                </div>
+                <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3" *ngIf="conversationUser">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-semibold text-truncate" *ngIf="conversationUser"> {{conversationUser.full_name}} </span>
+                            <span class="badge ms-2"></span>
                         </div>
+                        <span class="text-chat fs-7" *ngIf="conversationUser"> </span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <!-- <ng-container *ngIf="typingStatus && typingId.includes(data._id) else elseStatement">
+                                <span class="fs-7 text-success fw-semibold"> Typing... </span>
+                            </ng-container>
+                            <ng-template #elseStatement>
+                                <span class="fs-7 last-chat text-truncate text-chat"
+                                [ngClass]="{'fw-bold' : data.notificationCount != 0}"> {{data.message ? data.message
+                                    : 'No Messages'}} </span>
+                                </ng-template> -->
+                        <ng-container
+                           >
+                            <span class="fs-7 text-success fw-semibold" *ngIf="conversationUser"> Typing... </span>
+                        </ng-container>
+                        <ng-template #message>
+                            <span class="fs-7 last-chat text-chat text-truncate"></span>
+                              
+                        </ng-template>
+                        <ng-template >
+                            <ng-container>
+                                <span
+                                    class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
+                                   </span>
+                            </ng-container>
+                        </ng-template>
+                        <ng-container >
+                            <span class="badge bg-danger" >
+                            </span>
+                        </ng-container>
+                        <!-- <span class="text-danger"> ● </span> -->
                     </div>
                 </div>
             </div>

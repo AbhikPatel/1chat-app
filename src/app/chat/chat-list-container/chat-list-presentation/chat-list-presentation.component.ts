@@ -1,7 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { flatMap } from 'rxjs';
-import { User } from 'src/app/shared/models/user.model';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
@@ -10,23 +7,17 @@ import { CommonService } from 'src/app/shared/services/common.service';
 })
 export class ChatListPresentationComponent implements OnInit {
   /** This element is for toggle search */
+
   @ViewChild('toggle') public toggle: ElementRef;
   /** This variable will store the data of the current tab */
+
   public tabData: boolean;
-
   public conversationUser: any
-  constructor(private _commonService: CommonService,
-    private _activatedRoute: ActivatedRoute) {
+  constructor(private _commonService: CommonService
+    ) {
     this.tabData = true;
-  }
+    }
   ngOnInit(): void {
-    // get user object uisng activateRoute
-    this._activatedRoute.queryParamMap.subscribe((params: any) => {
-      this.conversationUser = JSON.parse(params.get('data'))
-
-      console.log(this.conversationUser);
-
-    })
   }
   /**
 * @name onSearchUser
@@ -53,5 +44,11 @@ export class ChatListPresentationComponent implements OnInit {
    */
   public onTabSwitch(data: boolean): void {
     this.tabData = data;
+  }
+
+  public getConversation(conversation:any){
+   this.conversationUser=conversation
+   console.log(conversation);
+  
   }
 }

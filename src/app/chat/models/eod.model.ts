@@ -7,7 +7,6 @@ export class EODResponse{
     receiver:string
     chatId:string
     status:TaskResponse[]
-    
     constructor(
         employeeName:string,
         position:string,
@@ -28,7 +27,6 @@ export class EODResponse{
         this.chatId = chatId
     }
 }
-
 export class EOD{
     employeeName:string
     position:string
@@ -103,7 +101,6 @@ export class Task{
         this.type = type
     }
 }
-
 export class TaskType{
     displayName:string
     className:string

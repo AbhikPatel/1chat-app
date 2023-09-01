@@ -1,12 +1,12 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
+
 import { AfterViewInit, Component, EventEmitter, Host, Input, OnInit, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { UserListPresenterService } from '../User-list-presenter/user-list-presenter.service';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
 import { Router } from '@angular/router';
+import { ConversationUserResponse } from '../../models/chat.model';
 
 @Component({
   selector: 'app-user-list-presentation-ui',
@@ -29,6 +29,8 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
 
   /** This property is used to emit boolean value */
   @Output() public closeAsideBar: EventEmitter<boolean>
+  /** This property is used to emit boolean value */
+  @Output() public userConversation: EventEmitter<any>
   /** This variable will store the details of the sender */
   public userRole: string;
   /** This variable will store id of the user */
@@ -51,6 +53,7 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
     this.userRole = this._commonService.getUserRole();
     this.searchGroup = this._UserListPresenterService.getGroup();
     this.closeAsideBar = new EventEmitter();
+    this.userConversation = new EventEmitter();
     this.showLoader = true
   }
   ngOnInit(): void {
@@ -62,11 +65,13 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
    * @description This method is called to start a new dm conversation
    */
   public onNewChat(user: User) {
-    this.closeAsideBar.next(false);
-    const userJsonString = JSON.stringify(user);
-    this._router.navigate(['1Chat/message/', user._id], { queryParams: { data: userJsonString } })
+    if(user){
+      this.closeAsideBar.next(false);
+      this.userConversation.next(user);
+      this._router.navigate(['1Chat/message', user._id]);
+    }
+   
   }
-
   public ngAfterViewInit(): void {
     this._loaderService.loader.subscribe((data: Boolean) => {
       this.showLoader = data

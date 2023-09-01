@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatComponent } from './chat.component';
 import { ChatListHeaderComponent } from './chat-list-header/chat-list-header.component';
@@ -13,11 +12,11 @@ import { CreateGroupFormContainerComponent } from './create-group-form-container
 import { CreateGroupFormPresentationComponent } from './create-group-form-container/create-group-form-presentation/create-group-form-presentation.component';
 import { ChatService } from './chat.service';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { OverlayService } from '../core/services/overlay/overlay.service';
 import { OnClickOutsideDirective } from './directive/on-click-outside.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchPipe } from './shared/pipe/search.pipe';
-
+import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
+import { FormatTime } from '../core/utilities/formatTime';
 
 @NgModule({
   declarations: [
@@ -32,8 +31,6 @@ import { SearchPipe } from './shared/pipe/search.pipe';
     CreateGroupFormPresentationComponent,
     OnClickOutsideDirective,
     SearchPipe
-
-
   ],
   imports: [
     CommonModule,
@@ -41,9 +38,14 @@ import { SearchPipe } from './shared/pipe/search.pipe';
     NgbDropdownModule,
     FormsModule,
     ReactiveFormsModule
-    
-    
   ],
-  providers:[ChatService]
+  providers:[ChatService,
+    conversationUserAdapter,
+    FormatTime,
+    ReactiveFormsModule,
+    conversationUserAdapter,
+    MessageAdapter,
+    EODAdapter
+  ]
 })
 export class ChatModule { }

@@ -1,8 +1,8 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { ChatService } from '../chat.service';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { environment } from 'src/environments/environment';
+import { login } from '../models/login.model';
 
 @Component({
   selector: 'app-chat-list-header-ui',
@@ -16,14 +16,11 @@ export class ChatListHeaderComponent implements OnInit {
   @Output() public openAsideBar: EventEmitter<void>
   /** This property is used to emit boolean value */
   @Output() public closeAsideBar: EventEmitter<boolean>
-
     /** This variable will store  localStorage object */
-    public getLoginDetails: any;
-
-  public imageUrl:any;
-
+     public getLoginDetails: login;
+    /** This variable will store  image Url  */
+  public imageUrl:string;
   constructor(
-    private _oneChatServices: ChatService,
     private _commonService: CommonService,
     private _authService: AuthService,
   ) {
@@ -40,9 +37,6 @@ export class ChatListHeaderComponent implements OnInit {
   * @description This method will be invoked on ngOnInit
   */
   private props(): void {
-   console.log( this.getLoginDetails.photo);
-   
-    
   }
   /**
    * @name onLogOut
