@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { User } from '../models/user.model';
+import { login } from 'src/app/chat/models/login.model';
 
 @Injectable({
   providedIn:'root'
@@ -10,6 +11,8 @@ export class CommonService {
 
     /** This Subject will be api call  */
     public userApiCall: Subject<any>;
+
+
 
   /** This Subject will store the user details */
   public user$: Subject<User>;
@@ -26,6 +29,8 @@ export class CommonService {
   constructor() {
 
     this.userApiCall = new Subject();
+
+
     this.user$ = new Subject();
     this.closeModel = new Subject();          
     this.isReplyModeFalse = new Subject();          
@@ -74,11 +79,16 @@ export class CommonService {
   public getUserEmail(): string {
     return localStorage.getItem('email');
   }
+
+
+
+  /**
+   * @name getLoginDetails
+   * @returns This method get login User details in localStorage and return
+   */
   public getLoginDetails(){
-   const storedUserLocalStorageDataJSON= localStorage.getItem('userLocalStorageData');
-   const storedUserLocalStorageData=JSON.parse(storedUserLocalStorageDataJSON);
+   const storedUserLocalStorageDataJSON:string= localStorage.getItem('userLocalStorageData');
+   const storedUserLocalStorageData:login=JSON.parse(storedUserLocalStorageDataJSON);
    return storedUserLocalStorageData
-
-
   }
 }
