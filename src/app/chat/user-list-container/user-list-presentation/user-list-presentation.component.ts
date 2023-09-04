@@ -6,7 +6,6 @@ import { CommonService } from 'src/app/shared/services/common.service';
 import { UserListPresenterService } from '../User-list-presenter/user-list-presenter.service';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
 import { Router } from '@angular/router';
-import { ConversationUserResponse } from '../../models/chat.model';
 
 @Component({
   selector: 'app-user-list-presentation-ui',
@@ -16,7 +15,6 @@ import { ConversationUserResponse } from '../../models/chat.model';
 
 })
 export class UserListPresentationComponent implements OnInit, AfterViewInit {
-
   /** This property is used to get all the user details from container component */
   @Input() public set allUsers(users: User[]) {
     if (users) {
@@ -26,7 +24,6 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
   public get allUsers(): User[] {
     return this._allUsers
   }
-
   /** This property is used to emit boolean value */
   @Output() public closeAsideBar: EventEmitter<boolean>
   /** This property is used to emit boolean value */
@@ -58,7 +55,6 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
   }
   ngOnInit(): void {
   }
-
   /**
    * @name onNewChat
    * @param user 
@@ -68,10 +64,10 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
     if(user){
       this.closeAsideBar.next(false);
       this.userConversation.next(user);
-      this._router.navigate(['1Chat/message', user._id]);
+      this._router.navigate(['1Chat/', user._id]);
     }
-   
   }
+
   public ngAfterViewInit(): void {
     this._loaderService.loader.subscribe((data: Boolean) => {
       this.showLoader = data

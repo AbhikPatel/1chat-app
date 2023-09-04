@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
+
 @Injectable()
 export class UserListPresenterService {
-
-  constructor(private _fb:FormBuilder) { }
+  constructor(private _fb:FormBuilder) { 
+  }
    /**
    * @name getGroup
    * @returns formGroup
@@ -15,4 +16,5 @@ export class UserListPresenterService {
       search: ['']
     })
   }
+ 
 }

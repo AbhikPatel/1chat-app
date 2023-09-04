@@ -2,29 +2,126 @@ import { Injectable } from '@angular/core';
 import { HttpService } from '../core/services/http/http.service';
 import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { environment } from 'src/environments/environment';
-import { Observable, map } from 'rxjs';
+import { Observable, Subject, map } from 'rxjs';
 import { User, UserResponse } from '../shared/models/user.model';
-import { ConversationUsers,ConversationUserResponse } from './models/chat.model';
+import { ConversationUsers, ConversationUserResponse, GroupDetails } from './models/chat.model';
 import { conversationUserAdapter } from './chat-adaptor/chat.adaptor';
 import { CommonService } from '../shared/services/common.service';
 import { login } from './models/login.model';
+import { io } from 'socket.io-client';
+import { UtilityService } from '../shared/services/utility.service';
 
 @Injectable()
+
 export class ChatService {
   /** variable for base url */
   public baseUrl: string;
-    /** This variable will store id of the user */
-    public loginUserObject: login;
-  constructor(private _Http: HttpService,
+  /** This variable will store id of the user */
+  /** variable for socket */
+  public socket: any;
+  /** variable for user Id */
+  /** Subject for recent chat Id */
+  public chatId: Subject<string>;
+  public userId: string;
+  public loginUserObject: login;
+  constructor(private _http: HttpService,
     private _userAdaptor: userAdaptor,
     private _conversationAdapter: conversationUserAdapter,
-    private _commonService:CommonService
+    private _commonService: CommonService,
+    private _utilityService: UtilityService
   ) {
     this.baseUrl = environment.baseURL;
     this.loginUserObject = this._commonService.getLoginDetails();
-    console.log( this.loginUserObject);
-    
+    this.socket = io(environment.socketUrl);
+    this.chatId = new Subject();
   }
+
+
+ /**
+   * @name listen
+   * @param eventname 
+   * @returns observable
+   * @description This method is used to listen the socket
+   */
+ public listen(eventname: string): Observable<any> {
+  return new Observable((subscriber) => {
+    this.socket.on(eventname, (data: any, fn: any) => {
+      if (eventname === 'dm:message') {
+        fn('received')
+        if(this._utilityService.subscriber !== null)
+        this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
+      }
+      if (eventname === 'group:message') {
+        fn('group message')
+        if(this._utilityService.subscriber !== null)
+        this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
+      }
+      if (eventname === 'dm:messageRead') {
+        fn('read')
+      }
+      if (eventname === 'dm:messageEdit') {
+        fn('Edit')
+      }
+      if (eventname === 'dm:messageReply') {
+        fn('reply')
+      }
+      if (eventname === 'eod:status') {
+        fn('eod')
+        if(this._utilityService.subscriber !== null)
+        this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
+      }
+      subscriber.next(data);
+    })
+  })
+}
+
+/**
+   * @name emit
+   * @param eventname 
+   * @param data 
+   * @description This method will emit the data as per the eventname
+   */
+public emit(eventname: string, data: any): void {
+  if (eventname === 'dm:message') {
+    this.socket.emit(eventname, data, (response: any) => {
+      console.log(response)
+      this.getRecentChatId(response)
+    })
+  } else if (eventname === 'group:message') {
+    this.socket.emit(eventname, data, (response: any) => {
+      console.log(response);
+    })
+  } else if (eventname === 'dm:messageRead') {
+    this.socket.emit(eventname, data, (response: any) => {
+      console.log(response);
+    })
+  } else if (eventname === 'dm:messageEdit') {
+    this.socket.emit(eventname, data, (response: any) => {
+      console.log(response);
+    })
+  } else if (eventname === 'dm:messageReply') {
+    this.socket.emit(eventname, data, (response: any) => {
+      console.log(response);
+    })
+  } else if (eventname === 'eod:status') {
+    this.socket.emit(eventname, data, (response: any) => {
+      console.log(response);
+    })
+  } else {
+    this.socket.emit(eventname, data);
+  }
+}
+
+ /**
+ * @name sendPushNotification
+ * @param sub, data 
+ * @returns observable
+ * @description This method is used to send push notification to client
+ */
+ private sendPushNotification(sub: any, data: any): Observable<any> {
+  const url: string = this.baseUrl + `push-notification`;
+  return this._http.httpPostRequest(url, { sub, data })
+}
 
   /**
    * @name getAllUserData
@@ -32,7 +129,7 @@ export class ChatService {
    * @description This method is called to get all the users data
   */
   public getAllUserData(): Observable<User[]> {
-    return this._Http.httpGetRequest(`${this.baseUrl}user/`).pipe(
+    return this._http.httpGetRequest(`${this.baseUrl}user/`).pipe(
       map((res: any) => {
         res.data.docs = res.data.docs.map((users: UserResponse) => this._userAdaptor.toResponse(users));
         return res.data.docs
@@ -47,7 +144,7 @@ export class ChatService {
     */
 public getConversationUser(): Observable<ConversationUsers[]> {
   const url: string = this.baseUrl + `user/` + this.loginUserObject.userId;
-  return this._Http.httpGetRequest(url).pipe(
+  return this._http.httpGetRequest(url).pipe(
     map((res: any) => {
       res.data.doc = res.data.doc.map((user: ConversationUserResponse) => this._conversationAdapter.toResponse(user))
       return res.data.doc
@@ -55,4 +152,43 @@ public getConversationUser(): Observable<ConversationUsers[]> {
   )
 }
 
+  /**
+   * @name postNewChat
+   * @param newChat 
+   * @returns This method will post the data of new
+   */
+  public postNewGroup(newGroup: GroupDetails): Observable<GroupDetails> {
+    const url: string = this.baseUrl + `chat`
+    return this._http.httpPostRequest(url, newGroup)
+  }
+  /**
+  * @name setMap
+  * @description This method will setMapper for the socket
+  */
+  public setMap(): void {
+    this.userId = this.loginUserObject.userId
+    if (!this.socket.connected) this.socket.connect();
+    this.socket.on('connect', () => {
+      this.socket.emit('dm:mapper', { userId: this.userId, socketId: this.socket.id })
+    })
+  }
+
+  /**
+ * @name getRecentChatId
+ * @param response 
+ * @description This method is used to get the recent chat Id through socket
+ */
+  public getRecentChatId(response: string): void {
+    let splitData: string[] = response.split(' ');
+    if (splitData.length === 3)
+      this.chatId.next(splitData[2])
+  }
+
+  /**
+ * @name disconnectSocket
+ * @description This method will disconnect the socket
+ */
+  public disconnectSocket(): void {
+    this.socket.disconnect();
+  }
 }

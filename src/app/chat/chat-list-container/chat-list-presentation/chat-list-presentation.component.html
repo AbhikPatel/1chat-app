@@ -3,7 +3,7 @@
     <div class="flex-grow-1 overflow-hidden d-flex flex-column position-relative">
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
         <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100">
-            <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)" (userConversation)="getConversation($event)"></app-user-list-container>
+            <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)" (userConversationEmitter)="getConversation($event)" ></app-user-list-container>
         </div>
         <div class="row border-5 m-0">
             <div class="col-6 p-0 border-end" role="button" (click)="onTabSwitch(true)">
@@ -19,58 +19,52 @@
                 </div>
             </div>
         </div>
+        <!-- Start: User Data  -->
         <div class="flex-grow-1 overflow-auto">
-            <div class="user-container d-flex align-items-center"
-                role="button"
-               >
+            <div class="user-container d-flex align-items-center"  role="button"
+                *ngFor="let user of conversationUsers " (click)="onUser(user)">
                 <div class="px-3 me-1 position-relative">
-                    <img *ngIf="conversationUser"  [src]="conversationUser.photo" class="border rounded-circle user-img" alt="profile">
-                    <ng-template >
-                        <span
+                    <img [src]="user.profile" class="border rounded-circle user-img" alt="profile">
+                    <ng-template [ngIf]="user.chat_type !== 'group'">
+                        <span *ngIf="checkIfOnline(user.members[0]._id)"
                             class="online position-absolute translate-middle bg-success border border-light rounded-circle">
                         </span>
                     </ng-template>
                 </div>
-                <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3" *ngIf="conversationUser">
+                <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
                     <div class="d-flex justify-content-between">
                         <div class="d-flex align-items-center">
-                            <span class="fw-semibold text-truncate" *ngIf="conversationUser"> {{conversationUser.full_name}} </span>
+                            <span class="fw-semibold text-truncate"> {{user.displayName}} </span>
                             <span class="badge ms-2"></span>
                         </div>
-                        <span class="text-chat fs-7" *ngIf="conversationUser"> </span>
+                        <span class="text-chat fs-7"> {{user.standardTime}} </span>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <!-- <ng-container *ngIf="typingStatus && typingId.includes(data._id) else elseStatement">
-                                <span class="fs-7 text-success fw-semibold"> Typing... </span>
-                            </ng-container>
-                            <ng-template #elseStatement>
-                                <span class="fs-7 last-chat text-truncate text-chat"
-                                [ngClass]="{'fw-bold' : data.notificationCount != 0}"> {{data.message ? data.message
-                                    : 'No Messages'}} </span>
-                                </ng-template> -->
-                        <ng-container
-                           >
-                            <span class="fs-7 text-success fw-semibold" *ngIf="conversationUser"> Typing... </span>
+                     <ng-container
+                            *ngIf="typingIds.includes(user.members[0]._id) && showTypingText | async else message">
+                            <span class="fs-7 text-success fw-semibold"> Typing... </span>
                         </ng-container>
                         <ng-template #message>
-                            <span class="fs-7 last-chat text-chat text-truncate"></span>
-                              
+                            <span class="fs-7 last-chat text-chat text-truncate"
+                                [ngClass]="{'fw-bold' : user.notificationCount}"> {{loginUserObject.userId === user.sender ? 'You: ' :
+                                ''}} {{user.lastMessage}} </span>
                         </ng-template>
-                        <ng-template >
-                            <ng-container>
+                        <ng-template [ngIf]="user.chat_type !== 'group'">
+                            <ng-container *ngIf="user.notificationCount">
                                 <span
                                     class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
-                                   </span>
+                                    {{user.notificationCount}} </span>
                             </ng-container>
                         </ng-template>
-                        <ng-container >
-                            <span class="badge bg-danger" >
+                        <!-- <ng-container *ngIf="user.eodNotification">
+                            <span class="badge bg-danger" (click)="eodChatOpen($event.stopPropagation(),user)"> EOD
                             </span>
-                        </ng-container>
+                        </ng-container> -->
                         <!-- <span class="text-danger"> ● </span> -->
                     </div>
                 </div>
             </div>
         </div>
+        <!-- End: User Data  -->
     </div>
 </div>

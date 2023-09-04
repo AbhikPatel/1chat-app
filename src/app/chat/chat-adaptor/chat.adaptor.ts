@@ -10,19 +10,19 @@ import { taskBgColor, taskTypeFormat } from "src/app/core/utilities/constants";
 @Injectable()
 export class conversationUserAdapter implements Adapter<ConversationUsers>{
 
-    public userId: string;
+    public loginUserObject: any;
 
     constructor(
         private _formatter: FormatTime,
         private _commonService: CommonService
     ) {
-        this.userId = this._commonService.getUserId();
+        this.loginUserObject = this._commonService.getLoginDetails()
     }
 
     public toResponse(item: ConversationUserResponse): ConversationUsers {
 
         let newMembers: Member[]
-        item.chat_type === 'dm' ? newMembers = item.members.filter((member: Member) => member._id !== this.userId) : newMembers = item.members
+        item.chat_type === 'dm' ? newMembers = item.members.filter((member: Member) => member._id !== this.loginUserObject.userId) : newMembers = item.members
         newMembers.map((member: Member) => {
             member.full_name = member.first_name + ' ' + member.last_name;
             member.photo = environment.imageUrl + member.photo;
@@ -44,7 +44,7 @@ export class conversationUserAdapter implements Adapter<ConversationUsers>{
             item.lastMessage ? this._formatter.Formatter(new Date(item.lastMessage.time)) : '',
             profile,
             item.chat_type === 'dm' ? newMembers[0].full_name : item.title,
-            item.lastMessage ? item.lastMessage.sender === this.userId ? 0 : item.notificationCount : 0,
+            item.lastMessage ? item.lastMessage.sender === this.loginUserObject.userId ? 0 : item.notificationCount : 0,
             false,
             false
         );

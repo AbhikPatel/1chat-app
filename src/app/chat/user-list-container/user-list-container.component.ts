@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Observable, Subject, flatMap, of, takeUntil } from 'rxjs';
+import {  Subject,takeUntil } from 'rxjs';
 import { ChatService } from '../chat.service';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
@@ -14,6 +14,8 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   @Input() public ClickAsideBarApiCall: boolean;
   /** This property is used to emit boolean value */
   @Output() public closeAsideBarEmitter: EventEmitter<boolean>;
+  /** This property is used to emit User details */
+  @Output() public userConversationEmitter: EventEmitter<any>;
   /** Observable for the details of all the users */
   public getAllUsers: User[];
     /** This variable will store  localStorage object */
@@ -26,6 +28,7 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
     private _commonService: CommonService
   ) {
     this.closeAsideBarEmitter = new EventEmitter();
+    this.userConversationEmitter = new EventEmitter();
     this.destroy = new Subject();
     this.getAllUsers = [];
     this.getLoginDetails=this._commonService.getLoginDetails()
@@ -49,13 +52,11 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
           users.splice(senderIndex,1);
           this.getAllUsers=this.getLoginDetails.role === 'intern' ? users.filter((user:User)=> user.role !=='intern' ) :users;
         }
+       })
     })
-      
-    })
-   
+    
+    
 }
-
-
   /**
   * @name closeAsideBar
   * @description This method  Emit boolean value 
@@ -65,10 +66,19 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
 
   }
   /**
+  * @name getConversation
+  * @description This method  Emit User details
+  */
+  public getConversation(user: any) {
+    this.userConversationEmitter.next(user)
+
+  }
+  /**
  * @name ngOnDestroy
  * @description This method is called the component is destroyed
  */
   public ngOnDestroy(): void {
+    this._chatService.disconnectSocket();
     this.destroy.next();
     this.destroy.unsubscribe();
     

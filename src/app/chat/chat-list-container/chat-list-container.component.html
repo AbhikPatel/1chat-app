@@ -1,1 +1,4 @@
-<app-chat-list-presentation-ui></app-chat-list-presentation-ui>
+<app-chat-list-presentation-ui  [getConversationUsers]="getConversationUsers$ | async "
+ [onlineUsers]="getOnlineUsersData$ | async"  
+ [typingInfo]="typingInfo$ | async"
+ ></app-chat-list-presentation-ui>
