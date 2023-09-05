@@ -2,9 +2,10 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { ConversationUsers, OnlineUser, Typing } from '../../models/chat.model';
 import { ChatListPresenterService } from '../Chat-list-presenter/chat-list-presenter.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { login } from '../../models/login.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { User } from 'src/app/shared/models/user.model';
 
 
 @Component({
@@ -18,17 +19,18 @@ export class ChatListPresentationComponent implements OnInit {
   @ViewChild('toggle') public toggle: ElementRef;
 
 
-  /** This property will get the conversation users from the container */
-  @Input() public set getConversationUsers(users: ConversationUsers[]) {
+   /** This property will get only one to one conversation users */
+   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
-      this._getConversationUsers = users;
-      this._chatListPresenterService.getConversationUsers(users);
+      this.copyOfConversationUsers = [...users];
+      this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
+      if(this.tabData) this.onTabSwitch(true);
+      else this.onTabSwitch(false);
     }
   }
-  public get getConversationUsers(): ConversationUsers[] {
-    return this._getConversationUsers;
+  public get conversationUsers(): ConversationUsers[] {
+    return this._conversationUsers;
   }
-
   /** This property is used to get all the online users details from container component */
   @Input() public set onlineUsers(users: OnlineUser[]) {
     if (users) {
@@ -50,10 +52,10 @@ export class ChatListPresentationComponent implements OnInit {
   public get typingInfo(): Typing {
     return this._typingInfo;
   }
+
   /** This variable will store the data of the current tab */
   public tabData: boolean;
-  /**This properties are used for store conversationUsers */
-  public conversationUsers: ConversationUsers[];
+
   /** This variable will store all the chat Ids of conversation users */
   public allChatIds: string[];
   /** This variable will store copy of all the conversation users */
@@ -62,24 +64,25 @@ export class ChatListPresentationComponent implements OnInit {
   public groupTyperNames: string[];
   /** variable for all typing Ids */
   public typingIds: string[];
+    /** This variable will store the current chat Id */
+    public currentChatId: string;
   public loginUserObject: login;
-// subject
-
-    /** Flag for showing typing text */
-    public showTypingText: BehaviorSubject<boolean>;
-
-
+  // subject
+  /** Flag for showing typing text */
+  public showTypingText: BehaviorSubject<boolean>;
   /** This property is used for getter setter */
-  private _getConversationUsers: ConversationUsers[];
+  private _conversationUsers: ConversationUsers[];
   private _onlineUsers: OnlineUser[];
   private _typingInfo: Typing;
   constructor(private _commonService: CommonService,
     private _chatListPresenterService: ChatListPresenterService,
+    private _route:ActivatedRoute,
     private _router: Router
   ) {
     this.tabData = true;
     this.groupTyperNames = [];
     this.typingIds = [];
+
     // subject   
     this.showTypingText = new BehaviorSubject(false);
     this.loginUserObject = this._commonService.getLoginDetails();
@@ -95,16 +98,10 @@ export class ChatListPresentationComponent implements OnInit {
   * @description This method will be invoked on ngOnInit
   */
   private props(): void {
-    this._chatListPresenterService.conversationUser$.subscribe((users: ConversationUsers[]) => {
-      if (users) {
-        this.conversationUsers = users
-        this.copyOfConversationUsers = [...users];
-        this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
-        if (this.tabData) this.onTabSwitch(true);
-        else this.onTabSwitch(false);
-      }
-    })
-
+    this._chatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
+      this._conversationUsers.unshift(user);
+       this.currentChatId = user.chatId
+    });
   }
 
   /**
@@ -143,28 +140,40 @@ export class ChatListPresentationComponent implements OnInit {
    */
   public onTabSwitch(data: boolean): void {
     this.tabData = data;
-    this.conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && !this.isEmptyString(users.standardTime) : users.chat_type === 'group' && !this.isEmptyString(users.standardTime));
+    this._conversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && !this.isEmptyString(users.standardTime) : users.chat_type === 'group' && !this.isEmptyString(users.standardTime));
     const clearedConversationUsers = this.copyOfConversationUsers.filter((users: ConversationUsers) => data ? users.chat_type === 'dm' && this.isEmptyString(users.standardTime) : users.chat_type === 'group' && this.isEmptyString(users.standardTime));
     const sortbyTime = (a, b) => {
       const timestampA = a.time.getTime();
       const timestampB = b.time.getTime();
       return timestampB - timestampA;
     };
-    this.conversationUsers.sort(sortbyTime);
-    this.conversationUsers = this.conversationUsers.concat(clearedConversationUsers)
+    this._conversationUsers.sort(sortbyTime);
+    this._conversationUsers = this.conversationUsers.concat(clearedConversationUsers)
   }
 
 
 
   /**
-   * @name getConversation
+   * @name newConversation
    * @param conversation 
    * @description  this method Create new conversation
    */
-  public getConversation(conversation: any) {
-    // this.conversationUser = conversation
-    console.log(conversation);
-
+  public newConversation(newConversation: User) {
+    const chatIdArr = this.conversationUsers.map((user: ConversationUsers) => user.chatId);
+    const resultArr = newConversation.chats.reduce((acc, sub) => {
+      if (chatIdArr.includes(sub)) {
+        acc.push(sub)
+      }
+      return acc
+    }, []);
+    if (resultArr.length === 0) {
+      this._router.navigate(['1Chat/', newConversation._id]);
+      this._chatListPresenterService.createNewConversation(newConversation);
+    }
+    else {
+      var findConversation: ConversationUsers = this.conversationUsers.find((user: ConversationUsers) => user.chatId === resultArr[0]);
+      this.onUser(findConversation);
+    }
   }
   /**
  * @name onUser
@@ -172,8 +181,12 @@ export class ChatListPresentationComponent implements OnInit {
  * @description This method is used to display the chats of the selected user
  */
   public onUser(user: ConversationUsers) {
-    console.log(user);
-    this._router.navigate(['1Chat/', user.chatId]);
+    const extraData = user; // Replace with your actual dynamic data
+    this._router.navigate(['1Chat',user.chatId], {
+      state: { extraData }
+    });
+    
+    
     // this.checkNonConversationUsers();
     // this.currentChatId = user.chatId;
     // this._ChatListPresenterService.getCurrentConversation(user, this.userId);

@@ -6,6 +6,7 @@ import { CommonService } from 'src/app/shared/services/common.service';
 import { UserListPresenterService } from '../User-list-presenter/user-list-presenter.service';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
 import { Router } from '@angular/router';
+import { ConversationUsers } from '../../models/chat.model';
 
 @Component({
   selector: 'app-user-list-presentation-ui',
@@ -27,7 +28,7 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
   /** This property is used to emit boolean value */
   @Output() public closeAsideBar: EventEmitter<boolean>
   /** This property is used to emit boolean value */
-  @Output() public userConversation: EventEmitter<any>
+  @Output() public newConversation: EventEmitter<any>
   /** This variable will store the details of the sender */
   public userRole: string;
   /** This variable will store id of the user */
@@ -41,16 +42,12 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
   //  This variable is use to show loader  
   public showLoader: Boolean;
   constructor(
-    private _commonService: CommonService,
-    private _UserListPresenterService: UserListPresenterService,
+    private _userListPresenterService: UserListPresenterService,
     private _loaderService: LoaderService,
-    private _router: Router
   ) {
-    this.userId = this._commonService.getUserId();
-    this.userRole = this._commonService.getUserRole();
-    this.searchGroup = this._UserListPresenterService.getGroup();
+    this.searchGroup = this._userListPresenterService.getGroup();
     this.closeAsideBar = new EventEmitter();
-    this.userConversation = new EventEmitter();
+    this.newConversation = new EventEmitter();
     this.showLoader = true
   }
   ngOnInit(): void {
@@ -63,8 +60,7 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
   public onNewChat(user: User) {
     if(user){
       this.closeAsideBar.next(false);
-      this.userConversation.next(user);
-      this._router.navigate(['1Chat/', user._id]);
+      this.newConversation.next(user);
     }
   }
 

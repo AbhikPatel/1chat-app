@@ -179,6 +179,7 @@ export class ConversationUsers {
     showIsOnline: boolean
     eodNotification:boolean
     _id?: string
+     chats?: any
     constructor(
         chatId: string,
         owner: string,

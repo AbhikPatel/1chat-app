@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import {  Subject,takeUntil } from 'rxjs';
+import {  Observable, Subject,takeUntil } from 'rxjs';
 import { ChatService } from '../chat.service';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
+import { ConversationUsers } from 'src/app/one-chat/models/chat.model';
+import { login } from '../models/login.model';
 
 @Component({
   selector: 'app-user-list-container',
@@ -11,24 +13,29 @@ import { CommonService } from 'src/app/shared/services/common.service';
 })
 export class UserListContainerComponent implements OnInit, OnDestroy {
 
+   /** This property is used to  api all user api call */
   @Input() public ClickAsideBarApiCall: boolean;
   /** This property is used to emit boolean value */
   @Output() public closeAsideBarEmitter: EventEmitter<boolean>;
   /** This property is used to emit User details */
-  @Output() public userConversationEmitter: EventEmitter<any>;
+  @Output() public newConversationEmitter: EventEmitter<any>;
   /** Observable for the details of all the users */
   public getAllUsers: User[];
     /** This variable will store  localStorage object */
-    public getLoginDetails:any
+    public getLoginDetails:login;
   /** stops the subscription on ngDestroy */
   private destroy: Subject<void>;
+  /** stops the subscription on ngDestroy */
+  private _getConversationUserLists: ConversationUsers[];
   //  This variable is use to show loader  
   public showLoader: Boolean;
+
   constructor(private _chatService: ChatService,
     private _commonService: CommonService
   ) {
     this.closeAsideBarEmitter = new EventEmitter();
-    this.userConversationEmitter = new EventEmitter();
+    this.newConversationEmitter = new EventEmitter();
+
     this.destroy = new Subject();
     this.getAllUsers = [];
     this.getLoginDetails=this._commonService.getLoginDetails()
@@ -69,8 +76,8 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   * @name getConversation
   * @description This method  Emit User details
   */
-  public getConversation(user: any) {
-    this.userConversationEmitter.next(user)
+  public newConversation(user: any) {
+    this.newConversationEmitter.next(user)
 
   }
   /**

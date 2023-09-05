@@ -7,5 +7,5 @@ import { ChattingMessagePresenterService } from '../Chatting-message-presenter/c
    providers:[ChattingMessagePresenterService]
 })
 export class ChattingMessagePresentationComponent {
-
+  
 }

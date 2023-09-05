@@ -17,7 +17,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchPipe } from './shared/pipe/search.pipe';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
 import { FormatTime } from '../core/utilities/formatTime';
-import { ChatHeaderComponent } from './chat-header/chat-header.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +31,6 @@ import { ChatHeaderComponent } from './chat-header/chat-header.component';
     CreateGroupFormPresentationComponent,
     OnClickOutsideDirective,
     SearchPipe,
-    ChatHeaderComponent
   ],
   imports: [
     CommonModule,
@@ -47,6 +45,6 @@ import { ChatHeaderComponent } from './chat-header/chat-header.component';
     ReactiveFormsModule,
     MessageAdapter,
     EODAdapter
-  ]
+  ],
 })
 export class ChatModule { }

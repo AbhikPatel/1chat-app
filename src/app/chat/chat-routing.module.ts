@@ -13,7 +13,9 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       { path: 'no-conversation', component: NoConversationComponent },
-      { path: ':id', loadChildren: () => import('./message/message.module').then(m => m.MessageModule) },
+      { path: ':id', loadChildren: () => import('./message/message.module').then(m => m.MessageModule), data: {
+        extraData: { message: 'Hello from SenderComponent!' },
+      },},
       { path: 'eod', loadChildren: () => import('./eod/eod.module').then(m => m.EodModule) },
 
     ],

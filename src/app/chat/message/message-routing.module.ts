@@ -9,10 +9,10 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'chat',
+        redirectTo: 'conversation',
         pathMatch: 'full'
       },
-      { path: 'chat', component: ChattingMessageContainerComponent }
+      { path: 'conversation', component: ChattingMessageContainerComponent}
     ]
   }
 ];
