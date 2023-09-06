@@ -52,7 +52,7 @@ import { EodTableFormPresentationComponent } from './shared/eod-table-form-prese
     PickerModule,
     FormsModule,
     OverlayModule,
-    NgMultiSelectDropDownModule,
+    NgMultiSelectDropDownModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgbDropdownModule ,
     InfiniteScrollModule

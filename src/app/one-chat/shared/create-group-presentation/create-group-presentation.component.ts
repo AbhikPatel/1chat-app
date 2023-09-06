@@ -21,7 +21,7 @@ export class CreateGroupPresentationComponent implements OnInit, OnDestroy {
   @Input() public set getUsers(v: any[]) {
     if (v)
       this._getUsers = v;
-
+    console.log(this.getUsers);
   }
 
   public get getUsers(): any[] {
@@ -43,7 +43,7 @@ export class CreateGroupPresentationComponent implements OnInit, OnDestroy {
 
   constructor(
     private _createGroupPresenterService: CreateGroupPresenterService,
-  private _commonService:CommonService
+       private _commonService:CommonService
   ) {
     this.destroy = new Subject();
     this.newGroupInformation = new EventEmitter();

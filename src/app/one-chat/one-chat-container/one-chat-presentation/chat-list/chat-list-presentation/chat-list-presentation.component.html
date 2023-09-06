@@ -28,7 +28,6 @@
                     </div>
                 </div>
             </i> -->
-
             <ng-template [ngIf]="serviceWorkerUpdateFlag">
                 <a class="d-flex align-items-center bg-danger bg-gradient rounded-1 text-white fs-6 px-1" title="Click to Update App!" type="button" (click)="checkForSWUpdates()">
                     <span>UPDATE</span>
@@ -47,13 +46,10 @@
                     </div>
                 </div>
             </div>
-            
             <div class="ms-3" role="button" title="Log-Out" (click)="onLogOut(senderDetails.email)">
                 <span class='icon-power text-info'></span>
             </div>
-
         </div>
-
     </div>
     <!-- End: Header Section  -->
 

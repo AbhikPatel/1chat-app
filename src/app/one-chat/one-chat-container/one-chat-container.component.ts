@@ -242,7 +242,6 @@ public emitData:any;
     const eodResult: EODResponse = this._eodAdapter.toRequest(eod);
     this._oneChatService.emit('eod:status', eodResult);
   }
-
   /**
    * @name getEodTab
    * @param id 

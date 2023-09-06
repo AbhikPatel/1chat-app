@@ -105,6 +105,8 @@ export class OneChatPresentationComponent extends OneChatPresentationBase implem
   /** This property will get the conversation users from the container */
   @Input() public set getConversationUsers(users: ConversationUsers[]) {
     if (users) {
+      console.log(users);
+      
       this._getConversationUsers = users;
       this._oneChatPresenterService.getConversationUsers(users);
     }

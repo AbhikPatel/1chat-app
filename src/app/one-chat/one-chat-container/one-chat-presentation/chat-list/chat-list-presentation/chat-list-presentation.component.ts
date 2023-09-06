@@ -141,7 +141,10 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
     this._ChatListPresenterService.messageRead$.pipe(takeUntil(this.destroy)).subscribe((messages: MessageRead) => this.readedMessages.emit(messages));
     this._ChatListPresenterService.newConversation$.pipe(takeUntil(this.destroy)).subscribe((user: ConversationUsers) => {
       this._conversationUsers.unshift(user);
-      this.currentChatId = user.chatId;
+      console.log();
+      
+      this.currentChatId = user.chatId
+      
     });
     this._ChatListPresenterService.newGroupData$.pipe(takeUntil(this.destroy)).subscribe((groupDetails: GroupDetails) => this.newGroupDetails.emit(groupDetails))
     this._utilityService.checkForServiceWorkerUpdates().subscribe(res => {
@@ -196,6 +199,8 @@ export class ChatListPresentationComponent extends OneChatPresentationBase imple
    * @description This method is called to start a new dm conversation
    */
   public onNewChat(user: User) {
+    console.log(user);
+    
     const chatIdArr = this.conversationUsers.map((user: ConversationUsers) => user.chatId);
     const resultArr = user.chats.reduce((acc, sub) => {
       if (chatIdArr.includes(sub)) {
