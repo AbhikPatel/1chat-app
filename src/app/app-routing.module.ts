@@ -10,7 +10,7 @@ const routes: Routes = [
     component: LoginComponent
   },
   {
-    path: '1Chat',
+    path: 'chat',
     component: MasterComponent,
     canActivate: [AuthGuard],
     children: [
@@ -23,7 +23,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '1Chat',
+    redirectTo: 'chat',
     pathMatch: 'full'
   },
 

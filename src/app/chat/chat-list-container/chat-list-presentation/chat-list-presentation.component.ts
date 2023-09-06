@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { login } from '../../models/login.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/shared/models/user.model';
+import { CommunicationService } from '../../shared/communication/communication.service';
 
 
 @Component({
@@ -55,11 +56,12 @@ export class ChatListPresentationComponent implements OnInit {
 
   /** This variable will store the data of the current tab */
   public tabData: boolean;
-
   /** This variable will store all the chat Ids of conversation users */
   public allChatIds: string[];
   /** This variable will store copy of all the conversation users */
   public copyOfConversationUsers: ConversationUsers[];
+  /** This variable will store copy of all the conversation users */
+  public newConversationUsers: ConversationUsers;
   /** variable for name of the types in group chat */
   public groupTyperNames: string[];
   /** variable for all typing Ids */
@@ -77,11 +79,13 @@ export class ChatListPresentationComponent implements OnInit {
   constructor(private _commonService: CommonService,
     private _chatListPresenterService: ChatListPresenterService,
     private _route:ActivatedRoute,
-    private _router: Router
+    private _router: Router,
+    private _communicationService:CommunicationService,
   ) {
     this.tabData = true;
     this.groupTyperNames = [];
     this.typingIds = [];
+    this.copyOfConversationUsers=[];
 
     // subject   
     this.showTypingText = new BehaviorSubject(false);
@@ -99,6 +103,7 @@ export class ChatListPresentationComponent implements OnInit {
   */
   private props(): void {
     this._chatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
+      this.newConversationUsers=user
       this._conversationUsers.unshift(user);
        this.currentChatId = user.chatId
     });
@@ -167,8 +172,9 @@ export class ChatListPresentationComponent implements OnInit {
       return acc
     }, []);
     if (resultArr.length === 0) {
-      this._router.navigate(['1Chat/', newConversation._id]);
+      this._router.navigate(['chat/', newConversation._id]);
       this._chatListPresenterService.createNewConversation(newConversation);
+      this._communicationService.setHeaderDetails(this.newConversationUsers)
     }
     else {
       var findConversation: ConversationUsers = this.conversationUsers.find((user: ConversationUsers) => user.chatId === resultArr[0]);
@@ -181,11 +187,11 @@ export class ChatListPresentationComponent implements OnInit {
  * @description This method is used to display the chats of the selected user
  */
   public onUser(user: ConversationUsers) {
-    const extraData = user; // Replace with your actual dynamic data
-    this._router.navigate(['1Chat',user.chatId], {
-      state: { extraData }
-    });
-    
+  if(user){
+
+    this._router.navigate(['chat',user.chatId])
+    this._communicationService.setHeaderDetails(user)
+  }
     
     // this.checkNonConversationUsers();
     // this.currentChatId = user.chatId;

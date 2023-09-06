@@ -1,0 +1,57 @@
+  <!-- Start: Header Section  -->
+  <div id="header" class="d-flex" *ngIf="receiversConversation">
+    <div class="container d-flex align-items-center justify-content-between ">
+        <div class="d-flex align-items-center h-100"  >
+            <div class="d-flex align-items-center py-2 " >
+                <figure class="m-0">
+                    <img [src]="receiversConversation.profile" class="rounded-circle profile-img"
+                        alt="profile">
+                </figure>
+                <div class="ms-3 d-flex flex-column">
+                    <span class="fw-semibold text-nowrap"> {{receiversConversation.displayName}} </span>
+                    <div class="fs-7" >
+                        Typing </div>
+                    <ng-container >
+                        <span class="fs-7"></span>
+                    </ng-container>
+                    <ng-template #online>
+                        <span class="fs-7"> Online </span>
+                    </ng-template>
+                </div>
+            </div>
+
+            <!-- Tab view  -->
+            <div class="d-flex h-100 px-5">
+                <span class="h-100 border-3 border-success d-flex align-items-center mx-2"
+                    (click)="onWindow(true)" role="button"
+                    [ngClass]="{'border-bottom fw-semibold' : currentWindow}" (click)="navigationConversation()"> Chat </span>
+                <span class="h-100 border-3 border-success d-flex align-items-center mx-2"
+                    (click)="onWindow(false)" role="button"
+                    [ngClass]="{'border-bottom fw-semibold' : !currentWindow}" (click)="navigationEod()"> EOD </span>
+            </div>
+        </div>
+        <div *ngIf="receiversConversation">
+            <div ngbDropdown class="d-inline-block"  *ngIf="receiversConversation.chat_type === 'group'">
+                <div class="d-flex align-items-center">
+                    <span type="button" id="dropdownBasic1" ngbDropdownToggle
+                        class="icon-user text-info fs-3">
+                    </span> <span class="fs-6 text-info">{{receiversConversation.members.length}}</span>
+                </div>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="dropdownBasic1 overflow-auto">
+                    <ul class="list-unstyled m-0" >
+                        <li class="d-flex align-items-center px-3 py-2" ngbDropdownItem 
+                            *ngFor="let members of receiversConversation.members">
+                            <figure class="m-0">
+                                <img [src]="members.photo" alt="avatar" class="rounded-circle shadow profile-img">
+                            </figure>
+                            <span class="ps-3"> {{members.full_name}} </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- End: Header Section  -->
