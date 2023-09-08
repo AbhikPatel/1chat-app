@@ -7,6 +7,11 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { environment } from 'src/environments/environment';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { ChatService } from './chat/chat.service';
+import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat/chat-adaptor/chat.adaptor';
+import { FormatTime } from './core/utilities/formatTime';
+import { CommunicationService } from './chat/shared/communication/communication.service';
 
 @NgModule({
   declarations: [
@@ -16,6 +21,7 @@ import { TokenInterceptor } from './core/services/interceptor/token.interceptor'
     BrowserModule,
     AppRoutingModule,
     CoreModule,
+    NgMultiSelectDropDownModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
       registrationStrategy: 'registerWhenStable:30000'
@@ -27,6 +33,12 @@ import { TokenInterceptor } from './core/services/interceptor/token.interceptor'
       useClass:TokenInterceptor,
       provide:HTTP_INTERCEPTORS
     },
+    ChatService,
+    conversationUserAdapter,
+    FormatTime,
+    MessageAdapter,
+    EODAdapter,
+    CommunicationService
   ],
   bootstrap: [AppComponent]
 })

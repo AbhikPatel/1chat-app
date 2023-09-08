@@ -30,11 +30,8 @@ export class LoginComponent implements OnInit {
     this.destroy = new Subject();
     this.password ='password'
   }
-
   ngOnInit(): void {
-
   }
-
   /**
    * @name onSubmit
    * @description This method is called when form is submitted
@@ -43,7 +40,7 @@ export class LoginComponent implements OnInit {
     if (this.loginGroup.valid) {
       this._service.loginUser(this.loginGroup.value).pipe(takeUntil(this.destroy)).subscribe((data) => {
         this._commonService.user$.next(data);
-        this._route.navigateByUrl('1Chat');
+        this._route.navigateByUrl('chat');
       })
     }
   }

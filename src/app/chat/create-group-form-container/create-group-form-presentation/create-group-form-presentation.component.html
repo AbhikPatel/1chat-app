@@ -1,1 +1,35 @@
-<p>create-group-form-presentation works!</p>
+<!-- Start: Overlay container  -->
+<div class="overlay-container bg-white rounded-3 p-5 position-absolute  start-50 end-50 translate-middle-x mt-5"  >
+    <!-- heading  -->
+    <div class="d-flex justify-content-center pb-3">
+        <h3> Create Group </h3>
+    </div>
+    <!-- Start: Create group form  -->
+    <form [formGroup]="groupChatFormGroup" (ngSubmit)="onSubmit()">
+        <div class="row g-4">
+            <!-- Group name  -->
+            <div class="col-12">
+                <label for="title" class="form-label"> Group Name </label>
+                <input type="text" class="form-control" name="title" id="title" placeholder="Enter Group Name"
+                    formControlName="title">
+            </div>
+
+            <!-- Group members  -->
+            <div class="col-12">
+                <label for="member" class="form-label"> Group Members </label>
+                <ng-multiselect-dropdown #multiSelect 
+                    [settings]="multiSelectConfig" 
+                    [data]="allUsers"
+                    formControlName="members">
+                </ng-multiselect-dropdown>
+            </div>
+        </div>
+        <!-- buttons  -->
+        <div class="d-flex align-items-center justify-content-between pt-3">
+            <button type="button" class="btn btn-danger text-white" (click)="closeModel()" > Close </button>
+            <button type="submit" class="btn btn-success text-white"> Submit </button>
+        </div>
+    </form>
+    <!-- End: Create group form  -->
+</div>
+<!-- End: Overlay container  -->

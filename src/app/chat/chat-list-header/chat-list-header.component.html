@@ -26,9 +26,7 @@
                 </span>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
                     <div ngbDropdownItem (click)="onSearchUser()" (appOnClickOutside)="clickOutside()">New Chat</div>
-                    <div ngbDropdownItem>
-                        <span>New Group</span>
-                    </div>  
+                    <div ngbDropdownItem (click)="openCreateGroupModel()"><span>New Group</span></div>  
                 </div>
             </div>
             <div class="ms-3" role="button" title="Log-Out" (click)="onLogOut(getLoginDetails.email)">

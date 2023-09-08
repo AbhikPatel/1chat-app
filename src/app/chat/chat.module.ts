@@ -19,6 +19,7 @@ import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat-adap
 import { FormatTime } from '../core/utilities/formatTime';
 import { ChatHeaderComponent } from './chat-header/chat-header.component';
 import { CommunicationService } from './shared/communication/communication.service';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
   declarations: [
@@ -40,15 +41,16 @@ import { CommunicationService } from './shared/communication/communication.servi
     ChatRoutingModule,
     NgbDropdownModule,
     FormsModule,
+    NgMultiSelectDropDownModule.forRoot(),
     ReactiveFormsModule
   ],
-  providers:[ChatService,
-    conversationUserAdapter,
-    FormatTime,
-    ReactiveFormsModule,
-    MessageAdapter,
-    EODAdapter,
-    CommunicationService
+  providers:[
+    // ChatService,
+    // conversationUserAdapter,
+    // FormatTime,
+    // MessageAdapter,
+    // EODAdapter,
+    // CommunicationService
   ],
 })
 export class ChatModule { }

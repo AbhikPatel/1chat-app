@@ -19,7 +19,7 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   @Output() public closeAsideBarEmitter: EventEmitter<boolean>;
   /** This property is used to emit User details */
   @Output() public newConversationEmitter: EventEmitter<any>;
-  /** Observable for the details of all the users */
+  /** This Variable the details of all the users */
   public getAllUsers: User[];
     /** This variable will store  localStorage object */
     public getLoginDetails:login;
@@ -60,9 +60,7 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
           this.getAllUsers=this.getLoginDetails.role === 'intern' ? users.filter((user:User)=> user.role !=='intern' ) :users;
         }
        })
-    })
-    
-    
+    }) 
 }
   /**
   * @name closeAsideBar

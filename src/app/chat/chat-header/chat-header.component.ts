@@ -19,8 +19,6 @@ export class ChatHeaderComponent implements OnInit {
     this._communicationService.ConversationUser$.subscribe((ConversationUsers: ConversationUsers) => {
       this.receiversConversation = ConversationUsers;
       console.log(ConversationUsers);
-      
-
     })
 
   }
@@ -39,7 +37,6 @@ export class ChatHeaderComponent implements OnInit {
    */
   public navigationConversation(){
     this._router.navigate(['chat',this.receiversConversation.chatId]);
-
   }
 /**
    * 

@@ -1,5 +1,5 @@
 <div class="h-100 d-flex flex-column ">
-    <app-chat-list-header-ui (openAsideBar)="openAsideBar()"></app-chat-list-header-ui>
+    <app-chat-list-header-ui (openAsideBar)="openAsideBar()" [allUsers]="getAllUsers"></app-chat-list-header-ui>
     <div class="flex-grow-1 overflow-hidden d-flex flex-column position-relative">
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
         <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100">
@@ -21,8 +21,10 @@
             </div>
         </div>
         <!-- Start: User Data  -->
-        <div class="flex-grow-1 overflow-auto">
-            <div class="user-container d-flex align-items-center" [ngClass]="{'bg-theme' : user.chatId === currentChatId}" role="button"*ngFor="let user of conversationUsers "
+    
+        <div class="flex-grow-1 overflow-auto" *ngIf="conversationUsers">
+            <div class="user-container d-flex align-items-center" [ngClass]="{'bg-theme' : user.chatId ===currentChatId }" role="button" *ngFor="let user of conversationUsers "
+            [class.selected]="selectedConversation === user.chatId"
                 (click)="onUser(user)">
                 <div class="px-3 me-1 position-relative">
                     <img [src]="user.profile" class="border rounded-circle user-img" alt="profile">

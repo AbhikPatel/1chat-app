@@ -18,16 +18,20 @@ export class ChatListPresentationComponent implements OnInit {
 
   /** This element is for toggle search */
   @ViewChild('toggle') public toggle: ElementRef;
-
-
    /** This property will get only one to one conversation users */
    @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
       this.copyOfConversationUsers = [...users];
+       // If no conversation is selected and there are conversations available, select the first one
+       if (!this.selectedConversation && this.conversationUsers.length > 0) {
+        this.onUser(users[0].chatId)
+      }
+  
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
       if(this.tabData) this.onTabSwitch(true);
       else this.onTabSwitch(false);
     }
+
   }
   public get conversationUsers(): ConversationUsers[] {
     return this._conversationUsers;
@@ -38,7 +42,6 @@ export class ChatListPresentationComponent implements OnInit {
       this._onlineUsers = users;
     }
   }
-
   public get onlineUsers(): OnlineUser[] {
     return this._onlineUsers;
   }
@@ -53,7 +56,15 @@ export class ChatListPresentationComponent implements OnInit {
   public get typingInfo(): Typing {
     return this._typingInfo;
   }
-
+/** This property is used to get all the user details from container component */
+@Input() public set getAllUsers(users: User[]) {
+  if (users) {
+    this._getAllUsers = users;
+  }
+}
+public get getAllUsers(): User[] {
+  return  this._getAllUsers
+}
   /** This variable will store the data of the current tab */
   public tabData: boolean;
   /** This variable will store all the chat Ids of conversation users */
@@ -67,8 +78,9 @@ export class ChatListPresentationComponent implements OnInit {
   /** variable for all typing Ids */
   public typingIds: string[];
     /** This variable will store the current chat Id */
-    public currentChatId: string;
+    public currentChatId: any;
   public loginUserObject: login;
+  selectedConversation: string | null = null;
   // subject
   /** Flag for showing typing text */
   public showTypingText: BehaviorSubject<boolean>;
@@ -76,6 +88,7 @@ export class ChatListPresentationComponent implements OnInit {
   private _conversationUsers: ConversationUsers[];
   private _onlineUsers: OnlineUser[];
   private _typingInfo: Typing;
+  private _getAllUsers: User[];
   constructor(private _commonService: CommonService,
     private _chatListPresenterService: ChatListPresenterService,
     private _route:ActivatedRoute,
@@ -90,7 +103,7 @@ export class ChatListPresentationComponent implements OnInit {
     // subject   
     this.showTypingText = new BehaviorSubject(false);
     this.loginUserObject = this._commonService.getLoginDetails();
-
+   
 
   }
   ngOnInit(): void {
@@ -105,8 +118,14 @@ export class ChatListPresentationComponent implements OnInit {
     this._chatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
       this.newConversationUsers=user
       this._conversationUsers.unshift(user);
-       this.currentChatId = user.chatId
+       this.currentChatId = user.chatId;
     });
+    const storedConversation = localStorage.getItem('ConversationUsers');
+    if (storedConversation) {
+      this.selectedConversation = storedConversation;
+      console.log(storedConversation);
+      
+    }
   }
 
   /**
@@ -174,7 +193,7 @@ export class ChatListPresentationComponent implements OnInit {
     if (resultArr.length === 0) {
       this._router.navigate(['chat/', newConversation._id]);
       this._chatListPresenterService.createNewConversation(newConversation);
-      this._communicationService.setHeaderDetails(this.newConversationUsers)
+      this._communicationService.setHeaderDetails(this.newConversationUsers);
     }
     else {
       var findConversation: ConversationUsers = this.conversationUsers.find((user: ConversationUsers) => user.chatId === resultArr[0]);
@@ -186,15 +205,16 @@ export class ChatListPresentationComponent implements OnInit {
  * @param user 
  * @description This method is used to display the chats of the selected user
  */
-  public onUser(user: ConversationUsers) {
+  public onUser(user: any) {
   if(user){
-
     this._router.navigate(['chat',user.chatId])
     this._communicationService.setHeaderDetails(user)
-  }
+    this.currentChatId = user.chatId;
+    this.selectedConversation = user.chatId;
+    localStorage.setItem('ConversationUsers', JSON.stringify(user));
     
+  }
     // this.checkNonConversationUsers();
-    // this.currentChatId = user.chatId;
     // this._ChatListPresenterService.getCurrentConversation(user, this.userId);
   }
   /**
