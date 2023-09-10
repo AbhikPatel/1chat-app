@@ -8,14 +8,18 @@ export class CommunicationService {
   public ConversationUser$: Observable<ConversationUsers>
   /** This variable Subject New conversationDetails to set header * */
   private ConversationUser: Subject<ConversationUsers>
-  /** This variable Observable New conversationDetails to set header */
+  /** This variable Observable   NewGroupConversation store */
   public NewGroupConversation$: Observable<ConversationUsers>
-  /** This variable Subject New conversationDetails to set header * */
+  /** This variable Subject NewGroupConversation store  * */
   private NewGroupConversation: Subject<ConversationUsers>
+  /** This variable Subject  to stora tabData boolean  * */
+  public tabData: Subject<boolean>
+
   constructor() {
     this.ConversationUser$ = new Observable();
     this.NewGroupConversation$ = new Observable();
     this.ConversationUser = new Subject();
+    this.tabData = new Subject();
     this.NewGroupConversation = new Subject();
     this.ConversationUser$ = this.ConversationUser.asObservable();
     this.NewGroupConversation$ = this.NewGroupConversation.asObservable();
@@ -31,9 +35,11 @@ export class CommunicationService {
   /**
    *@name setHeaderDetails
    * @param ConversationUser 
-   * @description This method next conversation user
+   * @description This method next NewGroupConversation  
    */
   public setNewGroupConversation(NewGroupConversation: ConversationUsers) {
     this.NewGroupConversation.next(NewGroupConversation)
   }
+
+
 }

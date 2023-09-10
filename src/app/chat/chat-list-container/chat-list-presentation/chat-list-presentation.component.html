@@ -4,7 +4,7 @@
         <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
         <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100">
             <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)"
-                (newConversationEmitter)="newConversation($event)" ></app-user-list-container>
+                (newConversationEmitter)="newConversation($event)"></app-user-list-container>
         </div>
         <div class="row border-5 m-0">
             <div class="col-6 p-0 border-end" role="button" (click)="onTabSwitch(true)">
@@ -21,18 +21,19 @@
             </div>
         </div>
         <!-- Start: User Data  -->
-    
+
         <div class="flex-grow-1 overflow-auto" *ngIf="conversationUsers">
-            <div class="user-container d-flex align-items-center" [ngClass]="{'bg-theme' : user.chatId ===currentChatId }" role="button" *ngFor="let user of conversationUsers "
-            [class.selected]="selectedConversation === user.chatId"
+            <div class="user-container d-flex align-items-center"
+                [ngClass]="{'bg-theme' : user.chatId ===currentChatId }" role="button"
+                *ngFor="let user of conversationUsers " [class.selected]=" isConversationSelected(user.chatId)"
                 (click)="onUser(user)">
                 <div class="px-3 me-1 position-relative">
                     <img [src]="user.profile" class="border rounded-circle user-img" alt="profile">
-                    <ng-template [ngIf]="user.chat_type !== 'group'">
+                    <!-- <ng-template [ngIf]="user.chat_type !== 'group'">
                         <span *ngIf="checkIfOnline(user.members[0]._id)"
                             class="online position-absolute translate-middle bg-success border border-light rounded-circle">
                         </span>
-                    </ng-template>
+                    </ng-template> -->
                 </div>
                 <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
                     <div class="d-flex justify-content-between">

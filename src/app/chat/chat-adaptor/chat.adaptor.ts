@@ -112,26 +112,13 @@ export class EODAdapter implements Adapter<EOD>{
      * @description This method is used to convert the type into response
      */
     public toResponse(eod: EODResponse): EOD {
-
-        let newTasks: Task[] = [];
-
-        eod.status.map((taskDetails: any) => {
-            taskDetails.type = {
-                displayName: taskTypeFormat[taskDetails.type],
-                className: taskBgColor[taskDetails.type]
-            }
-            newTasks.push(taskDetails)
-        })
-
         const newEOD: EOD = new EOD(
-            eod.employeeName,
-            eod.position,
-            eod.department,
-            eod.date,
-            eod.sender,
-            eod.receiver,
             eod.chatId,
-            newTasks,
+            eod.senderId,
+            eod.receiverId,
+            eod.senderName,
+            eod.generationTime,
+            eod.status,
         )
         return newEOD
     }
@@ -142,29 +129,14 @@ export class EODAdapter implements Adapter<EOD>{
      */
     public toRequest(eod: EOD): EODResponse {
 
-        let newStatus: TaskResponse[] = [];
-
-        eod.status.map((tasks: any) => {
-            switch (tasks.type.displayName) {
-                case 'Complete': tasks.type = 'completed'
-                    break;
-                case 'In Progress': tasks.type = 'InProgress'
-                    break;
-                case 'New Learning': tasks.type = 'newLearning'
-                    break;
-            }
-            newStatus.push(tasks);
-        })
 
         const newEODResult: EODResponse = new EODResponse(
-            eod.employeeName,
-            eod.position,
-            eod.department,
-            eod.date,
-            eod.sender,
-            eod.receiver,
             eod.chatId,
-            newStatus
+            eod.senderId,
+            eod.receiverId,
+            eod.generationTime,
+            eod.senderName,
+            // eod.status,
         )
 
         return newEODResult;

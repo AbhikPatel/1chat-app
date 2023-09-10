@@ -1,15 +1,62 @@
-a{
-    all:unset;
+a {
+    all: unset;
 }
+
 ul {
     padding-left: 0 !important;
     margin-bottom: 0 !important;
-    margin-top: 0; 
+    margin-top: 0;
+
     li {
         list-style: none;
         margin-bottom: 0;
     }
 }
-.dropdown-toggle:empty::after{
-display: none;
+
+.dropdown-toggle:empty::after {
+    display: none;
+}
+
+// ng select
+.ng-select-container {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+.ng-select {
+    border: 1px solid $info;
+    border-radius: 6px;
+}
+
+.ng-select.ng-select-focused:not(.ng-select-opened)>.ng-select-container {
+    border-color: $primary ;
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: none;
+}
+
+.ng-select .ng-clear-wrapper {
+    display: none;
+}
+
+.tox-tinymce {
+    border: none !important;
+}
+
+// ckEditor
+.cke_bottom {
+    display: none !important;
+}
+
+.cke_contents {
+    height: 120px !important;
+}
+
+.accordion-button {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.accordion-button::after {
+    display: none !important;
 }

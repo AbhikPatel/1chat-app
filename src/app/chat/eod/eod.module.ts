@@ -7,6 +7,10 @@ import { EodListContainerComponent } from './eod-list-container/eod-list-contain
 import { EodListPresentationComponent } from './eod-list-container/eod-list-presentation/eod-list-presentation.component';
 import { TaskFormContainerComponent } from './task-form-container/task-form-container.component';
 import { TaskFormPresentationComponent } from './task-form-container/task-form-presentation/task-form-presentation.component';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { CKEditorModule } from 'ckeditor4-angular';
 
 
 @NgModule({
@@ -19,7 +23,12 @@ import { TaskFormPresentationComponent } from './task-form-container/task-form-p
   ],
   imports: [
     CommonModule,
-    EodRoutingModule
+    EodRoutingModule,
+    NgbDropdownModule,
+    ReactiveFormsModule,
+    NgSelectModule,
+    CKEditorModule
+
   ]
 })
 export class EodModule { }

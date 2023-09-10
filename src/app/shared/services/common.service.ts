@@ -4,15 +4,17 @@ import { User } from '../models/user.model';
 import { login } from 'src/app/chat/models/login.model';
 
 @Injectable({
-  providedIn:'root'
+  providedIn: 'root'
 })
 
 export class CommonService {
 
-    /** This Subject will be api call  */
-    public userApiCall: Subject<any>;
-
-
+  /** This Subject will be api call  */
+  public userApiCall: Subject<boolean>;
+  /** This Subject will be api call  */
+  public userApiCallForGroup: Subject<boolean>;
+  /** This Subject will be api call  */
+  public stateActivityTypeApiCall: Subject<boolean>;
 
   /** This Subject will store the user details */
   public user$: Subject<User>;
@@ -20,25 +22,27 @@ export class CommonService {
   public statusDelete: BehaviorSubject<boolean>;
   public submitEod: BehaviorSubject<boolean>;
   public eodChatOpen: Subject<any>;
-  public closeOverlaySubject:Subject<void>
-  public closeOverlayS$:Observable<any>
+  public closeOverlaySubject: Subject<void>
+  public closeOverlayS$: Observable<any>
   /**
    * This Variable false replay message click on tab
    */
-   public isReplyModeFalse:Subject<boolean>
+  public isReplyModeFalse: Subject<boolean>
   constructor() {
 
     this.userApiCall = new Subject();
+    this.userApiCallForGroup = new Subject();
+    this.stateActivityTypeApiCall = new Subject();
 
 
     this.user$ = new Subject();
-    this.closeModel = new Subject();          
-    this.isReplyModeFalse = new Subject();          
+    this.closeModel = new Subject();
+    this.isReplyModeFalse = new Subject();
     this.statusDelete = new BehaviorSubject(false);
     this.submitEod = new BehaviorSubject(false);
     this.eodChatOpen = new Subject();
     this.closeOverlaySubject = new Subject();
-    this.closeOverlayS$=this.closeOverlaySubject.asObservable()
+    this.closeOverlayS$ = this.closeOverlaySubject.asObservable()
   }
   /**
    * @name closeOverlay
@@ -86,9 +90,9 @@ export class CommonService {
    * @name getLoginDetails
    * @returns This method get login User details in localStorage and return
    */
-  public getLoginDetails(){
-   const storedUserLocalStorageDataJSON:string= localStorage.getItem('userLocalStorageData');
-   const storedUserLocalStorageData:login=JSON.parse(storedUserLocalStorageDataJSON);
-   return storedUserLocalStorageData
+  public getLoginDetails() {
+    const storedUserLocalStorageDataJSON: string = localStorage.getItem('userLocalStorageData');
+    const storedUserLocalStorageData: login = JSON.parse(storedUserLocalStorageDataJSON);
+    return storedUserLocalStorageData
   }
 }

@@ -7,9 +7,6 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './message.component.html'
 })
 export class MessageComponent {
-  constructor(private activated:ActivatedRoute){
-        console.log(this.activated);
-        
-  }
-  
+
+
 }

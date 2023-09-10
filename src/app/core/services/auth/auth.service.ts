@@ -34,16 +34,15 @@ export class AuthService {
     const url: string = this.baseUrl + 'user/log-in';
     return this._http.httpPostRequest(url, credentials).pipe(
       map((res) => {
-      console.log(res)
-        localStorage.setItem('token',res.token)
-        const userLocalStorageData={
-            role:res.data.doc.role,
-            userId:res.data.doc._id,
-            email:res.data.doc.email,
-            profile:res.data.doc.photo,
-            fullName:res.data.doc.first_name + ' ' + res.data.doc.last_name
+        localStorage.setItem('token', res.token)
+        const userLocalStorageData = {
+          role: res.data.doc.role,
+          userId: res.data.doc._id,
+          email: res.data.doc.email,
+          profile: res.data.doc.photo,
+          fullName: res.data.doc.first_name + ' ' + res.data.doc.last_name
         }
-    localStorage.setItem('userLocalStorageData',JSON.stringify(userLocalStorageData))
+        localStorage.setItem('userLocalStorageData', JSON.stringify(userLocalStorageData))
         return this._adapt.toResponse(res.data.doc);
       })
     )
@@ -76,7 +75,7 @@ export class AuthService {
   public logOutUser(email: string): Observable<any> {
     const url: string = this.baseUrl + `user/log-out`;
     let requestBody = {
-      email:email
+      email: email
     }
     return this._http.httpPostRequest(url, requestBody);
   }

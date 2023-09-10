@@ -17,14 +17,14 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
   /** Observable for the details of online users */
   public getOnlineUsersData$: Observable<OnlineUser[]>;
   /**This Variable the details of all the users */
-  public allUsers:User[];
+  public allUsers: User[];
   /** Observable for new Chat Id */
   public typingInfo$: Observable<Typing>;
   constructor(private _chatService: ChatService,
     private _commonService: CommonService) {
     this.destroy = new Subject();
     this.getConversationUsers$ = new Observable();
-    this.allUsers= [];
+    this.allUsers = [];
     this.getOnlineUsersData$ = new Observable();
     this.typingInfo$ = new Observable();
   }
@@ -41,20 +41,17 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
     this._chatService.setMap();
     this.getOnlineUsersData$ = this._chatService.listen('alive');
     this.typingInfo$ = this._chatService.listen('typing');
-    this._commonService.userApiCall.subscribe((data: any) => {
-      if (data == true)
-        this._chatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
-          if (users) {
-            this.allUsers = users
-          }
-        })
+    this._chatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
+      if (users) {
+        this.allUsers = users
+      }
     })
     this._chatService.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: ConversationUsers[]) => {
       this.getConversationUsers$ = of(users);
-      })
- 
+    })
+
   }
- 
+
   /**
 * @name ngOnDestroy
 * @description This method is called the component is destroyed

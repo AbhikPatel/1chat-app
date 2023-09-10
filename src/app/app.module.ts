@@ -12,6 +12,8 @@ import { ChatService } from './chat/chat.service';
 import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat/chat-adaptor/chat.adaptor';
 import { FormatTime } from './core/utilities/formatTime';
 import { CommunicationService } from './chat/shared/communication/communication.service';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -21,17 +23,19 @@ import { CommunicationService } from './chat/shared/communication/communication.
     BrowserModule,
     AppRoutingModule,
     CoreModule,
+    NgSelectModule,
     NgMultiSelectDropDownModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
       registrationStrategy: 'registerWhenStable:30000'
     }),
+    NgbModule,
   ],
   providers: [
     {
-      multi:true,
-      useClass:TokenInterceptor,
-      provide:HTTP_INTERCEPTORS
+      multi: true,
+      useClass: TokenInterceptor,
+      provide: HTTP_INTERCEPTORS
     },
     ChatService,
     conversationUserAdapter,

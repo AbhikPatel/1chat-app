@@ -18,3 +18,7 @@
 
 /** Toastr scss */
 @import 'ngx-toastr/toastr';
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
+// import style ng-select
+@import "~@ng-select/ng-select/themes/default.theme.css";

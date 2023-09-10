@@ -1,114 +1,123 @@
-export class EODResponse{
-    employeeName:string
-    position:string
-    department:string
-    date:Date
-    sender:string
-    receiver:string
-    chatId:string
-    status:TaskResponse[]
+export class EODResponse {
+    chatId: string
+    senderId: string
+    receiverId: string
+    senderName: string
+    generationTime: any
+    status?: TaskResponse[]
     constructor(
-        employeeName:string,
-        position:string,
-        department:string,
-        date:Date,
-        sender:string,
-        receiver:string,
-        chatId:string,
-        status:TaskResponse[],
-    ){
-        this.employeeName = employeeName
-        this.position = position
-        this.department = department
-        this.date = date
-        this.sender = sender
-        this.receiver = receiver
-        this.status = status
+        chatId: string,
+        senderId: string,
+        receiverId: string,
+        senderName: string,
+        generationTime: any,
+        status?: TaskResponse[],
+
+    ) {
         this.chatId = chatId
+        this.senderId = senderId
+        this.receiverId = receiverId
+        this.senderName = senderName
+        this.generationTime = generationTime
+        this.status = status
     }
 }
-export class EOD{
-    employeeName:string
-    position:string
-    department:string
-    date:Date
-    sender:string
-    receiver:string
-    chatId:string
-    status?:Task[]
-    
+export class EOD {
+    position: string
+    department: string
+    chatId: string
+    senderId: string
+    receiverId: string
+    senderName: string
+    generationTime: any
+    status?: Task[]
+
     constructor(
-        employeeName:string,
-        position:string,
-        department:string,
-        date:Date,
-        sender:string,
-        receiver:string,
-        chatId:string,
-        status?:Task[],
-    ){
-        this.employeeName = employeeName
-        this.position = position
-        this.department = department
-        this.date = date
-        this.sender = sender
-        this.receiver = receiver
-        this.status = status
+        chatId: string,
+        senderId: string,
+        receiverId: string,
+        senderName: string,
+        generationTime: any,
+        status?: Task[],
+    ) {
         this.chatId = chatId
+        this.senderId = senderId
+        this.receiverId = receiverId
+        this.senderName = senderName
+        this.generationTime = generationTime
+        this.status = status
     }
 }
 
-export class TaskResponse{
-    name:string
-    hours:number
-    description:string
-    blocker:string
-    type:string
-    
+export class TaskResponse {
+    title: string
+    stateType: number
+    activityType: string
+    blocker: string
+    description: string
+    originalTime: number
+    remainingTime: number
+    competeTime: number
+
     constructor(
-        name:string,
-        hours:number,
-        description:string,
-        blocker:string,
-        type:string
-    ){
-        this.name = name
-        this.hours = hours
-        this.description = description
+        title: string,
+        stateType: number,
+        activityType: string,
+        blocker: string,
+        description: string,
+        originalTime: number,
+        remainingTime: number,
+        competeTime: number
+    ) {
+        this.title = title
+        this.stateType = stateType
+        this.activityType = activityType
         this.blocker = blocker
-        this.type = type
+        this.description = description
+        this.originalTime = originalTime
+        this.remainingTime = remainingTime
+        this.competeTime = competeTime
     }
 }
 
-export class Task{
-    name:string
-    hours:number
-    description:string
-    blocker:string
-    type:TaskType
-    isEdit?:boolean;
+export class Task {
+    title: string
+    stateType: number
+    activityType: string
+    blocker: string
+    description: string
+    originalTime: number
+    remainingTime: number
+    competeTime: number
+
     constructor(
-        name:string,
-        hours:number,
-        description:string,
-        blocker:string,
-        type:TaskType
-    ){
-        this.name = name
-        this.hours = hours
-        this.description = description
+        title: string,
+        stateType: number,
+        activityType: string,
+        blocker: string,
+        description: string,
+        originalTime: number,
+        remainingTime: number,
+        competeTime: number
+    ) {
+        this.title = title
+        this.stateType = stateType
+        this.activityType = activityType
         this.blocker = blocker
-        this.type = type
+        this.description = description
+        this.originalTime = originalTime
+        this.remainingTime = remainingTime
+        this.competeTime = competeTime
     }
 }
-export class TaskType{
-    displayName:string
-    className:string
-    
+export class TaskType {
+    displayName: string
+    className: string
+
     constructor(
-        displayName:string,
-        className:string
-    ){
+        displayName: string,
+        className: string
+    ) {
         this.displayName = displayName
         this.className = className
     }

@@ -44,7 +44,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
     NgMultiSelectDropDownModule.forRoot(),
     ReactiveFormsModule
   ],
-  providers:[
+  providers: [
     // ChatService,
     // conversationUserAdapter,
     // FormatTime,

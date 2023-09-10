@@ -9,18 +9,17 @@ import { Router } from '@angular/router';
 export class ChatHeaderComponent implements OnInit {
   /** This Properties store receiversConversation object  */
   public receiversConversation: ConversationUsers;
-    /** variable to display the current window on messages */
-    public currentWindow: boolean;
+  /** variable to display the current window on messages */
+  public currentWindow: boolean;
   constructor(private _communicationService: CommunicationService,
-    private _router:Router) {
+    private _router: Router) {
     this.currentWindow = true;
   }
   ngOnInit(): void {
     this._communicationService.ConversationUser$.subscribe((ConversationUsers: ConversationUsers) => {
       this.receiversConversation = ConversationUsers;
-      console.log(ConversationUsers);
     })
-
+    this._communicationService.tabData.subscribe((dataTab: any) => this.currentWindow = dataTab)
   }
   /**
    * 
@@ -35,16 +34,17 @@ export class ChatHeaderComponent implements OnInit {
    * @name navigationConversation 
    * @description This method navigate conversation
    */
-  public navigationConversation(){
-    this._router.navigate(['chat',this.receiversConversation.chatId]);
+  public navigationConversation() {
+    this._router.navigate(['chat', this.receiversConversation.chatId]);
   }
-/**
-   * 
-   * @name navigationConversation 
-   * @description This method navigate eod
-   */
-  public navigationEod(){
-    this._router.navigate(['chat',this.receiversConversation.chatId, 'eod']);
+  /**
+     * 
+     * @name navigationConversation 
+     * @description This method navigate eod
+     */
+  public navigationEod() {
+    this._router.navigate(['chat', this.receiversConversation.chatId, 'eod']);
+
 
   }
 
