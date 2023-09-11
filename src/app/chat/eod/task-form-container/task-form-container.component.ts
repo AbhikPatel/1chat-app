@@ -46,7 +46,7 @@ export class TaskFormContainerComponent implements OnInit {
    */
   public getTask(task: Task): void {
     this._chatService.postEODReports(task).subscribe((data: Task) => {
-      // console.log(data);
+      console.log(data);
 
     })
   }

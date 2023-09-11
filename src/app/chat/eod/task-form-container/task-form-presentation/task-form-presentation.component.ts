@@ -113,11 +113,11 @@ export class TaskFormPresentationComponent implements OnInit {
   public saveTask() {
     this.isSubmitted = true
     if (this.eodFormGroup.valid) {
+      console.log(this.eodFormGroup.value);
+      
       this._TaskFormPresenterService.getEodTasks(this.eodFormGroup.value)
       this._overlayService.close()
-
     }
-
   }
   /**
      * Short variable 

@@ -5,10 +5,9 @@ import { EOD, Task } from 'src/app/chat/models/eod.model';
 
 @Injectable()
 export class TaskFormPresenterService {
-  /** Observble for EOD Report details */
+  /** Observable for Task Report details */
   public eodDetails$: Observable<Task>;
-
-  /** Subject for EOD report details */
+  /** Subject for Task report details */
   private eodDetails: Subject<Task>;
   /** variable to store the ID of the receiver */
   public receiversId: string;
@@ -20,19 +19,21 @@ export class TaskFormPresenterService {
   }
   public eodFormGroup(): FormGroup {
     return this._fb.group({
-      title: ['', Validators.required],
-      stateType: ['', Validators.required],
-      activityType: ['', Validators.required],
-      description: ['', Validators.required],
-      blocker: [''],
-      originalTime: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      remainingTime: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      competeTime: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      taskTitle: ['', Validators.required],
+      taskState: ['', Validators.required],
+      taskActivity: ['', Validators.required],
+      taskDescription: ['', Validators.required],
+      taskBlocker: [''],
+      taskOriginalEstimate: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      taskEffortsRemaining: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      taskEffortsCompleted: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    
     })
 
   }
-
   public getEodTasks(tasks: Task): void {
+    tasks.eodId='64feafc82d1e7a34fe57e040';
+    console.log(tasks);
     this.eodDetails.next(tasks)
 
   }

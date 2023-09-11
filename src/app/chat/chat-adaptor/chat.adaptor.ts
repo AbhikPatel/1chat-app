@@ -105,40 +105,48 @@ export class MessageAdapter implements Adapter<Message>{
 
 @Injectable()
 export class EODAdapter implements Adapter<EOD>{
-
+       
     /**
      * @name toResponse
      * @param eod 
      * @description This method is used to convert the type into response
      */
     public toResponse(eod: EODResponse): EOD {
+        const inputDate =new Date(eod.generationTime);
+        const day = inputDate.getDate();
+        const month = inputDate.toLocaleString('default', { month: 'long' }); // Get the full month name
+        const year = inputDate.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`;
+
+        console.log(formattedDate);
+        eod.generationTime=formattedDate
         const newEOD: EOD = new EOD(
             eod.chatId,
             eod.senderId,
             eod.receiverId,
             eod.senderName,
             eod.generationTime,
-            eod.status,
+            eod.tasks,
         )
         return newEOD
     }
 
-    /**
-     * @name toRequest
-     * @param eod 
-     */
-    public toRequest(eod: EOD): EODResponse {
+    // /**
+    //  * @name toRequest
+    //  * @param eod 
+    //  */
+    // public toRequest(eod: EOD): EODResponse {
 
 
-        const newEODResult: EODResponse = new EODResponse(
-            eod.chatId,
-            eod.senderId,
-            eod.receiverId,
-            eod.generationTime,
-            eod.senderName,
-            // eod.status,
-        )
+    //     const newEODResult: EODResponse = new EODResponse(
+    //         eod.chatId,
+    //         eod.senderId,
+    //         eod.receiverId,
+    //         eod.generationTime,
+    //         eod.senderName,
+    //         eod.status,
+    //     )
 
-        return newEODResult;
-    }
+    //     return newEODResult;
+    // }
 }

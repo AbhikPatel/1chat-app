@@ -9,13 +9,15 @@ import { CommonService } from 'src/app/shared/services/common.service';
 @Component({
   selector: 'app-eod-list-presentation',
   templateUrl: './eod-list-presentation.component.html',
-  styles: [':Host{ height:100%;display:block;}'],
+  // styles: [':Host{ height:100%;display:block;}'],
   providers: [EodListPresenterService]
 })
 export class EodListPresentationComponent {
-  @Input() public set getEodResponse(EodResponse: EOD[]) {
-    if (EodResponse) {
-      this._getEodResponse = EodResponse;
+  @Input() public set getEodResponse(eodResponse: EOD[]) {
+    if (eodResponse) {
+      this._getEodResponse = eodResponse;
+      console.log(eodResponse);
+      
     }
   }
   public get getEodResponse(): EOD[] {

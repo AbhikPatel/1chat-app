@@ -3,15 +3,15 @@ export class EODResponse {
     senderId: string
     receiverId: string
     senderName: string
-    generationTime: any
-    status?: TaskResponse[]
+    generationTime: string
+    tasks: TaskResponse[]
     constructor(
         chatId: string,
         senderId: string,
         receiverId: string,
         senderName: string,
-        generationTime: any,
-        status?: TaskResponse[],
+        generationTime: string,
+        tasks: TaskResponse[],
 
     ) {
         this.chatId = chatId
@@ -19,7 +19,7 @@ export class EODResponse {
         this.receiverId = receiverId
         this.senderName = senderName
         this.generationTime = generationTime
-        this.status = status
+        this.tasks = tasks
     }
 }
 export class EOD {
@@ -29,87 +29,95 @@ export class EOD {
     senderId: string
     receiverId: string
     senderName: string
-    generationTime: any
-    status?: Task[]
+    generationTime: string
+    tasks?: Task[]
 
     constructor(
         chatId: string,
         senderId: string,
         receiverId: string,
         senderName: string,
-        generationTime: any,
-        status?: Task[],
+        generationTime: string,
+        tasks?: Task[],
     ) {
         this.chatId = chatId
         this.senderId = senderId
         this.receiverId = receiverId
         this.senderName = senderName
         this.generationTime = generationTime
-        this.status = status
+        this.tasks = tasks
     }
 }
 
 export class TaskResponse {
-    title: string
-    stateType: number
-    activityType: string
-    blocker: string
-    description: string
-    originalTime: number
-    remainingTime: number
-    competeTime: number
+    eodId:string
+    taskTitle: string
+    taskState: number
+    taskActivity: number
+    taskDescription: string
+    taskBlocker: string
+    taskOriginalEstimate:number
+    taskEffortsRemaining:number
+    taskEffortsCompleted:number
+
 
     constructor(
-        title: string,
-        stateType: number,
-        activityType: string,
-        blocker: string,
-        description: string,
-        originalTime: number,
-        remainingTime: number,
-        competeTime: number
+        eodId:string,
+        taskTitle: string,
+        taskState: number,
+        taskActivity: number,
+        taskDescription: string,
+        taskBlocker: string,
+        taskOriginalEstimate:number,
+        taskEffortsRemaining:number,
+        taskEffortsCompleted:number
     ) {
-        this.title = title
-        this.stateType = stateType
-        this.activityType = activityType
-        this.blocker = blocker
-        this.description = description
-        this.originalTime = originalTime
-        this.remainingTime = remainingTime
-        this.competeTime = competeTime
+        this.eodId = eodId
+        this.taskTitle = taskTitle
+        this.taskState = taskState
+        this.taskActivity = taskActivity
+        this.taskDescription = taskDescription
+        this.taskBlocker = taskBlocker
+        this.taskOriginalEstimate = taskOriginalEstimate
+        this.taskEffortsRemaining = taskEffortsRemaining
+        this.taskEffortsCompleted = taskEffortsCompleted
     }
 }
 
 export class Task {
-    title: string
-    stateType: number
-    activityType: string
-    blocker: string
-    description: string
-    originalTime: number
-    remainingTime: number
-    competeTime: number
+    eodId:string
+    taskTitle: string
+    taskState: number
+    taskActivity: number
+    taskDescription: string
+    taskBlocker: string
+    taskOriginalEstimate:number
+    taskEffortsRemaining:number
+    taskEffortsCompleted:number
 
     constructor(
-        title: string,
-        stateType: number,
-        activityType: string,
-        blocker: string,
-        description: string,
-        originalTime: number,
-        remainingTime: number,
-        competeTime: number
+        eodId:string,
+        taskTitle: string,
+        taskState: number,
+        taskActivity: number,
+        taskDescription: string,
+        taskBlocker: string,
+        taskOriginalEstimate:number,
+        taskEffortsRemaining:number,
+        taskEffortsCompleted:number
     ) {
-        this.title = title
-        this.stateType = stateType
-        this.activityType = activityType
-        this.blocker = blocker
-        this.description = description
-        this.originalTime = originalTime
-        this.remainingTime = remainingTime
-        this.competeTime = competeTime
+        this.eodId = eodId
+        this.taskTitle = taskTitle
+        this.taskState = taskState
+        this.taskActivity = taskActivity
+        this.taskDescription = taskDescription
+        this.taskBlocker = taskBlocker
+        this.taskOriginalEstimate = taskOriginalEstimate
+        this.taskEffortsRemaining = taskEffortsRemaining
+        this.taskEffortsCompleted = taskEffortsCompleted
     }
 }
+
 export class TaskType {
     displayName: string
     className: string

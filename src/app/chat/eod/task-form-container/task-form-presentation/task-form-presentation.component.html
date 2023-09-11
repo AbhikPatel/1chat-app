@@ -12,19 +12,19 @@
         <div class="h-100 d-flex flex-column justify-content-between">
             <div class="main-row-wrapper">
                 <div class="row g-0">
-                    <!-- Task Title -->
+                    <!-- Task taskTitle -->
                     <div class="col-12">
                         <div class="form-group mt-sm-3">
                             <label for="Title" class="fw-bold fs-7">Task Title <span class="text-danger">
                                     *</span></label>
                             <input type="text" class="form-control" id="Title" placeholder="Task Title"
-                                formControlName="title"
-                                [ngClass]="{'border-danger':validator['title'].invalid && (validator['title'].touched ||isSubmitted)}">
+                                formControlName="taskTitle"
+                                [ngClass]="{'border-danger':validator['taskTitle'].invalid && (validator['taskTitle'].touched ||isSubmitted)}">
                         </div>
                         <div class="validation-error-h">
                             <div
-                                *ngIf="validator['title'].invalid && (isSubmitted || validator['title'].touched||validator['title'].dirty)">
-                                <span class="text-danger fw-bold fs-8" *ngIf="validator['title'].errors?.['required']">
+                                *ngIf="validator['taskTitle'].invalid && (isSubmitted || validator['taskTitle'].touched||validator['taskTitle'].dirty)">
+                                <span class="text-danger fw-bold fs-8" *ngIf="validator['taskTitle'].errors?.['required']">
                                     This field is required</span>
                             </div>
                         </div>
@@ -35,22 +35,22 @@
                     <!-- Select State Type -->
                     <div class="col-6">
                         <div class="form-group mt-3">
-                            <label for="stateType" class="fw-bold fs-7">Select State Type <span class="text-danger">
+                            <label for="state" class="fw-bold fs-7">Select State Type <span class="text-danger">
                                     *</span></label>
-                            <ng-select formControlName="stateType"
-                                [ngClass]="{'border-danger':validator['stateType'].invalid && (validator['stateType'].touched||isSubmitted)}">
+                            <ng-select formControlName="taskState"
+                                [ngClass]="{'border-danger':validator['taskState'].invalid && (validator['taskState'].touched||isSubmitted)}">
                                 <ng-option value="" disabled>Select state type</ng-option>
                                 <ng-option *ngFor="let item of getStateActivityType.data.docs[1].data"
-                                    [value]="getStateActivityType.data.docs[1].data.stateId">
+                                   value="{{item.stateId}}">
                                     {{item.state}}
                                 </ng-option>
 
                             </ng-select>
                             <div class="validation-error-h">
                                 <div
-                                    *ngIf="validator['stateType'].invalid && (isSubmitted || validator['stateType'].touched||validator['stateType'].dirty)">
+                                    *ngIf="validator['taskState'].invalid && (isSubmitted || validator['taskState'].touched||validator['taskState'].dirty)">
                                     <span class="text-danger fw-bold fs-8"
-                                        *ngIf="validator['stateType'].errors?.['required']"> This field is
+                                        *ngIf="validator['taskState'].errors?.['required']"> This field is
                                         required</span>
                                 </div>
                             </div>
@@ -60,21 +60,21 @@
                     <!-- Select Activity  Type -->
                     <div class="col-6">
                         <div class="form-group mt-3">
-                            <label for="Activity" class="fw-bold fs-7 ">Select Activity Type <span class="text-danger">
+                            <label for="activity" class="fw-bold fs-7 ">Select activity Type <span class="text-danger">
                                     *</span></label>
-                            <ng-select placeholder="Select Activity Type" formControlName="activityType" id="Activity"
-                                [ngClass]="{'border-danger':validator['activityType'].invalid && (isSubmitted || validator['activityType'].touched )}">
+                            <ng-select placeholder="Select Activity Type" formControlName="taskActivity" id="activity"
+                                [ngClass]="{'border-danger':validator['taskActivity'].invalid && (isSubmitted || validator['taskActivity'].touched )}">
                                 <ng-option value="" disabled>Select Activity Type</ng-option>
-                                <ng-option [value]="getStateActivityType.data.docs[1].data.activityId"
-                                    *ngFor="let item of getStateActivityType?.data?.docs[0]?.data">{{item.activity
+                                <ng-option 
+                                    *ngFor="let item of getStateActivityType?.data?.docs[0]?.data"  value="{{item.activityId}}">{{item.activity
                                     }}</ng-option>
                             </ng-select>
                         </div>
                         <div class="validation-error-h">
                             <div
-                                *ngIf="validator['activityType'].invalid && (isSubmitted || validator['activityType'].touched||validator['activityType'].dirty)">
+                                *ngIf="validator['taskActivity'].invalid && (isSubmitted || validator['taskActivity'].touched||validator['taskActivity'].dirty)">
                                 <span class="text-danger fw-bold fs-8"
-                                    *ngIf="validator['activityType'].errors?.['required']"> This field is
+                                    *ngIf="validator['taskActivity'].errors?.['required']"> This field is
                                     required</span>
                             </div>
                         </div>
@@ -88,17 +88,14 @@
                         <div class="mt-3">
                             <label for="description" class="fw-bold fs-7">Description <span class="text-danger">
                                     *</span></label>
-                            <!-- <editor [apiKey]="_commonService.apiKey" formControlName="description" id="description" class="editor-border" 
-                             [ngClass]="{'border-danger':validator['description'].invalid && isSubmitted}">
-                            </editor > -->
-                            <ckeditor name="description" formControlName="description" [config]="ckEditorConfig">
+                            <ckeditor name="description" formControlName="taskDescription" [config]="ckEditorConfig">
                             </ckeditor>
                         </div>
                         <div class="validation-error-h">
                             <div
-                                *ngIf="eodFormGroup.get('description').invalid && (isSubmitted || eodFormGroup.get('description').touched)">
+                                *ngIf="eodFormGroup.get('taskDescription').invalid && (isSubmitted || eodFormGroup.get('taskDescription').touched)">
                                 <span class="text-danger fw-bold fs-8"
-                                    *ngIf="eodFormGroup.get('description').errors?.['required']"> This field is
+                                    *ngIf="eodFormGroup.get('taskDescription').errors?.['required']"> This field is
                                     required</span>
                             </div>
                         </div>
@@ -110,84 +107,91 @@
                     <div class="col-12 ">
                         <div class="mt-3">
                             <label for="blocker" class="fw-bold fs-7">Blocker</label>
-                            <ckeditor name="blocker" formControlName="blocker" [config]="ckEditorConfig">
+                            <ckeditor name="blocker" formControlName="taskBlocker" [config]="ckEditorConfig">
                             </ckeditor>
                         </div>
                     </div>
                 </div>
+                
                 <div class="row">
                     <!-- Effort  -->
-                    <label for="s" class="fw-bold mt-3">Effort(hours)</label>
+                    <label class="fw-bold mt-3">Effort(hours)</label>
                     <div class="col-8">
+                        
                         <div class="row">
+                       
                             <!-- Original Estimation  -->
-                            <div class="col-6">
+                          
+                       <div class="col-6">
                                 <div class="form-group">
                                     <label for="originalTime" class="fw-bold text-nowrap fs-7">Original Estimation <span
                                             class="text-danger">
                                             *</span></label>
                                     <input type="text" class="form-control" id="originalTime"
-                                        placeholder="Enter OriginalTime" formControlName="originalTime"
-                                        [ngClass]="{'border-danger':validator['originalTime'].invalid && (validator['originalTime'].touched ||isSubmitted)}">
+                                        placeholder="Enter OriginalTime" formControlName="taskOriginalEstimate"
+                                        [ngClass]="{'border-danger':validator['taskOriginalEstimate'].invalid && (validator['taskOriginalEstimate'].touched ||isSubmitted)}">
                                 </div>
                                 <div class="validation-error-h">
                                     <div
-                                        *ngIf="validator['originalTime'].invalid && (isSubmitted || validator['originalTime'].touched||validator['originalTime'].dirty)">
+                                        *ngIf="validator['taskOriginalEstimate'].invalid && (isSubmitted || validator['taskOriginalEstimate'].touched||validator['taskOriginalEstimate'].dirty)">
                                         <span class="text-danger fw-bold fs-8"
-                                            *ngIf="validator['originalTime'].errors?.['required']"> This field is
+                                            *ngIf="validator['taskOriginalEstimate'].errors?.['required']"> This field is
                                             required</span>
                                     </div>
                                     <span class="text-danger fw-bold fs-8"
-                                        *ngIf="validator['originalTime'].errors?.['pattern']">
+                                        *ngIf="validator['taskOriginalEstimate'].errors?.['pattern']">
                                         Only numbers required.</span>
                                 </div>
 
                             </div>
                             <!-- Remaining  -->
-                            <div class="col-6">
+                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="remainingTime" class="fw-bold fs-7">Remaining <span class="text-danger">
                                             *</span></label>
                                     <input type="text" class="form-control" id="remainingTime"
-                                        placeholder="Enter RemainingTime" formControlName="remainingTime"
-                                        [ngClass]="{'border-danger':validator['remainingTime'].invalid && (validator['remainingTime'].touched ||isSubmitted)}">
+                                        placeholder="Enter RemainingTime" formControlName="taskEffortsRemaining"
+                                        [ngClass]="{'border-danger':validator['taskEffortsRemaining'].invalid && (validator['taskEffortsRemaining'].touched ||isSubmitted)}">
                                 </div>
                                 <div class="validation-error-h">
                                     <div
-                                        *ngIf="validator['remainingTime'].invalid && (isSubmitted || validator['remainingTime'].touched||validator['remainingTime'].dirty)">
+                                        *ngIf="validator['taskEffortsRemaining'].invalid && (isSubmitted || validator['taskEffortsRemaining'].touched||validator['taskEffortsRemaining'].dirty)">
                                         <span class="text-danger fw-bold fs-8"
-                                            *ngIf="validator['remainingTime'].errors?.['required']"> This field is
+                                            *ngIf="validator['taskEffortsRemaining'].errors?.['required']"> This field is
                                             required</span>
                                     </div>
                                     <span class="text-danger fw-bold fs-8"
-                                        *ngIf="validator['remainingTime'].errors?.['pattern']">
+                                        *ngIf="validator['taskEffortsRemaining'].errors?.['pattern']">
                                         Only numbers required.</span>
                                 </div>
 
-                            </div>
+                            </div> 
                         </div>
+                    
+                     
                     </div>
                     <!-- Actual Time  -->
-                    <div class="col-4">
+                <div class="col-4">
                         <div class="form-group ">
                             <label for="competeTime" class="fw-bold fs-7">Actual Time <span class="text-danger">
                                     *</span></label>
                             <input type="text" class="form-control" id="competeTime" placeholder="Enter CompeteTime"
-                                formControlName="competeTime"
-                                [ngClass]="{'border-danger':validator['competeTime'].invalid && (validator['competeTime'].touched ||isSubmitted)}">
+                                formControlName="taskEffortsCompleted"
+                                [ngClass]="{'border-danger':validator['taskEffortsCompleted'].invalid && (validator['taskEffortsCompleted'].touched ||isSubmitted)}">
                         </div>
                         <div class="validation-error-h">
                             <div
-                                *ngIf="validator['competeTime'].invalid && (isSubmitted || validator['competeTime'].touched||validator['competeTime'].dirty)">
+                                *ngIf="validator['taskEffortsCompleted'].invalid && (isSubmitted || validator['taskEffortsCompleted'].touched||validator['taskEffortsCompleted'].dirty)">
                                 <span class="text-danger fw-bold fs-8"
-                                    *ngIf="validator['competeTime'].errors?.['required']"> This field is required</span>
+                                    *ngIf="validator['taskEffortsCompleted'].errors?.['required']"> This field is required</span>
                             </div>
-                            <span class="text-danger fw-bold fs-8" *ngIf="validator['competeTime'].errors?.['pattern']">
+                            <span class="text-danger fw-bold fs-8" *ngIf="validator['taskEffortsCompleted'].errors?.['pattern']">
                                 Only numbers required.</span>
                         </div>
 
                     </div>
                 </div>
+            
             </div>
             <!-- submit and Cancel button -->
             <div class="button my-5 my-lg-3 d-flex justify-content-between">

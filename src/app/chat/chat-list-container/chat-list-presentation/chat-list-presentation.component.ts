@@ -21,7 +21,12 @@ export class ChatListPresentationComponent implements OnInit {
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
+      let selectedConversation=users
       this.copyOfConversationUsers = [...users];
+      let findConversation: ConversationUsers = selectedConversation.find((user: ConversationUsers) =>user.chatId === this.currentChatId);
+     console.log(findConversation);
+      this.onUser(findConversation);   
+    
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
       if (this.tabData) this.onTabSwitch(true);
       else
@@ -75,7 +80,7 @@ export class ChatListPresentationComponent implements OnInit {
   /** variable for all typing Ids */
   public typingIds: string[];
   /** This variable will store the current chat Id */
-  public currentChatId: any;
+  public currentChatId: string | null;
   public loginUserObject: login;
   public selectedConversation: any;
   // subject
@@ -113,24 +118,27 @@ export class ChatListPresentationComponent implements OnInit {
   * @description This method will be invoked on ngOnInit
   */
   private props(): void {
+    console.log(this.currentChatId);
+    
     this._chatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
       this.newConversationUsers = user
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
+      console.log(this.currentChatId);
+      
     });
 
     const storedConversation = localStorage.getItem('ConversationUsers');
     if (storedConversation) {
-      const stringWithQuotes = JSON.parse(storedConversation);
-      this.selectedConversation = stringWithQuotes.replace(/^"|"$/g, "");
-    }
+      this.currentChatId= JSON.parse(storedConversation);
+    console.log(this.currentChatId);
+    
+  
+      
+      
+     
   }
-  /**
-* @name isConversationSelected
-* @description This method is used to isConversationSelected
-*/
-  public isConversationSelected(chatId: any) {
-    return this.selectedConversation == chatId;
+
   }
   /**
 * @name onSearchUser
@@ -215,9 +223,7 @@ export class ChatListPresentationComponent implements OnInit {
       this._communicationService.tabData.next(true)
       this._communicationService.setHeaderDetails(user)
       this.currentChatId = user.chatId;
-      // this.cdr.detectChanges(); // Force change detection
       localStorage.setItem('ConversationUsers', JSON.stringify(user.chatId));
-      this.selectedConversation = user.chatId;
     }
     // this.checkNonConversationUsers();
     // this._ChatListPresenterService.getCurrentConversation(user, this.userId);
