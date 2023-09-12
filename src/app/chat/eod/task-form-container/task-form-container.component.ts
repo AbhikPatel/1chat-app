@@ -4,6 +4,7 @@ import { CommonService } from 'src/app/shared/services/common.service';
 import { Observable } from 'rxjs';
 import { EOD, EODResponse, Task } from '../../models/eod.model';
 import { EODAdapter } from '../../chat-adaptor/chat.adaptor';
+import { CommunicationService } from '../../shared/communication/communication.service';
 
 @Component({
   selector: 'app-task-form-container',
@@ -24,6 +25,7 @@ export class TaskFormContainerComponent implements OnInit {
   private _stateActivityType: any;
   constructor(private _chatService: ChatService,
     private _commonService: CommonService,
+    private _communicationService: CommunicationService,
     private _eodAdapter: EODAdapter,) {
 
   }
@@ -46,8 +48,8 @@ export class TaskFormContainerComponent implements OnInit {
    */
   public getTask(task: Task): void {
     this._chatService.postEODReports(task).subscribe((data: Task) => {
-      console.log(data);
-
+      this._communicationService.taskResponses(data)
+      9
     })
   }
 }

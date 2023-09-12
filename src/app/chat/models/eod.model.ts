@@ -30,7 +30,7 @@ export class EOD {
     receiverId: string
     senderName: string
     generationTime: string
-    tasks?: Task[]
+    tasks: Task[]
 
     constructor(
         chatId: string,
@@ -38,7 +38,7 @@ export class EOD {
         receiverId: string,
         senderName: string,
         generationTime: string,
-        tasks?: Task[],
+        tasks: Task[],
     ) {
         this.chatId = chatId
         this.senderId = senderId
@@ -50,27 +50,27 @@ export class EOD {
 }
 
 export class TaskResponse {
-    eodId:string
+    eodId: string
     taskTitle: string
     taskState: number
     taskActivity: number
     taskDescription: string
     taskBlocker: string
-    taskOriginalEstimate:number
-    taskEffortsRemaining:number
-    taskEffortsCompleted:number
+    taskOriginalEstimate: number
+    taskEffortsRemaining: number
+    taskEffortsCompleted: number
 
 
     constructor(
-        eodId:string,
+        eodId: string,
         taskTitle: string,
         taskState: number,
         taskActivity: number,
         taskDescription: string,
         taskBlocker: string,
-        taskOriginalEstimate:number,
-        taskEffortsRemaining:number,
-        taskEffortsCompleted:number
+        taskOriginalEstimate: number,
+        taskEffortsRemaining: number,
+        taskEffortsCompleted: number
     ) {
         this.eodId = eodId
         this.taskTitle = taskTitle
@@ -85,26 +85,26 @@ export class TaskResponse {
 }
 
 export class Task {
-    eodId:string
+    eodId: string
     taskTitle: string
     taskState: number
     taskActivity: number
     taskDescription: string
     taskBlocker: string
-    taskOriginalEstimate:number
-    taskEffortsRemaining:number
-    taskEffortsCompleted:number
+    taskOriginalEstimate: number
+    taskEffortsRemaining: number
+    taskEffortsCompleted: number
 
     constructor(
-        eodId:string,
+        eodId: string,
         taskTitle: string,
         taskState: number,
         taskActivity: number,
         taskDescription: string,
         taskBlocker: string,
-        taskOriginalEstimate:number,
-        taskEffortsRemaining:number,
-        taskEffortsCompleted:number
+        taskOriginalEstimate: number,
+        taskEffortsRemaining: number,
+        taskEffortsCompleted: number
     ) {
         this.eodId = eodId
         this.taskTitle = taskTitle

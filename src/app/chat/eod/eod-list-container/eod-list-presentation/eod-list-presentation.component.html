@@ -4,7 +4,7 @@
     </div>
     <!-- Start Eod list -->
     <div class="flex-grow-1 overflow-auto">
-      <ng-container *ngFor="let eod of getEodResponse">   
+        <ng-container *ngFor="let eod of getEodResponse">
             <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center">
@@ -64,10 +64,10 @@
                                                             class="dropdownBasic1 overflow-auto">
                                                             <ul class="list-unstyled m-0">
                                                                 <li class="d-flex align-items-center px-3 py-2"
-                                                                    ngbDropdownItem>
+                                                                    ngbDropdownItem (click)="editTAsk(task)">
                                                                     Edit </li>
                                                                 <li class="d-flex align-items-center px-3 py-2"
-                                                                    ngbDropdownItem>
+                                                                    ngbDropdownItem (click)="deleteTask()">
                                                                     Delete </li>
                                                             </ul>
                                                         </div>
@@ -120,12 +120,9 @@
                     </div>
                 </div>
             </div>
-        </ng-container> 
+        </ng-container>
     </div>
 
 
 </div>
 <!-- End Start Eod list -->
-
-
-

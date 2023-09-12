@@ -7,6 +7,7 @@ import { TaskFormPresenterService } from '../Task-form-presenter/task-form-prese
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { login } from 'src/app/chat/models/login.model';
 import { EOD, Task } from 'src/app/chat/models/eod.model';
+import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
 
 @Component({
   selector: 'app-task-form-presentation',
@@ -113,8 +114,6 @@ export class TaskFormPresentationComponent implements OnInit {
   public saveTask() {
     this.isSubmitted = true
     if (this.eodFormGroup.valid) {
-      console.log(this.eodFormGroup.value);
-      
       this._TaskFormPresenterService.getEodTasks(this.eodFormGroup.value)
       this._overlayService.close()
     }
@@ -127,10 +126,10 @@ export class TaskFormPresentationComponent implements OnInit {
   }
   /**
    * @name closeEodForm
-   * @description This method close Eod form Overlay
+   * @description This method close task form Overlay
    */
   public closeEodForm() {
-    this._overlayService.close()
+    this._overlayService.open(ConfirmationModelComponent, false)
   }
 
 }
