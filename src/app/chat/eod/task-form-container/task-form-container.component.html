@@ -1,2 +1,3 @@
-<app-task-form-presentation [getStateActivityType]="stateActivityType"
-    (eodDetails)="getTask($event)"></app-task-form-presentation>
+<app-task-form-presentation [getStateActivityType]="stateActivityType" [getTaskDetails]="taskDetails"
+[getEodResponse]="eodResponse"
+    (taskDetails)="getTask($event)" (editTaskDetails)="getEditTaskDetails($event)"></app-task-form-presentation>

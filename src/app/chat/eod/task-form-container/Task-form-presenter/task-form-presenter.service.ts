@@ -6,17 +6,28 @@ import { EOD, Task } from 'src/app/chat/models/eod.model';
 @Injectable()
 export class TaskFormPresenterService {
   /** Observable for Task Report details */
-  public eodDetails$: Observable<Task>;
+  public taskDetails$: Observable<Task>;
   /** Subject for Task report details */
-  private eodDetails: Subject<Task>;
-  /** variable to store the ID of the receiver */
-  public receiversId: string;
+  private taskDetails: Subject<Task>;
+  /** Observable for Task Report details */
+  public editTaskDetails$: Observable<any>;
+  /** Subject for Task report details */
+  private editTaskDetails: Subject<any>;
+  /** variable to store the last Eod ID  */
+  public eodId: string;
   constructor(private _fb: FormBuilder) {
-    this.eodDetails$ = new Observable();
-    this.eodDetails = new Subject();
-    this.eodDetails$ = this.eodDetails.asObservable();
-    this.receiversId = '';
+    this.taskDetails$ = new Observable();
+    this.taskDetails = new Subject();
+    this. editTaskDetails$= new Observable();
+    this.editTaskDetails = new Subject();
+    this.taskDetails$ = this.taskDetails.asObservable();
+    this.editTaskDetails$ = this.editTaskDetails.asObservable();
+
   }
+/**
+ * Eod Form Group Create and return
+ * @returns 
+ */
   public eodFormGroup(): FormGroup {
     return this._fb.group({
       taskTitle: ['', Validators.required],
@@ -31,10 +42,35 @@ export class TaskFormPresenterService {
     })
 
   }
-  public getEodTasks(tasks: Task): void {
-    tasks.eodId='64feafc82d1e7a34fe57e040';
-    console.log(tasks);
-    this.eodDetails.next(tasks)
-
+/**
+ * @name getEodResponse
+ * @param eodResponses 
+ * @description This Method find last eod id in given EodResponse Array
+ */
+  public getEodResponse(eodResponses:any){
+    const spliceEodResponses= eodResponses.splice(-1);
+     this.eodId= spliceEodResponses[0]._id;          
+  }
+  /**
+   * @name getEodTasks
+   * @param tasks 
+   * @description This method next task Details  with eod Id
+   */
+  public addEodTasks(tasks: Task): void {
+    tasks.eodId=this.eodId;
+    this.taskDetails.next(tasks);
+  }
+  /**
+   * @name getEodTasks
+   * @param tasks 
+   * @description This method next Edit task Details  with eod Id
+   */
+  public editEodTasks(editTask: any,id:any): void {
+             editTask.eodId=this.eodId
+            const editData:any={
+                 task:editTask,
+                 editId:id
+            }
+          this.editTaskDetails.next(editData);
   }
 }

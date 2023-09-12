@@ -202,7 +202,7 @@
             <div class="button my-5 my-lg-3 d-flex justify-content-between">
                 <button type="button" class="btn btn-outline-info me-3"><span class="text-dark"
                         (click)="closeEodForm()">Cancel</span></button>
-                <button type="submit" class="btn btn-primary  border-0 text-nowrap text-white fw-bold ">Save</button>
+                <button type="submit" class="btn btn-primary  border-0 text-nowrap text-white fw-bold "  [disabled]="eodFormGroup.invalid">Save</button>
             </div>
         </div>
     </form>

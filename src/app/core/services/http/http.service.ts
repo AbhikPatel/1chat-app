@@ -43,7 +43,7 @@ export class HttpService {
    * @description generic get request to be used throughout the application.
    */
   public httpDeleteRequest<T>(url: string, version: string = '1.0'): Observable<any> {
-    const interceptableHeader: HttpHeaders = this.createHeader(version)
+     const interceptableHeader: HttpHeaders = this.createHeader(version)
     return this._http.delete<T>(url, { headers: interceptableHeader })
   }
 

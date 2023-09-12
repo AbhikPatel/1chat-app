@@ -17,8 +17,10 @@ export class CommunicationService {
   private NewGroupConversation: Subject<ConversationUsers>
   /** This variable Subject  Task Response store  * */
   private taskResponse: Subject<Task>
-  /** This variable Subject  to stora tabData boolean  * */
+  /** This variable Subject  to store tabData boolean  * */
   public tabData: Subject<boolean>
+  /** This variable Subject  to deleteEodID  * */
+  public deleteEodId: Subject<string>
 
   constructor() {
     this.ConversationUser$ = new Observable();
@@ -28,6 +30,7 @@ export class CommunicationService {
     this.tabData = new Subject();
     this.NewGroupConversation = new Subject();
     this.taskResponse = new Subject();
+    this.deleteEodId = new Subject();
     this.ConversationUser$ = this.ConversationUser.asObservable();
     this.NewGroupConversation$ = this.NewGroupConversation.asObservable();
     this.taskResponse$ = this.taskResponse.asObservable();

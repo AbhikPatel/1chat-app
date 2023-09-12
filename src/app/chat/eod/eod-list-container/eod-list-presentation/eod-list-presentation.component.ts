@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { TaskFormContainerComponent } from '../../task-form-container/task-form-container.component';
 import { EodListPresenterService } from '../Eod-list-presenter/eod-list-presenter.service';
@@ -14,11 +14,11 @@ import { CommunicationService } from 'src/app/chat/shared/communication/communic
   // styles: [':Host{ height:100%;display:block;}'],
   providers: [EodListPresenterService]
 })
-export class EodListPresentationComponent {
+export class EodListPresentationComponent implements OnInit {
   @Input() public set getEodResponse(eodResponse: EOD[]) {
     if (eodResponse) {
       this._getEodResponse = eodResponse;
-      console.log(eodResponse);
+      console.log('eodResponse', eodResponse);
 
     }
   }
@@ -38,25 +38,23 @@ export class EodListPresentationComponent {
   }
   // Initialize with -1 to have no items open by default
   public openIndex: number
+  public copyResponse: EOD[]
   /** getter and setter  Private Variable */
   private _getEodResponse: EOD[]
   private _getStateActivityType: any;
-  constructor(private _overlayService: OverlayService,
-    private _commonService: CommonService,
-    private _communicationService: CommunicationService) {
-    this.openIndex = -1
+  constructor(private _overlayService: OverlayService) {
+    this.openIndex = -1;
+    this.copyResponse = [];
+  }
+  ngOnInit(): void {
   }
   /**
    * @name openTaskForm
    * @description This method open task form
    */
   public openTaskForm() {
-    this._commonService.stateActivityTypeApiCall.next(true)
-    this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType)
-    this._communicationService.taskResponse$.subscribe((Response: Task) => {
-      console.log(Response);
+    this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType, this._getEodResponse)
 
-    })
   }
   /**
   * @name toggleAccordion
@@ -65,12 +63,21 @@ export class EodListPresentationComponent {
   public toggleAccordion(index: number) {
     this.openIndex = this.openIndex === index ? -1 : index; // Toggle the open index
   }
-  public editTAsk(task: Task) {
-    const taskInstance = this._overlayService.open(TaskFormContainerComponent, false, this._getStateActivityType);
-    // taskInstance.instance.eodFormGroup.patchValue(task)
-
+  /**
+   * @name editTask
+   * @param task 
+   * @description This method open edit form
+   */
+  public editTask(task: Task) {
+    const taskInstance = this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType,this._getEodResponse);
+    taskInstance.instance.taskDetails= task
+    
   }
-  public deleteTask() {
-    this._overlayService.open(ConfirmationModelComponent, false)
+  /**
+   * @name deleteTask
+   * @description This method Delete task 
+   */
+  public deleteTask(taskId:any) {
+    this._overlayService.open(ConfirmationModelComponent,false,taskId);
   }
 }

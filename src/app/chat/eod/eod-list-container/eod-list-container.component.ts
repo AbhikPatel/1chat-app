@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../../chat.service';
 import { Observable } from 'rxjs';
-import { EOD } from '../../models/eod.model';
+import { EOD, Task } from '../../models/eod.model';
+import { CommunicationService } from '../../shared/communication/communication.service';
 
 @Component({
   selector: 'app-eod-list-container',
@@ -15,9 +16,10 @@ export class EodListContainerComponent {
   /** This Variable Store routing params id */
   public eodResponse$: Observable<EOD[]>;
   /** This Variable store state and activity Type */
-  public stateActivityType$: Observable<any>
+  public stateActivityType$: Observable<any>;
   constructor(private _router: ActivatedRoute,
-    private _chatService: ChatService) {
+    private _chatService: ChatService,
+    private _communicationService:CommunicationService) {
     this.paramsId = '';
     this.eodResponse$ = new Observable();
     this.stateActivityType$ = new Observable();
@@ -36,9 +38,36 @@ export class EodListContainerComponent {
     this._router.parent.params.subscribe(parentParams => {
       this.paramsId = parentParams['id'];
     });
-    this.eodResponse$ = this._chatService.getEODReports(this.paramsId);
-    this.stateActivityType$ = this._chatService.getStateActivityType()
+    this.stateActivityType$ = this._chatService.getStateActivityType();
+    /**
+     * get All eod Response
+     */
+   this.getEODReports()
+   /**
+    * taskResponse
+    */
+    this._communicationService.taskResponse$.subscribe((taskResponse:Task)=>{
+      if(taskResponse)
+      this.getEODReports();
+    })
+      /**
+    * Delete Task
+    */
+    this._communicationService.deleteEodId.subscribe((taskId:string)=>{
+      if(taskId){
+        this._chatService.deleteTask(taskId).subscribe();
+        this.getEODReports();
+      }
+ 
+    })
   }
-
+  /**
+   * @name getEODReports
+   * @description This method Get all getEODReports
+   */
+  public getEODReports(){
+    this.eodResponse$ = this._chatService.getEODReports(this.paramsId);
+  }
+   
 }
 

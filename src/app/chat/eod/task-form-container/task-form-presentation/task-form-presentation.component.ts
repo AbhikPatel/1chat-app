@@ -27,19 +27,51 @@ export class TaskFormPresentationComponent implements OnInit {
     return this._getStateActivityType
 
   }
-  @Output() public eodDetails: EventEmitter<Task>
+  /**
+   * This Properties get getTaskDetails for container
+   */
+  @Input() public set getTaskDetails(getTaskDetails: any) {
+    if (getTaskDetails) {
+      this._getTaskDetails = getTaskDetails;
+       this.eodFormGroup.patchValue(this._getTaskDetails);
+    }
+  }
+  public get getTaskDetails(): any {
+    return this._getTaskDetails
+
+  }
+  /**
+   * This Properties get EodResponse for container
+   */
+  @Input() public set getEodResponse(eodResponse: EOD[]) {
+    if (eodResponse) {
+      const eodResponses=[...eodResponse]
+      this._getEodResponse = eodResponse;
+    this._TaskFormPresenterService.getEodResponse(eodResponses)
+      
+    }
+  }
+  public get getEodResponse(): EOD[] {
+    return  this._getEodResponse
+
+  }
+  /** This variable emit  Task Details*/
+  @Output() public taskDetails: EventEmitter<Task>
+  /** This variable emit  Task Details*/
+  @Output() public editTaskDetails: EventEmitter<Task>
   // This properties get LoginUser
   public loginUserDetails: login;
   /** getter and setter  Private Variable */
   private _getStateActivityType: any;
   /** This variable create form Group  */
   public eodFormGroup: FormGroup;
-
-  /** */
   public isSubmitted: boolean
   /** This element used for focus inputBox */
   public ckEditorConfig: any = {};
 
+/** Private Variable */
+public _getEodResponse:EOD[]
+private _getTaskDetails:Task
   constructor(public _commonService: CommonService,
     private _TaskFormPresenterService: TaskFormPresenterService,
     private _overlayService: OverlayService
@@ -47,7 +79,8 @@ export class TaskFormPresentationComponent implements OnInit {
     this.eodFormGroup = this._TaskFormPresenterService.eodFormGroup();
     this.isSubmitted = false;
     this.loginUserDetails = this._commonService.getLoginDetails();
-    this.eodDetails = new EventEmitter()
+    this.taskDetails = new EventEmitter();
+    this.editTaskDetails = new EventEmitter();
     this.ckEditorConfig = {
       toolbar: [
         [
@@ -109,13 +142,35 @@ export class TaskFormPresentationComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    this._TaskFormPresenterService.eodDetails$.subscribe((task: Task) => this.eodDetails.emit(task))
+   this.props();
   }
+   /**
+   * @name props
+   * @description This method will be invoked on ngOnInit
+   */
+   private props(): void {
+    this._TaskFormPresenterService.taskDetails$.subscribe((task: Task) => this.taskDetails.emit(task));
+    this._TaskFormPresenterService.editTaskDetails$.subscribe((EditTask: any) => this.editTaskDetails.emit(EditTask));
+
+    
+   }
+/**
+ * @name saveTask
+ * @description This method
+ */
   public saveTask() {
     this.isSubmitted = true
+    console.log(this.eodFormGroup.value);
+    
     if (this.eodFormGroup.valid) {
-      this._TaskFormPresenterService.getEodTasks(this.eodFormGroup.value)
-      this._overlayService.close()
+      if(this._getTaskDetails?._id){
+        this._TaskFormPresenterService.editEodTasks(this.eodFormGroup.value,this._getTaskDetails._id);
+        this._overlayService.close()
+      }else{
+        this._TaskFormPresenterService.addEodTasks(this.eodFormGroup.value);
+        this._overlayService.close()
+      }
+    
     }
   }
   /**
@@ -129,7 +184,7 @@ export class TaskFormPresentationComponent implements OnInit {
    * @description This method close task form Overlay
    */
   public closeEodForm() {
-    this._overlayService.open(ConfirmationModelComponent, false)
+    this._overlayService.close()
   }
 
 }

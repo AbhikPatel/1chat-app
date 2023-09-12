@@ -181,14 +181,30 @@ export class ChatService {
     * @param id 
     * @returns This method is used to get EOD Reports
     */
-  public postEODReports(taskData: Task): Observable<Task> {
+  public postTaskReports(taskData: Task): Observable<Task> {
     const url: string = this.baseUrl + `task`;
     return this._http.httpPostRequest(url, taskData)
-    // .pipe(
-    // map((res) => {
-    //   res.data.data = res.data.docs.map((eod: EODResponse) => this._eodAdapter.toResponse(eod));
-    //   return res.data.data;
-    // }))
+  }
+
+   /**
+    * @name deleteTask
+    * @param id 
+    * @returns This method is used to Delete task
+    */
+   public deleteTask(id: string): Observable<string> {
+    return this._http.httpDeleteRequest(`${this.baseUrl}task/${id}`)
+  }
+   /**
+    * @name deleteTask
+    * @param id 
+    * @returns This method is used to Delete task
+    */
+   public updateTask(task:any,id: any): Observable<any> {
+    console.log(task);
+    console.log(id);
+    
+    
+    return this._http.httpPutRequest(`${this.baseUrl}task/${id}`,task)
   }
   /**
   * @name setMap

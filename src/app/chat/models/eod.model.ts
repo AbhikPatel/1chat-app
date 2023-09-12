@@ -1,4 +1,5 @@
 export class EODResponse {
+    _id:number
     chatId: string
     senderId: string
     receiverId: string
@@ -6,6 +7,8 @@ export class EODResponse {
     generationTime: string
     tasks: TaskResponse[]
     constructor(
+    
+        _id:number,
         chatId: string,
         senderId: string,
         receiverId: string,
@@ -14,6 +17,7 @@ export class EODResponse {
         tasks: TaskResponse[],
 
     ) {
+        this._id=_id
         this.chatId = chatId
         this.senderId = senderId
         this.receiverId = receiverId
@@ -23,6 +27,7 @@ export class EODResponse {
     }
 }
 export class EOD {
+    _id:number
     position: string
     department: string
     chatId: string
@@ -33,6 +38,7 @@ export class EOD {
     tasks: Task[]
 
     constructor(
+        _id:number,
         chatId: string,
         senderId: string,
         receiverId: string,
@@ -40,6 +46,7 @@ export class EOD {
         generationTime: string,
         tasks: Task[],
     ) {
+        this._id=_id
         this.chatId = chatId
         this.senderId = senderId
         this.receiverId = receiverId
@@ -85,6 +92,7 @@ export class TaskResponse {
 }
 
 export class Task {
+    _id?:number
     eodId: string
     taskTitle: string
     taskState: number

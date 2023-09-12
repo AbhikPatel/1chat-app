@@ -37,13 +37,13 @@
                                         <div class="w-100">
                                             <div class="row align-items-center">
                                                 <div class="col-1">
-                                                    <h2 class="accordion-header" id="headingOne{{i}}">
+                                                    <h2 class="accordion-header" id="headingOne{{task._id}}">
                                                         <button class="accordion-button" type="button"
                                                             data-bs-toggle="collapse" aria-expanded="false"
                                                             (click)="toggleAccordion(i)"
-                                                            [attr.data-bs-target]="'#collapseOne' + i"
-                                                            [attr.aria-controls]="'collapseOne' + i">
-                                                            {{ i === openIndex ? '▼' : '►' }}
+                                                            [attr.data-bs-target]="'#collapseOne' + task._id"
+                                                            [attr.aria-controls]="'collapseOne' + task._id">
+                                                            {{ task._id === openIndex ? '▼' : '►' }}
                                                         </button>
                                                     </h2>
                                                 </div>
@@ -64,10 +64,11 @@
                                                             class="dropdownBasic1 overflow-auto">
                                                             <ul class="list-unstyled m-0">
                                                                 <li class="d-flex align-items-center px-3 py-2"
-                                                                    ngbDropdownItem (click)="editTAsk(task)">
+                                                                    ngbDropdownItem (click)="editTask(task)">
                                                                     Edit </li>
                                                                 <li class="d-flex align-items-center px-3 py-2"
-                                                                    ngbDropdownItem (click)="deleteTask()">
+                                                                    ngbDropdownItem (click)="deleteTask(task._id
+                                                                    )">
                                                                     Delete </li>
                                                             </ul>
                                                         </div>
@@ -75,8 +76,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div [id]="'collapseOne' + i " class="accordion-collapse collapse show"
-                                            [class.show]="i === openIndex" [attr.data-bs-parent]="'#accordionExample'">
+                                        <div [id]="'collapseOne' + task._id " class="accordion-collapse collapse show"
+                                            [class.show]="task._id=== openIndex" [attr.data-bs-parent]="'#accordionExample'">
                                             <div class="accordion-body p-4">
                                                 <div class="">
                                                     <div class="row">
@@ -92,7 +93,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
 
                                                 <div class="mt-3">
                                                     <div class="row">

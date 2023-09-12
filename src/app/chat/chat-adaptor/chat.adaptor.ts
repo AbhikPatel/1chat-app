@@ -117,10 +117,9 @@ export class EODAdapter implements Adapter<EOD>{
         const month = inputDate.toLocaleString('default', { month: 'long' }); // Get the full month name
         const year = inputDate.getFullYear();
         const formattedDate = `${day}/${month}/${year}`;
-
-        console.log(formattedDate);
         eod.generationTime=formattedDate
         const newEOD: EOD = new EOD(
+            eod._id,
             eod.chatId,
             eod.senderId,
             eod.receiverId,

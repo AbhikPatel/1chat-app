@@ -20,6 +20,7 @@ import { FormatTime } from '../core/utilities/formatTime';
 import { ChatHeaderComponent } from './chat-header/chat-header.component';
 import { CommunicationService } from './shared/communication/communication.service';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
     NgbDropdownModule,
     FormsModule,
     NgMultiSelectDropDownModule.forRoot(),
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     // ChatService,

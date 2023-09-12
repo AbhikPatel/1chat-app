@@ -2,9 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ChatService } from '../../chat.service';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { Observable } from 'rxjs';
-import { EOD, EODResponse, Task } from '../../models/eod.model';
+import { EOD, EODResponse, Task, TaskResponse } from '../../models/eod.model';
 import { EODAdapter } from '../../chat-adaptor/chat.adaptor';
 import { CommunicationService } from '../../shared/communication/communication.service';
+import { ActivatedRoute } from '@angular/router';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-task-form-container',
@@ -21,13 +23,36 @@ export class TaskFormContainerComponent implements OnInit {
     return this._stateActivityType
 
   }
+  /** This Properties store taskDetails */
+  @Input() public set taskDetails(taskDetails: any) {
+    if (taskDetails) {
+      this._taskDetails = taskDetails;
+      console.log(taskDetails);
+      
+    }
+  }
+  public get taskDetails(): any {
+    return this._taskDetails
+
+  }
+  /** This Properties eodResponse Data Store */
+  @Input() public set eodResponse(eodResponse: EOD[]) {
+    if (eodResponse) {
+      this._eodResponse = eodResponse;
+    }
+  }
+  public get eodResponse():  EOD[] {
+    return this._eodResponse
+
+  }
   /** getter and setter  Private Variable */
   private _stateActivityType: any;
+  private  _eodResponse: EOD[];
+  private  _taskDetails: EOD[];
+  public EodGroup:string;
   constructor(private _chatService: ChatService,
-    private _commonService: CommonService,
-    private _communicationService: CommunicationService,
-    private _eodAdapter: EODAdapter,) {
-
+    private _communicationService: CommunicationService) {
+      this.EodGroup='ssss'
   }
 
   ngOnInit(): void {
@@ -39,6 +64,7 @@ export class TaskFormContainerComponent implements OnInit {
    * @description This method will be invoked on ngOnInit
    */
   private props(): void {
+ 
 
   }
   /**
@@ -47,9 +73,22 @@ export class TaskFormContainerComponent implements OnInit {
    * @description This method post task details 
    */
   public getTask(task: Task): void {
-    this._chatService.postEODReports(task).subscribe((data: Task) => {
-      this._communicationService.taskResponses(data)
-      9
+    this._chatService.postTaskReports(task).subscribe((taskResponse:Task)=>{
+      if(TaskResponse)
+       this._communicationService.taskResponses(taskResponse)
+    });
+  }
+  /**
+   * @name getTask
+   * @param eod 
+   * @description This method post task details 
+   */
+  public getEditTaskDetails(EditTaskObject: any): void {
+    console.log(EditTaskObject);
+    
+    this._chatService.updateTask(EditTaskObject.task,EditTaskObject.editId).subscribe((data:any)=>{
+      console.log(data);
+      
     })
   }
 }

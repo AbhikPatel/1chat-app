@@ -3,6 +3,7 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { CreateGroupFormContainerComponent } from 'src/app/chat/create-group-form-container/create-group-form-container.component';
 import { TaskFormContainerComponent } from 'src/app/chat/eod/task-form-container/task-form-container.component';
+import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
 
 @Injectable()
 export class OverlayService {
@@ -12,7 +13,7 @@ export class OverlayService {
   /**
    * Open a custom component in an overlay
    */
-  open<T>(component: ComponentType<T>, isTrue: boolean, data?: any) {
+  open<T>(component: ComponentType<T>, isTrue: boolean, data?: any,data2?:any) {
     // Globally centered position strategy
     const positionStrategy = this.overlay
       .position()
@@ -27,12 +28,13 @@ export class OverlayService {
     const instance = this.overlayRef.attach(portal);
     // Pass data to the component instance based on component type
     if (component === CreateGroupFormContainerComponent) {
-      instance.instance.getAllUsers = data;
+             instance.instance.getAllUsers = data;
     } else if (component === TaskFormContainerComponent) {
-      instance.instance.stateActivityType = data;
+           instance.instance.stateActivityType = data;
+           instance.instance.eodResponse = data2;
+    } else if (component === ConfirmationModelComponent){
+                  instance.instance.taskId=data;
     }
-    // Pass data to the component instance
-    instance.instance.stateActivityType = data
     this.overlayRef.backdropClick().subscribe(() => { this.overlayRef.detach() })
     return instance;
   }
