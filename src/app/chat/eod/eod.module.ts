@@ -11,6 +11,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CKEditorModule } from 'ckeditor4-angular';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { CKEditorModule } from 'ckeditor4-angular';
     NgbDropdownModule,
     ReactiveFormsModule,
     NgSelectModule,
-    CKEditorModule
+    CKEditorModule,
+    NgxSkeletonLoaderModule
 
   ]
 })

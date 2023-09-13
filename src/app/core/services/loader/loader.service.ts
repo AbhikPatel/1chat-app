@@ -5,9 +5,12 @@ import { Subject } from 'rxjs/internal/Subject';
   providedIn: 'root'
 })
 export class LoaderService {
-
-  public loader:Subject<boolean>
+  public allUsers:Subject<boolean>
+  public conversation:Subject<boolean>
+  public eod:Subject<boolean>
   constructor() { 
-    this.loader = new Subject();
+    this.allUsers = new Subject();
+    this.conversation = new Subject();
+    this.eod = new Subject();
   }
 }

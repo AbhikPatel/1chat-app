@@ -160,8 +160,6 @@ private _getTaskDetails:Task
  */
   public saveTask() {
     this.isSubmitted = true
-    console.log(this.eodFormGroup.value);
-    
     if (this.eodFormGroup.valid) {
       if(this._getTaskDetails?._id){
         this._TaskFormPresenterService.editEodTasks(this.eodFormGroup.value,this._getTaskDetails._id);

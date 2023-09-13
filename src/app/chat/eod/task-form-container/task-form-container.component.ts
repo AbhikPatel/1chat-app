@@ -49,10 +49,8 @@ export class TaskFormContainerComponent implements OnInit {
   private _stateActivityType: any;
   private  _eodResponse: EOD[];
   private  _taskDetails: EOD[];
-  public EodGroup:string;
   constructor(private _chatService: ChatService,
     private _communicationService: CommunicationService) {
-      this.EodGroup='ssss'
   }
 
   ngOnInit(): void {
@@ -84,10 +82,8 @@ export class TaskFormContainerComponent implements OnInit {
    * @description This method post task details 
    */
   public getEditTaskDetails(EditTaskObject: any): void {
-    console.log(EditTaskObject);
-    
     this._chatService.updateTask(EditTaskObject.task,EditTaskObject.editId).subscribe((data:any)=>{
-      console.log(data);
+    
       
     })
   }

@@ -10,7 +10,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
   constructor(
     private _service: LoaderService,
-    private _toastr: ToasterService,
+    private _toaster: ToasterService,
     private _authService: AuthService
   ) { }
 
@@ -23,17 +23,23 @@ export class TokenInterceptor implements HttpInterceptor {
   public intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     let token = localStorage.getItem('token')
     const modifiedReq = request.clone({ headers: request.headers.set('Authorization', `Bearer ${token}`), });
-    this._service.loader.next(true)
+    this._service.allUsers.next(true)
+    this._service.conversation.next(true)
+    this._service.eod.next(true)
     return next.handle(modifiedReq).pipe(
-      finalize(() => this._service.loader.next(false)),
+      finalize(() => {
+        // Stop loading indicators when the request is complete
+        this._service.allUsers.next(false);
+        this._service.conversation.next(false);
+        this._service.eod.next(false);
+      }),
       catchError((errorResponse: HttpErrorResponse) => {
-
         switch (errorResponse.status) {
-          case 404: this._toastr.error(errorResponse.message);
+          case 404: this._toaster.error(errorResponse.message);
             break;
-          case 401: this._toastr.error(errorResponse.error.message);
+          case 401: this._toaster.error(errorResponse.error.message);
             break;
-          case 500: this._toastr.error(errorResponse.error.message);
+          case 500: this._toaster.error(errorResponse.error.message);
                     this.logOut();
             break;
         }

@@ -1,2 +1,3 @@
     <app-eod-list-presentation [getEodResponse]="eodResponse$  | async"
-    [getStateActivityType]="stateActivityType$  | async"></app-eod-list-presentation>
+    [getStateActivityType]="stateActivityType$  | async" 
+      (EodSubmissionTime)="getSendEodTime($event)"></app-eod-list-presentation>

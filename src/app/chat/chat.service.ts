@@ -195,17 +195,23 @@ export class ChatService {
     return this._http.httpDeleteRequest(`${this.baseUrl}task/${id}`)
   }
    /**
-    * @name deleteTask
+    * @name updateTask
     * @param id 
-    * @returns This method is used to Delete task
+    * @param task 
+    * @returns This method is used to edit eod task
     */
    public updateTask(task:any,id: any): Observable<any> {
-    console.log(task);
-    console.log(id);
-    
-    
-    return this._http.httpPutRequest(`${this.baseUrl}task/${id}`,task)
+    return this._http.httpPatchRequest(`${this.baseUrl}task/${id}`,task)
   }
+    /**
+    * @name updateTask
+    * @param id 
+    * @param task 
+    * @returns This method is used to edit eod task
+    */
+    public updateEod(Eod:any,id: any): Observable<any> {
+      return this._http.httpPatchRequest(`${this.baseUrl}eod/${id}`,Eod)
+    }
   /**
   * @name setMap
   * @description This method will setMapper for the socket

@@ -1,110 +1,221 @@
 <div class="container d-flex flex-column h-100">
-    <div class="eod-heading">
+    <div class="eod-heading border p-1">
         <span class="heading fs-2 fw-bold ">EOD LIST</span>
     </div>
     <!-- Start Eod list -->
     <div class="flex-grow-1 overflow-auto">
-        <ng-container *ngFor="let eod of getEodResponse">
-            <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3">
-                <div class="d-flex justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <span class="fw-bold"> Date : </span>
-                            <span>{{eod.generationTime }}</span>
+        <!-- Skeleton Loading -->
+        <div *ngIf="showLoader; else data">
+            <div class="container border mt-2" *ngFor="let user of [1,2,3,4,5]">
+                <div class="fb-item">
+                    <div class="d-flex flex-column">
+                        <div class=" d-flex  justify-content-between align-items-center">
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }">
+                                </ngx-skeleton-loader>
+                            </div>
+                        </div>
+                        <div class=" d-flex  justify-content-around align-items-center">
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }"></ngx-skeleton-loader>
+                            </div>
+                            <div>
+                                <ngx-skeleton-loader [theme]="{
+            width: '100px',
+            'border-radius': '5px',
+            height: '20px',
+            'margin-top': '10px',
+     
+          
+          }">
+                                </ngx-skeleton-loader>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <ngx-skeleton-loader [theme]="{
+                      width: '1200px',
+                      'border-radius': '5px',
+                      height: '35px',
+                      'margin-top': '10px',
+               
+                    
+                    }"></ngx-skeleton-loader>
                         </div>
                     </div>
-                    <button class="btn btn-primary text-white" (click)="openTaskForm()"> Add Task</button>
                 </div>
-                <div class="border border-1 rounded-1 p-3 rounded-1 bg-white my-3" *ngIf="eod.tasks.length === 0 ">
-                    <span class="d-flex text-info justify-content-center"> No Record Found</span>
-                </div>
-                <div class="mt-3" *ngIf="eod.tasks.length > 0 ">
-                    <div class="row">
-                        <div class="col-1"></div>
-                        <div class="col-2 fw-bold text-center">Task title</div>
-                        <div class="col-2 fw-bold text-center">ActivityType</div>
-                        <div class="col-2 fw-bold text-center">OriginalEstimation</div>
-                        <div class="col-2 fw-bold text-center">Remaining</div>
-                        <div class="col-1 fw-bold text-center">ActualTime</div>
-                        <div class="col-1 fw-bold text-center">Status</div>
-                        <div class="col-1 fw-bold text-center">Action</div>
+            </div>
+        </div>
+        <!-- Skeleton Loading -->
+        <ng-template #data>
+            <ng-container *ngFor="let eod of getEodResponse">
+                <div class="border border-1 rounded-1 p-2 rounded-1 bg-white my-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <span class="fw-bold"> Date : </span>
+                                <span>{{eod.generationTime }}</span>
+                            </div>
+                        </div>
+                        <div class="" *ngIf="eod.tasks.length === 0 ">
+                            <span class="d-flex text-info justify-content-center"> No Record Found</span>
+                        </div>
+                        <button class="btn btn-primary text-white" (click)="openTaskForm()" *ngIf="eod.submissionTime == undefined" > Add Task</button>
                     </div>
-                    <div class="my-3">
-                        <div *ngFor="let task of eod.tasks let i = index">
-                            <div class="mt-1">
-                                <div class="accordion" id="accordionExample d-flex">
-                                    <div class="accordion-item">
-                                        <div class="w-100">
-                                            <div class="row align-items-center">
-                                                <div class="col-1">
-                                                    <h2 class="accordion-header" id="headingOne{{task._id}}">
-                                                        <button class="accordion-button" type="button"
-                                                            data-bs-toggle="collapse" aria-expanded="false"
-                                                            (click)="toggleAccordion(i)"
-                                                            [attr.data-bs-target]="'#collapseOne' + task._id"
-                                                            [attr.aria-controls]="'collapseOne' + task._id">
-                                                            {{ task._id === openIndex ? '▼' : '►' }}
-                                                        </button>
-                                                    </h2>
-                                                </div>
-                                                <div class="col-2 text-center">{{task.taskTitle}}</div>
-                                                <div class="col-2 text-center">{{task.taskActivity}}</div>
-                                                <div class="col-2 text-center">{{task.taskOriginalEstimate}}</div>
-                                                <div class="col-2 text-center">{{task.taskEffortsRemaining}}</div>
-                                                <div class="col-1 text-center">{{task.taskEffortsCompleted}}</div>
-                                                <div class="col-1 text-center">{{task.taskState}}</div>
-                                                <div class="col-1 text-center">
-                                                    <div ngbDropdown class="d-inline-block">
-                                                        <div class="d-flex align-items-center">
-                                                            <span type="button" id="dropdownBasic1" ngbDropdownToggle
-                                                                class="icon-Dote text-info fw-bold fs-3">
-                                                            </span>
-                                                        </div>
-                                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1"
-                                                            class="dropdownBasic1 overflow-auto">
-                                                            <ul class="list-unstyled m-0">
-                                                                <li class="d-flex align-items-center px-3 py-2"
-                                                                    ngbDropdownItem (click)="editTask(task)">
-                                                                    Edit </li>
-                                                                <li class="d-flex align-items-center px-3 py-2"
-                                                                    ngbDropdownItem (click)="deleteTask(task._id
-                                                                    )">
-                                                                    Delete </li>
-                                                            </ul>
-                                                        </div>
+                    <div class="mt-3" *ngIf="eod.tasks.length > 0 ">
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <div class="col-2 fw-bold text-center">Task title</div>
+                            <div class="col-2 fw-bold text-center">ActivityType</div>
+                            <div class="col-2 fw-bold text-center">OriginalEstimation</div>
+                            <div class="col-2 fw-bold text-center">Remaining</div>
+                            <div class="col-1 fw-bold text-center">ActualTime</div>
+                            <div class="col-1 fw-bold text-center">Status</div>
+                            <div class="col-1 fw-bold text-center" *ngIf="eod.submissionTime == undefined" >Action</div>
+                        </div>
+                        <div class="my-3">
+                            <div *ngFor="let task of eod.tasks let i = index">
+                                <div class="mt-1">
+                                    <div class="accordion" id="accordionExample d-flex">
+                                        <div class="accordion-item">
+                                            <div class="w-100">
+                                                <div class="row align-items-center">
+                                                    <div class="col-1">
+                                                        <h2 class="accordion-header" id="headingOne{{task._id}}">
+                                                            <button class="accordion-button" type="button"
+                                                                data-bs-toggle="collapse" aria-expanded="false"
+                                                                (click)="toggleAccordion(task._id)"
+                                                                [attr.data-bs-target]="'#collapseOne' + task._id"
+                                                                [attr.aria-controls]="'collapseOne' + task._id">
+                                                                {{ task._id === openIndex ? '▼' : '►' }}
+                                                            </button>
+                                                        </h2>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div [id]="'collapseOne' + task._id " class="accordion-collapse collapse show"
-                                            [class.show]="task._id=== openIndex" [attr.data-bs-parent]="'#accordionExample'">
-                                            <div class="accordion-body p-4">
-                                                <div class="">
-                                                    <div class="row">
-                                                        <div class="row">
-                                                            <div class="col-12">
-
-                                                                <h5>Task Title</h5>
-                                                                <span>{{task.taskTitle}}
+                                                    <div class="col-2 text-center">{{task.taskTitle}}</div>
+                                                    <div class="col-2 text-center">{{task.taskActivity}}</div>
+                                                    <div class="col-2 text-center">{{task.taskOriginalEstimate}}</div>
+                                                    <div class="col-2 text-center">{{task.taskEffortsRemaining}}</div>
+                                                    <div class="col-1 text-center">{{task.taskEffortsCompleted}}</div>
+                                                    <div class="col-1 text-center">{{task.taskState}}</div>
+                                                    <div class="col-1 text-center">
+                                                        <div ngbDropdown class="d-inline-block" *ngIf="eod.submissionTime == undefined">
+                                                            <div class="d-flex align-items-center">
+                                                                <span type="button" id="dropdownBasic1"
+                                                                    ngbDropdownToggle
+                                                                    class="icon-Dote text-info fw-bold fs-3">
                                                                 </span>
-
-
+                                                            </div>
+                                                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1"
+                                                                class="dropdownBasic1 overflow-auto"  >
+                                                                <ul class="list-unstyled m-0">
+                                                                    <li class="d-flex align-items-center px-3 py-2"
+                                                                        ngbDropdownItem (click)="editTask(task)">
+                                                                        Edit </li>
+                                                                    <li class="d-flex align-items-center px-3 py-2"
+                                                                        ngbDropdownItem (click)="deleteTask(task._id
+                                                                    )">
+                                                                        Delete </li>
+                                                                </ul>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div [id]="'collapseOne' + task._id "
+                                                class="accordion-collapse collapse show"
+                                                [class.show]="task._id=== openIndex"
+                                                [attr.data-bs-parent]="'#accordionExample'">
+                                                <div class="accordion-body p-4">
+                                                    <div class="">
+                                                        <div class="row">
+                                                            <div class="row">
+                                                                <div class="col-12">
 
-                                                <div class="mt-3">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <h5>Description</h5>
-                                                            <span [innerHTML]="task.taskDescription">
-                                                            </span>
+                                                                    <h5>Task Title</h5>
+                                                                    <span>{{task.taskTitle}}
+                                                                    </span>
+
+
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-6">
-                                                            <h5>Blocker</h5>
-                                                            <span [innerHTML]="task.taskBlocker">
-                                                            </span>
+                                                    </div>
+
+                                                    <div class="mt-3">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <h5>Description</h5>
+                                                                <span [innerHTML]="task.taskDescription">
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <h5>Blocker</h5>
+                                                                <span [innerHTML]="task.taskBlocker">
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -114,13 +225,14 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="d-flex justify-content-end mt-3">
-                        <button class="btn btn-info text-black "> Send</button>
+                        <div class="d-flex justify-content-end mt-3">
+                            <button class="btn btn-info text-black " (click)="sendEod()"  *ngIf="eod.submissionTime == undefined" > Send</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </ng-container>
+            </ng-container>
+        </ng-template>
+
     </div>
 
 

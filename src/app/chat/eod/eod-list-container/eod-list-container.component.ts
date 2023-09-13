@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../../chat.service';
 import { Observable } from 'rxjs';
-import { EOD, Task } from '../../models/eod.model';
+import { EOD, Task, eodSubmission } from '../../models/eod.model';
 import { CommunicationService } from '../../shared/communication/communication.service';
 
 @Component({
@@ -61,6 +61,7 @@ export class EodListContainerComponent {
  
     })
   }
+  
   /**
    * @name getEODReports
    * @description This method Get all getEODReports
@@ -68,6 +69,16 @@ export class EodListContainerComponent {
   public getEODReports(){
     this.eodResponse$ = this._chatService.getEODReports(this.paramsId);
   }
-   
+  /**
+   * @name getEodReport
+   * @param eod 
+   * @description This method used to emit the eod report into socket
+   */
+  public getSendEodTime(eodSubmissionTime:eodSubmission): void {  
+    this._chatService.updateEod(eodSubmissionTime,eodSubmissionTime.eodId).subscribe((data:eodSubmission)=>{
+      this.getEODReports();
+    })
+  }
+ 
 }
 

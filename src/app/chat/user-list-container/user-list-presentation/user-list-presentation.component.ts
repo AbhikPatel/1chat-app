@@ -5,8 +5,7 @@ import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { UserListPresenterService } from '../User-list-presenter/user-list-presenter.service';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
-import { Router } from '@angular/router';
-import { ConversationUsers } from '../../models/chat.model';
+
 
 @Component({
   selector: 'app-user-list-presentation-ui',
@@ -65,7 +64,7 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    this._loaderService.loader.subscribe((data: Boolean) => {
+    this._loaderService.allUsers.subscribe((data: Boolean) => {
       this.showLoader = data
     });
   }

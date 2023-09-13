@@ -7,6 +7,7 @@ import { login } from '../../models/login.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/shared/models/user.model';
 import { CommunicationService } from '../../shared/communication/communication.service';
+import { LoaderService } from 'src/app/core/services/loader/loader.service';
 
 
 @Component({
@@ -24,7 +25,6 @@ export class ChatListPresentationComponent implements OnInit {
       let selectedConversation=users
       this.copyOfConversationUsers = [...users];
       let findConversation: ConversationUsers = selectedConversation.find((user: ConversationUsers) =>user.chatId === this.currentChatId);
-     console.log(findConversation);
       this.onUser(findConversation);   
     
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
@@ -83,6 +83,8 @@ export class ChatListPresentationComponent implements OnInit {
   public currentChatId: string | null;
   public loginUserObject: login;
   public selectedConversation: any;
+    //  This variable is use to show loader  
+    public showLoader: Boolean;
   // subject
   /** Flag for showing typing text */
   public showTypingText: BehaviorSubject<boolean>;
@@ -96,12 +98,14 @@ export class ChatListPresentationComponent implements OnInit {
     private _route: ActivatedRoute,
     private _router: Router,
     private _communicationService: CommunicationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private _loaderService: LoaderService,
   ) {
     this.tabData = true;
     this.groupTyperNames = [];
     this.typingIds = [];
     this.copyOfConversationUsers = [];
+    this.showLoader=true
 
     // subject   
     this.showTypingText = new BehaviorSubject(false);
@@ -118,25 +122,15 @@ export class ChatListPresentationComponent implements OnInit {
   * @description This method will be invoked on ngOnInit
   */
   private props(): void {
-    console.log(this.currentChatId);
-    
     this._chatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
       this.newConversationUsers = user
       this._conversationUsers.unshift(user);
       this.currentChatId = user.chatId;
-      console.log(this.currentChatId);
-      
     });
-
     const storedConversation = localStorage.getItem('ConversationUsers');
     if (storedConversation) {
       this.currentChatId= JSON.parse(storedConversation);
-    console.log(this.currentChatId);
-    
-  
-      
-      
-     
+
   }
 
   }
@@ -259,5 +253,10 @@ export class ChatListPresentationComponent implements OnInit {
         this.showTypingText.next(false);
       }, 2000);
     }
+  }
+  public ngAfterViewInit(): void {
+    this._loaderService.conversation.subscribe((data: Boolean) => {
+      this.showLoader = data
+    });
   }
 }

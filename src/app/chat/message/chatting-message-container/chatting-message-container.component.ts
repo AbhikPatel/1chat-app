@@ -14,7 +14,6 @@ export class ChattingMessageContainerComponent implements OnInit {
     // Access route parameters using ActivatedRoute
     this.router.parent.params.subscribe(parentParams => {
       this.ParamId = parentParams['id'];
-      console.log(this.ParamId);
     });
 
   }

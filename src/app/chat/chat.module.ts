@@ -21,6 +21,7 @@ import { ChatHeaderComponent } from './chat-header/chat-header.component';
 import { CommunicationService } from './shared/communication/communication.service';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { HttpClientModule } from '@angular/common/http';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     NgMultiSelectDropDownModule.forRoot(),
     ReactiveFormsModule,
+    NgxSkeletonLoaderModule
   ],
   providers: [
     // ChatService,

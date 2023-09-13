@@ -72,4 +72,8 @@ export class HttpService {
     const interceptableHeader: HttpHeaders = this.createHeader(version)
     return this._http.put<T>(url, requestBody, { headers: interceptableHeader })
   }
+  public httpPatchRequest<T>(url: string, requestBody: any, version: string = '1.0'): Observable<any> {
+    const interceptableHeader: HttpHeaders = this.createHeader(version)
+    return this._http.patch<T>(url, requestBody, { headers: interceptableHeader })
+  }
 }

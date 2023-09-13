@@ -1,5 +1,6 @@
 export class EODResponse {
-    _id:number
+    _id: number | string
+    submissionTime: string
     chatId: string
     senderId: string
     receiverId: string
@@ -7,8 +8,8 @@ export class EODResponse {
     generationTime: string
     tasks: TaskResponse[]
     constructor(
-    
-        _id:number,
+        _id: number | string,
+        submissionTime: string,
         chatId: string,
         senderId: string,
         receiverId: string,
@@ -17,7 +18,8 @@ export class EODResponse {
         tasks: TaskResponse[],
 
     ) {
-        this._id=_id
+        this._id = _id
+        this.submissionTime = submissionTime
         this.chatId = chatId
         this.senderId = senderId
         this.receiverId = receiverId
@@ -27,9 +29,7 @@ export class EODResponse {
     }
 }
 export class EOD {
-    _id:number
-    position: string
-    department: string
+    submissionTime: string
     chatId: string
     senderId: string
     receiverId: string
@@ -38,7 +38,7 @@ export class EOD {
     tasks: Task[]
 
     constructor(
-        _id:number,
+        submissionTime: string,
         chatId: string,
         senderId: string,
         receiverId: string,
@@ -46,7 +46,8 @@ export class EOD {
         generationTime: string,
         tasks: Task[],
     ) {
-        this._id=_id
+
+        this.submissionTime = submissionTime
         this.chatId = chatId
         this.senderId = senderId
         this.receiverId = receiverId
@@ -66,8 +67,6 @@ export class TaskResponse {
     taskOriginalEstimate: number
     taskEffortsRemaining: number
     taskEffortsCompleted: number
-
-
     constructor(
         eodId: string,
         taskTitle: string,
@@ -92,7 +91,7 @@ export class TaskResponse {
 }
 
 export class Task {
-    _id?:number
+    _id?: number
     eodId: string
     taskTitle: string
     taskState: number
@@ -126,15 +125,25 @@ export class Task {
     }
 }
 
-export class TaskType {
-    displayName: string
-    className: string
-
+export class activity {
+      activity: string
+      activityId: string
     constructor(
-        displayName: string,
-        className: string
+        activity: string,
+        activityId: string
     ) {
-        this.displayName = displayName
-        this.className = className
+        this.activity = activity
+        this.activityId = activityId
+    }
+}
+export class eodSubmission {
+    eodId: string
+    submissionTime: Date
+    constructor(
+        eodId: string,
+        submissionTime: Date
+    ) {
+        this.eodId = eodId
+        this.submissionTime = submissionTime
     }
 }

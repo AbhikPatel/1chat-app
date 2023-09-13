@@ -104,22 +104,22 @@ export class MessageAdapter implements Adapter<Message>{
 }
 
 @Injectable()
-export class EODAdapter implements Adapter<EOD>{
-       
+export class EODAdapter implements Adapter<EODResponse>{
     /**
      * @name toResponse
      * @param eod 
      * @description This method is used to convert the type into response
      */
-    public toResponse(eod: EODResponse): EOD {
+    public toResponse(eod: EODResponse) :EODResponse{
         const inputDate =new Date(eod.generationTime);
         const day = inputDate.getDate();
-        const month = inputDate.toLocaleString('default', { month: 'long' }); // Get the full month name
+        const month = inputDate.toLocaleString('default', { month: 'short' }); // Get the full month name
         const year = inputDate.getFullYear();
         const formattedDate = `${day}/${month}/${year}`;
         eod.generationTime=formattedDate
-        const newEOD: EOD = new EOD(
+        const newEOD: EODResponse = new EODResponse(
             eod._id,
+            eod.submissionTime,
             eod.chatId,
             eod.senderId,
             eod.receiverId,

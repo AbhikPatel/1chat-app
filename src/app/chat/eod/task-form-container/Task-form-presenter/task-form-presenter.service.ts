@@ -66,7 +66,7 @@ export class TaskFormPresenterService {
    * @description This method next Edit task Details  with eod Id
    */
   public editEodTasks(editTask: any,id:any): void {
-             editTask.eodId=this.eodId
+             editTask.eodId=this.eodId;
             const editData:any={
                  task:editTask,
                  editId:id
