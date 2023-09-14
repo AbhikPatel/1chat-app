@@ -14,7 +14,7 @@ import { LoaderService } from 'src/app/core/services/loader/loader.service';
   viewProviders: [UserListPresenterService]
 
 })
-export class UserListPresentationComponent implements OnInit, AfterViewInit {
+export class UserListPresentationComponent implements OnInit {
   /** This property is used to get all the user details from container component */
   @Input() public set allUsers(users: User[]) {
     if (users) {
@@ -38,8 +38,8 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
   public searchText: string;
   /** This property is used for getter setter */
   private _allUsers: User[];
-  //  This variable is use to show loader  
-  public showLoader: Boolean;
+   //  This variable is use to show loader  
+   public isLoading: any;
   constructor(
     private _userListPresenterService: UserListPresenterService,
     private _loaderService: LoaderService,
@@ -47,9 +47,9 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
     this.searchGroup = this._userListPresenterService.getGroup();
     this.closeAsideBar = new EventEmitter();
     this.newConversation = new EventEmitter();
-    this.showLoader = true
   }
   ngOnInit(): void {
+     this.isLoading = this._loaderService.getLoaderState1();
   }
   /**
    * @name onNewChat
@@ -62,11 +62,5 @@ export class UserListPresentationComponent implements OnInit, AfterViewInit {
       this.newConversation.next(user);
     }
   }
-
-  public ngAfterViewInit(): void {
-    this._loaderService.allUsers.subscribe((data: Boolean) => {
-      this.showLoader = data
-    });
-  }
-
+  
 }

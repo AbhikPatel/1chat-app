@@ -84,7 +84,7 @@ export class ChatListPresentationComponent implements OnInit {
   public loginUserObject: login;
   public selectedConversation: any;
     //  This variable is use to show loader  
-    public showLoader: Boolean;
+    public isLoading: any;
   // subject
   /** Flag for showing typing text */
   public showTypingText: BehaviorSubject<boolean>;
@@ -99,13 +99,13 @@ export class ChatListPresentationComponent implements OnInit {
     private _router: Router,
     private _communicationService: CommunicationService,
     private cdr: ChangeDetectorRef,
-    private _loaderService: LoaderService,
+    private _loaderService:LoaderService
   ) {
     this.tabData = true;
     this.groupTyperNames = [];
     this.typingIds = [];
     this.copyOfConversationUsers = [];
-    this.showLoader=true
+    
 
     // subject   
     this.showTypingText = new BehaviorSubject(false);
@@ -114,7 +114,8 @@ export class ChatListPresentationComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    this.props()
+    this.props();
+    this.isLoading = this._loaderService.getLoaderState();
   }
 
   /**
@@ -255,8 +256,6 @@ export class ChatListPresentationComponent implements OnInit {
     }
   }
   public ngAfterViewInit(): void {
-    this._loaderService.conversation.subscribe((data: Boolean) => {
-      this.showLoader = data
-    });
+   
   }
 }

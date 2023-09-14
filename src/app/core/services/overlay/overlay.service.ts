@@ -33,7 +33,7 @@ export class OverlayService {
            instance.instance.stateActivityType = data;
            instance.instance.eodResponse = data2;
     } else if (component === ConfirmationModelComponent){
-                  instance.instance.taskId=data;
+                  instance.instance.commonData=data;
     }
     this.overlayRef.backdropClick().subscribe(() => { this.overlayRef.detach() })
     return instance;

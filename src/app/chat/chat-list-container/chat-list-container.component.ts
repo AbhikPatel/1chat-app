@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatService } from '../chat.service';
-import { Observable, Subject, of, takeUntil } from 'rxjs';
+import { Observable, Subject, finalize, of, takeUntil } from 'rxjs';
 import { ConversationUsers, OnlineUser, Typing } from '../models/chat.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { User } from 'src/app/shared/models/user.model';
+import { LoaderService } from 'src/app/core/services/loader/loader.service';
 
 @Component({
   selector: 'app-chat-list-container',
@@ -21,7 +22,7 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
   /** Observable for new Chat Id */
   public typingInfo$: Observable<Typing>;
   constructor(private _chatService: ChatService,
-    private _commonService: CommonService) {
+    private _loaderService: LoaderService) {
     this.destroy = new Subject();
     this.getConversationUsers$ = new Observable();
     this.allUsers = [];
@@ -46,11 +47,43 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
         this.allUsers = users
       }
     })
-    this._chatService.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: ConversationUsers[]) => {
-      this.getConversationUsers$ = of(users);
-    })
 
+    console.log();
+    this.getAllConversationUser();
   }
+  /**
+   * @name getAllConversationUser
+   * @description This Method Get getAllConversationUser
+   */
+  public getAllConversationUser() {
+    this._loaderService.showLoader();
+    console.log('loading');
+    
+       this._chatService.getConversationUser().subscribe((users: ConversationUsers[]) => {
+       this._loaderService.hideLoader();
+       this.getConversationUsers$ = of(users);
+    });
+
+    // this._chatService.getConversationUser() .subscribe(
+    //   (users: ConversationUsers[]) => {
+    //     // Process your data here
+    //     this.getConversationUsers$ = of(users);
+    //     // Hide the loader when the data is received
+    //     this._loaderService.hideLoader();
+    //   },
+    //   (error) => {
+    //     // Hide the loader in case of an error
+    //     this._loaderService.hideLoader();
+    //   }
+    //   );
+      // this._chatService.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: ConversationUsers[]) => {
+      //   if (users) {
+      //     this.getConversationUsers$ = of(users);
+      //     this._loaderService.hideLoader();
+      //   }
+  
+      // })
+    }
 
   /**
 * @name ngOnDestroy

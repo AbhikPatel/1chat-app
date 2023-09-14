@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
-import { EOD, Task } from 'src/app/chat/models/eod.model';
+import { EOD, EditEodTasks, Task, TaskResponse, } from 'src/app/chat/models/eod.model';
 
 @Injectable()
 export class TaskFormPresenterService {
@@ -10,9 +10,9 @@ export class TaskFormPresenterService {
   /** Subject for Task report details */
   private taskDetails: Subject<Task>;
   /** Observable for Task Report details */
-  public editTaskDetails$: Observable<any>;
+  public editTaskDetails$: Observable<EditEodTasks>;
   /** Subject for Task report details */
-  private editTaskDetails: Subject<any>;
+  private editTaskDetails: Subject<EditEodTasks>;
   /** variable to store the last Eod ID  */
   public eodId: string;
   constructor(private _fb: FormBuilder) {
@@ -65,12 +65,13 @@ export class TaskFormPresenterService {
    * @param tasks 
    * @description This method next Edit task Details  with eod Id
    */
-  public editEodTasks(editTask: any,id:any): void {
+  public editEodTasks(editTask:TaskResponse,id:number): void {
              editTask.eodId=this.eodId;
-            const editData:any={
+            const editData:EditEodTasks={
                  task:editTask,
                  editId:id
             }
           this.editTaskDetails.next(editData);
   }
+  
 }

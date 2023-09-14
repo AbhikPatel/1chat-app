@@ -10,7 +10,7 @@ import { CommonService } from '../shared/services/common.service';
 import { login } from './models/login.model';
 import { io } from 'socket.io-client';
 import { UtilityService } from '../shared/services/utility.service';
-import { EOD, EODResponse, Task } from './models/eod.model';
+import { EOD, EODResponse, EditEodTasks, EodSubmission, Task } from './models/eod.model';
 
 @Injectable()
 
@@ -191,7 +191,7 @@ export class ChatService {
     * @param id 
     * @returns This method is used to Delete task
     */
-   public deleteTask(id: string): Observable<string> {
+   public deleteTask(id: number): Observable<number> {
     return this._http.httpDeleteRequest(`${this.baseUrl}task/${id}`)
   }
    /**
@@ -200,7 +200,7 @@ export class ChatService {
     * @param task 
     * @returns This method is used to edit eod task
     */
-   public updateTask(task:any,id: any): Observable<any> {
+   public updateTask(task:EditEodTasks,id: number): Observable<EditEodTasks> {
     return this._http.httpPatchRequest(`${this.baseUrl}task/${id}`,task)
   }
     /**
@@ -209,7 +209,7 @@ export class ChatService {
     * @param task 
     * @returns This method is used to edit eod task
     */
-    public updateEod(Eod:any,id: any): Observable<any> {
+    public updateEod(Eod:EodSubmission,id: any): Observable<EodSubmission> {
       return this._http.httpPatchRequest(`${this.baseUrl}eod/${id}`,Eod)
     }
   /**

@@ -6,7 +6,7 @@ import { LoginComponent } from 'src/app/core/components/login/login.component';
 import { TaskFormPresenterService } from '../Task-form-presenter/task-form-presenter.service';
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { login } from 'src/app/chat/models/login.model';
-import { EOD, Task } from 'src/app/chat/models/eod.model';
+import { EOD, EditEodTasks, Task } from 'src/app/chat/models/eod.model';
 import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
 
 @Component({
@@ -58,7 +58,7 @@ export class TaskFormPresentationComponent implements OnInit {
   /** This variable emit  Task Details*/
   @Output() public taskDetails: EventEmitter<Task>
   /** This variable emit  Task Details*/
-  @Output() public editTaskDetails: EventEmitter<Task>
+  @Output() public editTaskDetails: EventEmitter<EditEodTasks>
   // This properties get LoginUser
   public loginUserDetails: login;
   /** getter and setter  Private Variable */

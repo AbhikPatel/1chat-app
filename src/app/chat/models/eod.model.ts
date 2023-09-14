@@ -58,6 +58,7 @@ export class EOD {
 }
 
 export class TaskResponse {
+    _id: number | string
     eodId: string
     taskTitle: string
     taskState: number
@@ -68,6 +69,7 @@ export class TaskResponse {
     taskEffortsRemaining: number
     taskEffortsCompleted: number
     constructor(
+        _id: number | string,
         eodId: string,
         taskTitle: string,
         taskState: number,
@@ -87,6 +89,7 @@ export class TaskResponse {
         this.taskOriginalEstimate = taskOriginalEstimate
         this.taskEffortsRemaining = taskEffortsRemaining
         this.taskEffortsCompleted = taskEffortsCompleted
+        this._id=_id
     }
 }
 
@@ -136,14 +139,26 @@ export class activity {
         this.activityId = activityId
     }
 }
-export class eodSubmission {
-    eodId: string
+export class EodSubmission {
+    eodId: string | number
     submissionTime: Date
     constructor(
-        eodId: string,
+        eodId: string |number,
         submissionTime: Date
     ) {
         this.eodId = eodId
         this.submissionTime = submissionTime
+    }
+}
+export class EditEodTasks {
+  
+    task: TaskResponse
+    editId: number
+    constructor(
+        task: TaskResponse,
+         editId: number
+    ) {
+        this.task = task
+        this.editId = editId
     }
 }

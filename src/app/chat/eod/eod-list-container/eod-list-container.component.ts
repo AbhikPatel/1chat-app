@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../../chat.service';
 import { Observable } from 'rxjs';
-import { EOD, Task, eodSubmission } from '../../models/eod.model';
+import { EOD, EditEodTasks, EodSubmission, Task } from '../../models/eod.model';
 import { CommunicationService } from '../../shared/communication/communication.service';
+import { LoaderService } from 'src/app/core/services/loader/loader.service';
 
 @Component({
   selector: 'app-eod-list-container',
@@ -13,20 +14,21 @@ import { CommunicationService } from '../../shared/communication/communication.s
 export class EodListContainerComponent {
   /** This Variable Store routing params id */
   public paramsId: string;
-  /** This Variable Store routing params id */
-  public eodResponse$: Observable<EOD[]>;
+  /** This Variable Store  all eod response*/
+  public eodResponse:any;
   /** This Variable store state and activity Type */
   public stateActivityType$: Observable<any>;
   constructor(private _router: ActivatedRoute,
     private _chatService: ChatService,
-    private _communicationService:CommunicationService) {
+    private _communicationService:CommunicationService,
+    private _loaderService: LoaderService) {
     this.paramsId = '';
-    this.eodResponse$ = new Observable();
+    this.eodResponse =[];
     this.stateActivityType$ = new Observable();
+    
   }
   ngOnInit() {
     this.props();
-
   }
 
   /**
@@ -48,37 +50,50 @@ export class EodListContainerComponent {
     */
     this._communicationService.taskResponse$.subscribe((taskResponse:Task)=>{
       if(taskResponse)
-      this.getEODReports();
+       this.getEODReports();
+    })
+   /**
+    * taskResponse
+    */
+    this._communicationService.editTaskResponse$.subscribe((editTaskResponse:EditEodTasks)=>{
+       if(editTaskResponse)
+        this.getEODReports();
     })
       /**
     * Delete Task
     */
-    this._communicationService.deleteEodId.subscribe((taskId:string)=>{
+    this._communicationService.deleteEodId.subscribe((taskId:number
+      )=>{
       if(taskId){
-        this._chatService.deleteTask(taskId).subscribe();
+        this._chatService.deleteTask(taskId).subscribe()
+          this.getEODReports();
+      }
+ 
+    })
+      /**
+    * Send Eod
+    */
+    this._communicationService.senEodData$.subscribe((eodSubmissionTime:EodSubmission)=>{
+      if(eodSubmissionTime){
+        this._chatService.updateEod(eodSubmissionTime,eodSubmissionTime.eodId).subscribe();
         this.getEODReports();
       }
  
     })
   }
-  
   /**
    * @name getEODReports
    * @description This method Get all getEODReports
    */
   public getEODReports(){
-    this.eodResponse$ = this._chatService.getEODReports(this.paramsId);
+    this._loaderService.showLoader2();
+    this._chatService.getEODReports(this.paramsId).subscribe((data:any)=>{
+      this._loaderService.hideLoader2();
+      this.eodResponse=data
+    });
   }
-  /**
-   * @name getEodReport
-   * @param eod 
-   * @description This method used to emit the eod report into socket
-   */
-  public getSendEodTime(eodSubmissionTime:eodSubmission): void {  
-    this._chatService.updateEod(eodSubmissionTime,eodSubmissionTime.eodId).subscribe((data:eodSubmission)=>{
-      this.getEODReports();
-    })
-  }
+
+ 
  
 }
 

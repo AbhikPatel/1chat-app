@@ -5,7 +5,7 @@
     <!-- Start Eod list -->
     <div class="flex-grow-1 overflow-auto">
         <!-- Skeleton Loading -->
-        <div *ngIf="showLoader; else data">
+        <div *ngIf="isLoading | async; else data">
             <div class="container border mt-2" *ngFor="let user of [1,2,3,4,5]">
                 <div class="fb-item">
                     <div class="d-flex flex-column">
@@ -108,7 +108,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> 
         <!-- Skeleton Loading -->
         <ng-template #data>
             <ng-container *ngFor="let eod of getEodResponse">

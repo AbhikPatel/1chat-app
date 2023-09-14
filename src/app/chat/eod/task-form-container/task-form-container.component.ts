@@ -1,12 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ChatService } from '../../chat.service';
-import { CommonService } from 'src/app/shared/services/common.service';
-import { Observable } from 'rxjs';
-import { EOD, EODResponse, Task, TaskResponse } from '../../models/eod.model';
+
+import { EOD, EODResponse, EditEodTasks, Task, TaskResponse } from '../../models/eod.model';
 import { EODAdapter } from '../../chat-adaptor/chat.adaptor';
 import { CommunicationService } from '../../shared/communication/communication.service';
-import { ActivatedRoute } from '@angular/router';
-import { FormGroup } from '@angular/forms';
+
 
 @Component({
   selector: 'app-task-form-container',
@@ -24,14 +22,12 @@ export class TaskFormContainerComponent implements OnInit {
 
   }
   /** This Properties store taskDetails */
-  @Input() public set taskDetails(taskDetails: any) {
+  @Input() public set taskDetails(taskDetails: EOD[]) {
     if (taskDetails) {
       this._taskDetails = taskDetails;
-      console.log(taskDetails);
-      
     }
   }
-  public get taskDetails(): any {
+  public get taskDetails(): EOD[] {
     return this._taskDetails
 
   }
@@ -73,7 +69,7 @@ export class TaskFormContainerComponent implements OnInit {
   public getTask(task: Task): void {
     this._chatService.postTaskReports(task).subscribe((taskResponse:Task)=>{
       if(TaskResponse)
-       this._communicationService.taskResponses(taskResponse)
+       this._communicationService.postTaskReportsResponses(taskResponse);
     });
   }
   /**
@@ -83,8 +79,7 @@ export class TaskFormContainerComponent implements OnInit {
    */
   public getEditTaskDetails(EditTaskObject: any): void {
     this._chatService.updateTask(EditTaskObject.task,EditTaskObject.editId).subscribe((data:any)=>{
-    
-      
+      this._communicationService.editTaskResponses(data);
     })
   }
 }

@@ -2,17 +2,15 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { TaskFormContainerComponent } from '../../task-form-container/task-form-container.component';
 import { EodListPresenterService } from '../Eod-list-presenter/eod-list-presenter.service';
-import { EOD, Task, eodSubmission } from 'src/app/chat/models/eod.model';
+import { EOD, EodSubmission, Task } from 'src/app/chat/models/eod.model';
 import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
-import { Data } from 'ngx-bootstrap/positioning/models';
-
 @Component({
   selector: 'app-eod-list-presentation',
   templateUrl: './eod-list-presentation.component.html',
   providers: [EodListPresenterService]
 })
-export class EodListPresentationComponent implements OnInit, AfterViewInit {
+export class EodListPresentationComponent implements OnInit {
   @Input() public set getEodResponse(eodResponse: EOD[]) {
     if (eodResponse) {
       const eodResponses=[...eodResponse];
@@ -36,25 +34,27 @@ export class EodListPresentationComponent implements OnInit, AfterViewInit {
     return this._getStateActivityType
 
   }
-  @Output() public EodSubmissionTime:EventEmitter<eodSubmission>
   // Initialize with -1 to have no items open by default
   public openIndex: number
+  public EodSubmissionTimeObject:EodSubmission
   public copyResponse: EOD[]
-  //This variable is use to show loader  
-  public showLoader: Boolean;
+  public nowTime: Date;
+  /**  This variable store last eod ID*/
+  public EodId: number |string;
   /**getter and setter  Private Variable */
   private _getEodResponse: EOD[]
   private _getStateActivityType: any;
+  public isLoading:any
   constructor(private _overlayService: OverlayService, private _loaderService: LoaderService,
     private _eodListPresenterService: EodListPresenterService) {
     this.openIndex = -1;
     this.copyResponse = [];
-    this.showLoader = true;
-    this.EodSubmissionTime=new EventEmitter();
+    this.nowTime = new Date()
+    // this.EodSubmissionTime=new EventEmitter();
   }
   ngOnInit(): void {
-    this._eodListPresenterService.sendEod$.subscribe((EodSubmissionTime:any)=>this.EodSubmissionTime.next(EodSubmissionTime))
- 
+    this.isLoading = this._loaderService.getLoaderState2()
+    this._eodListPresenterService.sendEod$.subscribe((EodSubmissionTime:EodSubmission)=>this.EodSubmissionTimeObject=EodSubmissionTime)
   }
  
   /**
@@ -86,17 +86,16 @@ export class EodListPresentationComponent implements OnInit, AfterViewInit {
    * @name deleteTask
    * @description This method Delete task 
    */
-  public deleteTask(taskId: any) {
+  public deleteTask(taskId: number) {
     this._overlayService.open(ConfirmationModelComponent, true, taskId);
   }
-
+/**
+ * @name sendEod
+ * @description This Method Send Eod Reports
+ */
   public sendEod():void{
-    this._eodListPresenterService.sendEodSubmissionTime()
+    this._overlayService.open(ConfirmationModelComponent,true,this.EodSubmissionTimeObject)
 
   }
-  public ngAfterViewInit(): void {
-    this._loaderService.eod.subscribe((data: Boolean) => {
-      this.showLoader = data
-    });
-  }
+ 
 }

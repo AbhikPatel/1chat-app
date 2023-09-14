@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import {  Observable, Subject,takeUntil } from 'rxjs';
+import {  Observable, Subject,finalize,takeUntil } from 'rxjs';
 import { ChatService } from '../chat.service';
 import { User } from 'src/app/shared/models/user.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { ConversationUsers } from 'src/app/one-chat/models/chat.model';
 import { login } from '../models/login.model';
+import { LoaderService } from 'src/app/core/services/loader/loader.service';
 
 @Component({
   selector: 'app-user-list-container',
@@ -27,11 +28,11 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   private destroy: Subject<void>;
   /** stops the subscription on ngDestroy */
   private _getConversationUserLists: ConversationUsers[];
-  //  This variable is use to show loader  
-  public showLoader: Boolean;
+
 
   constructor(private _chatService: ChatService,
-    private _commonService: CommonService
+    private _commonService: CommonService,
+    private _loaderService: LoaderService
   ) {
     this.closeAsideBarEmitter = new EventEmitter();
     this.newConversationEmitter = new EventEmitter();
@@ -39,7 +40,7 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
     this.destroy = new Subject();
     this.getAllUsers = [];
     this.getLoginDetails=this._commonService.getLoginDetails()
-    this.showLoader=true
+   
   }
   ngOnInit(): void {
     this.props()
@@ -50,17 +51,25 @@ export class UserListContainerComponent implements OnInit, OnDestroy {
   */
   private props(): void {
     this._commonService.userApiCall.subscribe((data:any)=>{
-      if(data == true)
-      this._chatService.getAllUserData().pipe(takeUntil(this.destroy)).subscribe((users: User[]) => {
-        if(users){
-          this.getAllUsers = users;
-          const senderDetails = users.find((user:User)=> user._id == this.getLoginDetails.userId);
-          const senderIndex=users.indexOf(senderDetails);
-          users.splice(senderIndex,1);
-          this.getAllUsers=this.getLoginDetails.role === 'intern' ? users.filter((user:User)=> user.role !=='intern' ) :users;
-        }
-       })
+      if(data === true) {
+        this._loaderService.showLoader1();
+        this._chatService.getAllUserData().subscribe((users: User[]) => {
+          if(users){
+            this._loaderService.hideLoader1();
+              this.getAllUsers = users;
+              const senderDetails = users.find((user:User)=> user._id == this.getLoginDetails.userId);
+              const senderIndex=users.indexOf(senderDetails);
+              users.splice(senderIndex,1);
+              this.getAllUsers=this.getLoginDetails.role === 'intern' ? users.filter((user:User)=> user.role !=='intern' ) :users;
+            }
+           })
+      }
+     ;
     }) 
+    
+}
+public getAllUser(){
+ 
 }
   /**
   * @name closeAsideBar

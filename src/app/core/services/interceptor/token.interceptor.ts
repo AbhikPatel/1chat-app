@@ -23,16 +23,8 @@ export class TokenInterceptor implements HttpInterceptor {
   public intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     let token = localStorage.getItem('token')
     const modifiedReq = request.clone({ headers: request.headers.set('Authorization', `Bearer ${token}`), });
-    this._service.allUsers.next(true)
-    this._service.conversation.next(true)
-    this._service.eod.next(true)
     return next.handle(modifiedReq).pipe(
-      finalize(() => {
-        // Stop loading indicators when the request is complete
-        this._service.allUsers.next(false);
-        this._service.conversation.next(false);
-        this._service.eod.next(false);
-      }),
+
       catchError((errorResponse: HttpErrorResponse) => {
         switch (errorResponse.status) {
           case 404: this._toaster.error(errorResponse.message);
