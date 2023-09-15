@@ -57,8 +57,6 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
    */
   public getAllConversationUser() {
     this._loaderService.showLoader();
-    console.log('loading');
-    
        this._chatService.getConversationUser().subscribe((users: ConversationUsers[]) => {
        this._loaderService.hideLoader();
        this.getConversationUsers$ = of(users);

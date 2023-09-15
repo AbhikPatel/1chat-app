@@ -80,6 +80,14 @@ export class EodListContainerComponent {
       }
  
     })
+
+    this._communicationService.tabDataApi.subscribe((data:boolean)=>{
+      if(data){
+        console.log(data);
+        
+        this.getEODReports();
+      }
+    })
   }
   /**
    * @name getEODReports

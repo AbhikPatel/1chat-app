@@ -27,6 +27,9 @@ export class CommunicationService {
   private senEodData: Subject<EodSubmission>
   /** This variable Subject  to store tabData boolean  * */
   public tabData: Subject<boolean>
+  public tabDataApi: Subject<boolean>
+  /** This variable Subject  to store selectedTabData * */
+  public selectedTabData: Subject<boolean>
   /** This variable Subject  to deleteEodID  * */
   public deleteEodId: Subject<number>
 
@@ -38,9 +41,11 @@ export class CommunicationService {
     this.senEodData$ = new Observable();
     this.ConversationUser = new Subject();
     this.tabData = new Subject();
+    this.selectedTabData = new Subject();
     this.NewGroupConversation = new Subject();
     this.taskResponse = new Subject();
     this.editTaskResponse = new Subject();
+    this.tabDataApi = new Subject();
     this.deleteEodId = new Subject();
     this.senEodData = new Subject();
     this.ConversationUser$ = this.ConversationUser.asObservable();

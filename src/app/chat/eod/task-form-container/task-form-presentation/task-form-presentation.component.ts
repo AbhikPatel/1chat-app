@@ -68,7 +68,7 @@ export class TaskFormPresentationComponent implements OnInit {
   public isSubmitted: boolean
   /** This element used for focus inputBox */
   public ckEditorConfig: any = {};
-
+  public selectedCountryId: number;
 /** Private Variable */
 public _getEodResponse:EOD[]
 private _getTaskDetails:Task
@@ -151,8 +151,8 @@ private _getTaskDetails:Task
    private props(): void {
     this._TaskFormPresenterService.taskDetails$.subscribe((task: Task) => this.taskDetails.emit(task));
     this._TaskFormPresenterService.editTaskDetails$.subscribe((EditTask: any) => this.editTaskDetails.emit(EditTask));
-
-    
+     this.setSelectedStateName();
+     this.setSelectedActivityName();
    }
 /**
  * @name saveTask
@@ -170,6 +170,20 @@ private _getTaskDetails:Task
       }
     
     }
+  }
+/**
+ * @name setSelectedStateName
+ * @description This method Select state Name    
+ */
+  public setSelectedStateName() {
+    const selectedStateId = this.eodFormGroup.get('taskState').value;
+    const selectedState = this._getStateActivityType.data.docs[1].data.find(state => state.stateId === selectedStateId);
+    this.eodFormGroup.patchValue({ taskState: selectedState ? selectedState.state : '' });
+  }
+  public setSelectedActivityName() {
+    const selectedActivityId = this.eodFormGroup.get('taskActivity').value;
+    const selectedState = this._getStateActivityType.data.docs[0].data.find(activity => activity.activityId === selectedActivityId);
+    this.eodFormGroup.patchValue({ taskActivity: selectedState ? selectedState.activity : '' });
   }
   /**
      * Short variable 

@@ -19,7 +19,7 @@ export class ChatHeaderComponent implements OnInit {
     this._communicationService.ConversationUser$.subscribe((ConversationUsers: ConversationUsers) => {
       this.receiversConversation = ConversationUsers;
     })
-    this._communicationService.tabData.subscribe((dataTab: any) => this.currentWindow = dataTab)
+    this._communicationService.tabData.subscribe((dataTab: boolean) => this.currentWindow = dataTab)
   }
   /**
    * 
@@ -28,6 +28,7 @@ export class ChatHeaderComponent implements OnInit {
    */
   public onWindow(data: boolean): void {
     this.currentWindow = data;
+   
   }
   /**
    * 
@@ -35,6 +36,7 @@ export class ChatHeaderComponent implements OnInit {
    * @description This method navigate conversation
    */
   public navigationConversation() {
+    localStorage.removeItem('TabData')
     this._router.navigate(['chat', this.receiversConversation.chatId]);
   }
   /**
@@ -44,8 +46,7 @@ export class ChatHeaderComponent implements OnInit {
      */
   public navigationEod() {
     this._router.navigate(['chat', this.receiversConversation.chatId, 'eod']);
-
-
+    localStorage.setItem('TabData', 'true');
   }
 
 }

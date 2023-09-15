@@ -22,17 +22,15 @@ export class ChatListPresentationComponent implements OnInit {
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
-      let selectedConversation=users
+      let selectedConversation = users
       this.copyOfConversationUsers = [...users];
-      let findConversation: ConversationUsers = selectedConversation.find((user: ConversationUsers) =>user.chatId === this.currentChatId);
-      this.onUser(findConversation);   
-    
+      let findConversation: ConversationUsers = selectedConversation.find((user: ConversationUsers) => user.chatId === this.currentChatId);
+      this.onUser(findConversation);
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
       if (this.tabData) this.onTabSwitch(true);
       else
         this.onTabSwitch(false);
     }
-
   }
   public get conversationUsers(): ConversationUsers[] {
     return this._conversationUsers;
@@ -68,7 +66,6 @@ export class ChatListPresentationComponent implements OnInit {
   }
   /** This variable will store the data of the current tab */
   public tabData: boolean;
-
   /** This variable will store all the chat Ids of conversation users */
   public allChatIds: string[];
   /** This variable will store copy of all the conversation users */
@@ -83,8 +80,8 @@ export class ChatListPresentationComponent implements OnInit {
   public currentChatId: string | null;
   public loginUserObject: login;
   public selectedConversation: any;
-    //  This variable is use to show loader  
-    public isLoading: any;
+  //  This variable is use to show loader  
+  public isLoading: any;
   // subject
   /** Flag for showing typing text */
   public showTypingText: BehaviorSubject<boolean>;
@@ -95,17 +92,15 @@ export class ChatListPresentationComponent implements OnInit {
   private _getAllUsers: User[];
   constructor(private _commonService: CommonService,
     private _chatListPresenterService: ChatListPresenterService,
-    private _route: ActivatedRoute,
     private _router: Router,
     private _communicationService: CommunicationService,
-    private cdr: ChangeDetectorRef,
-    private _loaderService:LoaderService
+    private _loaderService: LoaderService
   ) {
     this.tabData = true;
     this.groupTyperNames = [];
     this.typingIds = [];
     this.copyOfConversationUsers = [];
-    
+
 
     // subject   
     this.showTypingText = new BehaviorSubject(false);
@@ -130,9 +125,8 @@ export class ChatListPresentationComponent implements OnInit {
     });
     const storedConversation = localStorage.getItem('ConversationUsers');
     if (storedConversation) {
-      this.currentChatId= JSON.parse(storedConversation);
-
-  }
+      this.currentChatId = JSON.parse(storedConversation);
+    }
 
   }
   /**
@@ -181,9 +175,6 @@ export class ChatListPresentationComponent implements OnInit {
     this._conversationUsers.sort(sortbyTime);
     this._conversationUsers = this.conversationUsers.concat(clearedConversationUsers)
   }
-
-
-
   /**
    * @name newConversation
    * @param conversation 
@@ -214,15 +205,22 @@ export class ChatListPresentationComponent implements OnInit {
  */
   public onUser(user: any) {
     if (user) {
-      this._router.navigate(['chat', user.chatId])
-      this._communicationService.tabData.next(true)
-      this._communicationService.setHeaderDetails(user)
-      this.currentChatId = user.chatId;
-      localStorage.setItem('ConversationUsers', JSON.stringify(user.chatId));
+      const TabData = localStorage.getItem('TabData');
+      if (TabData) {
+        this._router.navigate(['chat', user.chatId, 'eod']);
+        this._communicationService.tabData.next(false)
+      }else {
+        this._router.navigate(['chat', user.chatId])
+      } 
     }
-    // this.checkNonConversationUsers();
-    // this._ChatListPresenterService.getCurrentConversation(user, this.userId);
+    this._communicationService.setHeaderDetails(user)
+    this._communicationService.tabDataApi.next(true)
+    this.currentChatId = user.chatId;
+    localStorage.setItem('ConversationUsers', JSON.stringify(user.chatId));
   }
+  // this.checkNonConversationUsers();
+  // this._ChatListPresenterService.getCurrentConversation(user, this.userId);
+
   /**
 * @name checkIfOnline
 * @param id 
@@ -256,6 +254,6 @@ export class ChatListPresentationComponent implements OnInit {
     }
   }
   public ngAfterViewInit(): void {
-   
+
   }
 }
