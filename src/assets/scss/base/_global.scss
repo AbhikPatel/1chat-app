@@ -12,19 +12,7 @@ body {
     overflow: hidden;
 }
 
-#icon-eye {
-    right: 10px;
-    top: 25%;
-}
-
-.login-container {
-    width: 500px;
-}
-
-.bx {
-    color: #7e7e7e;
-}
-
+// helper class
 .fs-7 {
     font-size: 0.8rem;
 }
@@ -41,31 +29,23 @@ body {
     cursor: pointer;
 }
 
-.user-container {
-    background-color: $white;
 
-    &:hover {
-        background-color: $user-hover-bg;
-    }
+
+#icon-eye {
+    right: 10px;
+    top: 25%;
 }
 
-#user {
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    transition: 0.6s all;
-    transform: translateX(-100%);
-}
-
-#toggle-user {
-    &:checked~#user {
-        transform: translateX(0px);
-    }
+.login-container {
+    width: 500px;
 }
 
 .bg-theme {
-    background-color: #e7e7e7;
+    background-color: #D1E4E8;
+}
+
+.bg-main-color {
+    background-color: $bg-main-color;
 }
 
 .tick-color {
@@ -103,41 +83,11 @@ textarea {
     z-index: 10;
 }
 
-.eod-close {
-    transform: translateX(100%);
-}
 
-.eod-open {
-    transform: translateX(0%);
-}
 
-.bg-completed {
-    background-color: #beffbe;
-}
 
-.bg-progress {
-    background-color: #ffb7b7;
-}
 
-.bg-learning {
-    background-color: #f9ffac;
-}
 
-.members-modal {
-    z-index: 999;
-}
-
-.color-completed {
-    color: #beffbe;
-}
-
-.color-progress {
-    color: #ffb7b7;
-}
-
-.color-learning {
-    color: #f9ffac;
-}
 
 // Overlay backdrop styling
 .overlay-backdrop {

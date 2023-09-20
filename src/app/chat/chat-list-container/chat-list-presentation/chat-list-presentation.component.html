@@ -1,113 +1,117 @@
-<div class="h-100 d-flex flex-column ">
-    <app-chat-list-header-ui (openAsideBar)="openAsideBar()" [allUsers]="getAllUsers"></app-chat-list-header-ui>
-    <div class="flex-grow-1 overflow-hidden d-flex flex-column position-relative">
-        <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
-        <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100">
-            <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)"
-                (newConversationEmitter)="newConversation($event)"></app-user-list-container>
+<!-- sideBar Wrapper -->
+<div class="sidebar border-end border-1 border-success h-100">
+    <div class="h-100 d-flex flex-column ">
+        <!-- chat list header selector -->
+        <div class="chat-header  border-bottom border-1 border-success">
+            <app-chat-list-header-ui [allUsers]="getAllUsers">
+            </app-chat-list-header-ui>
         </div>
-        <div class="row border-5 m-0">
-            <div class="col-6 p-0 border-end" role="button" (click)="onTabSwitch(true)">
-                <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 border-3 border-bottom"
-                    [ngClass]="tabData ? 'border-primary' : 'border-transparent'">
-                    <span class="fw-bold"> Chat </span>
-                </div>
-            </div>
-            <div class="col-6 p-0" role="button" (click)="onTabSwitch(false)">
-                <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 border-3 border-bottom"
-                    [ngClass]="!tabData ? 'border-primary' : 'border-transparent'">
-                    <span class="fw-bold"> Groups </span>
-                </div>
-            </div>
-        </div>
-        <!-- Start: User Data  -->
-<!-- Skeleton Loading -->
-<div *ngIf="isLoading | async; else data">
-    <div class="container border-bottom mt-2" *ngFor="let user of [1,2,3,4,5,6,7,8,9,10]">
-      <div class="fb-item">
-        <div class="first-section-wrapper">
-          <div class="gravatar">
-            <ngx-skeleton-loader appearance="circle" [theme]="{ width: '60px', height: '60px','margin-top': '5px' }">
-            </ngx-skeleton-loader>
-          </div>
-            <div>
-              <ngx-skeleton-loader
-                [theme]="{
-                  width: '250px',
-                  'border-radius': '5px',
-                  height: '22px',
-                  'margin-top': '24px',
-                  'margin-left': '10px',
-                
-                }"
-              ></ngx-skeleton-loader>
-              <ngx-skeleton-loader
-              [theme]="{
-                width: '60px',
-                'border-radius': '5px',
-                height: '22px',
-                'margin-left': '10px',
-              
-              }"
-            ></ngx-skeleton-loader>
-            </div>
-          </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Skeleton Loading -->
-  <ng-template  #data>
-    <div class="flex-grow-1 overflow-auto" *ngIf="conversationUsers">
-        <div class="user-container d-flex align-items-center"
-            [ngClass]="{'bg-theme' : user.chatId ===currentChatId }" role="button"
-            *ngFor="let user of conversationUsers " 
-            (click)="onUser(user)">
-            <div class="px-3 me-1 position-relative">
-                <img [src]="user.profile" class="border rounded-circle user-img" alt="profile">
-                <!-- <ng-template [ngIf]="user.chat_type !== 'group'">
-                    <span *ngIf="checkIfOnline(user.members[0]._id)"
-                        class="online position-absolute translate-middle bg-success border border-light rounded-circle">
-                    </span>
-                </ng-template> -->
+        <!-- End chat list header selector -->
+        <!-- Conversation list  wrapper -->
+        <div class="flex-grow-1 overflow-hidden d-flex flex-column position-relative">
+            <input type="checkbox" name="toggle-user" id="toggle-user" class="d-none" #toggle>
+            <div id="user" class="d-flex flex-column search-container position-absolute bg-white h-100">
+                <!-- All users  selector -->
+                <app-user-list-container (closeAsideBarEmitter)="closeAsideBar($event)"
+                    (newConversationEmitter)="newConversation($event)">
+                </app-user-list-container>
+                <!-- End All users  selector -->
             </div>
-            <div class="py-3 border-bottom flex-grow-1 flex-column d-flex pe-3">
-                <div class="d-flex justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <span class="fw-semibold text-truncate"> {{user.displayName}} </span>
-                        <span class="badge ms-2"></span>
+            <!-- Conversations Search-->
+            <div class="p-3">
+                <form class="position-relative">
+                    <input type="text" class="form-control " name="search" autocomplete="off"
+                        placeholder="Search a Conversation " #inputTypeFocus>
+                    <span class="icon-search position-absolute fw-lighter "></span>
+                </form>
+            </div>
+            <!--End Conversations Search-->
+            <!--  Tabs Wrapper-->
+            <div class="row m-0 bg-white mx-2 rounded-2">
+                <!-- Chat tab -->
+                <div class="col-6 p-0 " role="button" (click)="onTabSwitch(true)">
+                    <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 rounded-2"
+                        [ngClass]="tabData ? 'bg-main-color' : 'border-transparent'">
+                        <span class="fw-bold" [ngClass]="tabData ? 'text-white' : 'text-dark'"> Chat </span>
                     </div>
-                    <span class="text-chat fs-7"> {{user.standardTime}} </span>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <ng-container
-                        *ngIf="typingIds.includes(user.members[0]._id) && showTypingText | async else message">
-                        <span class="fs-7 text-success fw-semibold"> Typing... </span>
-                    </ng-container>
-                    <ng-template #message>
-                        <span class="fs-7 last-chat text-chat text-truncate"
-                            [ngClass]="{'fw-bold' : user.notificationCount}"> {{loginUserObject.userId ===
-                            user.sender ? 'You: ' :
-                            ''}} {{user.lastMessage}} </span>
-                    </ng-template>
-                    <ng-template [ngIf]="user.chat_type !== 'group'">
-                        <ng-container *ngIf="user.notificationCount">
-                            <span
-                                class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
-                                {{user.notificationCount}} </span>
-                        </ng-container>
-                    </ng-template>
-                    <!-- <ng-container *ngIf="user.eodNotification">
-                        <span class="badge bg-danger" (click)="eodChatOpen($event.stopPropagation(),user)"> EOD
-                        </span>
-                    </ng-container> -->
-                    <!-- <span class="text-danger"> ● </span> -->
+                <!-- Groups tab -->
+                <div class="col-6 p-0" role="button" (click)="onTabSwitch(false)">
+                    <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 rounded-2"
+                        [ngClass]="!tabData ? 'bg-main-color' : 'border-transparent'">
+                        <span class="fw-bold" [ngClass]="tabData ? 'text-dark' : 'text-white'"> Groups </span>
+                    </div>
                 </div>
             </div>
+            <!-- End  tabs Wrapper-->
+            <!-- Skeleton Loading -->
+            <div *ngIf="isLoading | async; else data">
+                <app-conversation-skeleton-loader></app-conversation-skeleton-loader>
+            </div>
+            <!-- Skeleton Loading -->
+            <!-- Start: Conversation lists -->
+            <ng-template #data>
+                <div class=" conversation-list flex-grow-1 overflow-auto mt-3 mx-2 position-relative "
+                    *ngIf="conversationUsers">
+                    <div class="conversation d-flex align-items-center my-1 p-2 rounded-2"
+                        [ngClass]="{'bg-theme' : user.chatId ===currentChatId }" role="button"
+                        *ngFor="let user of conversationUsers " (click)="onUser(user)">
+                        <div class="px-2">
+                            <div class=" position-relative user-profile rounded-2 ">
+                                <img [src]="user.profile" class="h-100 w-auto" alt="profile">
+                                <!-- <ng-template [ngIf]="user.chat_type !== 'group'">
+                            <span *ngIf="checkIfOnline(user.members[0]._id)"
+                                class="online position-absolute translate-middle bg-success border border-light rounded-circle">
+                            </span>
+                        </ng-template> -->
+                            </div>
+                        </div>
+
+                        <div class="py-3 flex-grow-1 flex-column d-flex pe-3">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <span class="fw-semibold text-truncate"> {{user.displayName}} </span>
+                                    <span class="badge ms-2"></span>
+                                </div>
+                                <span class="text-chat fs-7"> {{user.standardTime}} </span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <ng-container
+                                    *ngIf="typingIds.includes(user.members[0]._id) && showTypingText | async else message">
+                                    <span class="fs-7 text-success fw-semibold"> Typing... </span>
+                                </ng-container>
+                                <ng-template #message>
+                                    <span class="fs-7 last-chat text-chat text-truncate"
+                                        [ngClass]="{'fw-bold' : user.notificationCount}"> {{loginUserObject.userId ===
+                                        user.sender ? 'You: ' :
+                                        ''}} {{user.lastMessage}} </span>
+                                </ng-template>
+                                <ng-template [ngIf]="user.chat_type !== 'group'">
+                                    <ng-container *ngIf="user.notificationCount">
+                                        <span
+                                            class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
+                                            {{user.notificationCount}} </span>
+                                    </ng-container>
+                                </ng-template>
+                                <!-- <ng-container *ngIf="user.eodNotification">
+                            <span class="badge bg-danger" (click)="eodChatOpen($event.stopPropagation(),user)"> EOD
+                            </span>
+                        </ng-container> -->
+                                <!-- <span class="text-danger"> ● </span> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="open-new-conversation position-absolute cursor-pointer"
+                        (click)="openNewConversationModel()">
+                        <span class="icon-chat-right fs-4 text-white"
+                            [ngClass]="iconHideShow  ?'icon-x-lg ':'icon-chat-right'"></span>
+
+                    </div>
+                </div>
+            </ng-template>
+            <!-- End : Conversation lists -->
         </div>
-    </div>
-  </ng-template>
-       
-        <!-- End: User Data  -->
+        <!-- Conversation list  wrapper -->
     </div>
 </div>

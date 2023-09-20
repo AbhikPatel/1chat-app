@@ -1,33 +1,38 @@
 // Theme Colors
-$primary                                    : #329bf6;
-$secondary                                  : #bffcb5;
-$white                                      : #fff;
+$primary : #329bf6;
+$secondary : #bffcb5;
+$white : #fff;
 // $success                                   : #1eca1a;
-$success                                    : #4cb4f8;
-$danger                                     : #e43536;
-$warning                                    : #ffc400;
-$info                                       : #a195958c;
+$success :#D1E4E8;
+$danger : #e43536;
+$warning : #ffc400;
+$info :#F5FAFC;
 
+
+// main-color
+$main-color: $info;
+$bg-main-color: #128C7E;
 // form 
-$input-focus-box-shadow                     : 0px;
-$input-border-radius                        : 10px;  
+$input-focus-box-shadow : 0px;
+$input-border-radius : 10px;
+
 
 // header
-$header-bg                                  : #dfdddd;
+$header-bg :#F5FAFC;
 
 // user 
-$user-hover-bg                              : #eeeeee;
-$container-bg                               : #fdfeff;
+$user-hover-bg : #eeeeee;
+$container-bg : #fdfeff;
 
 // chat 
-$chat-color                                 : #6e6e6e;
+$chat-color : #6e6e6e;
 
 // icon
-$icon-color                                 : #7e7e7ede;
+$icon-color : #7e7e7ede;
 
 // tick
-$tick-color                                 : #e0f2fa;
+$tick-color : #e0f2fa;
 
 // accordion 
-$accordion-button-active-bg                 : #e9e2fd;
-$accordion-button-active-color              : #8558ff;
+$accordion-button-active-bg : #e9e2fd;
+$accordion-button-active-color : #8558ff;

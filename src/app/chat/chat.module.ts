@@ -22,6 +22,9 @@ import { CommunicationService } from './shared/communication/communication.servi
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { ConversationSkeletonLoaderComponent } from './shared/conversation-skeleton-loader/conversation-skeleton-loader.component';
+import { UsersSkeletonLoaderComponent } from './shared/users-skeleton-loader/users-skeleton-loader.component';
+import { EodListSkeletonLoaderComponent } from './shared/eod-list-skeleton-loader/eod-list-skeleton-loader.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +40,9 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
     OnClickOutsideDirective,
     ChatHeaderComponent,
     SearchPipe,
+    ConversationSkeletonLoaderComponent,
+    UsersSkeletonLoaderComponent,
+    EodListSkeletonLoaderComponent,
   ],
   imports: [
     CommonModule,

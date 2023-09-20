@@ -1,15 +1,16 @@
-
-<div class=" d-flex flex-column h-100">
+<!--  Chat header Wrapper-->
+<div class="d-flex flex-column h-100">
     <!-- Start: Header Section  -->
-    <div id="header" class="d-flex align-items-center justify-content-between px-3">
+    <div class="chat-header d-flex align-items-center justify-content-between px-3">
         <div class="d-flex align-items-center">
             <!-- Profile Image  -->
             <figure class="m-0">
-                <img [src]="imageUrl + getLoginDetails.profile" alt="profile" class="border profile-img rounded-circle">
+                <img [src]="imageUrl + getLoginDetails.profile" alt="profile"
+                    class=" border border-success profile-img rounded-circle">
             </figure>
             <!-- Users Name  -->
             <div class="ms-3">
-                <span class="fw-semibold"> {{getLoginDetails.fullName}} </span>
+                <span class="fw-semibold fs-6"> {{getLoginDetails.fullName}} </span>
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-center h-icon-size">
@@ -22,18 +23,16 @@
             </ng-template>
             <!-- ngDropdown -->
             <div ngbDropdown class="d-inline-block ms-3">
-                <span type="button" id="dropdownBasic1" ngbDropdownToggle class="icon-user-plus text-info">
+                <span type="button" id="dropdownBasic1" ngbDropdownToggle class="icon-Dote text-dark fw-bold fs-4">
                 </span>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                    <div ngbDropdownItem (click)="onSearchUser()" (appOnClickOutside)="clickOutside()">New Chat</div>
-                    <div ngbDropdownItem (click)="openCreateGroupModel()"><span>New Group</span></div>  
+                    <div ngbDropdownItem (click)="openCreateGroupModel()"><span>New Group</span></div>
+                    <div ngbDropdownItem (click)="onLogOut(getLoginDetails.email)"><span>Log Out</span></div>
                 </div>
             </div>
-            <div class="ms-3" role="button" title="Log-Out" (click)="onLogOut(getLoginDetails.email)">
-                <span class='icon-power text-info'></span>
-            </div>
+
         </div>
     </div>
-   
+
 </div>
-<!-- End: User Data  -->
+<!-- End:  Chat header Wrapper -->

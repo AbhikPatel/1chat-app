@@ -1,34 +1,32 @@
 <!-- Start: Header Section  -->
-
-<div id="header" class="d-flex" *ngIf="receiversConversation">
-    <div class="container d-flex align-items-center justify-content-between ">
+<div class="message-header d-flex" *ngIf="receiversConversation">
+    <div class="d-flex align-items-center justify-content-between ">
         <div class="d-flex align-items-center h-100">
-            <div class="d-flex align-items-center py-2 ">
-                <figure class="m-0">
-                    <img [src]="receiversConversation.profile" class="rounded-circle profile-img" alt="profile">
-                </figure>
+            <div class="d-flex align-items-center p-3  ">
+                <div class="position-relative  user-profile rounded-2 ">
+                    <figure class="m-0">
+                        <img [src]="receiversConversation.profile" class="h-100 w-auto position-absolute" alt="profile">
+                    </figure>
+                </div>
+
                 <div class="ms-3 d-flex flex-column">
                     <span class="fw-semibold text-nowrap"> {{receiversConversation.displayName}} </span>
-                    <!-- <div class="fs-7">
-                        Typing </div> -->
-                    <ng-container>
-                        <span class="fs-7"></span>
-                    </ng-container>
-                    <ng-template #online>
-                        <span class="fs-7"> Online </span>
-                    </ng-template>
+                    <!-- <div class="fs-7">Typing </div> -->
+                    <span class="fs-7"></span>
+                    <span class="fs-7"> Online </span>
                 </div>
             </div>
 
             <!-- Tab view  -->
-            <div class="d-flex h-100 px-5">
-                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(true)"
-                    role="button" [ngClass]="{'border-bottom fw-semibold' : currentWindow}"
-                    (click)="navigationConversation()"> Chat
+            <div class="d-flex bg-white  ms-5 rounded-2">
+                <span class="p-3 align-items-center  rounded-2" (click)="onWindow(true)" role="button"
+                    [ngClass]="{'bg-main-color' : currentWindow}" (click)="navigationConversation()">
+                    <span class="fw-bolder" [ngClass]="{'text-white' : currentWindow}"> Chat</span>
                 </span>
-                <span class="h-100 border-3 border-success d-flex align-items-center mx-2" (click)="onWindow(false)"
-                    role="button" [ngClass]="{'border-bottom fw-semibold' : !currentWindow}" (click)="navigationEod()">
-                    EOD </span>
+                <span class="p-3 d-flex align-items-center  rounded-2 " (click)="onWindow(false)" role="button"
+                    [ngClass]="{'bg-main-color' : !currentWindow}" (click)="navigationEod()">
+                    <span class="fw-bolder" [ngClass]="{'text-white' : !currentWindow}"> EOD</span>
+                </span>
             </div>
         </div>
         <div *ngIf="receiversConversation">

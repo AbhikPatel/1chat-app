@@ -61,18 +61,16 @@ export class ChatListHeaderComponent implements OnInit {
   }
 
   /**
-   * @name onSearchUser
-   * @description This method is used to show modal
-   */
-  public onSearchUser(): void {
-    this.openAsideBar.next()
-  }
-  /**
+   * @name clickOutside
   * @description This method close model click on outside.
   */
   public clickOutside(): void {
     this.closeAsideBar.next(true)
   }
+  /**' 
+   * @name openCreateGroupModel
+   * @description This method open group model
+   */
   public openCreateGroupModel(): void {
     this._commonService.userApiCallForGroup.next(true);
     let userDetails: any[] = this._allUsers.map((user: User) => ({

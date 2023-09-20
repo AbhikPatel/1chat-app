@@ -1,5 +1,5 @@
 <!-- Start: Chat Container  -->
-<div class="d-flex flex-column h-100 ">
+<div class="main-chat-container d-flex flex-column h-100 ">
     <!-- Start: Message Screen  -->
     <div class="chat-container flex-grow-1 overflow-auto p-5" #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
@@ -105,14 +105,11 @@
     </div>
     <!-- End: Message Screen  -->
 
-
     <!-- Start: Typer Container  -->
-    <div id="typer" class="d-flex flex-column bg-theme py-2 position-relative">
-        <div class="icon-circle-down fs-4 text-info down-arrow position-absolute" id="icon" (click)="scrollUp()"
-            *ngIf="isScrolledToBottom">
-        </div>
+    <div class=" typer-container d-flex flex-column  py-2 position-relative">
+        <div class="icon-circle-down fs-4 text-info down-arrow position-absolute" (click)="scrollUp()"
+            *ngIf="isScrolledToBottom"> </div>
         <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
-
             <!-- Reply Model -->
             <div class="reply-wrapper rounded-1 p-2 pe-3" *ngIf="isReplyMode">
                 <div class="mx-3">
@@ -123,32 +120,35 @@
                     <span>{{replyMessage.content.text}}</span>
                 </div>
             </div>
-
+            <!-- End Reply Model -->
             <!-- Emoji Icon  -->
             <emoji-mart class="emoji-mart " *ngIf="showEmojiPicker" (emojiSelect)="addEmoji($event)"
                 title="Pick your emoji…"></emoji-mart>
-            <div class="d-flex align-items-center position-relative">
-                <input type="text" class="form-control py-2 rounded-1" name="message" formControlName="message"
-                    autocomplete="off" placeholder="Type a new message" [(ngModel)]="message " #inputTypeFocus>
-            </div>
-            <!-- Typer Dialog box  -->
-            <div class="d-flex align-items-center justify-content-between py-1">
+            <!-- Emoji Icon  -->
+
+            <!-- typeing Wrapper  -->
+            <div class="d-flex py-2 px-2">
                 <div class="file-attach d-flex align-items-center gap-2">
                     <span class="icon-{{closeIcon}} cursor-pointer" (click)="closeEmojiPicker()"></span>
-                    <span class="icon icon-emoji-smile fs-5 cursor-pointer" (click)="openEmojiPicker()"></span>
-                    <label for="file" class="d-flex align-items-center">
-                        <span class="icon icon-paperclip fs-5 cursor-pointer"></span>
+                    <img src="./../../../../../assets/images/01 Smile.png" class=" cursor-pointer"
+                        (click)="openEmojiPicker()">
+                    <label for="file" class="d-flex align-items-center border border-success rounded-2 fs-2">
+                        <span class="icon-plus fs-4 cursor-pointer"></span>
                     </label>
-                    <span class="icon" role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-                        aria-controls="offcanvasRight">EOD</span>
                 </div>
+                <!-- write Message -->
+                <div class="w-100 mx-3 ">
+                    <input type="text" class="form-control  rounded-4 px-2" name="message" formControlName="message"
+                        autocomplete="off" placeholder="Type a new message" [(ngModel)]="message " #inputTypeFocus>
+                </div>
+                <!-- write Message -->
                 <div class="d-flex align-items-center gap-1">
                     <ng-container *ngIf="isEditMode">
                         <span class="icon icon-x-lg fs-5" (click)="onCancelMode()" role="button"></span>
                     </ng-container>
 
                     <button type="submit" class="border-0" [disabled]="!chatGroup.valid"><span
-                            class='icon icon-bxs-send fs-4' role="button"></span></button>
+                            class='icon-bxs-send fs-3' role="button"></span></button>
                 </div>
             </div>
             <input type="file" id="file" class="d-none">

@@ -1,64 +1,45 @@
-<div class="h-100 d-flex flex-column ">
-  <form class="p-3 bg-theme" [formGroup]="searchGroup">
-    <input type="text" class="form-control" id="toggle-user" name="search" autocomplete="off"
-      placeholder="Search a User.." formControlName="search" [(ngModel)]="searchText" #inputTypeFocus>
-  </form>
-  <div class="flex-grow-1 border-end bg-white overflow-auto">
+<!-- all user -->
+<div class=" main-all-user-aside-wrapper h-100 d-flex flex-column ">
+  <!-- User Search Box-->
+  <div class="p-3">
+    <form class="position-relative" [formGroup]="searchGroup">
+      <input type="text" class="form-control " name="search" autocomplete="off" placeholder="Search a new user "
+        formControlName="search" [(ngModel)]="searchText" #inputTypeFocus>
+      <span class="icon-search position-absolute fw-lighter "></span>
+    </form>
+  </div>
+  <!--End user Search Box-->
+  <div class="flex-grow-1 overflow-auto border border-top border-success">
     <!-- Skeleton Loading -->
     <div *ngIf="isLoading | async; else data">
-      <div class="container border-bottom mt-2" *ngFor="let user of [1,2,3,4,5,6,7,8,9,10]">
-        <div class="fb-item">
-          <div class="first-section-wrapper">
-            <div class="gravatar">
-              <ngx-skeleton-loader appearance="circle" [theme]="{ width: '60px', height: '60px','margin-top': '5px' }">
-              </ngx-skeleton-loader>
-            </div>
-              <div>
-                <ngx-skeleton-loader
-                  [theme]="{
-                    width: '250px',
-                    'border-radius': '5px',
-                    height: '22px',
-                    'margin-top': '24px',
-                    'margin-left': '10px',
-                  
-                  }"
-                ></ngx-skeleton-loader>
-              </div>
-            </div>
-        </div>
-      </div>
+      <app-users-skeleton-loader></app-users-skeleton-loader>
     </div>
     <!-- Skeleton Loading -->
     <!-- all user list  -->
-    <ul>
-      <ng-template #data>
-        <ng-container *ngFor="let user of allUsers | search:searchText">
-          <li role="button" class="user-container d-flex align-items-center p-2 border-bottom"
-            (click)="onNewChat(user)">
-            <div class="px-3 me-1 position-relative">
-              <figure class="m-0">
-                <img [src]="user.photo" class="border rounded-circle user-img" alt="profile">
-              </figure>
-            </div>
-            <div class="ms-2">
-              <span class="fw-semibold"> {{user.full_name}} </span>
-              <span class="fw-semibold"
-                [ngClass]="{'text-danger' : user.role === 'lead', 'text-warning' : user.role === 'mentor', 'text-success' : user.role === 'intern'}">
-                ({{user.role}}) </span>
-            </div>
-          </li>
-        </ng-container>
-        <!-- No user found section  -->
-        <div class="h-100 d-flex justify-content-center align-items-center"
-          *ngIf="(allUsers | search:searchText)?.length <= 0 ">
-          <span class="text-info"> No User Found </span>
+    <ng-template #data>
+      <ng-container *ngFor="let user of allUsers | search:searchText">
+        <div role="button" class="user-container d-flex align-items-center p-2 mx-2 rounded-2"
+          (click)="onNewChat(user)">
+          <div class="position-relative user-profile rounded-2 ">
+            <figure class="m-0">
+              <img [src]="user.photo" class="h-100 w-auto position-absolute" alt="profile">
+            </figure>
+          </div>
+          <div class="ms-2">
+            <span class="fw-semibold"> {{user.full_name}} </span>
+            <span class="fw-semibold"
+              [ngClass]="{'text-danger' : user.role === 'lead', 'text-warning' : user.role === 'mentor', 'text-success' : user.role === 'intern'}">
+              ({{user.role}}) </span>
+          </div>
         </div>
-        <!-- End  No user found section  -->
-      </ng-template>
-    </ul>
+      </ng-container>
+      <!-- No user found section  -->
+      <div class="h-100 d-flex justify-content-center align-items-center"
+        *ngIf="(allUsers|search:searchText)?.length <= 0 ">
+        <span class="text-info"> No User Found </span>
+      </div>
+      <!-- End  No user found section  -->
+    </ng-template>
     <!-- End all user  list -->
   </div>
-
-
 </div>

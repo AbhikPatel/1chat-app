@@ -3,7 +3,7 @@
     height: 2px;
 
     &-thumb {
-        background-color: $info;
+        background-color: $bg-main-color;
         border-radius: 12px;
     }
 
@@ -20,16 +20,3 @@
         }
     }
 }
-
-// // Small devices (landscape phones, less than 768px)
-// // @media (max-width: $tablet-view) {
-// //     ::-webkit-scrollbar {
-// //         width: 2px;
-// //         height: 2px;
-
-// //         &-button {
-// //             height: 2px;
-// //             width: 2px;
-// //         }
-// //     }
-// // }

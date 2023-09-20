@@ -82,6 +82,7 @@ export class ChatListPresentationComponent implements OnInit {
   public selectedConversation: any;
   //  This variable is use to show loader  
   public isLoading: any;
+  public iconHideShow: boolean
   // subject
   /** Flag for showing typing text */
   public showTypingText: BehaviorSubject<boolean>;
@@ -133,10 +134,10 @@ export class ChatListPresentationComponent implements OnInit {
 * @name onSearchUser
 * @description This method is used to show Aside bar
 */
-  public openAsideBar() {
+  public openNewConversationModel() {
     this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true;
-    const data = this.toggle.nativeElement.checked;
-    this._commonService.userApiCall.next(data)
+    this.iconHideShow = this.toggle.nativeElement.checked;
+    this._commonService.userApiCall.next(this.iconHideShow)
   }
 
   /**
@@ -209,9 +210,9 @@ export class ChatListPresentationComponent implements OnInit {
       if (TabData) {
         this._router.navigate(['chat', user.chatId, 'eod']);
         this._communicationService.tabData.next(false)
-      }else {
+      } else {
         this._router.navigate(['chat', user.chatId])
-      } 
+      }
     }
     this._communicationService.setHeaderDetails(user)
     this._communicationService.tabDataApi.next(true)

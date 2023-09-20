@@ -1,23 +1,17 @@
 // All the SCSS Variables goes here
 
 // font 
-$font-family                            : 'Poppins', sans-serif;
+$font-family : 'Poppins',
+sans-serif;
 
 // sidebar 
-$sidebar-width                          : 400px;
+$sidebar-width : 380px;
 
 // header 
-$header-height                          : 58px;
+$header-height :65px;
 
-// badge 
-$badge-font-weight                      : 500;
-
-// offcanvas 
-$offcanvas-horizontal-width             : 800px;
-$offcanvas-padding-x                    : 50px;
-
-
+// input Type
 $input-focus-box-shadow: none;
-$form-select-box-shadow:none;
-$form-select-focus-box-shadow:none;
-$input-focus-border-color:          blue;
+$form-select-focus-box-shadow: none;
+$input-focus-border-color: $bg-main-color;
+$form-select-box-shadow: none;
