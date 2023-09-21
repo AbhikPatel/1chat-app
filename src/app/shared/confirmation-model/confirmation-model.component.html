@@ -6,12 +6,13 @@
       <span type="button" class="icon-close fs-2" (click)="dismiss()"></span>
     </div>
     <div class="p-2">
-      <h4 class="my-4 fs-4">Do you really want to ?</h4>
+      <h4 class="my-4 fs-4" *ngIf="commonData.eodId">Do you really want to Send ?</h4>
+      <h4 class="my-4 fs-4" *ngIf="!commonData.eodId">Do you really want to  Delete ?</h4>
     </div>
 
     <div class="mt-3 d-flex justify-content-end border-bottom border-top  p-2">
-      <button type="button" class="btn btn-info  me-3" (click)="decline()">No</button>
-      <button type="button" class="btn btn-danger" (click)="accepted()">Yes</button>
+      <button type="button" class="btn btn-success  me-3" (click)="decline()">No</button>
+      <button type="button" class="btn btn-danger tes" (click)="accepted()">Yes</button>
     </div>
   </div>
 </div>

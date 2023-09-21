@@ -54,11 +54,11 @@
             <ng-template #data>
                 <div class=" conversation-list flex-grow-1 overflow-auto mt-3 mx-2 position-relative "
                     *ngIf="conversationUsers">
-                    <div class="conversation d-flex align-items-center my-1 p-2 rounded-2"
+                    <div class="conversation d-flex align-items-center my-1 p-1 rounded-2"
                         [ngClass]="{'bg-theme' : user.chatId ===currentChatId }" role="button"
                         *ngFor="let user of conversationUsers " (click)="onUser(user)">
                         <div class="px-2">
-                            <div class=" position-relative user-profile rounded-2 ">
+                            <div class=" position-relative user-profile rounded-circle">
                                 <img [src]="user.profile" class="h-100 w-auto" alt="profile">
                                 <!-- <ng-template [ngIf]="user.chat_type !== 'group'">
                             <span *ngIf="checkIfOnline(user.members[0]._id)"
@@ -104,7 +104,7 @@
                     </div>
                     <div class="open-new-conversation position-absolute cursor-pointer"
                         (click)="openNewConversationModel()">
-                        <span class="icon-chat-right fs-4 text-white"
+                        <span class="icon-chat-right fs-5 text-white"
                             [ngClass]="iconHideShow  ?'icon-x-lg ':'icon-chat-right'"></span>
 
                     </div>

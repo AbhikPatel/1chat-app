@@ -8,10 +8,11 @@ import { EodListPresentationComponent } from './eod-list-container/eod-list-pres
 import { TaskFormContainerComponent } from './task-form-container/task-form-container.component';
 import { TaskFormPresentationComponent } from './task-form-container/task-form-presentation/task-form-presentation.component';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CKEditorModule } from 'ckeditor4-angular';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -29,7 +30,9 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
     ReactiveFormsModule,
     NgSelectModule,
     CKEditorModule,
-    NgxSkeletonLoaderModule
+    FormsModule,
+    NgxSkeletonLoaderModule,
+    SharedModule
 
   ]
 })

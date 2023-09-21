@@ -6,11 +6,12 @@ import { CommonService } from "src/app/shared/services/common.service";
 import { environment } from "src/environments/environment";
 import { EOD, EODResponse, Task, TaskResponse } from "../models/eod.model";
 import { taskBgColor, taskTypeFormat } from "src/app/core/utilities/constants";
+import { login } from "../models/login.model";
 
 @Injectable()
 export class conversationUserAdapter implements Adapter<ConversationUsers>{
 
-    public loginUserObject: any;
+    public loginUserObject: login;
 
     constructor(
         private _formatter: FormatTime,
@@ -54,20 +55,18 @@ export class conversationUserAdapter implements Adapter<ConversationUsers>{
 
 @Injectable()
 export class MessageAdapter implements Adapter<Message>{
-
-    public userId: string;
-
+    public loginUserObject: login;
     constructor(
         private _formatter: FormatTime,
         private _commonService: CommonService
     ) {
-        this.userId = this._commonService.getUserId();
+        this.loginUserObject = this._commonService.getLoginDetails()
     }
 
     public toResponse(message: MessageResponse): Message {
 
         if (message.replied_to) {
-            message.replied_to.sender === this.userId ? message.replied_to.is_sender = true : message.replied_to.is_sender = false;
+            message.replied_to.sender ===  this.loginUserObject.userId ? message.replied_to.is_sender = true : message.replied_to.is_sender = false;
         }
         const newMessage: Message = new Message(
             message._id,
@@ -79,7 +78,7 @@ export class MessageAdapter implements Adapter<Message>{
             message.time,
             message.type,
             message.content,
-            message.sender === this.userId,
+            message.sender ===this.loginUserObject.userId,
             this._formatter.Formatter(new Date(message.time)),
             message.chat === message.receiver ? 'group' : 'dm',
             message.replied_to

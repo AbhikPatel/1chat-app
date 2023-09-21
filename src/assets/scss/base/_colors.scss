@@ -1,5 +1,6 @@
 // Theme Colors
-$primary : #329bf6;
+$bg-main-color: #128C7E;
+$primary : $bg-main-color;
 $secondary : #bffcb5;
 $white : #fff;
 // $success                                   : #1eca1a;
@@ -11,7 +12,6 @@ $info :#F5FAFC;
 
 // main-color
 $main-color: $info;
-$bg-main-color: #128C7E;
 // form 
 $input-focus-box-shadow : 0px;
 $input-border-radius : 10px;

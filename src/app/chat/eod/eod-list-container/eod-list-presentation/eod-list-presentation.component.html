@@ -1,6 +1,6 @@
 <div class="container d-flex flex-column h-100">
-    <div class="eod-heading border p-1">
-        <span class="heading fs-2 fw-bold ">EOD LIST</span>
+    <div class="eod-heading border border-success p-1">
+        <span class="heading fs-3 fw-semibold">EOD LIST</span>
     </div>
     <!-- Start Eod list -->
     <div class="flex-grow-1 overflow-auto">
@@ -9,7 +9,7 @@
             <div class="container border mt-2" *ngFor="let user of [1,2,3,4,5]">
                 <div class="fb-item">
                     <div class="d-flex flex-column">
-                        <div class=" d-flex  justify-content-between align-items-center">
+                        <div class=" d-flex justify-content-between align-items-center">
                             <div>
                                 <ngx-skeleton-loader [theme]="{
             width: '100px',
@@ -112,7 +112,7 @@
         <!-- Skeleton Loading -->
         <ng-template #data>
             <ng-container *ngFor="let eod of getEodResponse.slice().reverse()">
-                <div class="border border-1 rounded-1 p-2 rounded-1 bg-white my-2">
+                <div class="border border-1 border-success rounded-1 p-2 bg-info my-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                             <div>
@@ -121,7 +121,7 @@
                             </div>
                         </div>
                         <div class="" *ngIf="eod.tasks.length === 0 ">
-                            <span class="d-flex text-info justify-content-center"> No Record Found</span>
+                            <span class="d-flex text-dark justify-content-center"> No Record Found</span>
                         </div>
                         <button class="btn btn-primary text-white" (click)="openTaskForm()"
                             *ngIf="eod.submissionTime == undefined"> Add Task</button>
@@ -129,8 +129,8 @@
                     <div class="mt-3" *ngIf="eod.tasks.length > 0 ">
                         <div class="row">
                             <div class="col-1"></div>
-                            <div class="col-2 fw-bold text-center">Task title</div>
-                            <div class="col-2 fw-bold text-center">ActivityType</div>
+                            <div class="col-2 fw-bold text-center">Title</div>
+                            <div class="col-2 fw-bold text-center">Activity</div>
                             <div class="col-2 fw-bold text-center">OriginalEstimation</div>
                             <div class="col-2 fw-bold text-center">Remaining</div>
                             <div class="col-1 fw-bold text-center">ActualTime</div>
@@ -151,13 +151,14 @@
                                                                 (click)="toggleAccordion(task._id)"
                                                                 [attr.data-bs-target]="'#collapseOne' + task._id"
                                                                 [attr.aria-controls]="'collapseOne' + task._id">
-                                                                {{ task._id === openIndex ? '▼' : '►' }}
+                                                                <i class="fs-4 text-dark" [class]="'icon-moon-class-name ' + (task._id === openIndex ? 'icon-down' : 'icon-up')"></i>
+                                 
                                                             </button>
                                                         </h2>
                                                     </div>
-                                                    <div class="col-2 text-center">{{task.taskTitle}}</div>
+                                                    <div class="col-2 text-center truncated-text" >{{task.taskTitle  }}</div>
                                                     <div class="col-2 text-center">{{task.taskActivity}}</div>
-                                                    <div class="col-2 text-center">{{task.taskOriginalEstimate}}<span>h</span></div>
+                                                    <div class="col-2 text-center">{{task.taskOriginalEstimate }}<span>h</span></div>
                                                     <div class="col-2 text-center">{{task.taskEffortsRemaining}}<span>h</span></div>
                                                     <div class="col-1 text-center">{{task.taskEffortsCompleted}}<span>h</span></div>
                                                     <div class="col-1 text-center">{{task.taskState}}</div>
@@ -167,7 +168,7 @@
                                                             <div class="d-flex align-items-center">
                                                                 <span type="button" id="dropdownBasic1"
                                                                     ngbDropdownToggle
-                                                                    class="icon-Dote text-info fw-bold fs-3">
+                                                                    class="icon-Dote text-dark fw-bold fs-3">
                                                                 </span>
                                                             </div>
                                                             <div ngbDropdownMenu aria-labelledby="dropdownBasic1"
@@ -191,19 +192,17 @@
                                                 [class.show]="task._id=== openIndex"
                                                 [attr.data-bs-parent]="'#accordionExample'">
                                                 <div class="accordion-body p-4">
-                                                    <div class="">
-                                                        <div class="row">
+                                    
                                                             <div class="row">
                                                                 <div class="col-12">
 
-                                                                    <h5>Task Title</h5>
+                                                                    <h5>Title</h5>
                                                                     <span>{{task.taskTitle}}
                                                                     </span>
 
 
                                                                 </div>
-                                                            </div>
-                                                        </div>
+                                                         
                                                     </div>
 
                                                     <div class="mt-3">
@@ -228,7 +227,7 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-end mt-3">
-                            <button class="btn btn-info text-black " (click)="sendEod()"
+                            <button class="btn btn-primary text-white" (click)="sendEod()"
                                 *ngIf="eod.submissionTime == undefined"> Send</button>
                         </div>
                     </div>

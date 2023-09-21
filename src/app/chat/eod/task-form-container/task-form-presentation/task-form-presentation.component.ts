@@ -8,6 +8,7 @@ import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { login } from 'src/app/chat/models/login.model';
 import { EOD, EditEodTasks, Task } from 'src/app/chat/models/eod.model';
 import { ConfirmationModelComponent } from 'src/app/shared/confirmation-model/confirmation-model.component';
+import { CKEditorComponent } from 'ckeditor4-angular';
 
 @Component({
   selector: 'app-task-form-presentation',
@@ -20,6 +21,8 @@ export class TaskFormPresentationComponent implements OnInit {
    */
   @Input() public set getStateActivityType(getStateActivityType: any) {
     if (getStateActivityType) {
+      console.log(getStateActivityType);
+      
       this._getStateActivityType = getStateActivityType;
     }
   }
@@ -55,6 +58,7 @@ export class TaskFormPresentationComponent implements OnInit {
     return  this._getEodResponse
 
   }
+  @ViewChild('editor') editor: CKEditorComponent;
   /** This variable emit  Task Details*/
   @Output() public taskDetails: EventEmitter<Task>
   /** This variable emit  Task Details*/
@@ -68,10 +72,11 @@ export class TaskFormPresentationComponent implements OnInit {
   public isSubmitted: boolean
   /** This element used for focus inputBox */
   public ckEditorConfig: any = {};
-  public selectedCountryId: number;
+  public isExpanded:boolean;
 /** Private Variable */
-public _getEodResponse:EOD[]
-private _getTaskDetails:Task
+public _getEodResponse:EOD[];
+private _getTaskDetails:Task;
+
   constructor(public _commonService: CommonService,
     private _TaskFormPresenterService: TaskFormPresenterService,
     private _overlayService: OverlayService
@@ -81,6 +86,7 @@ private _getTaskDetails:Task
     this.loginUserDetails = this._commonService.getLoginDetails();
     this.taskDetails = new EventEmitter();
     this.editTaskDetails = new EventEmitter();
+    this.isExpanded=false
     this.ckEditorConfig = {
       toolbar: [
         [
@@ -162,6 +168,8 @@ private _getTaskDetails:Task
     this.isSubmitted = true
     if (this.eodFormGroup.valid) {
       if(this._getTaskDetails?._id){
+        console.log(this.eodFormGroup.value);
+        
         this._TaskFormPresenterService.editEodTasks(this.eodFormGroup.value,this._getTaskDetails._id);
         this._overlayService.close()
       }else{
@@ -171,19 +179,28 @@ private _getTaskDetails:Task
     
     }
   }
+  
+  toggleEditor() {
+    this.isExpanded = !this.isExpanded;
+    if (this.isExpanded) {
+      this.editor.instance.subscribe(() => {
+        this.editor.instance.focus();
+      });
+    }
+  }
 /**
  * @name setSelectedStateName
  * @description This method Select state Name    
  */
   public setSelectedStateName() {
     const selectedStateId = this.eodFormGroup.get('taskState').value;
-    const selectedState = this._getStateActivityType.data.docs[1].data.find(state => state.stateId === selectedStateId);
-    this.eodFormGroup.patchValue({ taskState: selectedState ? selectedState.state : '' });
+    const selectedState = this._getStateActivityType.data.docs[0].data.find(state => state.stateId === selectedStateId);
+    this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.state : '' });
   }
   public setSelectedActivityName() {
     const selectedActivityId = this.eodFormGroup.get('taskActivity').value;
-    const selectedState = this._getStateActivityType.data.docs[0].data.find(activity => activity.activityId === selectedActivityId);
-    this.eodFormGroup.patchValue({ taskActivity: selectedState ? selectedState.activity : '' });
+    const selectedState = this._getStateActivityType.data.docs[1].data.find(activity => activity.activityId === selectedActivityId);
+    this.eodFormGroup.patchValue({ activityId: selectedState ? selectedState.activity : '' });
   }
   /**
      * Short variable 

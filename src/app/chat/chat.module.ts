@@ -10,21 +10,17 @@ import { UserListContainerComponent } from './user-list-container/user-list-cont
 import { UserListPresentationComponent } from './user-list-container/user-list-presentation/user-list-presentation.component';
 import { CreateGroupFormContainerComponent } from './create-group-form-container/create-group-form-container.component';
 import { CreateGroupFormPresentationComponent } from './create-group-form-container/create-group-form-presentation/create-group-form-presentation.component';
-import { ChatService } from './chat.service';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { OnClickOutsideDirective } from './directive/on-click-outside.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchPipe } from './shared/pipe/search.pipe';
-import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
-import { FormatTime } from '../core/utilities/formatTime';
 import { ChatHeaderComponent } from './chat-header/chat-header.component';
-import { CommunicationService } from './shared/communication/communication.service';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
-import { HttpClientModule } from '@angular/common/http';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { ConversationSkeletonLoaderComponent } from './shared/conversation-skeleton-loader/conversation-skeleton-loader.component';
 import { UsersSkeletonLoaderComponent } from './shared/users-skeleton-loader/users-skeleton-loader.component';
 import { EodListSkeletonLoaderComponent } from './shared/eod-list-skeleton-loader/eod-list-skeleton-loader.component';
+
 
 @NgModule({
   declarations: [
@@ -40,6 +36,7 @@ import { EodListSkeletonLoaderComponent } from './shared/eod-list-skeleton-loade
     OnClickOutsideDirective,
     ChatHeaderComponent,
     SearchPipe,
+
     ConversationSkeletonLoaderComponent,
     UsersSkeletonLoaderComponent,
     EodListSkeletonLoaderComponent,

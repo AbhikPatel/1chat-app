@@ -24,7 +24,9 @@ export class EodListPresentationComponent implements OnInit {
   }
   /** this variable data  */
   @Input() public set getStateActivityType(getStateActivityType: any) {
+    
     if (getStateActivityType) {
+      console.log(getStateActivityType);
       this._getStateActivityType = getStateActivityType;
      this._eodListPresenterService.getStateActivityType(this._getStateActivityType);
       
@@ -63,7 +65,6 @@ export class EodListPresentationComponent implements OnInit {
    */
   public openTaskForm() {
     this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType, this._getEodResponse)
-
   }
   /**
   * @name toggleAccordion
@@ -80,7 +81,6 @@ export class EodListPresentationComponent implements OnInit {
   public editTask(task: Task) {
     const taskInstance = this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType, this._getEodResponse);
     taskInstance.instance.taskDetails = task
-
   }
   /**
    * @name deleteTask

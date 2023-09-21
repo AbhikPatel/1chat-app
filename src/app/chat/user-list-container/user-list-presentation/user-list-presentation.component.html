@@ -18,9 +18,9 @@
     <!-- all user list  -->
     <ng-template #data>
       <ng-container *ngFor="let user of allUsers | search:searchText">
-        <div role="button" class="user-container d-flex align-items-center p-2 mx-2 rounded-2"
+        <div role="button" class="user-container d-flex align-items-center p-2 mx-2 rounded-2 mt-1"
           (click)="onNewChat(user)">
-          <div class="position-relative user-profile rounded-2 ">
+          <div class="position-relative user-profile rounded-circle">
             <figure class="m-0">
               <img [src]="user.photo" class="h-100 w-auto position-absolute" alt="profile">
             </figure>

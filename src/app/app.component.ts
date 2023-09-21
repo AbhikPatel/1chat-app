@@ -1,6 +1,5 @@
-import { AfterViewInit, Component } from '@angular/core';
-import { LoaderService } from './core/services/loader/loader.service';
-import { delay } from 'rxjs';
+import { Component } from '@angular/core';
+
 
 @Component({
   selector: 'app-root',
@@ -10,9 +9,6 @@ export class AppComponent {
 
   /** This variable holds the application name */
   public title = '1-chat';
-
-
-
   constructor(
    
   ) {

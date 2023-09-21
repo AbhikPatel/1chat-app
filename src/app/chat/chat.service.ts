@@ -4,8 +4,8 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { environment } from 'src/environments/environment';
 import { Observable, Subject, map } from 'rxjs';
 import { User, UserResponse } from '../shared/models/user.model';
-import { ConversationUsers, ConversationUserResponse, GroupDetails } from './models/chat.model';
-import { EODAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
+import { ConversationUsers, ConversationUserResponse, GroupDetails, Message, MessageResponse } from './models/chat.model';
+import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
 import { CommonService } from '../shared/services/common.service';
 import { login } from './models/login.model';
 import { io } from 'socket.io-client';
@@ -30,7 +30,8 @@ export class ChatService {
     private _conversationAdapter: conversationUserAdapter,
     private _commonService: CommonService,
     private _utilityService: UtilityService,
-    private _eodAdapter: EODAdapter
+    private _eodAdapter: EODAdapter,
+    private _messageAdaptor: MessageAdapter,
   ) {
     this.baseUrl = environment.baseURL;
     this.loginUserObject = this._commonService.getLoginDetails();
@@ -124,7 +125,6 @@ export class ChatService {
     const url: string = this.baseUrl + `push-notification`;
     return this._http.httpPostRequest(url, { sub, data })
   }
-
   /**
    * @name getAllUserData
    * @returns 
@@ -138,7 +138,7 @@ export class ChatService {
       })
     )
   }
-
+  
   /**
        * @name getConversationUser
        * @returns observable
@@ -162,6 +162,22 @@ export class ChatService {
   public postNewGroup(newGroup: GroupDetails): Observable<GroupDetails> {
     const url: string = this.baseUrl + `chat`
     return this._http.httpPostRequest(url, newGroup)
+  }
+  /**
+     * @name getChatMessages
+     * @param chatId 
+     * @returns Observable
+     * @description This will get the data of all the messages as per the chatId
+     */
+  public getChatMessages(chatId: string): Observable<Message[]> {
+    const url: string = this.baseUrl + `message?chat=` + chatId;
+    return this._http.httpGetRequest(url).pipe(
+      map((res: any) => {
+        res.data.data = res.data.docs.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));
+        return res.data.data;
+  
+      })
+    )
   }
   /**
     * @name getEODReports

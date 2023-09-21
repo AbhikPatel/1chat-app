@@ -34,6 +34,8 @@ export class AuthService {
     const url: string = this.baseUrl + 'user/log-in';
     return this._http.httpPostRequest(url, credentials).pipe(
       map((res) => {
+        console.log(res);
+        
         localStorage.setItem('token', res.token)
         const userLocalStorageData = {
           role: res.data.doc.role,

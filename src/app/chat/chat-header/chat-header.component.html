@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center justify-content-between ">
         <div class="d-flex align-items-center h-100">
             <div class="d-flex align-items-center p-3  ">
-                <div class="position-relative  user-profile rounded-2 ">
+                <div class="position-relative  user-profile rounded-circle ">
                     <figure class="m-0">
                         <img [src]="receiversConversation.profile" class="h-100 w-auto position-absolute" alt="profile">
                     </figure>
@@ -19,11 +19,11 @@
 
             <!-- Tab view  -->
             <div class="d-flex bg-white  ms-5 rounded-2">
-                <span class="p-3 align-items-center  rounded-2" (click)="onWindow(true)" role="button"
+                <span class="p-2 align-items-center  rounded-2" (click)="onWindow(true)" role="button"
                     [ngClass]="{'bg-main-color' : currentWindow}" (click)="navigationConversation()">
                     <span class="fw-bolder" [ngClass]="{'text-white' : currentWindow}"> Chat</span>
                 </span>
-                <span class="p-3 d-flex align-items-center  rounded-2 " (click)="onWindow(false)" role="button"
+                <span class="p-2 d-flex align-items-center  rounded-2 " (click)="onWindow(false)" role="button"
                     [ngClass]="{'bg-main-color' : !currentWindow}" (click)="navigationEod()">
                     <span class="fw-bolder" [ngClass]="{'text-white' : !currentWindow}"> EOD</span>
                 </span>
