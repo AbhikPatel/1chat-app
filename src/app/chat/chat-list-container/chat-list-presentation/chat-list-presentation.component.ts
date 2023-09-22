@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/shared/models/user.model';
 import { CommunicationService } from '../../shared/communication/communication.service';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
+import { Login } from 'src/app/core/models/login.model';
 
 
 @Component({
@@ -22,8 +23,9 @@ export class ChatListPresentationComponent implements OnInit {
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
-      let selectedConversation = users
+    this._chatListPresenterService.getConversationUsers(users)
       this.copyOfConversationUsers = [...users];
+      let selectedConversation = users
       let findConversation: ConversationUsers = selectedConversation.find((user: ConversationUsers) => user.chatId === this.currentChatId);
       this.onUser(findConversation);
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
@@ -58,6 +60,7 @@ export class ChatListPresentationComponent implements OnInit {
   /** This property is used to get all the user details from container component */
   @Input() public set getAllUsers(users: User[]) {
     if (users) {
+     this._chatListPresenterService.getAllUsers(users)
       this._getAllUsers = users;
     }
   }

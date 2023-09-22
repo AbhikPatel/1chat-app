@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { EOD, EodSubmission } from 'src/app/chat/models/eod.model';
+import { EOD, EodSubmission, Task, activity } from 'src/app/chat/models/eod.model';
 
 @Injectable()
 export class EodListPresenterService implements OnInit {
@@ -10,16 +10,17 @@ export class EodListPresenterService implements OnInit {
   /** Subject for currentTime */
   public sendEod: Subject<EodSubmission>;
   /**  This variable store Current Date and time*/
-  public nowTime: Date;
+  public currentTime: Date;
   /**  This variable store last eod ID*/
   public EodId: number | string;
 
-public getStateActivityTypes:any
+  public getStateActivityTypes: any
+  public getActivity: any
   constructor() {
     this.sendEod$ = new Observable();
     this.sendEod = new Subject();
     this.sendEod$ = this.sendEod.asObservable();
-    this.nowTime = new Date()
+    this.currentTime = new Date()
   }
   ngOnInit(): void {
 
@@ -31,47 +32,51 @@ public getStateActivityTypes:any
    * @description This Method find last eod id in given EodResponse Array
    */
   public getEodResponse(eodResponses: any) {
-    // const eodResponse=[...eodResponses]
-    // console.log(eodResponse);
-    
-    // const data = eodResponse[26]?.tasks.map((Eod:any) => ({
-    //   taskState :this.getStateName(Eod.taskState),
-    //   taskActivity: this.getActivityName(Eod.taskActivity),
-      
-    // }));
-    // console.log(data);
+    const eodResponse = [...eodResponses];
+    eodResponse.forEach((eod: EOD) => {
+      eod.tasks = eod.tasks.map((task: Task) => ({
+        ...task,
+        taskActivity: this.getActivityName(task.taskActivity),
+        taskState: this.getStateName(task.taskState),
+      }));
+    });
+    console.log(eodResponse);
     
     const spliceEodResponses = eodResponses.splice(-1);
     this.EodId = spliceEodResponses[0]?._id;
     const sendEodSubmissionTime: EodSubmission = {
       eodId: this.EodId,
-      submissionTime: this.nowTime,
+      submissionTime: this.currentTime,
     }
     this.sendEod.next(sendEodSubmissionTime);
   }
-  private getStateName(ActivityID: any) {
-    console.log(ActivityID);
-    
-    const Activity = this.getStateActivityTypes.data.docs[0].data.find((data:any) => data.activityId === ActivityID);
-    console.log(Activity);
-    
-    return Activity ? Activity.activity : 'Unknown Country';
+  /**
+   * @name getActivityName
+   * @param activityID 
+   * @returns 
+   * @description This method find activityName base on id and return 
+   */
+  private getActivityName(activityID: number) {
+    const activity = this.getStateActivityTypes.data.docs[1].data.find((data: any) => data.activityId === activityID);
+    return activity ? activity.activity : 'Unknown';
   }
-
-  private getActivityName(stateID: any) {
-    console.log(stateID);
-    
-    const state = this.getStateActivityTypes.data.docs[1].data.find((data:any) => data.stateId === stateID);
-    console.log(state);
-    
-    return state ? state.state : 'Unknown State';
+  /**
+   * @name getStateName
+   * @param stateID 
+   * @returns 
+   * @description  This method find getStateName base on id and return 
+   */
+  private getStateName(stateID: number) {
+    const state = this.getStateActivityTypes.data.docs[0].data.find((data:any) => data.stateId === stateID);
+    return state ? state.state : 'Unknown';
   }
-/**
- * 
- * @param getStateActivityType 
- */
+  /**
+   * @name getStateActivityType
+   * @param getStateActivityType 
+   * @description This method get all state and activity type
+   */
   public getStateActivityType(getStateActivityType: any) {
-   this.getStateActivityTypes=getStateActivityType
+    this.getStateActivityTypes = getStateActivityType
 
   }
 }

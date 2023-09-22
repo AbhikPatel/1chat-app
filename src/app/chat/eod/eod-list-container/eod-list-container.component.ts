@@ -15,9 +15,11 @@ export class EodListContainerComponent {
   /** This Variable Store routing params id */
   public paramsId: string;
   /** This Variable Store  all eod response*/
-  public eodResponse:any;
+  public eodResponse:EOD[];
   /** This Variable store state and activity Type */
+  public eodIsTrue:string;
   public stateActivityType$: Observable<any>;
+  public IsTrue: boolean;
   constructor(private _router: ActivatedRoute,
     private _chatService: ChatService,
     private _communicationService:CommunicationService,
@@ -75,10 +77,9 @@ export class EodListContainerComponent {
     */
     this._communicationService.senEodData$.subscribe((eodSubmissionTime:EodSubmission)=>{
       if(eodSubmissionTime){
-        this._chatService.updateEod(eodSubmissionTime,eodSubmissionTime.eodId).subscribe();
-        this.getEODReports();
+          this.IsTrue=true
+        // this._chatService.updateEod(eodSubmissionTime,eodSubmissionTime.eodId).subscribe();
       }
- 
     })
     this._communicationService.tabDataApi.subscribe((data:boolean)=>{
       if(data){

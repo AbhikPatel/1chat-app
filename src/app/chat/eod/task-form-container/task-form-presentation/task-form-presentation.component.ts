@@ -168,8 +168,6 @@ private _getTaskDetails:Task;
     this.isSubmitted = true
     if (this.eodFormGroup.valid) {
       if(this._getTaskDetails?._id){
-        console.log(this.eodFormGroup.value);
-        
         this._TaskFormPresenterService.editEodTasks(this.eodFormGroup.value,this._getTaskDetails._id);
         this._overlayService.close()
       }else{
@@ -177,15 +175,6 @@ private _getTaskDetails:Task;
         this._overlayService.close()
       }
     
-    }
-  }
-  
-  toggleEditor() {
-    this.isExpanded = !this.isExpanded;
-    if (this.isExpanded) {
-      this.editor.instance.subscribe(() => {
-        this.editor.instance.focus();
-      });
     }
   }
 /**
@@ -197,6 +186,7 @@ private _getTaskDetails:Task;
     const selectedState = this._getStateActivityType.data.docs[0].data.find(state => state.stateId === selectedStateId);
     this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.state : '' });
   }
+  
   public setSelectedActivityName() {
     const selectedActivityId = this.eodFormGroup.get('taskActivity').value;
     const selectedState = this._getStateActivityType.data.docs[1].data.find(activity => activity.activityId === selectedActivityId);

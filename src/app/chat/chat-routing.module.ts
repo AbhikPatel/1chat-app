@@ -9,10 +9,10 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'no-conversation',
+        redirectTo: 'default-path',
         pathMatch: 'full'
       },
-      { path: 'no-conversation', component: NoConversationComponent },
+      { path: 'default-path', component: NoConversationComponent },
       { path: ':id', loadChildren: () => import('./message/message.module').then(m => m.MessageModule) },
       { path: ':id/eod', loadChildren: () => import('./eod/eod.module').then(m => m.EodModule) },
     ],

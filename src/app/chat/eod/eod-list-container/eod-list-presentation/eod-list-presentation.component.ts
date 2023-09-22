@@ -13,6 +13,8 @@ import { LoaderService } from 'src/app/core/services/loader/loader.service';
 export class EodListPresentationComponent implements OnInit {
   @Input() public set getEodResponse(eodResponse: EOD[]) {
     if (eodResponse) {
+      console.log(eodResponse);
+      
       const eodResponses=[...eodResponse];
       this._getEodResponse = eodResponse;
       this._eodListPresenterService.getEodResponse(eodResponses);
@@ -24,7 +26,6 @@ export class EodListPresentationComponent implements OnInit {
   }
   /** this variable data  */
   @Input() public set getStateActivityType(getStateActivityType: any) {
-    
     if (getStateActivityType) {
       console.log(getStateActivityType);
       this._getStateActivityType = getStateActivityType;
@@ -36,6 +37,22 @@ export class EodListPresentationComponent implements OnInit {
     return this._getStateActivityType
 
   }
+  /** this variable data  */
+  @Input() public set getEodIsTrue(getEodIsTrue: boolean) {
+    
+    if (getEodIsTrue) {
+      console.log(getEodIsTrue);
+      
+     this._getEodIsTrue=getEodIsTrue
+    
+      
+    }
+  }
+  public get getEodIsTrue(): boolean {
+    return this._getEodIsTrue
+
+  }
+
   // Initialize with -1 to have no items open by default
   public openIndex: number
   public EodSubmissionTimeObject:EodSubmission
@@ -45,6 +62,7 @@ export class EodListPresentationComponent implements OnInit {
   public EodId: number |string;
   /**getter and setter  Private Variable */
   private _getEodResponse: EOD[]
+  private _getEodIsTrue: boolean
   private _getStateActivityType: any;
   public isLoading:any
   constructor(private _overlayService: OverlayService, private _loaderService: LoaderService,
@@ -56,7 +74,8 @@ export class EodListPresentationComponent implements OnInit {
   }
   ngOnInit(): void {
     this.isLoading = this._loaderService.getLoaderState2()
-    this._eodListPresenterService.sendEod$.subscribe((EodSubmissionTime:EodSubmission)=>this.EodSubmissionTimeObject=EodSubmissionTime)
+    this._eodListPresenterService.sendEod$.subscribe((EodSubmissionTime:EodSubmission)=>this.EodSubmissionTimeObject=EodSubmissionTime);
+    
   }
  
   /**
