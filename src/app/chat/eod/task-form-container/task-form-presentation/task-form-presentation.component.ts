@@ -21,8 +21,6 @@ export class TaskFormPresentationComponent implements OnInit {
    */
   @Input() public set getStateActivityType(getStateActivityType: any) {
     if (getStateActivityType) {
-      console.log(getStateActivityType);
-      
       this._getStateActivityType = getStateActivityType;
     }
   }
@@ -167,6 +165,8 @@ private _getTaskDetails:Task;
   public saveTask() {
     this.isSubmitted = true
     if (this.eodFormGroup.valid) {
+      console.log(this.eodFormGroup.value);
+      
       if(this._getTaskDetails?._id){
         this._TaskFormPresenterService.editEodTasks(this.eodFormGroup.value,this._getTaskDetails._id);
         this._overlayService.close()
@@ -183,14 +183,16 @@ private _getTaskDetails:Task;
  */
   public setSelectedStateName() {
     const selectedStateId = this.eodFormGroup.get('taskState').value;
-    const selectedState = this._getStateActivityType.data.docs[0].data.find(state => state.stateId === selectedStateId);
-    this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.state : '' });
+    const selectedState = this._getStateActivityType.data.docs[1].data.find(state => state.stateId === selectedStateId);
+    console.log(selectedState);
+    
+    this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.stateId : '' });
   }
   
   public setSelectedActivityName() {
     const selectedActivityId = this.eodFormGroup.get('taskActivity').value;
-    const selectedState = this._getStateActivityType.data.docs[1].data.find(activity => activity.activityId === selectedActivityId);
-    this.eodFormGroup.patchValue({ activityId: selectedState ? selectedState.activity : '' });
+    const selectedState = this._getStateActivityType.data.docs[0].data.find(activity => activity.activityId === selectedActivityId);
+    this.eodFormGroup.patchValue({ activityId: selectedState ? selectedState.activityId : '' });
   }
   /**
      * Short variable 

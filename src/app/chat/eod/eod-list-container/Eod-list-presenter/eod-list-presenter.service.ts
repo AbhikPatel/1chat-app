@@ -32,17 +32,8 @@ export class EodListPresenterService implements OnInit {
    * @description This Method find last eod id in given EodResponse Array
    */
   public getEodResponse(eodResponses: any) {
-    const eodResponse = [...eodResponses];
-    eodResponse.forEach((eod: EOD) => {
-      eod.tasks = eod.tasks.map((task: Task) => ({
-        ...task,
-        taskActivity: this.getActivityName(task.taskActivity),
-        taskState: this.getStateName(task.taskState),
-      }));
-    });
-    console.log(eodResponse);
-    
-    const spliceEodResponses = eodResponses.splice(-1);
+    const eodResponse=[...eodResponses]
+    const spliceEodResponses = eodResponse.splice(-1);
     this.EodId = spliceEodResponses[0]?._id;
     const sendEodSubmissionTime: EodSubmission = {
       eodId: this.EodId,
@@ -56,8 +47,8 @@ export class EodListPresenterService implements OnInit {
    * @returns 
    * @description This method find activityName base on id and return 
    */
-  private getActivityName(activityID: number) {
-    const activity = this.getStateActivityTypes.data.docs[1].data.find((data: any) => data.activityId === activityID);
+  public getActivityName(activityID: number) {
+    const activity = this.getStateActivityTypes.data.docs[0].data.find((data: any) => data.activityId === activityID);
     return activity ? activity.activity : 'Unknown';
   }
   /**
@@ -66,10 +57,11 @@ export class EodListPresenterService implements OnInit {
    * @returns 
    * @description  This method find getStateName base on id and return 
    */
-  private getStateName(stateID: number) {
-    const state = this.getStateActivityTypes.data.docs[0].data.find((data:any) => data.stateId === stateID);
+  public  getStateName(stateID: number) {
+    const state = this.getStateActivityTypes.data.docs[1].data.find((data:any) => data.stateId === stateID);
     return state ? state.state : 'Unknown';
   }
+ 
   /**
    * @name getStateActivityType
    * @param getStateActivityType 

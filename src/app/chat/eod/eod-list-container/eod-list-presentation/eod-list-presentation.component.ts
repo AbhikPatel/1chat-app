@@ -13,11 +13,9 @@ import { LoaderService } from 'src/app/core/services/loader/loader.service';
 export class EodListPresentationComponent implements OnInit {
   @Input() public set getEodResponse(eodResponse: EOD[]) {
     if (eodResponse) {
-      console.log(eodResponse);
-      
-      const eodResponses=[...eodResponse];
+      this.eodResponses = [...eodResponse];
       this._getEodResponse = eodResponse;
-      this._eodListPresenterService.getEodResponse(eodResponses);
+      this._eodListPresenterService.getEodResponse(this._getEodResponse);
     }
   }
   public get getEodResponse(): EOD[] {
@@ -29,8 +27,8 @@ export class EodListPresentationComponent implements OnInit {
     if (getStateActivityType) {
       console.log(getStateActivityType);
       this._getStateActivityType = getStateActivityType;
-     this._eodListPresenterService.getStateActivityType(this._getStateActivityType);
-      
+      this._eodListPresenterService.getStateActivityType(this._getStateActivityType);
+
     }
   }
   public get getStateActivityType(): any {
@@ -39,13 +37,13 @@ export class EodListPresentationComponent implements OnInit {
   }
   /** this variable data  */
   @Input() public set getEodIsTrue(getEodIsTrue: boolean) {
-    
+
     if (getEodIsTrue) {
       console.log(getEodIsTrue);
-      
-     this._getEodIsTrue=getEodIsTrue
-    
-      
+
+      this._getEodIsTrue = getEodIsTrue
+
+
     }
   }
   public get getEodIsTrue(): boolean {
@@ -55,35 +53,67 @@ export class EodListPresentationComponent implements OnInit {
 
   // Initialize with -1 to have no items open by default
   public openIndex: number
-  public EodSubmissionTimeObject:EodSubmission
+  public EodSubmissionTimeObject: EodSubmission
   public copyResponse: EOD[]
   public nowTime: Date;
   /**  This variable store last eod ID*/
-  public EodId: number |string;
+  public EodId: number | string;
+  public eodResponses: EOD[]
+  /**  This variable store Current Date and time*/
+  public currentTime: Date;
   /**getter and setter  Private Variable */
   private _getEodResponse: EOD[]
   private _getEodIsTrue: boolean
   private _getStateActivityType: any;
-  public isLoading:any
+
+  public isLoading: any
   constructor(private _overlayService: OverlayService, private _loaderService: LoaderService,
     private _eodListPresenterService: EodListPresenterService) {
     this.openIndex = -1;
     this.copyResponse = [];
-    this.nowTime = new Date()
+    this.currentTime = new Date()
     // this.EodSubmissionTime=new EventEmitter();
   }
   ngOnInit(): void {
     this.isLoading = this._loaderService.getLoaderState2()
-    this._eodListPresenterService.sendEod$.subscribe((EodSubmissionTime:EodSubmission)=>this.EodSubmissionTimeObject=EodSubmissionTime);
-    
+    this._eodListPresenterService.sendEod$.subscribe((EodSubmissionTime: EodSubmission) => this.EodSubmissionTimeObject = EodSubmissionTime);
+
   }
- 
+  /**
+   * @name getActivityName
+   * @param id 
+   * @returns 
+   * @description This method find Show activity Name
+   */
+  public getActivityName(id: number) {
+    return this._eodListPresenterService.getActivityName(id);
+
+  }
+  /**
+ * @name getStateName
+ * @param id 
+ * @returns 
+ * @description This method find Show State Name
+ */
+  public getStateName(id: number) {
+    return this._eodListPresenterService.getStateName(id);
+
+  }
+/**
+ * 
+ * @param date 
+ */
+  public getEodDate(date:string){   
+      // const
+  }
+  
+
   /**
    * @name openTaskForm
    * @description This method open task form
    */
   public openTaskForm() {
-    this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType, this._getEodResponse)
+    this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType, this.eodResponses)
   }
   /**
   * @name toggleAccordion
@@ -98,7 +128,7 @@ export class EodListPresentationComponent implements OnInit {
    * @description This method open edit form
    */
   public editTask(task: Task) {
-    const taskInstance = this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType, this._getEodResponse);
+    const taskInstance = this._overlayService.open(TaskFormContainerComponent, true, this._getStateActivityType);
     taskInstance.instance.taskDetails = task
   }
   /**
@@ -108,13 +138,13 @@ export class EodListPresentationComponent implements OnInit {
   public deleteTask(taskId: number) {
     this._overlayService.open(ConfirmationModelComponent, true, taskId);
   }
-/**
- * @name sendEod
- * @description This Method Send Eod Reports
- */
-  public sendEod():void{
-    this._overlayService.open(ConfirmationModelComponent,true,this.EodSubmissionTimeObject)
+  /**
+   * @name sendEod
+   * @description This Method Send Eod Reports
+   */
+  public sendEod(): void {
+    this._overlayService.open(ConfirmationModelComponent, true, this.EodSubmissionTimeObject)
 
   }
- 
+
 }
