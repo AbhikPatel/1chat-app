@@ -36,16 +36,16 @@ export class AuthService {
       map((res) => {
         console.log(res);
         
-        localStorage.setItem('token', res.token)
+        localStorage.setItem('token', res.accessToken)
         const userLocalStorageData = {
-          role: res.data.doc.role,
-          userId: res.data.doc._id,
-          email: res.data.doc.email,
-          profile: res.data.doc.photo,
-          fullName: res.data.doc.first_name + ' ' + res.data.doc.last_name
+          role: res.doc.role,
+          userId: res.doc._id,
+          email: res.doc.email,
+          profile: res.doc.photo,
+          fullName: res.doc.first_name + ' ' + res.doc.last_name
         }
         localStorage.setItem('userLocalStorageData', JSON.stringify(userLocalStorageData))
-        return this._adapt.toResponse(res.data.doc);
+        return this._adapt.toResponse(res.doc);
       })
     )
   }

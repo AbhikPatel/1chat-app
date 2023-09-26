@@ -9,11 +9,12 @@ import { environment } from 'src/environments/environment';
 import { TokenInterceptor } from './core/services/interceptor/token.interceptor';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { ChatService } from './chat/chat.service';
-import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat/chat-adaptor/chat.adaptor';
+import { EODAdapter, conversationUserAdapter } from './chat/chat-adaptor/chat.adaptor';
 import { FormatTime } from './core/utilities/formatTime';
 import { CommunicationService } from './chat/shared/communication/communication.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { MessageAdapter } from './chat/chat-adaptor/message.adaptor';
 
 @NgModule({
   declarations: [

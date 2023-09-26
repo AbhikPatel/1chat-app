@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Adapter } from "src/app/core/adaptor/adaptor";
-import { ConversationUserResponse, ConversationUsers, Member, Message, MessageResponse } from "../models/chat.model";
+import { ConversationUsers, Member, Message, MessageResponse } from "../models/chat.model";
 import { FormatTime } from "src/app/core/utilities/formatTime";
 import { CommonService } from "src/app/shared/services/common.service";
 import { environment } from "src/environments/environment";
 import { EOD, EODResponse, Task, TaskResponse } from "../models/eod.model";
 import { taskBgColor, taskTypeFormat } from "src/app/core/utilities/constants";
 import { login } from "../models/login.model";
+import { ConversationUserResponse } from "../models/conversation.model";
 
 @Injectable()
 export class conversationUserAdapter implements Adapter<ConversationUsers>{
@@ -35,17 +36,17 @@ export class conversationUserAdapter implements Adapter<ConversationUsers>{
             item.owner,
             item.chat_type,
             newMembers,
-            item.lastMessage ? item.lastMessage.sender : '',
-            item.lastMessage ? item.lastMessage.receiver : '',
-            item.lastMessage ? new Date(item.lastMessage.time) : '',
-            item.lastMessage ? item.lastMessage.content.text : 'No Messages',
+            item.lastMessage ? item.lastMessage.senderId : '',
+            item.lastMessage ? item.lastMessage.receiverId : '',
+            item.lastMessage ? new Date(item.lastMessage.timestamp) : '',
+            item.lastMessage ? item.lastMessage.body : 'No Messages',
             item.lastMessage ? item.lastMessage._id : '',
-            item.lastMessage ? item.lastMessage.is_read : false,
-            item.lastMessage ? item.lastMessage.is_edit : false,
-            item.lastMessage ? this._formatter.Formatter(new Date(item.lastMessage.time)) : '',
+            item.lastMessage ? item.lastMessage.isRead : false,
+            item.lastMessage ? item.lastMessage.isEdited : false,
+            item.lastMessage ? this._formatter.Formatter(new Date(item.lastMessage.timestamp)) : '',
             profile,
             item.chat_type === 'dm' ? newMembers[0].full_name : item.title,
-            item.lastMessage ? item.lastMessage.sender === this.loginUserObject.userId ? 0 : item.notificationCount : 0,
+            item.lastMessage ? item.lastMessage.senderId === this.loginUserObject.userId ? 0 : item.notificationCount : 0,
             false,
             false
         );

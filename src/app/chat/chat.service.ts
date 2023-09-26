@@ -4,13 +4,16 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { environment } from 'src/environments/environment';
 import { Observable, Subject, map } from 'rxjs';
 import { User, UserResponse } from '../shared/models/user.model';
-import { ConversationUsers, ConversationUserResponse, GroupDetails, Message, MessageResponse } from './models/chat.model';
-import { EODAdapter, MessageAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
+import { ConversationUsers, GroupDetails, Message } from './models/chat.model';
+import { EODAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
 import { CommonService } from '../shared/services/common.service';
 import { login } from './models/login.model';
 import { io } from 'socket.io-client';
 import { UtilityService } from '../shared/services/utility.service';
 import { EOD, EODResponse, EditEodTasks, EodSubmission, Task } from './models/eod.model';
+import { ConversationUserResponse } from './models/conversation.model';
+import { MessageAdapter } from './chat-adaptor/message.adaptor';
+import { MessageResponse } from './models/message.model';
 
 @Injectable()
 
@@ -170,7 +173,7 @@ export class ChatService {
      * @description This will get the data of all the messages as per the chatId
      */
   public getChatMessages(chatId: string): Observable<Message[]> {
-    const url: string = this.baseUrl + `message?chat=` + chatId;
+    const url: string = this.baseUrl + `message?chatId=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
         res.data.data = res.data.docs.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));

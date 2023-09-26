@@ -162,3 +162,16 @@ export class EditEodTasks {
         this.editId = editId
     }
 }
+
+export class NotifyEod {
+    senderId: string
+    receiverId: string
+
+    constructor(
+        senderId: string,
+        receiverId: string,
+    ) {
+        this.senderId = senderId
+        this.receiverId = receiverId
+    }
+}
