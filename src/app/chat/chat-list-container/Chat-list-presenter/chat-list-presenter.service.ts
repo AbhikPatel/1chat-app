@@ -54,8 +54,6 @@ export class ChatListPresenterService {
    * @description This method get all users in chat list presentation
    */
   public getAllUsers(users: User[]): void {
-console.log(users);
-
     this.allUsers = users
   }
   /**

@@ -21,8 +21,6 @@ export class TaskFormPresentationComponent implements OnInit {
    */
   @Input() public set getStateActivityType(getStateActivityType: any) {
     if (getStateActivityType) {
-      console.log(getStateActivityType);
-      
       this._getStateActivityType = getStateActivityType;
     }
   }
@@ -60,16 +58,16 @@ export class TaskFormPresentationComponent implements OnInit {
   }
   @ViewChild('editor') editor: CKEditorComponent;
   /** This variable emit  Task Details*/
-  @Output() public taskDetails: EventEmitter<Task>
+  @Output() public taskDetails: EventEmitter<Task>;
   /** This variable emit  Task Details*/
-  @Output() public editTaskDetails: EventEmitter<EditEodTasks>
+  @Output() public editTaskDetails: EventEmitter<EditEodTasks>;
   // This properties get LoginUser
   public loginUserDetails: login;
   /** getter and setter  Private Variable */
   private _getStateActivityType: any;
   /** This variable create form Group  */
   public eodFormGroup: FormGroup;
-  public isSubmitted: boolean
+  public isSubmitted: boolean;
   /** This element used for focus inputBox */
   public ckEditorConfig: any = {};
   public isExpanded:boolean;
@@ -169,10 +167,10 @@ private _getTaskDetails:Task;
     if (this.eodFormGroup.valid) {
       if(this._getTaskDetails?._id){
         this._TaskFormPresenterService.editEodTasks(this.eodFormGroup.value,this._getTaskDetails._id);
-        this._overlayService.close()
+        this._overlayService.close();
       }else{
         this._TaskFormPresenterService.addEodTasks(this.eodFormGroup.value);
-        this._overlayService.close()
+        this._overlayService.close();
       }
     
     }
@@ -183,14 +181,14 @@ private _getTaskDetails:Task;
  */
   public setSelectedStateName() {
     const selectedStateId = this.eodFormGroup.get('taskState').value;
-    const selectedState = this._getStateActivityType.data.docs[0].data.find(state => state.stateId === selectedStateId);
-    this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.state : '' });
+    const selectedState = this._getStateActivityType.data.docs[1].data.find(state => state.stateId === selectedStateId);
+    this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.stateId : '' });
   }
   
   public setSelectedActivityName() {
     const selectedActivityId = this.eodFormGroup.get('taskActivity').value;
-    const selectedState = this._getStateActivityType.data.docs[1].data.find(activity => activity.activityId === selectedActivityId);
-    this.eodFormGroup.patchValue({ activityId: selectedState ? selectedState.activity : '' });
+    const selectedState = this._getStateActivityType.data.docs[0].data.find(activity => activity.activityId === selectedActivityId);
+    this.eodFormGroup.patchValue({ activityId: selectedState ? selectedState.activityId : '' });
   }
   /**
      * Short variable 
@@ -203,7 +201,7 @@ private _getTaskDetails:Task;
    * @description This method close task form Overlay
    */
   public closeEodForm() {
-    this._overlayService.close()
+    this._overlayService.close();
   }
 
 }

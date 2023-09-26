@@ -36,8 +36,7 @@ export class ChattingMessagePresentationComponent {
   @Input() public set chatArray(messages: Message[]) {
     if (messages)
       this._chatArray = messages
-    console.log(messages);
-    
+ 
     // this._chattingMessagePresenterService.getChatArray(this._chatArray, this.receiversConversation)
   }
   public get chatArray(): Message[] {

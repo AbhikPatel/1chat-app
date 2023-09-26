@@ -25,9 +25,9 @@ export class UserListPresentationComponent implements OnInit {
     return this._allUsers
   }
   /** This property is used to emit boolean value */
-  @Output() public closeAsideBar: EventEmitter<boolean>
+  @Output() public closeAsideBar: EventEmitter<boolean>;
   /** This property is used to emit boolean value */
-  @Output() public newConversation: EventEmitter<any>
+  @Output() public newConversation: EventEmitter<any>;
   /** This variable will store the details of the sender */
   public userRole: string;
   /** This variable will store id of the user */

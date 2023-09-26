@@ -104,13 +104,10 @@ export class ChatListPresentationComponent implements OnInit {
     this.groupTyperNames = [];
     this.typingIds = [];
     this.copyOfConversationUsers = [];
-
-
     // subject   
     this.showTypingText = new BehaviorSubject(false);
     this.loginUserObject = this._commonService.getLoginDetails();
-
-
+    
   }
   ngOnInit(): void {
     this.props();

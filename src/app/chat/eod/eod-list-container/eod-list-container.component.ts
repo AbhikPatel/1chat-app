@@ -78,7 +78,7 @@ export class EodListContainerComponent {
     this._communicationService.senEodData$.subscribe((eodSubmissionTime:EodSubmission)=>{
       if(eodSubmissionTime){
           this.IsTrue=true
-        // this._chatService.updateEod(eodSubmissionTime,eodSubmissionTime.eodId).subscribe();
+        this._chatService.updateEod(eodSubmissionTime,eodSubmissionTime.eodId).subscribe();
       }
     })
     this._communicationService.tabDataApi.subscribe((data:boolean)=>{
@@ -95,7 +95,7 @@ export class EodListContainerComponent {
     this._loaderService.showLoader2();
     this._chatService.getEODReports(this.paramsId).subscribe((data:any)=>{
       this._loaderService.hideLoader2();
-      this.eodResponse=data
+      this.eodResponse=data;
     });
   }
 

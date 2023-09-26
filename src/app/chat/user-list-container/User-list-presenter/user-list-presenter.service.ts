@@ -11,8 +11,6 @@ export class UserListPresenterService {
     public currentConversationUser$: Observable<ConversationUsers>;
     /** Observable for new conversation user */
     public newConversation$: Observable<ConversationUsers>;
-
-    
   /** Subject for current conversation user */
   private currentConversationUser: Subject<ConversationUsers>;
    /** Subject for new conversation users*/
@@ -20,9 +18,7 @@ export class UserListPresenterService {
   constructor(private _fb:FormBuilder) { 
     this.currentConversationUser$ = new Observable();
     this.newConversation$ = new Observable();
-
     this.currentConversationUser = new Subject();
-
     // this.currentConversationUser$ = this.currentConversationUser.asObservable();
     // this.newConversation$ = this.newConversation.asObservable();
   }
