@@ -12,98 +12,98 @@
                         <div class=" d-flex justify-content-between align-items-center">
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }"></ngx-skeleton-loader>
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }"></ngx-skeleton-loader>
                             </div>
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }">
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }">
                                 </ngx-skeleton-loader>
                             </div>
                         </div>
                         <div class=" d-flex  justify-content-around align-items-center">
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }"></ngx-skeleton-loader>
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }"></ngx-skeleton-loader>
                             </div>
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }"></ngx-skeleton-loader>
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }"></ngx-skeleton-loader>
                             </div>
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }"></ngx-skeleton-loader>
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }"></ngx-skeleton-loader>
                             </div>
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }"></ngx-skeleton-loader>
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }"></ngx-skeleton-loader>
                             </div>
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }"></ngx-skeleton-loader>
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }"></ngx-skeleton-loader>
                             </div>
                             <div>
                                 <ngx-skeleton-loader [theme]="{
-            width: '100px',
-            'border-radius': '5px',
-            height: '20px',
-            'margin-top': '10px',
-     
-          
-          }">
+                        width: '100px',
+                        'border-radius': '5px',
+                        height: '20px',
+                        'margin-top': '10px',
+                 
+                      
+                      }">
                                 </ngx-skeleton-loader>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center align-items-center">
                             <ngx-skeleton-loader [theme]="{
-                      width: '1200px',
-                      'border-radius': '5px',
-                      height: '35px',
-                      'margin-top': '10px',
-               
-                    
-                    }"></ngx-skeleton-loader>
+                                  width: '1200px',
+                                  'border-radius': '5px',
+                                  height: '35px',
+                                  'margin-top': '10px',
+                           
+                                
+                                }"></ngx-skeleton-loader>
                         </div>
                     </div>
                 </div>
@@ -117,14 +117,19 @@
                         <div class="d-flex align-items-center">
                             <div>
                                 <span class="fw-bold"> Date : </span>
-                                <span>{{getEodDate(eod.generationTime)}}</span>
+                                <span>{{eod.generationTime}}</span>
+
                             </div>
                         </div>
                         <div class="" *ngIf="eod.tasks.length === 0 ">
-                            <span class="d-flex text-dark justify-content-center"> No Record Found</span>
+                            <span class="d-flex text-dark justify-content-center "> No Record Found</span>
                         </div>
-                        <button class="btn btn-primary text-white" (click)="openTaskForm()"
-                            *ngIf="eod.submissionTime == undefined  "> Add Task</button>
+                        <div></div>
+                        <!-- In your template -->
+                        <div *ngIf="formattedDate === eod.generationTime && !getEodIsTrue && !eod.submissionTime">
+                            <button class="btn btn-primary text-white" (click)="openTaskForm()"> Add Task</button>
+                        </div>
+
                     </div>
                     <div class="mt-3" *ngIf="eod.tasks.length > 0 ">
                         <div class="row">
@@ -135,7 +140,9 @@
                             <div class="col-2 fw-bold text-center">Remaining</div>
                             <div class="col-1 fw-bold text-center">ActualTime</div>
                             <div class="col-1 fw-bold text-center">Status</div>
-                            <div class="col-1 fw-bold text-center" >Action</div>
+                            <div class="col-1 fw-bold text-center"
+                                *ngIf="formattedDate === eod.generationTime && !getEodIsTrue  && !eod.submissionTime">
+                                Action</div>
                         </div>
                         <div class="my-3">
                             <div *ngFor="let task of eod.tasks let i = index">
@@ -151,20 +158,27 @@
                                                                 (click)="toggleAccordion(task._id)"
                                                                 [attr.data-bs-target]="'#collapseOne' + task._id"
                                                                 [attr.aria-controls]="'collapseOne' + task._id">
-                                                                <i class="fs-4 text-dark" [class]="'icon-moon-class-name ' + (task._id === openIndex ? 'icon-up' : 'icon-down')"></i>
-                                 
+                                                                <i class="fs-4 text-dark"
+                                                                    [class]="'icon-moon-class-name ' + (task._id === openIndex ? 'icon-up' : 'icon-down')"></i>
+
                                                             </button>
                                                         </h2>
                                                     </div>
-                                                    <div class="col-2 text-center truncated-text" >{{task.taskTitle  }}</div>
-                                                    <div class="col-2 text-center">{{getActivityName(task.taskActivity)}}</div>
-                                                    <div class="col-2 text-center">{{task.taskOriginalEstimate }}<span>h</span></div>
-                                                    <div class="col-2 text-center">{{task.taskEffortsRemaining}}<span>h</span></div>
-                                                    <div class="col-1 text-center">{{task.taskEffortsCompleted}}<span>h</span></div>
-                                                    <div class="col-1 text-center">{{getStateName(task.taskActivity)}}</div>
+                                                    <div class="col-2 text-center truncated-text">{{task.taskTitle }}
+                                                    </div>
+                                                    <div class="col-2 text-center">
+                                                        {{getActivityName(task.taskActivity)}}</div>
+                                                    <div class="col-2 text-center">{{task.taskOriginalEstimate
+                                                        }}<span>h</span></div>
+                                                    <div class="col-2 text-center">
+                                                        {{task.taskEffortsRemaining}}<span>h</span></div>
+                                                    <div class="col-1 text-center">
+                                                        {{task.taskEffortsCompleted}}<span>h</span></div>
+                                                    <div class="col-1 text-center">{{getStateName(task.taskActivity)}}
+                                                    </div>
                                                     <div class="col-1 text-center">
                                                         <div ngbDropdown class="d-inline-block"
-                                                            *ngIf=" eod.submissionTime == undefined  ">
+                                                            *ngIf="formattedDate === eod.generationTime && !getEodIsTrue && !eod.submissionTime">
                                                             <div class="d-flex align-items-center">
                                                                 <span type="button" id="dropdownBasic1"
                                                                     ngbDropdownToggle
@@ -192,12 +206,12 @@
                                                 [class.show]="task._id=== openIndex"
                                                 [attr.data-bs-parent]="'#accordionExample'">
                                                 <div class="accordion-body p-4">
-                                                          <div class="row">
-                                                                <div class="col-12">
-                                                                    <h5>Title</h5>
-                                                                    <span>{{task.taskTitle}}
-                                                                    </span>
-                                                                </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <h5>Title</h5>
+                                                            <span>{{task.taskTitle}}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                     <div class="mt-3">
                                                         <div class="row">
@@ -222,7 +236,8 @@
                         </div>
                         <div class="d-flex justify-content-end mt-3">
                             <button class="btn btn-primary text-white" (click)="sendEod()"
-                                *ngIf=" eod.submissionTime == undefined  "> Send</button>
+                                *ngIf="formattedDate === eod.generationTime && !getEodIsTrue && !eod.submissionTime">
+                                Send</button>
                         </div>
                     </div>
                 </div>

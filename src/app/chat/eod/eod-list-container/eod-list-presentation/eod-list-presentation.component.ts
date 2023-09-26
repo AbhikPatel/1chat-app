@@ -25,7 +25,6 @@ export class EodListPresentationComponent implements OnInit {
   /** this variable data  */
   @Input() public set getStateActivityType(getStateActivityType: any) {
     if (getStateActivityType) {
-      console.log(getStateActivityType);
       this._getStateActivityType = getStateActivityType;
       this._eodListPresenterService.getStateActivityType(this._getStateActivityType);
 
@@ -37,13 +36,8 @@ export class EodListPresentationComponent implements OnInit {
   }
   /** this variable data  */
   @Input() public set getEodIsTrue(getEodIsTrue: boolean) {
-
     if (getEodIsTrue) {
-      console.log(getEodIsTrue);
-
       this._getEodIsTrue = getEodIsTrue
-
-
     }
   }
   public get getEodIsTrue(): boolean {
@@ -52,32 +46,35 @@ export class EodListPresentationComponent implements OnInit {
   }
 
   // Initialize with -1 to have no items open by default
-  public openIndex: number
-  public EodSubmissionTimeObject: EodSubmission
-  public copyResponse: EOD[]
+  public openIndex: number;
+  public EodSubmissionTimeObject: EodSubmission;
+  public copyResponse: EOD[];
   public nowTime: Date;
   /**  This variable store last eod ID*/
   public EodId: number | string;
-  public eodResponses: EOD[]
+  public eodResponses: EOD[];
   /**  This variable store Current Date and time*/
-  public currentTime: Date;
+  public formattedDate:string;
   /**getter and setter  Private Variable */
   private _getEodResponse: EOD[]
-  private _getEodIsTrue: boolean
+  private _getEodIsTrue: boolean;
   private _getStateActivityType: any;
-
   public isLoading: any
   constructor(private _overlayService: OverlayService, private _loaderService: LoaderService,
     private _eodListPresenterService: EodListPresenterService) {
     this.openIndex = -1;
     this.copyResponse = [];
-    this.currentTime = new Date()
     // this.EodSubmissionTime=new EventEmitter();
   }
   ngOnInit(): void {
     this.isLoading = this._loaderService.getLoaderState2()
     this._eodListPresenterService.sendEod$.subscribe((EodSubmissionTime: EodSubmission) => this.EodSubmissionTimeObject = EodSubmissionTime);
-
+       const currentDate=new Date();
+       const inputDate =new Date(currentDate);
+       const day = inputDate.getDate();
+       const month = inputDate.toLocaleString('default', { month: 'short' }); // Get the full month name
+       const year = inputDate.getFullYear();
+       this.formattedDate = `${day}/${month}/${year}`;
   }
   /**
    * @name getActivityName
@@ -99,15 +96,6 @@ export class EodListPresentationComponent implements OnInit {
     return this._eodListPresenterService.getStateName(id);
 
   }
-/**
- * 
- * @param date 
- */
-  public getEodDate(date:string){   
-      // const
-  }
-  
-
   /**
    * @name openTaskForm
    * @description This method open task form

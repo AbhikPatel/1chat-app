@@ -13,14 +13,13 @@ export class EodListPresenterService implements OnInit {
   public currentTime: Date;
   /**  This variable store last eod ID*/
   public EodId: number | string;
-
-  public getStateActivityTypes: any
+  public getStateActivityTypes: any;
   public getActivity: any
   constructor() {
     this.sendEod$ = new Observable();
     this.sendEod = new Subject();
     this.sendEod$ = this.sendEod.asObservable();
-    this.currentTime = new Date()
+    this.currentTime = new Date();
   }
   ngOnInit(): void {
 

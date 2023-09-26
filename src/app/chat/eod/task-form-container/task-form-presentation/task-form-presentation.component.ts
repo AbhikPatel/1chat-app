@@ -58,16 +58,16 @@ export class TaskFormPresentationComponent implements OnInit {
   }
   @ViewChild('editor') editor: CKEditorComponent;
   /** This variable emit  Task Details*/
-  @Output() public taskDetails: EventEmitter<Task>
+  @Output() public taskDetails: EventEmitter<Task>;
   /** This variable emit  Task Details*/
-  @Output() public editTaskDetails: EventEmitter<EditEodTasks>
+  @Output() public editTaskDetails: EventEmitter<EditEodTasks>;
   // This properties get LoginUser
   public loginUserDetails: login;
   /** getter and setter  Private Variable */
   private _getStateActivityType: any;
   /** This variable create form Group  */
   public eodFormGroup: FormGroup;
-  public isSubmitted: boolean
+  public isSubmitted: boolean;
   /** This element used for focus inputBox */
   public ckEditorConfig: any = {};
   public isExpanded:boolean;
@@ -165,14 +165,12 @@ private _getTaskDetails:Task;
   public saveTask() {
     this.isSubmitted = true
     if (this.eodFormGroup.valid) {
-      console.log(this.eodFormGroup.value);
-      
       if(this._getTaskDetails?._id){
         this._TaskFormPresenterService.editEodTasks(this.eodFormGroup.value,this._getTaskDetails._id);
-        this._overlayService.close()
+        this._overlayService.close();
       }else{
         this._TaskFormPresenterService.addEodTasks(this.eodFormGroup.value);
-        this._overlayService.close()
+        this._overlayService.close();
       }
     
     }
@@ -184,8 +182,6 @@ private _getTaskDetails:Task;
   public setSelectedStateName() {
     const selectedStateId = this.eodFormGroup.get('taskState').value;
     const selectedState = this._getStateActivityType.data.docs[1].data.find(state => state.stateId === selectedStateId);
-    console.log(selectedState);
-    
     this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.stateId : '' });
   }
   
@@ -205,7 +201,7 @@ private _getTaskDetails:Task;
    * @description This method close task form Overlay
    */
   public closeEodForm() {
-    this._overlayService.close()
+    this._overlayService.close();
   }
 
 }

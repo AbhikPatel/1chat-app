@@ -48,7 +48,6 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
       }
     })
 
-    console.log();
     this.getAllConversationUser();
   }
   /**

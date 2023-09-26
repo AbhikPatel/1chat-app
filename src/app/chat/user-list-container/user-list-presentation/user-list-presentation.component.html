@@ -32,12 +32,13 @@
               ({{user.role}}) </span>
           </div>
         </div>
+        <!-- No user found section  -->
+        <div class="h-100 d-flex justify-content-center align-items-center"
+          *ngIf="(allUsers|search:searchText)?.length <= 0">
+          <span class="text-info"> No User Found </span>
+        </div>
       </ng-container>
-      <!-- No user found section  -->
-      <div class="h-100 d-flex justify-content-center align-items-center"
-        *ngIf="(allUsers|search:searchText)?.length <= 0 ">
-        <span class="text-info"> No User Found </span>
-      </div>
+
       <!-- End  No user found section  -->
     </ng-template>
     <!-- End all user  list -->

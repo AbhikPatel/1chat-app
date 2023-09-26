@@ -6,32 +6,32 @@ import { EditEodTasks, EodSubmission, Task } from '../../models/eod.model';
 @Injectable()
 export class CommunicationService {
   /** This variable Observable New conversationDetails to set header */
-  public ConversationUser$: Observable<ConversationUsers>
+  public ConversationUser$: Observable<ConversationUsers>;
   /** This variable Observable   NewGroupConversation store */
-  public NewGroupConversation$: Observable<ConversationUsers>
+  public NewGroupConversation$: Observable<ConversationUsers>;
   /**  This variable Observable   Task Response store * */
-  public taskResponse$: Observable<Task>
+  public taskResponse$: Observable<Task>;
   /**  This variable Observable  editTaskResponse store * */
-  public editTaskResponse$: Observable<EditEodTasks>
+  public editTaskResponse$: Observable<EditEodTasks>;
   /**  This variable Observable  senEodData store * */
-  public senEodData$: Observable<EodSubmission>
+  public senEodData$: Observable<EodSubmission>;
   /** This variable Subject New conversationDetails to set header * */
-  private ConversationUser: Subject<ConversationUsers>
+  private ConversationUser: Subject<ConversationUsers>;
   /** This variable Subject NewGroupConversation store  * */
-  private NewGroupConversation: Subject<ConversationUsers>
+  private NewGroupConversation: Subject<ConversationUsers>;
   /** This variable Subject  Task Response store  * */
-  private taskResponse: Subject<Task>
+  private taskResponse: Subject<Task>;
   /** This variable Subject  editTaskResponse store  * */
-  private editTaskResponse: Subject<EditEodTasks>
+  private editTaskResponse: Subject<EditEodTasks>;
   /** This variable Subject  senEodData store  * */
-  private senEodData: Subject<EodSubmission>
+  private senEodData: Subject<EodSubmission>;
   /** This variable Subject  to store tabData boolean  * */
-  public tabData: Subject<boolean>
-  public tabDataApi: Subject<boolean>
+  public tabData: Subject<boolean>;
+  public tabDataApi: Subject<boolean>;
   /** This variable Subject  to store selectedTabData * */
-  public selectedTabData: Subject<boolean>
+  public selectedTabData: Subject<boolean>;
   /** This variable Subject  to deleteEodID  * */
-  public deleteEodId: Subject<number>
+  public deleteEodId: Subject<number>;
 
   constructor() {
     this.ConversationUser$ = new Observable();
@@ -60,7 +60,7 @@ export class CommunicationService {
    * @description This method next conversation user
    */
   public setHeaderDetails(ConversationUser: ConversationUsers) {
-    this.ConversationUser.next(ConversationUser)
+    this.ConversationUser.next(ConversationUser);
   }
   /**
    *@name setNewGroupConversation
@@ -68,7 +68,7 @@ export class CommunicationService {
    * @description This method next NewGroupConversation  
    */
   public setNewGroupConversation(NewGroupConversation: ConversationUsers) {
-    this.NewGroupConversation.next(NewGroupConversation)
+    this.NewGroupConversation.next(NewGroupConversation);
   }
   /**
    *@name postTaskReportsResponses
@@ -76,7 +76,7 @@ export class CommunicationService {
    * @description This method next postTaskReportsResponses  
    */
   public postTaskReportsResponses(taskResponse: Task) {
-    this.taskResponse.next(taskResponse)
+    this.taskResponse.next(taskResponse);
   }
   /**
    *@name postTaskReportsResponses
@@ -84,7 +84,7 @@ export class CommunicationService {
    * @description This method next postTaskReportsResponses  
    */
   public editTaskResponses(editTaskResponse: EditEodTasks) {
-    this.editTaskResponse.next(editTaskResponse)
+    this.editTaskResponse.next(editTaskResponse);
   }
   /**
    *@name postTaskReportsResponses
@@ -92,6 +92,6 @@ export class CommunicationService {
    * @description This method next postTaskReportsResponses  
    */
   public sendEodData(sendEodData:EodSubmission ) {
-    this.senEodData.next(sendEodData)
+    this.senEodData.next(sendEodData);
   }
 }
