@@ -6,20 +6,19 @@
     <div class="chat-container flex-grow-1 overflow-auto p-5" #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
             <div class="chat d-flex flex-column my-3" *ngFor="let message of chatArray let i = index"
-                [ngClass]="message.senderId ? 'justify-content-end': 'justify-content-start'">
+                [ngClass]="message.senderId._id === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
                 <div class="d-flex justify-content-center">
-                    <!-- <span class="tick-color shadow-sm text-info py-1 px-2 rounded-2 fs-7"
-                        *ngIf="formatDate(message.time,chatArray[i-1]?.time)">
-                        {{formatDate(message.time,chatArray[i-1]?.time) }}
-                    </span> -->
+                    <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
+                        *ngIf="formatDate(message.timestamp,chatArray[i-1]?.timestamp)">
+                        {{formatDate(message.timestamp,chatArray[i-1]?.timestamp) }}
+                    </span>
                 </div>
-                <!-- <span *ngIf="receiversConversation.chat_type ==='group' && userId !== message.sender " class="fs-7">
-                    {{message.ownerName}} </span> -->
                 <div class="chat">
-                    <div class="d-flex" [ngClass]="message.senderId ? 'justify-content-end': 'justify-content-start'">
+                    <div class="d-flex" [ngClass]="message.senderId._id === UserObject.userId  ? 'justify-content-end' : 'justify-content-start'">>
                         <!-- Message Text  -->
+                        {{ message.senderId._id === message.senderId._id | json}}
                         <div class="chat-text py-1 px-2  placeholder-glow dropstart"
-                            [ngClass]="message.senderId ? 'bg-success chat-rt-border' : 'bg-success chat-lt-border'"
+                            [ngClass]="message.senderId._id === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-success chat-lt-border'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
                             <!-- <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
                             [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
@@ -79,11 +78,11 @@
 
                     <!-- Message Details  -->
                     <p class="fs-8 text-info d-flex align-items-center"
-                        [ngClass]="message.senderId ? 'justify-content-end' : 'justify-content-start'">
+                        [ngClass]="message.senderId._id ? 'justify-content-end' : 'justify-content-start'">
                         <span class="pe-1">
                             <!-- {{message.displayTime}} -->
                         </span>
-                        <ng-container *ngIf="message.senderId">
+                        <ng-container *ngIf="message.senderId._id">
                             <!-- <span *ngIf="!message.is_read">
                                 <img src="https://img.icons8.com/ios-filled/16/b1b1b1/double-tick.png" />
                             </span>

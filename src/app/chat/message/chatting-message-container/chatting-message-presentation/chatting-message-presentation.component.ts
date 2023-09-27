@@ -6,6 +6,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
+import { animate } from '@angular/animations';
+import { login } from 'src/app/chat/models/login.model';
 
 @Component({
   selector: 'app-chatting-message-presentation',
@@ -35,8 +37,8 @@ export class ChattingMessagePresentationComponent {
   }
   /** This property is used to get chat array */
   @Input() public set chatArray(messages: MessageResponse[]) {
-    console.log(messages)
     if (messages)
+    console.log(messages)
       this._chatArray = messages
 
     // this._chattingMessagePresenterService.getChatArray(this._chatArray, this.receiversConversation)
@@ -194,13 +196,21 @@ export class ChattingMessagePresentationComponent {
   public distance: number;
   public limit: number;
   public pageSize: number;
-  public userId: string;
+  public UserObject: login;
   constructor(
     private _chattingMessagePresenterService: ChattingMessagePresenterService,
     private _commonService: CommonService,
 
   ) {
     this.destroy = new Subject();
+    this.emitDirectMessage = new EventEmitter();
+    this.emitDirectMessageReply = new EventEmitter();
+    this.emitDirectMessageEdit = new EventEmitter();
+    this.emitDirectMessageAcknowledge = new EventEmitter();
+    this.emitGroupMessage = new EventEmitter();
+    this.emitGroupMessageReply = new EventEmitter();
+    this.emitGroupMessageAcknowledge = new EventEmitter();
+
     this.chatData = new EventEmitter();
 
     this.repliedMessage = {} as MessageReply;
@@ -229,7 +239,7 @@ export class ChattingMessagePresentationComponent {
     /**
      * Get UserId
      */
-    this.userId = this._commonService.getUserId()
+    this.UserObject = this._commonService.getLoginDetails()
     this._commonService.isReplyModeFalse.subscribe((data: boolean) => {
       this.isReplyMode = data;
     });
@@ -342,6 +352,7 @@ export class ChattingMessagePresentationComponent {
     // this.replyMessage = message;
   }
 
+
   /**
    * @name addEmoji
    * @description this method add a emojis
@@ -373,7 +384,7 @@ export class ChattingMessagePresentationComponent {
    * @param pre 
    * @returns 
   */
-  formatDate(data: Date, pre: Date) {
+  formatDate(data: any, pre: any) {
     return this._chattingMessagePresenterService.formatDate(data, pre);
   }
   /** 
