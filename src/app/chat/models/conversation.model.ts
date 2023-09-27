@@ -1,4 +1,4 @@
-import { MessageResponse } from "./message.model"
+import { lastMessage } from "./message.model"
 
 export class ConversationUserResponse {
     _id: string
@@ -6,7 +6,7 @@ export class ConversationUserResponse {
     chat_type: string
     title: string
     members: Member[]
-    lastMessage: MessageResponse
+    lastMessage: lastMessage
     notificationCount: number
     photo?: string
 
@@ -16,7 +16,7 @@ export class ConversationUserResponse {
         chat_type: string,
         title: string,
         members: Member[],
-        lastMessage: MessageResponse,
+        lastMessage: lastMessage,
         notificationCount: number,
         photo?: string,
     ) {

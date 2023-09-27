@@ -1,11 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ChattingMessagePresenterService } from '../Chatting-message-presenter/chatting-message-presenter.service';
-import { ConversationUsers, Message } from 'src/app/chat/models/chat.model';
+import { ConversationUsers } from 'src/app/chat/models/chat.model';
 import { FormGroup } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { CommonService } from 'src/app/shared/services/common.service';
-import { MessageResponse } from 'src/app/chat/models/message.model';
+import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 
 @Component({
   selector: 'app-chatting-message-presentation',
@@ -35,37 +35,152 @@ export class ChattingMessagePresentationComponent {
   }
   /** This property is used to get chat array */
   @Input() public set chatArray(messages: MessageResponse[]) {
+    console.log(messages)
     if (messages)
       this._chatArray = messages
- 
+
     // this._chattingMessagePresenterService.getChatArray(this._chatArray, this.receiversConversation)
   }
   public get chatArray(): MessageResponse[] {
     return this._chatArray;
   }
+
+  // Getter Setter for direct message
+  @Input() public set listenDirectMessage(v: MessageResponse) {
+    this._listenDirectMessage = v;
+  }
+  public get listenDirectMessage(): MessageResponse {
+    return this._listenDirectMessage;
+  }
+
+  // Getter Setter for direct message response
+  @Input() public set listenDirectMessageResponse(v: MessageResponse) {
+    this._listenDirectMessageResponse = v;
+  }
+  public get listenDirectMessageResponse(): MessageResponse {
+    return this._listenDirectMessageResponse;
+  }
+
+  // Getter Setter for direct message reply
+  @Input() public set listenDirectMessageReply(v: MessageResponse) {
+    this._listenDirectMessageReply = v;
+  }
+  public get listenDirectMessageReply(): MessageResponse {
+    return this._listenDirectMessageReply;
+  }
+
+  // Getter Setter for direct message reply response
+  @Input() public set listenDirectMessageReplyResponse(v: MessageResponse) {
+    this._listenDirectMessageReplyResponse = v;
+  }
+  public get listenDirectMessageReplyResponse(): MessageResponse {
+    return this._listenDirectMessageReplyResponse;
+  }
+
+  // Getter Setter for direct message edit
+  @Input() public set listenDirectMessageEdit(v: MessageResponse) {
+    this._listenDirectMessageEdit = v;
+  }
+  public get listenDirectMessageEdit(): MessageResponse {
+    return this._listenDirectMessageEdit;
+  }
+
+  // Getter Setter for direct message edit response
+  @Input() public set listenDirectMessageEditResponse(v: MessageResponse) {
+    this._listenDirectMessageEditResponse = v;
+  }
+  public get listenDirectMessageEditResponse(): MessageResponse {
+    return this._listenDirectMessageEditResponse;
+  }
+
+  // Getter Setter for direct message acknowledge
+  @Input() public set listenDirectMessageAcknowledge(v: MessageResponse[]) {
+    this._listenDirectMessageAcknowledge = v;
+  }
+  public get listenDirectMessageAcknowledge(): MessageResponse[] {
+    return this._listenDirectMessageAcknowledge;
+  }
+
+  // Getter Setter for direct message acknowledge response
+  @Input() public set listenDirectMessageAcknowledgeResponse(v: MessageResponse[]) {
+    this._listenDirectMessageAcknowledgeResponse = v;
+  }
+  public get listenDirectMessageAcknowledgeResponse(): MessageResponse[] {
+    return this._listenDirectMessageAcknowledgeResponse;
+  }
+
+  // Getter Setter for direct message Error
+  @Input() public set listenDirectMessageError(v: any) {
+    this._listenDirectMessageError = v;
+  }
+  public get listenDirectMessageError(): any {
+    return this._listenDirectMessageError;
+  }
+
+  // Getter Setter for group message
+  @Input() public set listenGroupMessage(v: MessageResponse) {
+    this._listenGroupMessage = v;
+  }
+  public get listenGroupMessage(): MessageResponse {
+    return this._listenGroupMessage;
+  }
+
+  // Getter Setter for group message reply
+  @Input() public set listenGroupMessageReply(v: MessageResponse) {
+    this._listenGroupMessageReply = v;
+  }
+  public get listenGroupMessageReply(): MessageResponse {
+    return this._listenGroupMessageReply;
+  }
+
+  // Getter Setter for group message acknowledge
+  @Input() public set listenGroupMessageAcknowledge(v: MessageResponse[]) {
+    this._listenGroupMessageAcknowledge = v;
+  }
+  public get listenGroupMessageAcknowledge(): MessageResponse[] {
+    return this._listenGroupMessageAcknowledge;
+  }
+
+  @Output() public emitDirectMessage: EventEmitter<Message>;
+  @Output() public emitDirectMessageReply: EventEmitter<MessageReply>;
+  @Output() public emitDirectMessageEdit: EventEmitter<MessageEdit>;
+  @Output() public emitDirectMessageAcknowledge: EventEmitter<MessageRead>;
+  @Output() public emitGroupMessage: EventEmitter<Message>;
+  @Output() public emitGroupMessageReply: EventEmitter<MessageReply>;
+  @Output() public emitGroupMessageAcknowledge: EventEmitter<GroupMessageSeenBy>;
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
+
+
   private _chatArray: MessageResponse[];
+  private _listenDirectMessage: MessageResponse;
+  private _listenDirectMessageResponse: MessageResponse;
+  private _listenGroupMessageReply: MessageResponse;
+  private _listenDirectMessageReplyResponse: MessageResponse;
+  private _listenDirectMessageEdit: MessageResponse;
+  private _listenDirectMessageEditResponse: MessageResponse;
+  private _listenGroupMessageAcknowledge: MessageResponse[];
+  private _listenDirectMessageAcknowledgeResponse: MessageResponse[];
+  private _listenDirectMessageError: any;
+  private _listenGroupMessage: MessageResponse;
+  private _listenDirectMessageReply: MessageResponse;
+  private _listenDirectMessageAcknowledge: MessageResponse[];
   /** This Variable store chartArray[] */
   public NewChatArray: Message[];
   /** FormGroup for chat */
   public chatGroup: FormGroup;
+  public isEditMode: boolean;
+  public editedMessage: MessageEdit;
+  public isReplyMode: boolean;
+  public repliedMessage: MessageReply;
   /** Flag for message screen scroll */
   public isScrolledToBottom: boolean;
   /** Flag for showing modal for the messages */
   public messageModel: boolean;
   /** Flag for showing message Icon */
   public showMessageIcon: boolean;
-  /** Flag for edit mode */
-  public isEditMode: boolean;
-  /** Flag for reply mode */
-  public isReplyMode: boolean;
-  /** variable to store the reply message */
-  public replyMessage: Message;
   /** current message model */
   public currentMessageId: string;
-  /** Edit Message object */
-  public editMessage: Message;
   /** show and hide emojis model */
   public showEmojiPicker: boolean;
   /** This variable  show emojis in inputBox  */
@@ -88,7 +203,7 @@ export class ChattingMessagePresentationComponent {
     this.destroy = new Subject();
     this.chatData = new EventEmitter();
 
-    this.replyMessage = {} as Message;
+    this.repliedMessage = {} as MessageReply;
     this.chatGroup = this._chattingMessagePresenterService.getGroup();
     this.isScrolledToBottom = false;
     this.messageModel = false;
@@ -125,14 +240,15 @@ export class ChattingMessagePresentationComponent {
    * @description This method will be called when the form is submitted
    */
   public onSubmit(): void {
+    console.log(this.chatGroup.value.message);
+
     if (this.isEditMode) {
-      this.editMessage.content.text = this.chatGroup.value.message;
-      this.editMessage.is_edit = true;
+      this.editedMessage.editedBody = this.chatGroup.value.message;
+      this.editedMessage.isEdited = true
       // this.editMessageObj.emit(this.editMessage);
-    } else {
-      if (this.isReplyMode)
-        // this.repliedMessage.emit(this.replyMessage)
-        this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
+    } else if (this.isReplyMode) {
+      // this.repliedMessage.emit(this.replyMessage)
+      this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
       setTimeout(() => {
         this.scrollUp();
       }, 0);
@@ -187,10 +303,10 @@ export class ChattingMessagePresentationComponent {
    */
   public onEditMessage(message: Message): void {
     this.isReplyMode = false;
-    this.chatGroup.get('message').patchValue(message.content.text);
+    // this.chatGroup.get('message').patchValue(message.content.text);
     this.messageModel = false;
     this.isEditMode = true;
-    this.editMessage = message;
+    // this.editMessage = message;
     this.setFocusInputBox()
 
   }
@@ -223,7 +339,7 @@ export class ChattingMessagePresentationComponent {
     this.isEditMode = false;
     this.chatGroup.reset();
     this.isReplyMode = true;
-    this.replyMessage = message;
+    // this.replyMessage = message;
   }
 
   /**

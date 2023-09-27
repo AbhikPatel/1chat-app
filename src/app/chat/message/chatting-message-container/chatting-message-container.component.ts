@@ -99,9 +99,9 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @param message message data
    * @description method emits group message chat ids
    */
-  public emitGroupJoin(message: any) {
-    this._ChatService.emit('groupJoin', message);
-  }
+  // public emitGroupJoin(message: any) {
+  //   this._ChatService.emit('groupJoin', message);
+  // }
   /**
    * @name emitGroupMessage
    * @param message message data
