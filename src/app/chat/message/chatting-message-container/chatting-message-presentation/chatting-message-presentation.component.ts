@@ -37,7 +37,7 @@ export class ChattingMessagePresentationComponent {
   @Input() public set chatArray(messages: MessageResponse[]) {
     if (messages)
       this._chatArray = messages
- 
+    console.log(messages);
     // this._chattingMessagePresenterService.getChatArray(this._chatArray, this.receiversConversation)
   }
   public get chatArray(): MessageResponse[] {
@@ -125,6 +125,7 @@ export class ChattingMessagePresentationComponent {
    * @description This method will be called when the form is submitted
    */
   public onSubmit(): void {
+    console.log(this.chatGroup.value.message);
     if (this.isEditMode) {
       this.editMessage.content.text = this.chatGroup.value.message;
       this.editMessage.is_edit = true;
@@ -185,7 +186,7 @@ export class ChattingMessagePresentationComponent {
    * @param message 
    * @description This method is used to edit the chat message
    */
-  public onEditMessage(message: Message): void {
+  public onEditMessage(message: any): void {
     this.isReplyMode = false;
     this.chatGroup.get('message').patchValue(message.content.text);
     this.messageModel = false;
@@ -218,7 +219,7 @@ export class ChattingMessagePresentationComponent {
    * @param message 
    * @description This method is used when the reply mode is activated
    */
-  public onReplyMessage(message: Message): void {
+  public onReplyMessage(message: any): void {
     this.setFocusInputBox();
     this.isEditMode = false;
     this.chatGroup.reset();

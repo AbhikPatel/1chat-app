@@ -4,15 +4,15 @@
 
 export const environment = {
   production: false,
-  imageUrl: 'http://127.0.0.1:2132/img/user/',
-  baseURL: 'http://127.0.0.1:2132/api/v1/',
-  socketUrl:'http://127.0.0.1:2132',
+  // imageUrl: 'http://127.0.0.1:2132/img/user/',
+  // baseURL: 'http://127.0.0.1:2132/api/v1/',
+  // socketUrl:'http://127.0.0.1:2132',
   // imageUrl:'https://onechat-npcg.onrender.com/img/user/',
   // baseURL: 'https://onechat-npcg.onrender.com/api/v1/',
   // socketUrl: 'https://onechat-npcg.onrender.com'
-  // imageUrl:'https://onechat-session-management.onrender.com/img/user/',
-  // baseURL: 'https://onechat-session-management.onrender.com/api/v1/',
-  // socketUrl: 'https://onechat-session-management.onrender.com'
+  imageUrl:'https://onechat-session-management.onrender.com/img/user/',
+  baseURL: 'https://onechat-session-management.onrender.com/api/v1/',
+  socketUrl: 'https://onechat-session-management.onrender.com'
 };
 
 /*

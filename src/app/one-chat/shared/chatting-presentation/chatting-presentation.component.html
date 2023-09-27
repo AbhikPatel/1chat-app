@@ -19,9 +19,9 @@
                         <div class="chat-text py-1 px-2  placeholder-glow dropstart"
                             [ngClass]="message.is_sender ? 'bg-secondary chat-rt-border' : 'bg-theme chat-lt-border'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
-                        <!-- <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
+                        <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
                             [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
-                            (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)"> -->
+                            (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
                             <!-- Edit Message  -->
                             <ng-container *ngIf="message.is_edit">
                                 <span class="fs-7 text-info" [ngClass]="message.is_sender ? 'text-end': 'text-start'">
@@ -42,7 +42,7 @@
                             <!-- Message Dropdown  -->
                             <div class="dropdown">
                                 <span> {{message.content.text}} </span>
-                                <!-- <span class="icon-circle-down text-info" data-bs-toggle="dropdown" aria-expanded="false"
+                                <span class="icon-circle-down text-info" data-bs-toggle="dropdown" aria-expanded="false"
                                     role="button"
                                     [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'"
                                     (click)="openModel()"></span>
@@ -51,8 +51,7 @@
                                     <li class="dropdown-item" (click)="onEditMessage(message)"
                                         *ngIf="message.is_sender"> Edit </li>
                                     <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
-                                </ul> -->
-                                
+                                </ul>
                                 <!-- ngDropdown -->
                             <div ngbDropdown class="d-inline-block">
                                 <div [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'">

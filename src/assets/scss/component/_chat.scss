@@ -1,7 +1,8 @@
 .main-chat-container {
     .chat-container {
-        background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
-            url("../../images/bg-image.jpg");
+        // background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+        //     url("../../images/bg-image.jpg");
+            background-color: $chat-bg-color;
 
         .chat {
             &-text {
@@ -10,8 +11,8 @@
             }
 
             &-rt-border {
-                border: 2px solid lighten($info, 30);
-                border-top-left-radius: 1rem;
+                border: 2px solid lighten($success, 30);
+                border-top-left-radius: 1.5rem;
                 border-top-right-radius: 1rem;
                 border-bottom-right-radius: 1rem;
             }
@@ -24,7 +25,11 @@
             }
 
             .icon-down-arrow {
-                visibility: hidden;
+                color:  black;
+                & {
+
+                    visibility: hidden;
+                }
             }
 
             .chat-text:hover .icon-down-arrow {
