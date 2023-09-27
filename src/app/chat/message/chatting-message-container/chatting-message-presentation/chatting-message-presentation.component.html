@@ -1,3 +1,5 @@
+
+
 <!-- Start: Chat Container  -->
 <div class="main-chat-container d-flex flex-column h-100 ">
     <!-- Start: Message Screen  -->
@@ -94,13 +96,14 @@
             </div>
 
         </div>
+        
 
         <!-- Screen Message  -->
-        <ng-container *ngIf="chatArray.length === 0">
+        <!-- <ng-container *ngIf="chatArray.length === 0"> -->
             <div class="d-flex h-100 justify-content-center align-items-center">
                 <span class="text-info"> No Conversation Started </span>
             </div>
-        </ng-container>
+        <!-- </ng-container> -->
 
     </div>
     <!-- End: Message Screen  -->
@@ -114,10 +117,10 @@
             <div class="reply-wrapper rounded-1 p-2 pe-3" *ngIf="isReplyMode">
                 <div class="mx-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <span> {{replyMessage.is_sender ? 'You' : this.replyMessage.ownerName}} </span>
+                        <!-- <span> {{replyMessage.is_sender ? 'You' : this.replyMessage.ownerName}} </span> -->
                         <button class="btn-close" (click)="onCancelMode()" type="button"></button>
                     </div>
-                    <span>{{replyMessage.content.text}}</span>
+                    <!-- <span>{{replyMessage.content.text}}</span> -->
                 </div>
             </div>
             <!-- End Reply Model -->

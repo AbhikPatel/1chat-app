@@ -15,8 +15,14 @@ export class MessageAdapter implements Adapter<MessageResponse> {
             item.isEdited ? item.isEdited : false,
             item.isReplied ? item.isReplied : false,
             item.chatId,
-            item.senderId,
-            item.receiverId,
+            {
+                ...item.senderId,
+                full_name : `${item.senderId.first_name} ${item.senderId.last_name}`
+            },
+            {
+                ...item.receiverId,
+                full_name : `${item.receiverId.first_name} ${item.receiverId.last_name}`
+            },
             item.repliedMessageId ? item.repliedMessageId : '',
             item.timestamp ? this._formatter.Formatter(new Date(item.timestamp)): '',
             item.threadType,

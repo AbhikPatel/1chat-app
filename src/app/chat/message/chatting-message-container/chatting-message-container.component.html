@@ -1,1 +1,22 @@
-<app-chatting-message-presentation [chatArray]="getMessages$ | async"></app-chatting-message-presentation>
+<app-chatting-message-presentation 
+    [chatArray]="getMessages$ | async"
+    [listenDirectMessage]="listenDirectMessage$ | async"
+    [listenDirectMessageResponse]="listenDirectMessageResponse$ | async"
+    [listenDirectMessageReply]="listenDirectMessageReply$ | async"
+    [listenDirectMessageReplyResponse]="listenDirectMessageReplyResponse$ | async"
+    [listenDirectMessageEdit]="listenDirectMessageEdit$ | async"
+    [listenDirectMessageEditResponse]="listenDirectMessageEditResponse$ | async"
+    [listenDirectMessageAcknowledge]="listenDirectMessageAcknowledge$ | async"
+    [listenDirectMessageAcknowledgeResponse]="listenDirectMessageAcknowledgeResponse$ | async"
+    [listenDirectMessageError]="listenDirectMessageError$ | async"
+    [listenGroupMessage]="listenGroupMessage$ | async"
+    [listenGroupMessageReply]="listenGroupMessageReply$ | async"
+    [listenGroupMessageAcknowledge]="listenGroupMessageAcknowledge$ | async"
+    (emitDirectMessage)="emitDirectMessage($event)"
+    (emitDirectMessageReply)="emitDirectMessageReply($event)"
+    (emitDirectMessageEdit)="emitDirectMessageEdit($event)"
+    (emitDirectMessageAcknowledge)="emitDirectMessageAcknowledge($event)"
+    (emitGroupMessage)="emitGroupMessage($event)"
+    (emitGroupMessageReply)="emitGroupMessageReply($event)"
+    (emitGroupMessageAcknowledge)="emitGroupMessageAcknowledge($event)"
+></app-chatting-message-presentation>
