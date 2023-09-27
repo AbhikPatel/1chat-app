@@ -34,7 +34,8 @@ export class AuthService {
     const url: string = this.baseUrl + 'user/log-in';
     return this._http.httpPostRequest(url, credentials).pipe(
       map((res) => {
-        localStorage.setItem('token', res.accessToken)
+        localStorage.setItem('accessToken', res.accessToken)
+        localStorage.setItem('refreshToken', res.accessToken)
         const userLocalStorageData = {
           role: res.doc.role,
           userId: res.doc._id,
@@ -53,7 +54,7 @@ export class AuthService {
    * @returns token
    */
   public getToken(): string {
-    this.userToken = localStorage.getItem('token') ?? '';
+    this.userToken = localStorage.getItem('accessToken') ?? '';
     return this.userToken;
   }
 

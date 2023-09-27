@@ -10,6 +10,9 @@ export const environment = {
   // imageUrl:'https://onechat-npcg.onrender.com/img/user/',
   // baseURL: 'https://onechat-npcg.onrender.com/api/v1/',
   // socketUrl: 'https://onechat-npcg.onrender.com'
+  // imageUrl:'https://onechat-session-management.onrender.com/img/user/',
+  // baseURL: 'https://onechat-session-management.onrender.com/api/v1/',
+  // socketUrl: 'https://onechat-session-management.onrender.com'
 };
 
 /*

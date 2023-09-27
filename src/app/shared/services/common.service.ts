@@ -84,7 +84,13 @@ export class CommonService {
     return localStorage.getItem('email');
   }
 
+  public getAccessToken(): string {
+    return localStorage.getItem('token')
+  }
 
+  public getRefreshToken(): string {
+    return localStorage.getItem('token')
+  }
 
   /**
    * @name getLoginDetails

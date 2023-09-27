@@ -49,37 +49,25 @@ export class ChatService {
     * @returns observable
     * @description This method is used to listen the socket
     */
-  public listen(eventname: string): Observable<any> {
-    return new Observable((subscriber) => {
-      this.socket.on(eventname, (data: any, fn: any) => {
-        if (eventname === 'dm:message') {
-          fn('received')
-          if (this._utilityService.subscriber !== null)
-            this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
-        }
-        if (eventname === 'group:message') {
-          fn('group message')
-          if (this._utilityService.subscriber !== null)
-            this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
-        }
-        if (eventname === 'dm:messageRead') {
-          fn('read')
-        }
-        if (eventname === 'dm:messageEdit') {
-          fn('Edit')
-        }
-        if (eventname === 'dm:messageReply') {
-          fn('reply')
-        }
-        if (eventname === 'eod:status') {
-          fn('eod')
-          if (this._utilityService.subscriber !== null)
-            this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
-        }
-        subscriber.next(data);
-      })
+public listen(eventname: string): Observable<any> {
+  const importantEvents = [
+    'directMessage',
+    'directMessageReply',
+    'directMessageEdit',
+    'groupMessage',
+    'groupMessageReply',
+    'eodReportNotify'
+  ];
+
+  return new Observable((subscriber) => {
+    this.socket.on(eventname, (data: any, fn: any) => {
+      if (importantEvents.includes(eventname) && this._utilityService.subscriber !== null) {
+        this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
+      }
+      subscriber.next(data);
     })
-  }
+  })
+}
 
   /**
      * @name emit
@@ -88,34 +76,9 @@ export class ChatService {
      * @description This method will emit the data as per the eventname
      */
   public emit(eventname: string, data: any): void {
-    if (eventname === 'dm:message') {
-      this.socket.emit(eventname, data, (response: any) => {
-        console.log(response)
-        this.getRecentChatId(response)
-      })
-    } else if (eventname === 'group:message') {
-      this.socket.emit(eventname, data, (response: any) => {
-        console.log(response);
-      })
-    } else if (eventname === 'dm:messageRead') {
-      this.socket.emit(eventname, data, (response: any) => {
-        console.log(response);
-      })
-    } else if (eventname === 'dm:messageEdit') {
-      this.socket.emit(eventname, data, (response: any) => {
-        console.log(response);
-      })
-    } else if (eventname === 'dm:messageReply') {
-      this.socket.emit(eventname, data, (response: any) => {
-        console.log(response);
-      })
-    } else if (eventname === 'eod:status') {
-      this.socket.emit(eventname, data, (response: any) => {
-        console.log(response);
-      })
-    } else {
-      this.socket.emit(eventname, data);
-    }
+    this.socket.emit(eventname, data, (response: any) => {
+      console.log(response);
+    })
   }
 
   /**
@@ -172,7 +135,7 @@ export class ChatService {
      * @returns Observable
      * @description This will get the data of all the messages as per the chatId
      */
-  public getChatMessages(chatId: string): Observable<Message[]> {
+  public getChatMessages(chatId: string): Observable<MessageResponse[]> {
     const url: string = this.baseUrl + `message?chatId=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {

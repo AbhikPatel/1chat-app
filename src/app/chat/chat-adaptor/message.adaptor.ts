@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Adapter } from "src/app/core/adaptor/adaptor";
-import { MessageResponse } from "../models/message.model";
+import { Message, MessageResponse } from "../models/message.model";
 import { FormatTime } from "src/app/core/utilities/formatTime";
 
 @Injectable()
