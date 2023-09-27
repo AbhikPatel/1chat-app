@@ -5,6 +5,7 @@ import { FormGroup } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { CommonService } from 'src/app/shared/services/common.service';
+import { MessageResponse } from 'src/app/chat/models/message.model';
 
 @Component({
   selector: 'app-chatting-message-presentation',
@@ -33,18 +34,18 @@ export class ChattingMessagePresentationComponent {
     return this._receiversConversation;
   }
   /** This property is used to get chat array */
-  @Input() public set chatArray(messages: Message[]) {
+  @Input() public set chatArray(messages: MessageResponse[]) {
     if (messages)
       this._chatArray = messages
  
     // this._chattingMessagePresenterService.getChatArray(this._chatArray, this.receiversConversation)
   }
-  public get chatArray(): Message[] {
+  public get chatArray(): MessageResponse[] {
     return this._chatArray;
   }
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
-  private _chatArray: Message[];
+  private _chatArray: MessageResponse[];
   /** This Variable store chartArray[] */
   public NewChatArray: Message[];
   /** FormGroup for chat */
