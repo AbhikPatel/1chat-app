@@ -22,24 +22,23 @@ export class ChattingMessagePresentationComponent {
   @ViewChild('inputTypeFocus') public inputTypeFocus: ElementRef;
 
   /** Input to get the receiver's data */
-  @Input() public set receiversConversation(receiver: ConversationUsers) {
-    if (receiver) {
-      this._receiversConversation = receiver;
-      this.closeEmojiPicker();
-      setTimeout(() => {
-        this.scrollUp();
-      }, 100);
-    }
-    this.setFocusInputBox()
-  }
-  public get receiversConversation(): ConversationUsers {
-    return this._receiversConversation;
-  }
+  // @Input() public set receiversConversation(receiver: ConversationUsers) {
+  //   if (receiver) {
+  //     this._receiversConversation = receiver;
+  //     this.closeEmojiPicker();
+  //     setTimeout(() => {
+  //       this.scrollUp();
+  //     }, 100);
+  //   }
+  //   this.setFocusInputBox()
+  // }
+  // public get receiversConversation(): ConversationUsers {
+  //   return this._receiversConversation;
+  // }
   /** This property is used to get chat array */
   @Input() public set chatArray(messages: MessageResponse[]) {
-    if (messages)
     console.log(messages)
-      this._chatArray = messages
+    if (messages) this._chatArray = messages
 
     // this._chattingMessagePresenterService.getChatArray(this._chatArray, this.receiversConversation)
   }
@@ -48,64 +47,98 @@ export class ChattingMessagePresentationComponent {
   }
 
   // Getter Setter for direct message
-  @Input() public set listenDirectMessage(v: MessageResponse) {
-    this._listenDirectMessage = v;
+  @Input() public set listenDirectMessage(message: MessageResponse) {
+    if(message){
+      this._listenDirectMessage = message;
+      this.chatArray.push(this._listenDirectMessage);
+    }
   }
   public get listenDirectMessage(): MessageResponse {
     return this._listenDirectMessage;
   }
 
   // Getter Setter for direct message response
-  @Input() public set listenDirectMessageResponse(v: MessageResponse) {
-    this._listenDirectMessageResponse = v;
+  @Input() public set listenDirectMessageResponse(message: MessageResponse) {
+    if(message) {
+      this._listenDirectMessageResponse = message;
+      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnTime(this.chatArray, message);
+      if(messageIndex > -1) this.chatArray[messageIndex] = message;
+    }
   }
   public get listenDirectMessageResponse(): MessageResponse {
     return this._listenDirectMessageResponse;
   }
 
   // Getter Setter for direct message reply
-  @Input() public set listenDirectMessageReply(v: MessageResponse) {
-    this._listenDirectMessageReply = v;
+  @Input() public set listenDirectMessageReply(message: MessageResponse) {
+    if(message) {
+      this._listenDirectMessageReply = message;
+      this.chatArray.push(this._listenDirectMessageReply)
+    }
   }
   public get listenDirectMessageReply(): MessageResponse {
     return this._listenDirectMessageReply;
   }
 
   // Getter Setter for direct message reply response
-  @Input() public set listenDirectMessageReplyResponse(v: MessageResponse) {
-    this._listenDirectMessageReplyResponse = v;
+  @Input() public set listenDirectMessageReplyResponse(message: MessageResponse) {
+    if(message) {
+      this._listenDirectMessageReplyResponse = message;
+      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnTime(this.chatArray, message);
+      if(messageIndex > -1) this.chatArray[messageIndex] = message;
+    } 
   }
   public get listenDirectMessageReplyResponse(): MessageResponse {
     return this._listenDirectMessageReplyResponse;
   }
 
   // Getter Setter for direct message edit
-  @Input() public set listenDirectMessageEdit(v: MessageResponse) {
-    this._listenDirectMessageEdit = v;
+  @Input() public set listenDirectMessageEdit(message: MessageResponse) {
+    if(message) {
+      this._listenDirectMessageEdit = message;
+      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnId(this.chatArray, message);
+      if(messageIndex > -1) this.chatArray[messageIndex] = message;
+    }
   }
   public get listenDirectMessageEdit(): MessageResponse {
     return this._listenDirectMessageEdit;
   }
 
   // Getter Setter for direct message edit response
-  @Input() public set listenDirectMessageEditResponse(v: MessageResponse) {
-    this._listenDirectMessageEditResponse = v;
+  @Input() public set listenDirectMessageEditResponse(message: MessageResponse) {
+    if(message) {
+      this._listenDirectMessageEditResponse = message;
+      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnId(this.chatArray, message);
+      if(messageIndex > -1) this.chatArray[messageIndex] = message;
+    }
   }
   public get listenDirectMessageEditResponse(): MessageResponse {
     return this._listenDirectMessageEditResponse;
   }
 
   // Getter Setter for direct message acknowledge
-  @Input() public set listenDirectMessageAcknowledge(v: MessageResponse[]) {
-    this._listenDirectMessageAcknowledge = v;
+  @Input() public set listenDirectMessageAcknowledge(messages: MessageResponse[]) {
+    if(messages) {
+      this._listenDirectMessageAcknowledgeResponse = messages;
+      const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.chatArray, messages);
+      indexArray.forEach((val, index) => {
+        this.chatArray[val] = messages[index]
+      })
+    }
   }
   public get listenDirectMessageAcknowledge(): MessageResponse[] {
     return this._listenDirectMessageAcknowledge;
   }
 
   // Getter Setter for direct message acknowledge response
-  @Input() public set listenDirectMessageAcknowledgeResponse(v: MessageResponse[]) {
-    this._listenDirectMessageAcknowledgeResponse = v;
+  @Input() public set listenDirectMessageAcknowledgeResponse(messages: MessageResponse[]) {
+    if(messages) {
+      this._listenDirectMessageAcknowledgeResponse = messages;
+      const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.chatArray, messages);
+      indexArray.forEach((val, index) => {
+        this.chatArray[val] = messages[index]
+      })
+    }
   }
   public get listenDirectMessageAcknowledgeResponse(): MessageResponse[] {
     return this._listenDirectMessageAcknowledgeResponse;
@@ -113,31 +146,46 @@ export class ChattingMessagePresentationComponent {
 
   // Getter Setter for direct message Error
   @Input() public set listenDirectMessageError(v: any) {
-    this._listenDirectMessageError = v;
+    if(v) {
+      this._listenDirectMessageError = v;
+      console.log(v);
+    } 
   }
   public get listenDirectMessageError(): any {
     return this._listenDirectMessageError;
   }
 
   // Getter Setter for group message
-  @Input() public set listenGroupMessage(v: MessageResponse) {
-    this._listenGroupMessage = v;
+  @Input() public set listenGroupMessage(message: MessageResponse) {
+    if(message) {
+      this._listenGroupMessage = message;
+      this.chatArray.push(this._listenDirectMessageReply)
+    }
   }
   public get listenGroupMessage(): MessageResponse {
     return this._listenGroupMessage;
   }
 
   // Getter Setter for group message reply
-  @Input() public set listenGroupMessageReply(v: MessageResponse) {
-    this._listenGroupMessageReply = v;
+  @Input() public set listenGroupMessageReply(message: MessageResponse) {
+    if(message) {
+      this._listenGroupMessage = message;
+      this.chatArray.push(this._listenDirectMessageReply)
+    }
   }
   public get listenGroupMessageReply(): MessageResponse {
     return this._listenGroupMessageReply;
   }
 
   // Getter Setter for group message acknowledge
-  @Input() public set listenGroupMessageAcknowledge(v: MessageResponse[]) {
-    this._listenGroupMessageAcknowledge = v;
+  @Input() public set listenGroupMessageAcknowledge(messages: MessageResponse[]) {
+    if(messages) {
+      this._listenDirectMessageAcknowledgeResponse = messages;
+      const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.chatArray, messages);
+      indexArray.forEach((val, index) => {
+        this.chatArray[val] = messages[index]
+      })
+    }
   }
   public get listenGroupMessageAcknowledge(): MessageResponse[] {
     return this._listenGroupMessageAcknowledge;
@@ -242,6 +290,17 @@ export class ChattingMessagePresentationComponent {
     this.UserObject = this._commonService.getLoginDetails()
     this._commonService.isReplyModeFalse.subscribe((data: boolean) => {
       this.isReplyMode = data;
+    });
+  }
+
+  /**
+   * @name findIndexOfMessage
+   * @param message 
+   * @returns methods returns index of existed message
+   */
+  private findIndexOfMessage(message: MessageResponse): number {
+    return this.chatArray.findIndex((val) => {
+      val._id === message._id
     });
   }
 

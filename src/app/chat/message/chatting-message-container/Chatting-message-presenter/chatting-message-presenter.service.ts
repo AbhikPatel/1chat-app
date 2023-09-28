@@ -2,6 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { ConversationUsers, Message } from 'src/app/chat/models/chat.model';
+import { MessageResponse } from 'src/app/chat/models/message.model';
 
 @Injectable()
 export class ChattingMessagePresenterService implements OnDestroy {
@@ -29,6 +30,41 @@ export class ChattingMessagePresenterService implements OnDestroy {
     this.chat$ = this.chat.asObservable();
     this.chatArray$ = this.chatArray.asObservable();
   }
+
+  /**
+   * @name findIndexOfMessage
+   * @param message 
+   * @returns methods returns index of existed message
+   */
+  public findIndexOfMessageBasedOnId(chatArray: MessageResponse[], message: MessageResponse): number {
+    return chatArray.findIndex((val) => {
+      return val._id === message._id
+    });
+  }
+  /**
+   * @name findIndexOfMessage
+   * @param message 
+   * @returns methods returns index of existed message
+   */
+  public findIndexOfMultipleMessageBasedOnId(chatArray: MessageResponse[], message: MessageResponse[]): Array<number> {
+    const indexArray = [];
+    message.forEach((val) => {
+        const index = this.findIndexOfMessageBasedOnId(chatArray, val);
+        indexArray.push(index);
+    })
+    return indexArray;
+  }
+  /**
+   * @name findIndexOfMessage
+   * @param message 
+   * @returns methods returns index of existed message
+   */
+  public findIndexOfMessageBasedOnTime(chatArray: MessageResponse[], message: MessageResponse): number {
+    return chatArray.findIndex((val) => {
+      return val.body === message.body && new Date(val.timestamp).toString() === new Date(message.timestamp).toString()
+    });
+  }
+
 
   /**
    * @name getGroup
