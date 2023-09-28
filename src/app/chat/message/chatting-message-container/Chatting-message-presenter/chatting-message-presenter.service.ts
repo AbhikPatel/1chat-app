@@ -5,6 +5,8 @@ import { login } from 'src/app/chat/models/login.model';
 import { Message, MessageResponse } from 'src/app/chat/models/message.model';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { CommonService } from 'src/app/shared/services/common.service';
+import { ConversationUsers } from 'src/app/chat/models/chat.model';
+
 
 @Injectable()
 export class ChattingMessagePresenterService implements OnInit, OnDestroy {
@@ -54,6 +56,41 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
     });
   
   }
+
+  /**
+   * @name findIndexOfMessage
+   * @param message 
+   * @returns methods returns index of existed message
+   */
+  public findIndexOfMessageBasedOnId(chatArray: MessageResponse[], message: MessageResponse): number {
+    return chatArray.findIndex((val) => {
+      return val._id === message._id
+    });
+  }
+  /**
+   * @name findIndexOfMessage
+   * @param message 
+   * @returns methods returns index of existed message
+   */
+  public findIndexOfMultipleMessageBasedOnId(chatArray: MessageResponse[], message: MessageResponse[]): Array<number> {
+    const indexArray = [];
+    message.forEach((val) => {
+        const index = this.findIndexOfMessageBasedOnId(chatArray, val);
+        indexArray.push(index);
+    })
+    return indexArray;
+  }
+  /**
+   * @name findIndexOfMessage
+   * @param message 
+   * @returns methods returns index of existed message
+   */
+  public findIndexOfMessageBasedOnTime(chatArray: MessageResponse[], message: MessageResponse): number {
+    return chatArray.findIndex((val) => {
+      return val.body === message.body && new Date(val.timestamp).toString() === new Date(message.timestamp).toString()
+    });
+  }
+
 
   /**
    * @name getGroup
