@@ -10,7 +10,7 @@ import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, Me
   templateUrl: './chatting-message-container.component.html'
 })
 export class ChattingMessageContainerComponent implements OnInit {
-  public ParamId: string;
+  public paramId: string;
   /** Observable for the chat messages */
   public getMessages$: Observable<MessageResponse[]>;
   // Observable for direct message and direst message response
@@ -39,14 +39,13 @@ export class ChattingMessageContainerComponent implements OnInit {
   ngOnInit(): void {
     // Access route parameters using ActivatedRoute
     this.router.parent.params.subscribe(parentParams => {
-      this.ParamId = parentParams['id'];
+      this.paramId = parentParams['id'];
     });
     this.props();
   }
 
   private props() {
-    this.getMessages$= this._ChatService.getChatMessages(this.ParamId);  
-
+    this.getMessages$= this._ChatService.getChatMessages(this.paramId);  
     this.listenDirectMessage$ = this._ChatService.listen('directMessage');
     this.listenDirectMessageResponse$ = this._ChatService.listen('directMessageResponse');
     this.listenDirectMessageReply$ = this._ChatService.listen('directMessageReply');

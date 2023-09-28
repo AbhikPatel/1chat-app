@@ -1,4 +1,5 @@
 <app-chatting-message-presentation 
+    [getParamId]="paramId"
     [chatArray]="getMessages$ | async"
     [listenDirectMessage]="listenDirectMessage$ | async"
     [listenDirectMessageResponse]="listenDirectMessageResponse$ | async"

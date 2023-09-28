@@ -22,7 +22,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     ReactiveFormsModule,
     PickerModule,
     FormsModule,
-    NgbDropdownModule
+    NgbDropdownModule,
   ]
 })
 export class MessageModule { }

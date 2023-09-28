@@ -5,20 +5,19 @@
     <!-- Start: Message Screen  -->
     <div class="chat-container flex-grow-1 overflow-auto p-5" #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
-            <div class="chat d-flex flex-column my-3" *ngFor="let message of chatArray let i = index"
+            <div class="chat d-flex flex-column my-3" *ngFor="let message of NewChatArray let i = index"
                 [ngClass]="message.senderId._id === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
                 <div class="d-flex justify-content-center">
                     <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
                         *ngIf="formatDate(message.timestamp,chatArray[i-1]?.timestamp)">
-                        {{formatDate(message.timestamp,chatArray[i-1]?.timestamp) }}
+                            {{formatDate(message.timestamp,chatArray[i-1]?.timestamp)}}
                     </span>
                 </div>
                 <div class="chat">
-                    <div class="d-flex" [ngClass]="message.senderId._id === UserObject.userId  ? 'justify-content-end' : 'justify-content-start'">>
+                    <div class="d-flex" [ngClass]="message.senderId._id === UserObject.userId  ? 'justify-content-end' : 'justify-content-start'">
                         <!-- Message Text  -->
-                        {{ message.senderId._id === message.senderId._id | json}}
                         <div class="chat-text py-1 px-2  placeholder-glow dropstart"
-                            [ngClass]="message.senderId._id === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-success chat-lt-border'"
+                            [ngClass]="message.senderId._id === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-white chat-lt-border'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
                             <!-- <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
                             [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
@@ -43,31 +42,19 @@
                             <!-- Message Dropdown  -->
                             <div class="dropdown p-1">
                                 <span class="p-4"> {{message.body}} </span>
-                                <!-- <span class="icon-circle-down text-info" data-bs-toggle="dropdown" aria-expanded="false"
-                                    role="button"
-                                    [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'"
-                                    (click)="openModel()"></span>
-                                <ul class="dropdown-menu justify-content-end"
-                                    [ngClass]="{'show' : messageModel && currentMessageId === message._id}">
-                                    <li class="dropdown-item" (click)="onEditMessage(message)"
-                                        *ngIf="message.is_sender"> Edit </li>
-                                    <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
-                                </ul> -->
-
                                 <!-- ngDropdown -->
                                 <div ngbDropdown class="d-inline-block">
                                     <div
                                         [ngClass]="showMessageIcon && currentMessageId === message._id ? 'visible' : 'invisible'">
                                         <span id="dropdownBasic1" ngbDropdownToggle
-                                            class="icon-down text- fs-4 ">
+                                            class="icon-down  fs-4 ">
                                         </span>
                                     </div>
-
                                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
                                         <ul class=" justify-content-end"
                                             [ngClass]="{'show' : messageModel && currentMessageId === message._id}">
-                                            <li class="dropdown-item" (click)="onEditMessage(message)"
-                                                *ngIf="message.senderId"> Edit </li>
+                                            <li class="dropdown-item" (click)="onEditMessage(message.body)"
+                                                *ngIf="message.senderId._id === UserObject.userId"> Edit </li>
                                             <li class="dropdown-item" (click)="onReplyMessage(message)"> Reply </li>
                                         </ul>
                                     </div>
@@ -75,51 +62,47 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Message Details  -->
                     <p class="fs-8 text-info d-flex align-items-center"
-                        [ngClass]="message.senderId._id ? 'justify-content-end' : 'justify-content-start'">
-                        <span class="pe-1">
-                            <!-- {{message.displayTime}} -->
+                        [ngClass]="message.senderId._id === UserObject.userId? 'justify-content-end' : 'justify-content-start'">
+                        <span class="pe-1 text-black">
+                            {{message.timestamp}}
                         </span>
                         <ng-container *ngIf="message.senderId._id">
-                            <!-- <span *ngIf="!message.is_read">
+                            <span *ngIf="!message.isRead">
                                 <img src="https://img.icons8.com/ios-filled/16/b1b1b1/double-tick.png" />
                             </span>
-                            <span *ngIf="message.is_read">
+                            <span *ngIf="message.isRead">
                                 <img src="https://img.icons8.com/ios-filled/16/00ffff/double-tick.png" />
-                            </span> -->
+                            </span>
                         </ng-container>
                     </p>
                 </div>
             </div>
-
         </div>
-        
-
         <!-- Screen Message  -->
-        <!-- <ng-container *ngIf="chatArray.length === 0"> -->
+        <!-- <ng-container *ngIf="chatArray.length === 0">
             <div class="d-flex h-100 justify-content-center align-items-center">
                 <span class="text-info"> No Conversation Started </span>
             </div>
-        <!-- </ng-container> -->
+        </ng-container> -->
 
     </div>
     <!-- End: Message Screen  -->
-
-    <!-- Start: Typer Container  -->
-    <div class=" typer-container d-flex flex-column  py-2 position-relative">
-        <div class="icon-circle-down fs-4 text-info down-arrow position-absolute" (click)="scrollUp()"
-            *ngIf="isScrolledToBottom"> </div>
+    <!-- Start:  Container  -->
+    <div class="typer-container d-flex flex-column  py-2 position-relative">
+        <div class="icon-circle-down fs-4 text-info down-arrow position-absolute " (click)="scrollUp()"
+            *ngIf="isScrolledToBottom">
+         </div>
         <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">
             <!-- Reply Model -->
             <div class="reply-wrapper rounded-1 p-2 pe-3" *ngIf="isReplyMode">
                 <div class="mx-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <!-- <span> {{replyMessage.is_sender ? 'You' : this.replyMessage.ownerName}} </span> -->
-                        <button class="btn-close" (click)="onCancelMode()" type="button"></button>
+                        <span> {{repliedMessage.senderId._id === UserObject.userId ? 'You' : repliedMessage.senderId.full_name}} </span>
+                        <button class="btn-close d-flex justify-content-end" (click)="onCancelMode()" type="button"></button>
                     </div>
-                    <!-- <span>{{replyMessage.content.text}}</span> -->
+                    <span>{{repliedMessage.body}}</span>
                 </div>
             </div>
             <!-- End Reply Model -->
@@ -128,7 +111,7 @@
                 title="Pick your emoji…"></emoji-mart>
             <!-- Emoji Icon  -->
 
-            <!-- typeing Wrapper  -->
+            <!--  Wrapper  -->
             <div class="d-flex py-2 px-2">
                 <div class="file-attach d-flex align-items-center gap-2">
                     <span class="icon-{{closeIcon}} cursor-pointer" (click)="closeEmojiPicker()"></span>
@@ -149,13 +132,13 @@
                         <span class="icon icon-x-lg fs-5" (click)="onCancelMode()" role="button"></span>
                     </ng-container>
 
-                    <button type="submit" class="border-0" [disabled]="!chatGroup.valid"><span
-                            class='icon-bxs-send fs-3' role="button"></span></button>
+                    <button type="submit" class="border-0 " [disabled]="!chatGroup.valid"><span
+                            class='icon-bxs-send  fs-3' role="button"></span></button>
                 </div>
             </div>
             <input type="file" id="file" class="d-none">
         </form>
     </div>
-    <!-- End: Typer Container  -->
+    <!-- End:  Container  -->
 </div>
 <!-- End: Chat Container  -->

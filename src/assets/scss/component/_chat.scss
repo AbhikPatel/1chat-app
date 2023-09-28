@@ -1,8 +1,8 @@
 .main-chat-container {
     .chat-container {
-        // background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
-        //     url("../../images/bg-image.jpg");
-            background-color: $chat-bg-color;
+        background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+            url("../../images/bg-image.jpg");
+            // background-color: $chat-bg-color;
 
         .chat {
             &-text {
@@ -18,7 +18,7 @@
             }
 
             &-lt-border {
-                border: 2px solid lighten($info, 30);
+                border: 2px solid lighten($success, 30);
                 border-top-left-radius: 1rem;
                 border-top-right-radius: 1rem;
                 border-bottom-left-radius: 1rem;

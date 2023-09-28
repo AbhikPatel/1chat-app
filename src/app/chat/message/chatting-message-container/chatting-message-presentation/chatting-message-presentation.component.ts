@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ChattingMessagePresenterService } from '../Chatting-message-presenter/chatting-message-presenter.service';
 import { ConversationUsers } from 'src/app/chat/models/chat.model';
 import { FormGroup } from '@angular/forms';
@@ -14,39 +14,33 @@ import { login } from 'src/app/chat/models/login.model';
   templateUrl: './chatting-message-presentation.component.html',
   providers: [ChattingMessagePresenterService]
 })
-export class ChattingMessagePresentationComponent {
+export class ChattingMessagePresentationComponent implements OnInit {
 
   /** Element DOM for message screen */
   @ViewChild('messageContainer') public messageContainer: ElementRef;
   /** This element used for focus inputBox */
   @ViewChild('inputTypeFocus') public inputTypeFocus: ElementRef;
-
-  /** Input to get the receiver's data */
-  @Input() public set receiversConversation(receiver: ConversationUsers) {
-    if (receiver) {
-      this._receiversConversation = receiver;
-      this.closeEmojiPicker();
-      setTimeout(() => {
-        this.scrollUp();
-      }, 100);
-    }
-    this.setFocusInputBox()
-  }
-  public get receiversConversation(): ConversationUsers {
-    return this._receiversConversation;
-  }
   /** This property is used to get chat array */
   @Input() public set chatArray(messages: MessageResponse[]) {
     if (messages)
-    console.log(messages)
-      this._chatArray = messages
+      this._chatArray = messages;
 
-    // this._chattingMessagePresenterService.getChatArray(this._chatArray, this.receiversConversation)
+    this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray)
   }
   public get chatArray(): MessageResponse[] {
     return this._chatArray;
   }
 
+  // Getter Setter for _getParamId
+  @Input() public set getParamId(v: string) {
+    this._getParamId = v;
+    this.receiverId = localStorage.getItem('receiverId');
+    this._chattingMessagePresenterService.getId(this._getParamId, this.receiverId);
+
+  }
+  public get getParamId(): string {
+    return this._getParamId;
+  }
   // Getter Setter for direct message
   @Input() public set listenDirectMessage(v: MessageResponse) {
     this._listenDirectMessage = v;
@@ -167,14 +161,16 @@ export class ChattingMessagePresentationComponent {
   private _listenGroupMessage: MessageResponse;
   private _listenDirectMessageReply: MessageResponse;
   private _listenDirectMessageAcknowledge: MessageResponse[];
+  private _getParamId: string;
   /** This Variable store chartArray[] */
-  public NewChatArray: Message[];
+  public NewChatArray: MessageResponse[];
   /** FormGroup for chat */
   public chatGroup: FormGroup;
   public isEditMode: boolean;
   public editedMessage: MessageEdit;
   public isReplyMode: boolean;
   public repliedMessage: MessageReply;
+
   /** Flag for message screen scroll */
   public isScrolledToBottom: boolean;
   /** Flag for showing modal for the messages */
@@ -189,20 +185,16 @@ export class ChattingMessagePresentationComponent {
   public message: string;
   ///** Show and hide close icon */
   public closeIcon: string;
-  /** This variable is used for getter setter */
-  private _receiversConversation: ConversationUsers;
-  /** stops the subscription on destroy */
-  private destroy: Subject<void>;
   public distance: number;
   public limit: number;
   public pageSize: number;
   public UserObject: login;
+  public receiverId: string;
   constructor(
     private _chattingMessagePresenterService: ChattingMessagePresenterService,
     private _commonService: CommonService,
 
   ) {
-    this.destroy = new Subject();
     this.emitDirectMessage = new EventEmitter();
     this.emitDirectMessageReply = new EventEmitter();
     this.emitDirectMessageEdit = new EventEmitter();
@@ -230,19 +222,21 @@ export class ChattingMessagePresentationComponent {
   }
   ngAfterViewInit(): void {
     this.scrollUp();
+
   }
   ngOnInit(): void {
-    this._chattingMessagePresenterService.chat$.pipe(takeUntil(this.destroy)).subscribe((chat: string) => this.chatData.emit(chat));
-    // this.chatGroup.valueChanges.pipe(takeUntil(this.destroy)).subscribe(() => this.InputTyping.emit());
-    this._chattingMessagePresenterService.chatArray$.pipe(takeUntil(this.destroy)).subscribe((res: Message[]) => this.NewChatArray = res
-    )
+
+    this._chattingMessagePresenterService.newMessage$.subscribe((newMessage: Message) => console.log(newMessage)
+    );
+    this._chattingMessagePresenterService.chatArray$.subscribe((res: MessageResponse[]) => {
+      this.NewChatArray = res
+      console.log(res);
+    })
     /**
      * Get UserId
      */
     this.UserObject = this._commonService.getLoginDetails()
-    this._commonService.isReplyModeFalse.subscribe((data: boolean) => {
-      this.isReplyMode = data;
-    });
+    
   }
 
   /**
@@ -250,14 +244,17 @@ export class ChattingMessagePresentationComponent {
    * @description This method will be called when the form is submitted
    */
   public onSubmit(): void {
-    console.log(this.chatGroup.value.message);
-
-    if (this.isEditMode) {
-      this.editedMessage.editedBody = this.chatGroup.value.message;
-      this.editedMessage.isEdited = true
+    
+    if (this.isEditMode ===true) {
+      console.log(this.isEditMode);
+      this.editedMessage.editedBody.push(this.chatGroup.value.message);
+      this.editedMessage.isEdited = true;
       // this.editMessageObj.emit(this.editMessage);
     } else if (this.isReplyMode) {
+      console.log('reply');
+      this._chattingMessagePresenterService.replyMessage(this.repliedMessage)
       // this.repliedMessage.emit(this.replyMessage)
+    }else{
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
       setTimeout(() => {
         this.scrollUp();
@@ -312,13 +309,25 @@ export class ChattingMessagePresentationComponent {
    * @description This method is used to edit the chat message
    */
   public onEditMessage(message: any): void {
+    this.setFocusInputBox()
+    this.chatGroup.get('message').patchValue(message);
     this.isReplyMode = false;
-    // this.chatGroup.get('message').patchValue(message.content.text);
     this.messageModel = false;
     this.isEditMode = true;
-    // this.editMessage = message;
-    this.setFocusInputBox()
+    this.editedMessage = message;
 
+  }
+  /**
+    * @name onReplyMessage
+    * @param message 
+    * @description This method is used when the reply mode is activated
+    */
+  public onReplyMessage(message: any): void {
+    this.isReplyMode = true;
+    this.setFocusInputBox();
+    this.chatGroup.reset();
+    this.isEditMode = false;
+    this.repliedMessage = message;
   }
 
   /**
@@ -339,18 +348,10 @@ export class ChattingMessagePresentationComponent {
     this.chatGroup.reset();
   }
 
-  /**
-   * @name onReplyMessage
-   * @param message 
-   * @description This method is used when the reply mode is activated
-   */
-  public onReplyMessage(message: any): void {
-    this.setFocusInputBox();
-    this.isEditMode = false;
-    this.chatGroup.reset();
-    this.isReplyMode = true;
-    // this.replyMessage = message;
-  }
+
+
+
+
 
 
   /**
@@ -379,24 +380,23 @@ export class ChattingMessagePresentationComponent {
     this.showEmojiPicker = false;
   }
   /**
+   * @name formatDate
    * @description This method print Today,Yesterday and full weeks then print full dates
    * @param data 
    * @param pre 
    * @returns 
   */
-  formatDate(data: any, pre: any) {
+  public formatDate(data: any, pre: any) {
     return this._chattingMessagePresenterService.formatDate(data, pre);
   }
   /** 
+   * @name setFocusInputBox
    * @description This method used for focus input box
    * */
   public setFocusInputBox(): void {
     this.inputTypeFocus?.nativeElement.focus();
   }
 
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.unsubscribe();
-  }
+
 
 }

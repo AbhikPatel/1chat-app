@@ -32,11 +32,15 @@ export class CommunicationService {
   public selectedTabData: Subject<boolean>;
   /** This variable Subject  to deleteEodID  * */
   public deleteEodId: Subject<number>;
+  /** This variable Subject  to store receiverId  * */
+  public receiverId: Subject<string>;
 
   constructor() {
     this.ConversationUser$ = new Observable();
     this.NewGroupConversation$ = new Observable();
     this.taskResponse$ = new Observable();
+    this.editTaskResponse$ = new Observable();
+
     this.editTaskResponse$ = new Observable();
     this.senEodData$ = new Observable();
     this.ConversationUser = new Subject();
@@ -48,11 +52,14 @@ export class CommunicationService {
     this.tabDataApi = new Subject();
     this.deleteEodId = new Subject();
     this.senEodData = new Subject();
+ 
     this.ConversationUser$ = this.ConversationUser.asObservable();
     this.NewGroupConversation$ = this.NewGroupConversation.asObservable();
     this.taskResponse$ = this.taskResponse.asObservable();
     this.editTaskResponse$ = this.editTaskResponse.asObservable();
     this.senEodData$ = this.senEodData.asObservable();
+    this.senEodData$ = this.senEodData.asObservable();
+   
   }
   /**
    *@name setHeaderDetails

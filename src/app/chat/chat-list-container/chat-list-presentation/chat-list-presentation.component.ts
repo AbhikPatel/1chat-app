@@ -29,9 +29,8 @@ export class ChatListPresentationComponent implements OnInit {
       let findConversation: ConversationUsers = selectedConversation.find((user: ConversationUsers) => user.chatId === this.currentChatId);
       this.onUser(findConversation);
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
-      if (this.tabData) this.onTabSwitch(true);
-      else
-        this.onTabSwitch(false);
+      this.onTabSwitch(true);
+
     }
   }
   public get conversationUsers(): ConversationUsers[] {
@@ -111,6 +110,7 @@ export class ChatListPresentationComponent implements OnInit {
   }
   ngOnInit(): void {
     this.props();
+    this.onTabSwitch(true);
     this.isLoading = this._loaderService.getLoaderState();
   }
 
@@ -205,19 +205,22 @@ export class ChatListPresentationComponent implements OnInit {
  * @description This method is used to display the chats of the selected user
  */
   public onUser(user: any) {
-    if (user) {
+    if (user && user.chatId) {
+      localStorage.setItem('receiverId',user.sender)
       const TabData = localStorage.getItem('TabData');
+      this._commonService.receiverId.next(user.sender);
       if (TabData) {
         this._router.navigate(['chat', user.chatId, 'eod']);
-        this._communicationService.tabData.next(false)
+        this._communicationService.tabData.next(false);
       } else {
-        this._router.navigate(['chat', user.chatId])
+        this._router.navigate(['chat', user.chatId]);
       }
-    }
-    this._communicationService.setHeaderDetails(user)
-    this._communicationService.tabDataApi.next(true)
+    this._communicationService.setHeaderDetails(user);
+    this._communicationService.tabDataApi.next(true);
     this.currentChatId = user.chatId;
     localStorage.setItem('ConversationUsers', JSON.stringify(user.chatId));
+    }
+    
   }
   // this.checkNonConversationUsers();
   // this._ChatListPresenterService.getCurrentConversation(user, this.userId);

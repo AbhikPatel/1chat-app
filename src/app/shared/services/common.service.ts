@@ -15,7 +15,10 @@ export class CommonService {
   public userApiCallForGroup: Subject<boolean>;
   /** This Subject will be api call  */
   public stateActivityTypeApiCall: Subject<boolean>;
-
+  /**  This variable Observable receiverId  * */
+  public receiverId$: Observable<string>;
+    /** This variable Subject  to store receiverId  * */
+    public receiverId: Subject<string>;
   /** This Subject will store the user details */
   public user$: Subject<User>;
   public closeModel: Subject<boolean>;
@@ -33,8 +36,8 @@ export class CommonService {
     this.userApiCall = new Subject();
     this.userApiCallForGroup = new Subject();
     this.stateActivityTypeApiCall = new Subject();
-
-
+    this.receiverId$ = new Observable();
+    this.receiverId = new Subject();
     this.user$ = new Subject();
     this.closeModel = new Subject();
     this.isReplyModeFalse = new Subject();
@@ -42,7 +45,8 @@ export class CommonService {
     this.submitEod = new BehaviorSubject(false);
     this.eodChatOpen = new Subject();
     this.closeOverlaySubject = new Subject();
-    this.closeOverlayS$ = this.closeOverlaySubject.asObservable()
+    this.closeOverlayS$ = this.closeOverlaySubject.asObservable();
+    this.receiverId$ = this.receiverId.asObservable();
   }
   /**
    * @name closeOverlay

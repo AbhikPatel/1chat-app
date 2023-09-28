@@ -1,33 +1,58 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
-import { ConversationUsers, Message } from 'src/app/chat/models/chat.model';
+import { login } from 'src/app/chat/models/login.model';
+import { Message, MessageResponse } from 'src/app/chat/models/message.model';
+import { FormatTime } from 'src/app/core/utilities/formatTime';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Injectable()
-export class ChattingMessagePresenterService implements OnDestroy {
-
+export class ChattingMessagePresenterService implements OnInit, OnDestroy {
   /** Observable for chat */
   public chat$: Observable<string>;
-
+  /** Observable for chat message array conversation user */
+  public newMessage$: Observable<Message>;
   /** Subject for chat */
   private chat: Subject<string>;
-  /** Stops the subcription */
+  /** Subject for receivers conversation data */
+  private newMessage: Subject<Message>;
+  public chatArray$: Observable<MessageResponse[]>;
+  /** variable for chat array */
+  public chats: MessageResponse[];
+  public loginObject: login;
+  public receiverId: string;
+  public chatId: string;
+  /** Stops the subscription */
   private destroy: Subject<void>;
   public senderId: number;
-  private chatArray: Subject<Message[]>;
-  public chatArray$: Observable<any>;
+  private chatArray: Subject<MessageResponse[]>;
   constructor(
-    private _fb: FormBuilder
-  ) {
-    this.chat$ = new Observable();
-    this.chatArray$ = new Observable();
+    private _fb: FormBuilder,
+    private _commonService: CommonService,
+    private _formatter: FormatTime,
 
+  ) {
+    this.chatArray$ = new Observable();
+    this.newMessage$ = new Observable();
+    this.chat$ = new Observable();
     this.chat = new Subject();
+    this.newMessage = new Subject();
     this.chatArray = new Subject();
     this.destroy = new Subject();
+    this.chats = [];
+    this.loginObject = this._commonService.getLoginDetails();
 
     this.chat$ = this.chat.asObservable();
+    this.newMessage$ = this.newMessage.asObservable();
     this.chatArray$ = this.chatArray.asObservable();
+
+
+  }
+  ngOnInit(): void {
+    this._commonService.receiverId$.subscribe((receiverId: string) => {
+      console.log(receiverId);
+    });
+  
   }
 
   /**
@@ -40,36 +65,70 @@ export class ChattingMessagePresenterService implements OnDestroy {
       message: ['', [Validators.required]]
     })
   }
+/**
+ * 
+ * @param chatId 
+ */
+  public getId(chatId: string,receiverId:string) {
+    this.chatId = chatId;
+    this.receiverId=receiverId
+  }
+  /**
+   * 
+   * @param chat 
+   */
+  public getChatMessagesArray(chat: MessageResponse[]) {
+    this.chats = [...chat];
+    this.chatArray.next(this.chats);
 
+  }
   /**
    * @name getChatData
    * @param chatData 
    * @description This method will get the data of chat
    */
   public getChatData(chatData: string): void {
-    this.chat.next(chatData)
+    const currentTime = new Date()
+    let messageObj: MessageResponse = {
+      body: chatData,
+      editedBody: [''],
+      chatId:  this.chatId ,
+      isRead: false,
+      isEdited: false,
+      isReplied: false,
+      senderId: {
+        first_name: '',
+        photo: '',
+        last_name: '',
+        full_name: '',
+        _id: this.loginObject.userId
+      },
+      repliedMessageId: '',
+      receiverId: {
+        first_name: '',
+        photo: '',
+        last_name: '',
+        full_name: '',
+        _id:  this.receiverId
+      },
+      timestamp: this._formatter.Formatter(currentTime),
+      threadType: 'text',
+      _id: '',
+    };
+    const sendMessage: Message = {
+      chatId:this.chatId ,
+      senderId: this.loginObject.userId,
+      receiverId: this.receiverId,
+      timestamp: currentTime,
+      threadType: 'text',
+      body: chatData
+    }
+    this.newMessage.next(sendMessage);
+    this.chats.push(messageObj);
   }
-  /**
-   * @name getChatArray
-   * @param chatArray 
-   * @param conversationUser 
-   * @description  This Method add ownName field in ChatArray find in conversationUser 
-   */
-  public getChatArray(chatArray: Message[], conversationUser: ConversationUsers) {
-    chatArray = chatArray.map((message: any) => {
-      if (message.sender) {
-        const groupMember = conversationUser.members.find((item: any, index: number) => item._id == message.sender);
-        return {
-          ...message,
-          ownerName: groupMember ? groupMember.full_name : ''
-        }
-      }
-      else {
-        return chatArray
-      }
-    })
 
-    this.chatArray.next(chatArray)
+  public replyMessage(replyMessage:any){
+
   }
   /**
    * @description
@@ -77,12 +136,14 @@ export class ChattingMessagePresenterService implements OnDestroy {
    * @param pre 
    * @returns 
    */
-  public formatDate(data: Date, pre: Date): string {
+  public formatDate(data: string, pre: string): string {
     // convert string to date object
     const newData = new Date(data);
+    // console.log('current date',newData);
     const getday = newData.getDate();
     // convert string to date object
     const preData = new Date(pre);
+    // console.log('previces',preData);
     const preDay = preData.getDate();
     // check first date and Previous date then Return
     if (getday === preDay) {
