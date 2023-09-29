@@ -306,16 +306,16 @@ export class ChattingMessagePresentationComponent implements OnInit {
    */
   public onSubmit(): void {
     if (this.isEditMode === true) {
-      this.chatGroup.get('message').reset();
       this.editedMessage.editedBody.push(this.chatGroup.value.message);
+      this. scrollUpMessage()
       this.editedMessage.isEdited = true;
     } else if (this.isReplyMode) {
       this._chattingMessagePresenterService.replyMessages(this.chatGroup.value.message, this.repliedMessage)
+
+      this. scrollUpMessage()
     } else {
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
-      setTimeout(() => {
-        this.scrollUp();
-      }, 0);
+    this. scrollUpMessage()
     }
     this.isEditMode = false;
     this.isReplyMode = false;
@@ -332,7 +332,12 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
 
   }
-
+  public  scrollUpMessage(){
+    setTimeout(() => {
+      this.scrollUp();
+    }, 0);
+    this.chatGroup.get('message').reset();
+  }
   /**
    * @name onMessageScroll
    * @param container

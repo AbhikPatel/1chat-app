@@ -1,3 +1,5 @@
+import { Data } from "@angular/router"
+
 export class personalDetail {
     _id: string
     first_name: string
@@ -71,7 +73,7 @@ export class MessageResponse {
     senderId: personalDetail
     receiverId: personalDetail
     repliedMessageId: string
-    timestamp: string
+    timestamp: Date
     threadType: string
     body: string
     editedBody: [string]
@@ -85,7 +87,7 @@ export class MessageResponse {
         senderId: personalDetail,
         receiverId: personalDetail,
         repliedMessageId: string,
-        timestamp: string,
+        timestamp: Date,
         threadType: string,
         body: string,
         editedBody: [string],

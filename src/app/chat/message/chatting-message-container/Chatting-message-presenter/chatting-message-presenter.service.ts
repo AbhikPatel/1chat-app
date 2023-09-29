@@ -148,7 +148,7 @@ export class ChattingMessagePresenterService implements OnInit {
         full_name: '',
         _id: this.receiverId
       },
-      timestamp: this._formatter.Formatter(currentTime),
+      timestamp:currentTime,
       threadType: 'text',
       _id: '',
     };
@@ -163,7 +163,11 @@ export class ChattingMessagePresenterService implements OnInit {
     this.newMessage.next(sendMessage);
     this.chats.push(messageObj);
   }
-
+/**
+ * 
+ * @param replyMessage 
+ * @param repliedMessage 
+ */
   public replyMessages(replyMessage: string, repliedMessage: MessageResponse) {
     const currentTime = new Date();
     const sendMessage: MessageReply = new MessageReply (

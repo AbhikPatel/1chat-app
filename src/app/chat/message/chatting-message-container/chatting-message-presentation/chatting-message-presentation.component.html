@@ -4,7 +4,7 @@
     <div class="chat-container flex-grow-1 overflow-auto p-5" #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
             <div class="chat d-flex flex-column my-3" *ngFor="let message of newChatArray let i = index"
-            [ngClass]="message.senderId._id === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
+            [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
             <!-- {{ message | json}} -->
                 <div class="d-flex justify-content-center">
                     <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
@@ -14,10 +14,10 @@
                 </div>
                 <div class="chat">
                     <div class="d-flex"
-                        [ngClass]="message.senderId._id === UserObject.userId  ? 'justify-content-end' : 'justify-content-start'">
+                        [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId  ? 'justify-content-end' : 'justify-content-start'">
                         <!-- Message Text  -->
                         <div class="chat-text py-1 px-2  placeholder-glow dropstart"
-                            [ngClass]="message.senderId._id === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-white chat-lt-border'"
+                            [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-white chat-lt-border'"
                             (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
                             <!-- <div class="chat-text rounded-3 py-1 px-2 shadow mb-1 placeholder-glow "
                             [ngClass]="message.is_sender ? 'bg-secondary' : 'bg-white'"
@@ -30,15 +30,15 @@
                             </ng-container> -->
 
                             <!-- Reply Message  -->
-                            <!-- <div class="reply-wrapper text-white bg-info rounded-1 p-1" *ngIf="message.replied_to">
+                            <div class="reply-wrapper text-white bg-info rounded-1 p-1" *ngIf="repliedMessage.isReplied === true ">
                                 <div class="mx-3">
                                     <div class="d-flex align-items-center justify-content-between mb-1 ">
-                                        <span class="fs-9 text-nowrap"> {{message.replied_to.is_sender ? 'You' :
-                                            message.replied_to.ownerName}} </span>
+                                        <span class="fs-9 text-nowrap text-black"> {{(message.senderId._id || message.senderId) === UserObject.userId  ? 'You' :
+                                            message.senderId.full_name}} </span>
                                     </div>
-                                    <div class="fs-7 text-nowrap"> {{message.replied_to.content.text}} </div>
+                                    <div class="fs-7 text-nowrap text-black"> {{repliedMessage.ReplyMessage}} </div>
                                 </div>
-                            </div> -->
+                            </div>
                             <!-- Message Dropdown  -->
                             <div class="dropdown p-1">
                                 <span class="p-4"> {{message.body}} </span>
@@ -63,11 +63,11 @@
                     </div>
                     <!-- Message Details  -->
                     <p class="fs-8 text-info d-flex align-items-center"
-                        [ngClass]="message.senderId._id === UserObject.userId? 'justify-content-end' : 'justify-content-start'">
+                        [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId? 'justify-content-end' : 'justify-content-start'">
                         <span class="pe-1 text-black">
                             {{message.timestamp}}
                         </span>
-                        <ng-container *ngIf="message.senderId._id">
+                        <ng-container *ngIf="message._id">
                             <span *ngIf="!message.isRead">
                                 <img src="https://img.icons8.com/ios-filled/16/b1b1b1/double-tick.png" />
                             </span>
