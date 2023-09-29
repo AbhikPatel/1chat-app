@@ -43,7 +43,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   }
   // Getter Setter for direct message
   @Input() public set listenDirectMessage(message: MessageResponse) {
-    if(message){
+    if (message) {
       this._listenDirectMessage = message;
       this.chatArray.push(this._listenDirectMessage);
     }
@@ -54,10 +54,10 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message response
   @Input() public set listenDirectMessageResponse(message: MessageResponse) {
-    if(message) {
+    if (message) {
       this._listenDirectMessageResponse = message;
       const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnTime(this.chatArray, message);
-      if(messageIndex > -1) this.chatArray[messageIndex] = message;
+      if (messageIndex > -1) this.chatArray[messageIndex] = message;
     }
   }
   public get listenDirectMessageResponse(): MessageResponse {
@@ -66,7 +66,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message reply
   @Input() public set listenDirectMessageReply(message: MessageResponse) {
-    if(message) {
+    if (message) {
       this._listenDirectMessageReply = message;
       this.chatArray.push(this._listenDirectMessageReply)
     }
@@ -77,11 +77,11 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message reply response
   @Input() public set listenDirectMessageReplyResponse(message: MessageResponse) {
-    if(message) {
+    if (message) {
       this._listenDirectMessageReplyResponse = message;
       const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnTime(this.chatArray, message);
-      if(messageIndex > -1) this.chatArray[messageIndex] = message;
-    } 
+      if (messageIndex > -1) this.chatArray[messageIndex] = message;
+    }
   }
   public get listenDirectMessageReplyResponse(): MessageResponse {
     return this._listenDirectMessageReplyResponse;
@@ -89,10 +89,10 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message edit
   @Input() public set listenDirectMessageEdit(message: MessageResponse) {
-    if(message) {
+    if (message) {
       this._listenDirectMessageEdit = message;
       const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnId(this.chatArray, message);
-      if(messageIndex > -1) this.chatArray[messageIndex] = message;
+      if (messageIndex > -1) this.chatArray[messageIndex] = message;
     }
   }
   public get listenDirectMessageEdit(): MessageResponse {
@@ -101,10 +101,10 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message edit response
   @Input() public set listenDirectMessageEditResponse(message: MessageResponse) {
-    if(message) {
+    if (message) {
       this._listenDirectMessageEditResponse = message;
       const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnId(this.chatArray, message);
-      if(messageIndex > -1) this.chatArray[messageIndex] = message;
+      if (messageIndex > -1) this.chatArray[messageIndex] = message;
     }
   }
   public get listenDirectMessageEditResponse(): MessageResponse {
@@ -113,7 +113,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message acknowledge
   @Input() public set listenDirectMessageAcknowledge(messages: MessageResponse[]) {
-    if(messages) {
+    if (messages) {
       this._listenDirectMessageAcknowledgeResponse = messages;
       const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.chatArray, messages);
       indexArray.forEach((val, index) => {
@@ -127,7 +127,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message acknowledge response
   @Input() public set listenDirectMessageAcknowledgeResponse(messages: MessageResponse[]) {
-    if(messages) {
+    if (messages) {
       this._listenDirectMessageAcknowledgeResponse = messages;
       const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.chatArray, messages);
       indexArray.forEach((val, index) => {
@@ -141,10 +141,10 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for direct message Error
   @Input() public set listenDirectMessageError(v: any) {
-    if(v) {
+    if (v) {
       this._listenDirectMessageError = v;
       console.log(v);
-    } 
+    }
   }
   public get listenDirectMessageError(): any {
     return this._listenDirectMessageError;
@@ -152,7 +152,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for group message
   @Input() public set listenGroupMessage(message: MessageResponse) {
-    if(message) {
+    if (message) {
       this._listenGroupMessage = message;
       this.chatArray.push(this._listenDirectMessageReply)
     }
@@ -163,7 +163,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for group message reply
   @Input() public set listenGroupMessageReply(message: MessageResponse) {
-    if(message) {
+    if (message) {
       this._listenGroupMessage = message;
       this.chatArray.push(this._listenDirectMessageReply)
     }
@@ -174,7 +174,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   // Getter Setter for group message acknowledge
   @Input() public set listenGroupMessageAcknowledge(messages: MessageResponse[]) {
-    if(messages) {
+    if (messages) {
       this._listenDirectMessageAcknowledgeResponse = messages;
       const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.chatArray, messages);
       indexArray.forEach((val, index) => {
@@ -218,7 +218,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public isEditMode: boolean;
   public editedMessage: MessageEdit;
   public isReplyMode: boolean;
-  public repliedMessage: MessageReply;
+  public repliedMessage: any;
 
   /** Flag for message screen scroll */
   public isScrolledToBottom: boolean;
@@ -277,15 +277,18 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
     this._chattingMessagePresenterService.newMessage$.subscribe((newMessage: Message) => console.log(newMessage)
     );
+    this._chattingMessagePresenterService.messageReply$.subscribe((res: MessageReply) => console.log(res)
+    )
     this._chattingMessagePresenterService.chatArray$.subscribe((res: MessageResponse[]) => {
       this.NewChatArray = res
       console.log(res);
     })
+
     /**
      * Get UserId
      */
     this.UserObject = this._commonService.getLoginDetails()
-    
+
   }
 
   /**
@@ -304,23 +307,18 @@ export class ChattingMessagePresentationComponent implements OnInit {
    * @description This method will be called when the form is submitted
    */
   public onSubmit(): void {
-    
-    if (this.isEditMode ===true) {
-      console.log(this.isEditMode);
+    if (this.isEditMode === true) {
+      this.chatGroup.get('message').reset();
       this.editedMessage.editedBody.push(this.chatGroup.value.message);
       this.editedMessage.isEdited = true;
-      // this.editMessageObj.emit(this.editMessage);
     } else if (this.isReplyMode) {
-      console.log('reply');
-      this._chattingMessagePresenterService.replyMessage(this.repliedMessage)
-      // this.repliedMessage.emit(this.replyMessage)
-    }else{
+      this._chattingMessagePresenterService.replyMessages(this.chatGroup.value.message, this.repliedMessage)
+    } else {
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
       setTimeout(() => {
         this.scrollUp();
       }, 0);
     }
-    this.chatGroup.get('message').reset();
     this.isEditMode = false;
     this.isReplyMode = false;
     this.closeEmojiPicker();

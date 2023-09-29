@@ -2,30 +2,30 @@ import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { login } from 'src/app/chat/models/login.model';
-import { Message, MessageResponse } from 'src/app/chat/models/message.model';
+import { Message, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { ConversationUsers } from 'src/app/chat/models/chat.model';
 
 
 @Injectable()
-export class ChattingMessagePresenterService implements OnInit, OnDestroy {
+export class ChattingMessagePresenterService implements OnInit {
   /** Observable for chat */
   public chat$: Observable<string>;
-  /** Observable for chat message array conversation user */
+  /** Observable for new chat message array  */
   public newMessage$: Observable<Message>;
-  /** Subject for chat */
-  private chat: Subject<string>;
-  /** Subject for receivers conversation data */
+  /** Subject for messageReply */
+  public messageReply$: Observable<MessageReply>;
+  /** Subject for newMessage */
   private newMessage: Subject<Message>;
+  /** Subject for messageReply */
+  private messageReply: Subject<MessageReply>;
   public chatArray$: Observable<MessageResponse[]>;
   /** variable for chat array */
   public chats: MessageResponse[];
   public loginObject: login;
   public receiverId: string;
   public chatId: string;
-  /** Stops the subscription */
-  private destroy: Subject<void>;
   public senderId: number;
   private chatArray: Subject<MessageResponse[]>;
   constructor(
@@ -36,16 +36,16 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
   ) {
     this.chatArray$ = new Observable();
     this.newMessage$ = new Observable();
-    this.chat$ = new Observable();
-    this.chat = new Subject();
+    this.messageReply$ = new Observable();
+    this.messageReply = new Subject();
     this.newMessage = new Subject();
     this.chatArray = new Subject();
-    this.destroy = new Subject();
+
     this.chats = [];
     this.loginObject = this._commonService.getLoginDetails();
 
-    this.chat$ = this.chat.asObservable();
     this.newMessage$ = this.newMessage.asObservable();
+    this.messageReply$ = this.messageReply.asObservable();
     this.chatArray$ = this.chatArray.asObservable();
 
 
@@ -54,7 +54,7 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
     this._commonService.receiverId$.subscribe((receiverId: string) => {
       console.log(receiverId);
     });
-  
+
   }
 
   /**
@@ -75,8 +75,8 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
   public findIndexOfMultipleMessageBasedOnId(chatArray: MessageResponse[], message: MessageResponse[]): Array<number> {
     const indexArray = [];
     message.forEach((val) => {
-        const index = this.findIndexOfMessageBasedOnId(chatArray, val);
-        indexArray.push(index);
+      const index = this.findIndexOfMessageBasedOnId(chatArray, val);
+      indexArray.push(index);
     })
     return indexArray;
   }
@@ -102,13 +102,13 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
       message: ['', [Validators.required]]
     })
   }
-/**
- * 
- * @param chatId 
- */
-  public getId(chatId: string,receiverId:string) {
+  /**
+   * 
+   * @param chatId 
+   */
+  public getId(chatId: string, receiverId: string) {
     this.chatId = chatId;
-    this.receiverId=receiverId
+    this.receiverId = receiverId
   }
   /**
    * 
@@ -129,7 +129,7 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
     let messageObj: MessageResponse = {
       body: chatData,
       editedBody: [''],
-      chatId:  this.chatId ,
+      chatId: this.chatId,
       isRead: false,
       isEdited: false,
       isReplied: false,
@@ -146,14 +146,14 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
         photo: '',
         last_name: '',
         full_name: '',
-        _id:  this.receiverId
+        _id: this.receiverId
       },
       timestamp: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
     };
     const sendMessage: Message = {
-      chatId:this.chatId ,
+      chatId: this.chatId,
       senderId: this.loginObject.userId,
       receiverId: this.receiverId,
       timestamp: currentTime,
@@ -164,7 +164,19 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
     this.chats.push(messageObj);
   }
 
-  public replyMessage(replyMessage:any){
+  public replyMessages(repplayMessge: string, repliedMessage: MessageResponse) {
+    const currentTime = new Date();
+    const sendMessage: MessageReply = {
+      isReplied: false,
+      chatId: this.chatId,
+      senderId: this.loginObject.userId,
+      receiverId: this.receiverId,
+      repliedMessageId: repliedMessage._id,
+      timestamp: currentTime,
+      threadType: 'text',
+      body: repplayMessge
+    }
+    this.messageReply.next(sendMessage);
 
   }
   /**
@@ -209,10 +221,5 @@ export class ChattingMessagePresenterService implements OnInit, OnDestroy {
       month: 'short',
       year: 'numeric',
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.unsubscribe();
   }
 }

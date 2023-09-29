@@ -146,8 +146,8 @@ export class MessageEdit {
 export class MessageReply {
     isReplied: boolean
     chatId: string
-    senderId: personalDetail
-    receiverId: personalDetail
+    senderId: string
+    receiverId: string
     repliedMessageId: string
     timestamp: Date
     threadType: string
@@ -156,8 +156,8 @@ export class MessageReply {
     constructor(
         isReplied: boolean,
         chatId: string,
-        senderId: personalDetail,
-        receiverId: personalDetail,
+        senderId: string,
+        receiverId: string,
         repliedMessageId: string,
         timestamp: Date,
         threadType: string,
