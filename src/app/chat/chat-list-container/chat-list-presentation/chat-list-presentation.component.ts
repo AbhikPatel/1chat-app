@@ -206,7 +206,7 @@ export class ChatListPresentationComponent implements OnInit {
  */
   public onUser(user: any) {
     if (user && user.chatId) {
-      localStorage.setItem('receiverId',user.sender)
+      localStorage.setItem('receiverId',user.receiver)
       const TabData = localStorage.getItem('TabData');
       this._commonService.receiverId.next(user.sender);
       if (TabData) {

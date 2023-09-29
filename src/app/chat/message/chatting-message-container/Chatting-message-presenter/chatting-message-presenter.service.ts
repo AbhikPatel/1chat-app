@@ -164,18 +164,18 @@ export class ChattingMessagePresenterService implements OnInit {
     this.chats.push(messageObj);
   }
 
-  public replyMessages(repplayMessge: string, repliedMessage: MessageResponse) {
+  public replyMessages(replyMessage: string, repliedMessage: MessageResponse) {
     const currentTime = new Date();
-    const sendMessage: MessageReply = {
-      isReplied: false,
-      chatId: this.chatId,
-      senderId: this.loginObject.userId,
-      receiverId: this.receiverId,
-      repliedMessageId: repliedMessage._id,
-      timestamp: currentTime,
-      threadType: 'text',
-      body: repplayMessge
-    }
+    const sendMessage: MessageReply = new MessageReply (
+      true,
+      this.chatId,
+      this.loginObject.userId,
+      this.receiverId,
+      repliedMessage._id,
+      currentTime,
+      'text',
+      replyMessage
+    )
     this.messageReply.next(sendMessage);
 
   }

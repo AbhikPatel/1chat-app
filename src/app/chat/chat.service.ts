@@ -28,6 +28,7 @@ export class ChatService {
   public chatId: Subject<string>;
   public userId: string;
   public loginUserObject: login;
+  private accessToken: string;
   constructor(private _http: HttpService,
     private _userAdaptor: userAdaptor,
     private _conversationAdapter: conversationUserAdapter,
@@ -38,7 +39,9 @@ export class ChatService {
   ) {
     this.baseUrl = environment.baseURL;
     this.loginUserObject = this._commonService.getLoginDetails();
-    this.socket = io(environment.socketUrl);
+    this.accessToken = this._commonService.getAccessToken();
+    this.socket = io(`${environment.socketUrl}/?token=${this.accessToken}`);
+    this.socket.emit('login', {});
     this.chatId = new Subject();
   }
 

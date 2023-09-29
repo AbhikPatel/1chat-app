@@ -3,8 +3,9 @@
     <!-- Start: Message Screen  -->
     <div class="chat-container flex-grow-1 overflow-auto p-5" #messageContainer (scroll)="onMessageScroll()">
         <div class="container position-relative">
-            <div class="chat d-flex flex-column my-3" *ngFor="let message of NewChatArray let i = index"
-                [ngClass]="message.senderId._id === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
+            <div class="chat d-flex flex-column my-3" *ngFor="let message of newChatArray let i = index"
+            [ngClass]="message.senderId._id === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
+            <!-- {{ message | json}} -->
                 <div class="d-flex justify-content-center">
                     <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
                         *ngIf="formatDate(message.timestamp,chatArray[i-1]?.timestamp)">

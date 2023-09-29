@@ -59,6 +59,10 @@ export class ChattingMessageContainerComponent implements OnInit {
     this.listenGroupMessage$ = this._ChatService.listen('groupMessage');
     this.listenGroupMessageReply$ = this._ChatService.listen('groupMessageReply');
     this.listenGroupMessageAcknowledge$ = this._ChatService.listen('groupMessageAcknowledge');
+
+    // this._ChatService.listen('alive').subscribe((val) => {
+    //   console.log(val)
+    // })
   }
 
   /**

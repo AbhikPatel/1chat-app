@@ -89,11 +89,11 @@ export class CommonService {
   }
 
   public getAccessToken(): string {
-    return localStorage.getItem('token')
+    return localStorage.getItem('accessToken')
   }
 
   public getRefreshToken(): string {
-    return localStorage.getItem('token')
+    return localStorage.getItem('refreshToken')
   }
 
   /**

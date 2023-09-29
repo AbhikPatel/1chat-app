@@ -22,22 +22,26 @@ export class conversationUserAdapter implements Adapter<ConversationUsers>{
     }
 
     public toResponse(item: ConversationUserResponse): ConversationUsers {
-
-        let newMembers: Member[]
+        let receiverId: string;
+        let newMembers: Member[];
         item.chat_type === 'dm' ? newMembers = item.members.filter((member: Member) => member._id !== this.loginUserObject.userId) : newMembers = item.members
         newMembers.map((member: Member) => {
             member.full_name = member.first_name + ' ' + member.last_name;
             member.photo = environment.imageUrl + member.photo;
         });
         const profile: string = item.chat_type === 'dm' ? newMembers[0].photo : environment.imageUrl + item.photo;
-
+        if(item.chat_type === 'dm') {
+            item.members.forEach(element => {
+                if(element._id !== this.loginUserObject.userId) receiverId = element._id
+            });
+        }
         const user: ConversationUsers = new ConversationUsers(
             item._id,
             item.owner,
             item.chat_type,
             newMembers,
-            item.lastMessage ? item.lastMessage.senderId : '',
-            item.lastMessage ? item.lastMessage.receiverId : '',
+            '',
+            receiverId,
             item.lastMessage ? new Date(item.lastMessage.timestamp) : '',
             item.lastMessage ? item.lastMessage.body : 'No Messages',
             item.lastMessage ? item.lastMessage._id : '',

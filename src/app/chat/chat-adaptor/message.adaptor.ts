@@ -24,7 +24,7 @@ export class MessageAdapter implements Adapter<MessageResponse> {
                 full_name : `${item.receiverId.first_name} ${item.receiverId.last_name}`
             },
             item.repliedMessageId ? item.repliedMessageId : '',
-            item.timestamp ? this._formatter.Formatter(new Date(item.timestamp)): '',
+            item.timestamp,
             item.threadType,
             item.body,
             item.editedBody ? item.editedBody : ['']
