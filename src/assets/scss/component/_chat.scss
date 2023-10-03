@@ -5,6 +5,15 @@
             // background-color: $chat-bg-color;
 
         .chat {
+            .editedBody-container {
+                visibility: hidden;
+                opacity: 0; 
+                transition: visibility 0s, opacity 0.5s; 
+            }
+            .isChecked:checked ~ .editedBody-container {
+                visibility: visible;
+                opacity: 1; 
+            }
             &-text {
                 max-width: 500px;
                 word-wrap: break-word;
@@ -107,7 +116,7 @@
     color: $primary !important;
 }
 
-
+  
 // .online {
 //     padding: 5px;
 //     left: 60px;

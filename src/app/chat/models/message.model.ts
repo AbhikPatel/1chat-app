@@ -124,6 +124,7 @@ export class MessageRead {
 }
 
 export class MessageEdit {
+    body?:string
     senderId: string
     receiverId: string
     editedMessageId: string

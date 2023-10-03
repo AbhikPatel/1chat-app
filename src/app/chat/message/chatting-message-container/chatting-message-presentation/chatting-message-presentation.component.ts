@@ -148,7 +148,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set listenDirectMessageError(v: any) {
     if (v) {
       this._listenDirectMessageError = v;
-      console.log(v);
     }
   }
   public get listenDirectMessageError(): any {
@@ -221,9 +220,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
   /** FormGroup for chat */
   public chatGroup: FormGroup;
   public isEditMode: boolean;
-  public editedMessage: MessageEdit;
+  public editedMessage: MessageResponse;
   public isReplyMode: boolean;
-  public repliedMessage: any;
+  public repliedMessage: MessageResponse;
 
   /** Flag for message screen scroll */
   public isScrolledToBottom: boolean;
@@ -246,8 +245,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public receiverId: string;
   constructor(
     private _chattingMessagePresenterService: ChattingMessagePresenterService,
-    private _commonService: CommonService,
-
+    private _commonService: CommonService
   ) {
     this.emitDirectMessage = new EventEmitter();
     this.emitDirectMessageReply = new EventEmitter();
@@ -256,13 +254,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.emitGroupMessage = new EventEmitter();
     this.emitGroupMessageReply = new EventEmitter();
     this.emitGroupMessageAcknowledge = new EventEmitter();
-
     this.chatData = new EventEmitter();
-
-    this.repliedMessage = {} as MessageReply;
     this.chatGroup = this._chattingMessagePresenterService.getGroup();
     this.isScrolledToBottom = false;
-    this.messageModel = false;
     this.showMessageIcon = false;
     this.isEditMode = false;
     this.isReplyMode = false;
@@ -280,18 +274,22 @@ export class ChattingMessagePresentationComponent implements OnInit {
   }
   ngOnInit(): void {
 
-    this._chattingMessagePresenterService.newMessage$.subscribe((newMessage: Message) => {
-      this.emitDirectMessage.emit(newMessage)
-      console.log(newMessage)
-    });
-    this._chattingMessagePresenterService.messageReply$.subscribe((res: MessageReply) => {
-      this.emitDirectMessageReply.emit(res)
-      console.log(res)
-    });
-    this._chattingMessagePresenterService.chatArray$.subscribe((res: MessageResponse[]) => {
-      this.newChatArray = res
-      console.log(res);
+    this._chattingMessagePresenterService.chatArray$.subscribe((chartArray: MessageResponse[]) => {
+      this.newChatArray = chartArray
+      console.log(chartArray);
     })
+    this._chattingMessagePresenterService.directMessage$.subscribe((directMessage: Message) => {
+      this.emitDirectMessage.emit(directMessage)
+      console.log(directMessage)
+    });
+    this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
+    this.emitDirectMessageEdit.next(editMessage)
+      console.log(editMessage)
+    });
+    this._chattingMessagePresenterService.directMessageReply$.subscribe((replyMessage: MessageReply) => {
+      this.emitDirectMessageReply.emit(replyMessage)
+      console.log(replyMessage)
+    });
 
     /**
      * Get UserId
@@ -307,11 +305,13 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public onSubmit(): void {
     if (this.isEditMode === true) {
       this.editedMessage.editedBody.push(this.chatGroup.value.message);
-      this. scrollUpMessage()
+      this.editedMessage.body=this.chatGroup.value.message
       this.editedMessage.isEdited = true;
+    this._chattingMessagePresenterService.editMessage(this.editedMessage);
+      this. scrollUpMessage()
     } else if (this.isReplyMode) {
-      this._chattingMessagePresenterService.replyMessages(this.chatGroup.value.message, this.repliedMessage)
-
+       this.repliedMessage
+      this._chattingMessagePresenterService.replyMessage(this.chatGroup.value.message, this.repliedMessage)
       this. scrollUpMessage()
     } else {
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
@@ -361,7 +361,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public onMessageModel(id: string): void {
     this.currentMessageId = id;
     this.showMessageIcon ? this.showMessageIcon = false : this.showMessageIcon = true;
-    this.messageModel = false;
+
   }
 
   /**
@@ -371,9 +371,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
    */
   public onEditMessage(message: any): void {
     this.setFocusInputBox()
-    this.chatGroup.get('message').patchValue(message);
+    this.chatGroup.get('message').patchValue(message.body);
     this.isReplyMode = false;
-    this.messageModel = false;
+
     this.isEditMode = true;
     this.editedMessage = message;
 
@@ -389,6 +389,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.chatGroup.reset();
     this.isEditMode = false;
     this.repliedMessage = message;
+    console.log( this.repliedMessage);
+    
   }
 
   /**
@@ -408,12 +410,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.isReplyMode = false;
     this.chatGroup.reset();
   }
-
-
-
-
-
-
 
   /**
    * @name addEmoji

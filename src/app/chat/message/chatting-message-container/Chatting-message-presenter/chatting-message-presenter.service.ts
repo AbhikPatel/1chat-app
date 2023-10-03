@@ -2,7 +2,7 @@ import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { login } from 'src/app/chat/models/login.model';
-import { Message, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
+import { Message, MessageEdit, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { ConversationUsers } from 'src/app/chat/models/chat.model';
@@ -10,53 +10,52 @@ import { ConversationUsers } from 'src/app/chat/models/chat.model';
 
 @Injectable()
 export class ChattingMessagePresenterService implements OnInit {
-  /** Observable for chat */
-  public chat$: Observable<string>;
-  /** Observable for new chat message array  */
-  public newMessage$: Observable<Message>;
-  /** Subject for messageReply */
-  public messageReply$: Observable<MessageReply>;
-  /** Subject for newMessage */
-  private newMessage: Subject<Message>;
-  /** Subject for messageReply */
-  private messageReply: Subject<MessageReply>;
+  /** Observable for all chatArray  */
   public chatArray$: Observable<MessageResponse[]>;
+  /** Observable for new directMessage send container  */
+  public directMessage$: Observable<Message>;
+    /** Observable for  directMessageEdit send container  */
+    public directMessageEdit$: Observable<MessageEdit>;
+  /**  Observable for new directMessageReply array send container */
+  public directMessageReply$: Observable<MessageReply>;
+  /** Subject for directMessage */
+  private directMessage: Subject<Message>;
+  /** Subject for directMessageEdit */
+  private directMessageEdit: Subject<MessageEdit>;
+  /** Subject for messageReply */
+  private directMessageReply: Subject<MessageReply>;
+   /** Subject for  for all chatArray */
+  private chatArray: Subject<MessageResponse[]>;
   /** variable for chat array */
   public chats: MessageResponse[];
   public loginObject: login;
   public receiverId: string;
   public chatId: string;
   public senderId: number;
-  private chatArray: Subject<MessageResponse[]>;
   constructor(
     private _fb: FormBuilder,
     private _commonService: CommonService,
-    private _formatter: FormatTime,
-
   ) {
     this.chatArray$ = new Observable();
-    this.newMessage$ = new Observable();
-    this.messageReply$ = new Observable();
-    this.messageReply = new Subject();
-    this.newMessage = new Subject();
+    this.directMessage$ = new Observable();
+    this.directMessageEdit$ = new Observable();
+    this.directMessageReply$ = new Observable();
+    this.directMessage = new Subject();
+    this.directMessageEdit = new Subject();
+    this.directMessageReply = new Subject();
     this.chatArray = new Subject();
-
     this.chats = [];
-    this.loginObject = this._commonService.getLoginDetails();
-
-    this.newMessage$ = this.newMessage.asObservable();
-    this.messageReply$ = this.messageReply.asObservable();
     this.chatArray$ = this.chatArray.asObservable();
-
-
+    this.directMessage$ = this.directMessage.asObservable();
+    this.directMessageEdit$ = this.directMessageEdit.asObservable();
+    this.directMessageReply$ = this.directMessageReply.asObservable();
+    this.loginObject = this._commonService.getLoginDetails();
   }
   ngOnInit(): void {
     this._commonService.receiverId$.subscribe((receiverId: string) => {
       console.log(receiverId);
     });
-
   }
-
   /**
    * @name findIndexOfMessage
    * @param message 
@@ -122,7 +121,7 @@ export class ChattingMessagePresenterService implements OnInit {
   /**
    * @name getChatData
    * @param chatData 
-   * @description This method will get the data of chat
+   * @description This method will get the data and push an next
    */
   public getChatData(chatData: string): void {
     const currentTime = new Date()
@@ -160,31 +159,46 @@ export class ChattingMessagePresenterService implements OnInit {
       threadType: 'text',
       body: chatData
     }
-    this.newMessage.next(sendMessage);
+    this.directMessage.next(sendMessage);
     this.chats.push(messageObj);
   }
+  /**
+   * @name editMessage
+   * @param editMessageData 
+   * @description This method  next edit message
+   */
+  public editMessage(editMessageData:MessageResponse):void{
+   const editMessage :MessageEdit = new MessageEdit (
+   this.loginObject.userId,
+   this.receiverId,
+   editMessageData._id,
+   true,
+   editMessageData.editedBody
+   )
+   this.directMessageEdit.next(editMessage)
+  }
 /**
- * 
+ * @name replyMessages
  * @param replyMessage 
  * @param repliedMessage 
+ * @description This method reply message send 
  */
-  public replyMessages(replyMessage: string, repliedMessage: MessageResponse) {
+  public replyMessage(replyMessage: string, repliedMessage: MessageResponse) {
     const currentTime = new Date();
     const sendMessage: MessageReply = new MessageReply (
-      true,
-      this.chatId,
-      this.loginObject.userId,
-      this.receiverId,
-      repliedMessage._id,
-      currentTime,
+        true,
+        this.chatId,
+        this.loginObject.userId,
+        this.receiverId,
+       repliedMessage._id,
+       currentTime,
       'text',
       replyMessage
     )
-    this.messageReply.next(sendMessage);
-
+    this.directMessageReply.next(sendMessage);
   }
   /**
-   * @description
+   * @description This method  formate date 
    * @param data 
    * @param pre 
    * @returns 
