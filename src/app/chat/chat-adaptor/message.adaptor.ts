@@ -7,16 +7,16 @@ import { FormatTime } from "src/app/core/utilities/formatTime";
 export class MessageAdapter implements Adapter<MessageResponse> {
 
     constructor(private _formatter: FormatTime,) { }
-
     public toResponse(item: MessageResponse): MessageResponse {
-        return new MessageResponse(
+        const timestamp =this._formatter.Formatter(new Date(item.timestamp))
+    
+        const newMessage: MessageResponse = new MessageResponse(
             item.body,
             item.editedBody ? item.editedBody : [''],
             item.chatId,
             item.isRead ? item.isRead : false,
             item.isEdited ? item.isEdited : false,
             item.isReplied ? item.isReplied : false,
-
             {
                 ...item.senderId,
                 full_name: `${item.senderId.first_name} ${item.senderId.last_name}`
@@ -27,9 +27,10 @@ export class MessageAdapter implements Adapter<MessageResponse> {
             },
             item.repliedMessageId ? item.repliedMessageId : '',
             item.timestamp,
+            this._formatter.Formatter(new Date( item.timestamp)),
             item.threadType,
             item._id,
-
         )
+        return newMessage
     }
 }

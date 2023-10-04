@@ -17,6 +17,9 @@
             &-text {
                 max-width: 500px;
                 word-wrap: break-word;
+                #dropdownBasic1::before {
+                    content: none ;
+                }
             }
 
             &-rt-border {
@@ -116,7 +119,11 @@
     color: $primary !important;
 }
 
-  
+.dropdown-toggle:empty:after {
+    display: none;
+}
+
+
 // .online {
 //     padding: 5px;
 //     left: 60px;

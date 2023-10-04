@@ -138,8 +138,11 @@ public listen(eventname: string): Observable<any> {
      * @returns Observable
      * @description This will get the data of all the messages as per the chatId
      */
+  // page:number,limit:number
   public getChatMessages(chatId: string): Observable<MessageResponse[]> {
-    const url: string = this.baseUrl + `message?chatId=` + chatId;
+    // &page=${page}&limit=${limit}
+    const url = `${this.baseUrl}message?chatId=${chatId}&page=${1}&limit=${300}`;
+    // const url: string = this.baseUrl + `message?chatId=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {
         res.data.data = res.data.docs.map((messages: MessageResponse) => this._messageAdaptor.toResponse(messages));

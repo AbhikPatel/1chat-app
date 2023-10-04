@@ -31,11 +31,14 @@ export class ChattingMessageContainerComponent implements OnInit {
   public listenGroupMessage$: Observable<MessageResponse>;
   public listenGroupMessageReply$: Observable<MessageResponse>;
   public listenGroupMessageAcknowledge$: Observable<MessageResponse[]>;
-
+  public pageSize: number
+  public limit: number
   constructor(private router: ActivatedRoute,
     private _ChatService: ChatService) {
-
+    this.pageSize = 20
+    this.limit = 10
   }
+
   ngOnInit(): void {
     // Access route parameters using ActivatedRoute
     this.router.parent.params.subscribe(parentParams => {
@@ -45,6 +48,7 @@ export class ChattingMessageContainerComponent implements OnInit {
   }
 
   private props() {
+    // this.pageSize, this.limit
     this.getMessages$ = this._ChatService.getChatMessages(this.paramId);
     this.listenDirectMessage$ = this._ChatService.listen('directMessage');
     this.listenDirectMessageResponse$ = this._ChatService.listen('directMessageResponse');
@@ -64,6 +68,13 @@ export class ChattingMessageContainerComponent implements OnInit {
     // })
   }
 
+
+  public paginationScroll(paginationData: any) {
+    console.log(paginationData);
+    // this.getMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.limit);
+    this.pageSize = paginationData.page;
+    this.limit = paginationData.limit
+  }
   /**
    * @name emitDirectMessage
    * @param message message data

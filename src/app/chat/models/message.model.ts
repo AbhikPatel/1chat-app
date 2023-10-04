@@ -44,7 +44,7 @@ export class lastMessage {
         senderId: string,
         receiverId: string,
         repliedMessageId: string,
-        timestamp: string,
+        timestamp: any,
         threadType: string,
         body: string,
         editedBody: [string],
@@ -75,6 +75,7 @@ export class MessageResponse {
     receiverId: personalDetail
     repliedMessageId: any
     timestamp: Date
+    displayTime ?:string
     threadType: string
     _id: string
 
@@ -90,6 +91,7 @@ export class MessageResponse {
         receiverId: personalDetail,
         repliedMessageId: any,
         timestamp: Date,
+        displayTime:string,
         threadType: string,
         _id: string,
 
@@ -103,6 +105,7 @@ export class MessageResponse {
         this.receiverId = receiverId
         this.repliedMessageId = repliedMessageId
         this.timestamp = timestamp
+        this.displayTime=displayTime
         this.threadType = threadType
         this.body = body
         this.editedBody = editedBody

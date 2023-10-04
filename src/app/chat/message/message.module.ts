@@ -8,6 +8,7 @@ import { ChattingMessagePresentationComponent } from './chatting-message-contain
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ScrollPaginationDirective } from './directive/scroll-pagination.directive';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     MessageComponent,
     ChattingMessageContainerComponent,
     ChattingMessagePresentationComponent,
+    ScrollPaginationDirective
   ],
   imports: [
     CommonModule,

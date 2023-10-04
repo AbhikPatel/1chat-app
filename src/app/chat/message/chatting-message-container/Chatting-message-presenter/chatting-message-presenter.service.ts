@@ -36,6 +36,7 @@ export class ChattingMessagePresenterService implements OnInit {
   constructor(
     private _fb: FormBuilder,
     private _commonService: CommonService,
+    private _formatter: FormatTime
   ) {
     this.chatArray$ = new Observable();
     this.directMessage$ = new Observable();
@@ -117,7 +118,6 @@ export class ChattingMessagePresenterService implements OnInit {
   public getChatMessagesArray(chat: MessageResponse[]) {
     this.chats = [...chat];
     this.chatArray.next(this.chats);
-
   }
   /**
    * @name getChatData
@@ -149,6 +149,7 @@ export class ChattingMessagePresenterService implements OnInit {
         _id: this.receiverId
       },
       timestamp: currentTime,
+      displayTime: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
     };
@@ -208,7 +209,8 @@ export class ChattingMessagePresenterService implements OnInit {
         full_name: '',
         _id: this.receiverId
       },
-      timestamp: currentTime,
+      timestamp:currentTime,
+      displayTime: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
     };
