@@ -43,10 +43,12 @@
                             <div class="reply-wrapper text-white bg-info rounded-1 p-1" *ngIf="message.isReplied ">
                                 <div class="mx-3">
                                     <div class="d-flex align-items-center justify-content-between mb-1 ">
-                                        <span class="fs-9 text-nowrap text-black"> {{(message.senderId._id || message.senderId) === UserObject.userId  ? 'You' :
+                                        <span class="fs-9 text-nowrap text-black"> {{(message.senderId._id ||
+                                            message.senderId) === UserObject.userId ? 'You' :
                                             message.senderId.full_name}} </span>
                                     </div>
-                                    <div class="fs-7 text-nowrap text-black"> {{repliedMessage?.body}} </div>
+                                    <div class="fs-7 text-nowrap text-black"> {{message.repliedMessageId?.body}}
+                                    </div>
                                 </div>
                             </div>
                             <!-- Message Dropdown  -->

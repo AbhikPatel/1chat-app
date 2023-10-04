@@ -273,22 +273,21 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
   }
   ngOnInit(): void {
-
     this._chattingMessagePresenterService.chatArray$.subscribe((chartArray: MessageResponse[]) => {
       this.newChatArray = chartArray
-      console.log(chartArray);
+      console.log('all-chats', chartArray);
     })
     this._chattingMessagePresenterService.directMessage$.subscribe((directMessage: Message) => {
       this.emitDirectMessage.emit(directMessage)
-      console.log(directMessage)
+      // console.log(directMessage)
     });
     this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
-    this.emitDirectMessageEdit.next(editMessage)
-      console.log(editMessage)
+      this.emitDirectMessageEdit.next(editMessage)
+      // console.log(editMessage)
     });
     this._chattingMessagePresenterService.directMessageReply$.subscribe((replyMessage: MessageReply) => {
       this.emitDirectMessageReply.emit(replyMessage)
-      console.log(replyMessage)
+      // console.log(replyMessage)
     });
 
     /**
@@ -305,17 +304,17 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public onSubmit(): void {
     if (this.isEditMode === true) {
       this.editedMessage.editedBody.push(this.chatGroup.value.message);
-      this.editedMessage.body=this.chatGroup.value.message
+      this.editedMessage.body = this.chatGroup.value.message;
       this.editedMessage.isEdited = true;
-    this._chattingMessagePresenterService.editMessage(this.editedMessage);
-      this. scrollUpMessage()
-    } else if (this.isReplyMode) {
-       this.repliedMessage
+      this._chattingMessagePresenterService.editMessage(this.editedMessage);
+      this.scrollUpMessage()
+    } else if (this.isReplyMode === true) {
+      this.repliedMessage.isReplied = true
       this._chattingMessagePresenterService.replyMessage(this.chatGroup.value.message, this.repliedMessage)
-      this. scrollUpMessage()
+      this.scrollUpMessage()
     } else {
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
-    this. scrollUpMessage()
+      this.scrollUpMessage()
     }
     this.isEditMode = false;
     this.isReplyMode = false;
@@ -332,7 +331,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
 
 
   }
-  public  scrollUpMessage(){
+  public scrollUpMessage() {
     setTimeout(() => {
       this.scrollUp();
     }, 0);
@@ -369,28 +368,26 @@ export class ChattingMessagePresentationComponent implements OnInit {
    * @param message 
    * @description This method is used to edit the chat message
    */
-  public onEditMessage(message: any): void {
+  public onEditMessage(message: MessageResponse): void {
     this.setFocusInputBox()
     this.chatGroup.get('message').patchValue(message.body);
     this.isReplyMode = false;
-
     this.isEditMode = true;
     this.editedMessage = message;
 
   }
+
   /**
     * @name onReplyMessage
     * @param message 
     * @description This method is used when the reply mode is activated
     */
-  public onReplyMessage(message: any): void {
+  public onReplyMessage(message: MessageResponse): void {
     this.isReplyMode = true;
     this.setFocusInputBox();
     this.chatGroup.reset();
     this.isEditMode = false;
     this.repliedMessage = message;
-    console.log( this.repliedMessage);
-    
   }
 
   /**

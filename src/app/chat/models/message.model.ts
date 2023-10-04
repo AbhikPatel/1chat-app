@@ -65,32 +65,34 @@ export class lastMessage {
 }
 
 export class MessageResponse {
-    _id: string
+    body: string
+    editedBody: [string]
+    chatId: string
     isRead: boolean
     isEdited: boolean
     isReplied: boolean
-    chatId: string
     senderId: personalDetail
     receiverId: personalDetail
-    repliedMessageId: string
+    repliedMessageId: any
     timestamp: Date
     threadType: string
-    body: string
-    editedBody: [string]
+    _id: string
+
 
     constructor(
-        _id: string,
+        body: string,
+        editedBody: [string],
+        chatId: string,
         isRead: boolean,
         isEdited: boolean,
         isReplied: boolean,
-        chatId: string,
         senderId: personalDetail,
         receiverId: personalDetail,
-        repliedMessageId: string,
+        repliedMessageId: any,
         timestamp: Date,
         threadType: string,
-        body: string,
-        editedBody: [string],
+        _id: string,
+
     ) {
         this._id = _id
         this.isRead = isRead
@@ -124,7 +126,7 @@ export class MessageRead {
 }
 
 export class MessageEdit {
-    body?:string
+    body?: string
     senderId: string
     receiverId: string
     editedMessageId: string

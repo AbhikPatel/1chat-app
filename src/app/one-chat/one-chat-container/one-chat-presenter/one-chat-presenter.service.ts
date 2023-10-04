@@ -156,7 +156,7 @@ export class OneChatPresenterService implements OnDestroy {
    * @param message 
    * @description This method will update the list of conversation users
    */
-  public updateConversationList(message: string, chatId: string, increaseCount?: boolean, id?:string): void {
+  public updateConversationList(message: string, chatId: string, increaseCount?: boolean, id?: string): void {
     let latestConversation: ConversationUsers = this.conversationList.find((user: ConversationUsers) => user.chatId === chatId);
     latestConversation.lastMessage = message;
     latestConversation.lastMessageId = id;

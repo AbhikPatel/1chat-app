@@ -14,8 +14,8 @@ export class ChattingMessagePresenterService implements OnInit {
   public chatArray$: Observable<MessageResponse[]>;
   /** Observable for new directMessage send container  */
   public directMessage$: Observable<Message>;
-    /** Observable for  directMessageEdit send container  */
-    public directMessageEdit$: Observable<MessageEdit>;
+  /** Observable for  directMessageEdit send container  */
+  public directMessageEdit$: Observable<MessageEdit>;
   /**  Observable for new directMessageReply array send container */
   public directMessageReply$: Observable<MessageReply>;
   /** Subject for directMessage */
@@ -24,7 +24,7 @@ export class ChattingMessagePresenterService implements OnInit {
   private directMessageEdit: Subject<MessageEdit>;
   /** Subject for messageReply */
   private directMessageReply: Subject<MessageReply>;
-   /** Subject for  for all chatArray */
+  /** Subject for  for all chatArray */
   private chatArray: Subject<MessageResponse[]>;
   /** variable for chat array */
   public chats: MessageResponse[];
@@ -32,6 +32,7 @@ export class ChattingMessagePresenterService implements OnInit {
   public receiverId: string;
   public chatId: string;
   public senderId: number;
+  public messageObj: MessageResponse
   constructor(
     private _fb: FormBuilder,
     private _commonService: CommonService,
@@ -124,8 +125,8 @@ export class ChattingMessagePresenterService implements OnInit {
    * @description This method will get the data and push an next
    */
   public getChatData(chatData: string): void {
-    const currentTime = new Date()
-    let messageObj: MessageResponse = {
+    const currentTime = new Date();
+    this.messageObj = {
       body: chatData,
       editedBody: [''],
       chatId: this.chatId,
@@ -147,7 +148,7 @@ export class ChattingMessagePresenterService implements OnInit {
         full_name: '',
         _id: this.receiverId
       },
-      timestamp:currentTime,
+      timestamp: currentTime,
       threadType: 'text',
       _id: '',
     };
@@ -160,43 +161,71 @@ export class ChattingMessagePresenterService implements OnInit {
       body: chatData
     }
     this.directMessage.next(sendMessage);
-    this.chats.push(messageObj);
+    this.chats.push(this.messageObj);
   }
   /**
    * @name editMessage
    * @param editMessageData 
    * @description This method  next edit message
    */
-  public editMessage(editMessageData:MessageResponse):void{
-   const editMessage :MessageEdit = new MessageEdit (
-   this.loginObject.userId,
-   this.receiverId,
-   editMessageData._id,
-   true,
-   editMessageData.editedBody
-   )
-   this.directMessageEdit.next(editMessage)
-  }
-/**
- * @name replyMessages
- * @param replyMessage 
- * @param repliedMessage 
- * @description This method reply message send 
- */
-  public replyMessage(replyMessage: string, repliedMessage: MessageResponse) {
-    const currentTime = new Date();
-    const sendMessage: MessageReply = new MessageReply (
-        true,
-        this.chatId,
-        this.loginObject.userId,
-        this.receiverId,
-       repliedMessage._id,
-       currentTime,
-      'text',
-      replyMessage
+  public editMessage(editMessageData: MessageResponse): void {
+    const editMessage: MessageEdit = new MessageEdit(
+      this.loginObject.userId,
+      this.receiverId,
+      editMessageData._id,
+      true,
+      editMessageData.editedBody
     )
-    this.directMessageReply.next(sendMessage);
+    this.directMessageEdit.next(editMessage)
   }
+  /**
+   * @name replyMessages
+   * @param replyMessage 
+   * @param repliedMessage 
+   * @description This method reply message send 
+   */
+  public replyMessage(replyMessage: string, repliedMessage: MessageResponse) {
+    const currentTime = new Date()
+    let messageObj: MessageResponse = {
+      body: replyMessage,
+      editedBody: [''],
+      chatId: this.chatId,
+      isRead: false,
+      isEdited: false,
+      isReplied: true,
+      senderId: {
+        first_name: '',
+        photo: '',
+        last_name: '',
+        full_name: '',
+        _id: this.loginObject.userId
+      },
+      repliedMessageId: repliedMessage,
+      receiverId: {
+        first_name: '',
+        photo: '',
+        last_name: '',
+        full_name: '',
+        _id: this.receiverId
+      },
+      timestamp: currentTime,
+      threadType: 'text',
+      _id: '',
+    };
+    const replyMessages: MessageReply = {
+      isReplied: true,
+      chatId: this.chatId,
+      senderId: this.loginObject.userId,
+      receiverId: this.receiverId,
+      repliedMessageId: repliedMessage._id,
+      timestamp: currentTime,
+      threadType: 'text',
+      body: replyMessage
+    }
+    this.directMessageReply.next(replyMessages);
+    this.chats.push(messageObj);
+  }
+
   /**
    * @description This method  formate date 
    * @param data 

@@ -33,7 +33,7 @@ export class ChattingMessageContainerComponent implements OnInit {
   public listenGroupMessageAcknowledge$: Observable<MessageResponse[]>;
 
   constructor(private router: ActivatedRoute,
-    private _ChatService:ChatService) {
+    private _ChatService: ChatService) {
 
   }
   ngOnInit(): void {
@@ -45,7 +45,7 @@ export class ChattingMessageContainerComponent implements OnInit {
   }
 
   private props() {
-    this.getMessages$= this._ChatService.getChatMessages(this.paramId);  
+    this.getMessages$ = this._ChatService.getChatMessages(this.paramId);
     this.listenDirectMessage$ = this._ChatService.listen('directMessage');
     this.listenDirectMessageResponse$ = this._ChatService.listen('directMessageResponse');
     this.listenDirectMessageReply$ = this._ChatService.listen('directMessageReply');
@@ -55,7 +55,6 @@ export class ChattingMessageContainerComponent implements OnInit {
     this.listenDirectMessageAcknowledge$ = this._ChatService.listen('directMessageAcknowledge');
     this.listenDirectMessageAcknowledgeResponse$ = this._ChatService.listen('directMessageAcknowledgeResponse');
     this.listenDirectMessageError$ = this._ChatService.listen('directMessageError');
-
     this.listenGroupMessage$ = this._ChatService.listen('groupMessage');
     this.listenGroupMessageReply$ = this._ChatService.listen('groupMessageReply');
     this.listenGroupMessageAcknowledge$ = this._ChatService.listen('groupMessageAcknowledge');
