@@ -25,7 +25,8 @@ export class MessageAdapter implements Adapter<MessageResponse> {
                 ...item.receiverId,
                 full_name: `${item.receiverId.first_name} ${item.receiverId.last_name}`
             },
-            item.repliedMessageId ? item.repliedMessageId : '',
+            item.repliedMessageId ? {...item.repliedMessageId
+                ,full_name: `${item.receiverId.first_name} ${item.receiverId.last_name}`} : '',
             item.timestamp,
             this._formatter.Formatter(new Date( item.timestamp)),
             item.threadType,

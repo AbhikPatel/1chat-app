@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?2wy30t');
-  src:  url('fonts/icomoon.eot?2wy30t#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?2wy30t') format('truetype'),
-    url('fonts/icomoon.woff?2wy30t') format('woff'),
-    url('fonts/icomoon.svg?2wy30t#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?xdw61v');
+  src:  url('fonts/icomoon.eot?xdw61v#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?xdw61v') format('truetype'),
+    url('fonts/icomoon.woff?xdw61v') format('woff'),
+    url('fonts/icomoon.svg?xdw61v#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -30,6 +30,15 @@
 }
 .icon-Dote:before {
   content: "\e910";
+}
+.icon-clock:before {
+  content: "\e917";
+}
+.icon-readMessage:before {
+  content: "\e915";
+}
+.icon-check-message:before {
+  content: "\e916";
 }
 .icon-plus:before {
   content: "\e912";

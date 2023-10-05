@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../../chat.service';
 import { } from '../../models/chat.model';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from '../../models/message.model';
+import { MessageAdapter } from '../../chat-adaptor/message.adaptor';
 
 @Component({
   selector: 'app-chatting-message-container',
@@ -34,7 +35,7 @@ export class ChattingMessageContainerComponent implements OnInit {
   public pageSize: number
   public limit: number
   constructor(private router: ActivatedRoute,
-    private _ChatService: ChatService) {
+    private _ChatService: ChatService,private _messageAdaptor:MessageAdapter) {
     this.pageSize = 20
     this.limit = 10
   }
@@ -50,10 +51,18 @@ export class ChattingMessageContainerComponent implements OnInit {
   private props() {
     // this.pageSize, this.limit
     this.getMessages$ = this._ChatService.getChatMessages(this.paramId);
-    this.listenDirectMessage$ = this._ChatService.listen('directMessage');
-    this.listenDirectMessageResponse$ = this._ChatService.listen('directMessageResponse');
-    this.listenDirectMessageReply$ = this._ChatService.listen('directMessageReply');
-    this.listenDirectMessageReplyResponse$ = this._ChatService.listen('directMessageReplyResponse');
+    this.listenDirectMessage$ = this._ChatService.listen('directMessage').pipe(
+      map(message => this._messageAdaptor.toResponse(message))
+    );
+    this.listenDirectMessageResponse$ = this._ChatService.listen('directMessageResponse').pipe(
+      map(message => this._messageAdaptor.toResponse(message))
+    );
+    this.listenDirectMessageReply$ = this._ChatService.listen('directMessageReply').pipe(
+      map(message => this._messageAdaptor.toResponse(message))
+    );;
+    this.listenDirectMessageReplyResponse$ = this._ChatService.listen('directMessageReplyResponse').pipe(
+      map(message => this._messageAdaptor.toResponse(message))
+    );;
     this.listenDirectMessageEdit$ = this._ChatService.listen('directMessageEdit');
     this.listenDirectMessageEditResponse$ = this._ChatService.listen('directMessageEditResponse');
     this.listenDirectMessageAcknowledge$ = this._ChatService.listen('directMessageAcknowledge');
@@ -97,6 +106,8 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits direct message edits
    */
   public emitDirectMessageEdit(message: MessageEdit) {
+    console.log(message);
+    
     this._ChatService.emit('directMessageEdit', message);
   }
   /**

@@ -167,7 +167,7 @@ export class ChattingMessagePresenterService implements OnInit {
   /**
    * @name editMessage
    * @param editMessageData 
-   * @description This method  next edit message
+   * @description This method Create object and next edit message
    */
   public editMessage(editMessageData: MessageResponse): void {
     const editMessage: MessageEdit = new MessageEdit(
@@ -175,7 +175,7 @@ export class ChattingMessagePresenterService implements OnInit {
       this.receiverId,
       editMessageData._id,
       true,
-      editMessageData.editedBody
+      editMessageData.body
     )
     this.directMessageEdit.next(editMessage)
   }
@@ -183,7 +183,7 @@ export class ChattingMessagePresenterService implements OnInit {
    * @name replyMessages
    * @param replyMessage 
    * @param repliedMessage 
-   * @description This method reply message send 
+   * @description This method create replay message object and next  reply message  
    */
   public replyMessage(replyMessage: string, repliedMessage: MessageResponse) {
     const currentTime = new Date()
@@ -229,19 +229,17 @@ export class ChattingMessagePresenterService implements OnInit {
   }
 
   /**
-   * @description This method  formate date 
    * @param data 
    * @param pre 
    * @returns 
+   * @description This method formate message data 
    */
   public formatDate(data: string, pre: string): string {
     // convert string to date object
     const newData = new Date(data);
-    // console.log('current date',newData);
     const getday = newData.getDate();
     // convert string to date object
     const preData = new Date(pre);
-    // console.log('previces',preData);
     const preDay = preData.getDate();
     // check first date and Previous date then Return
     if (getday === preDay) {

@@ -40,7 +40,7 @@
                             <ng-select formControlName="taskState"  
                                 [ngClass]="{'border-danger':validator['taskState'].invalid && (validator['taskState'].touched||isSubmitted)}" >
                                 <ng-option value="" disabled>Select state type</ng-option>
-                                <ng-option *ngFor="let item of getStateActivityType.data.docs[1].data"
+                                <ng-option *ngFor="let item of getStateActivityType.data.docs[0].data"
                                     [value]="item.stateId">
                                     {{item.state}}
                                 </ng-option>
@@ -65,7 +65,7 @@
                             <ng-select placeholder="Select Activity Type" formControlName="taskActivity" id="activity"
                                 [ngClass]="{'border-danger':validator['taskActivity'].invalid && (isSubmitted || validator['taskActivity'].touched )}">
                                 <ng-option value="" disabled>Select Activity Type</ng-option>
-                                <ng-option *ngFor="let item of getStateActivityType?.data?.docs[0]?.data"
+                                <ng-option *ngFor="let item of getStateActivityType?.data?.docs[1]?.data"
                                     [value]="item.activityId">{{item.activity
                                     }}</ng-option>
                             </ng-select>

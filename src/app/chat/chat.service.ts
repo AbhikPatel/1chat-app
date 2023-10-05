@@ -64,6 +64,8 @@ public listen(eventname: string): Observable<any> {
 
   return new Observable((subscriber) => {
     this.socket.on(eventname, (data: any, fn: any) => {
+      console.log(data);
+      
       if (importantEvents.includes(eventname) && this._utilityService.subscriber !== null) {
         this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
       }
@@ -107,7 +109,7 @@ public listen(eventname: string): Observable<any> {
       })
     )
   }
-  
+
   /**
        * @name getConversationUser
        * @returns observable

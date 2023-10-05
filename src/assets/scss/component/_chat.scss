@@ -2,23 +2,35 @@
     .chat-container {
         background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
             url("../../images/bg-image.jpg");
-            // background-color: $chat-bg-color;
+        // background-color: $chat-bg-color;
 
         .chat {
             .editedBody-container {
+                text-align: right; 
                 visibility: hidden;
-                opacity: 0; 
-                transition: visibility 0s, opacity 0.5s; 
+                opacity: 0;
+                transition:
+                    visibility 0s,
+                    opacity 0.5s;
+                    .edit-box-model{
+                        display: inline-block;
+                        max-width: 100%;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        margin: 0 0px 0 0;
+                        margin-bottom: 0 !important
+                    }
             }
             .isChecked:checked ~ .editedBody-container {
                 visibility: visible;
-                opacity: 1; 
+                opacity: 1;
             }
             &-text {
-                max-width: 500px;
-                word-wrap: break-word;
+                max-width: 250px;
+                overflow-wrap: break-word;
                 #dropdownBasic1::before {
-                    content: none ;
+                    content: none;
                 }
             }
 
@@ -37,9 +49,8 @@
             }
 
             .icon-down-arrow {
-                color:  black;
+                color: black;
                 & {
-
                     visibility: hidden;
                 }
             }
@@ -49,14 +60,13 @@
             }
         }
 
-        #openBox:checked+.box {
+        #openBox:checked + .box {
             margin-top: 30px;
             visibility: visible;
             width: 20%;
             height: 140px;
             z-index: 1000;
         }
-
     }
 
     .emojis-container {
@@ -76,7 +86,6 @@
 
     .typer-container {
         background-color: $info;
-
         .form-control {
             padding: 15px 10px 10px 50px;
 
@@ -85,17 +94,19 @@
                 border-bottom: 2px solid $bg-main-color;
             }
         }
-
+        .down-arrow {
+            top: -40px;
+            right: 25px;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
     }
-
-
 }
 
 .reply-wrapper {
-    border-left: 10px solid $chat-color;
-    border-right: 10px solid $chat-color;
-    border-top: 2px solid $chat-color;
-    border-bottom: 2px solid $chat-color;
+    margin-top: 10;
+    border-left: 5px solid $primary;
+   
     width: 98.9%;
 }
 
@@ -123,14 +134,11 @@
     display: none;
 }
 
-
 // .online {
 //     padding: 5px;
 //     left: 60px;
 //     bottom: -5px;
 // }
-
-
 
 // .floating-btn {
 //     bottom: 68px;
@@ -139,14 +147,6 @@
 //     height: 50px;
 //     background-color: $primary;
 //     z-index: 999;
-// }
-
-// .down-arrow {
-//     top: -60px;
-//     right: 35px;
-//     transform: translateX(-50%);
-//     cursor: pointer;
-// }
 
 // .down-arrow-position {
 //     right: 40px;

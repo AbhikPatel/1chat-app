@@ -181,13 +181,13 @@ private _getTaskDetails:Task;
  */
   public setSelectedStateName() {
     const selectedStateId = this.eodFormGroup.get('taskState').value;
-    const selectedState = this._getStateActivityType.data.docs[1].data.find(state => state.stateId === selectedStateId);
+    const selectedState = this._getStateActivityType.data.docs[0].data.find(state => state.stateId === selectedStateId);
     this.eodFormGroup.patchValue({ stateId: selectedState ? selectedState.stateId : '' });
   }
   
   public setSelectedActivityName() {
     const selectedActivityId = this.eodFormGroup.get('taskActivity').value;
-    const selectedState = this._getStateActivityType.data.docs[0].data.find(activity => activity.activityId === selectedActivityId);
+    const selectedState = this._getStateActivityType.data.docs[1].data.find(activity => activity.activityId === selectedActivityId);
     this.eodFormGroup.patchValue({ activityId: selectedState ? selectedState.activityId : '' });
   }
   /**

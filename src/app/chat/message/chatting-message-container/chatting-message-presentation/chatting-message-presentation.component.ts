@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ChattingMessagePresenterService } from '../Chatting-message-presenter/chatting-message-presenter.service';
 import { FormGroup } from '@angular/forms';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
@@ -9,11 +9,12 @@ import { login } from 'src/app/chat/models/login.model';
 @Component({
   selector: 'app-chatting-message-presentation',
   templateUrl: './chatting-message-presentation.component.html',
-  providers: [ChattingMessagePresenterService]
+  providers: [ChattingMessagePresenterService],
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class ChattingMessagePresentationComponent implements OnInit {
   /** Element DOM for message screen */
-  @ViewChild('messageContainer') public messageContainer: ElementRef;
+  @ViewChild('scrollMe') public messageContainer: ElementRef;
   /** This element used for focus inputBox */
   @ViewChild('inputTypeFocus') public inputTypeFocus: ElementRef;
   /** This property is used to get chat array */
@@ -269,10 +270,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.isLoading;
     this._chatArray = []
   }
-  ngAfterViewInit(): void {
-    this.scrollUp();
-
-  }
   ngOnInit(): void {
     this._chattingMessagePresenterService.chatArray$.subscribe((chartArray: MessageResponse[]) => {
       this.newChatArray=chartArray
@@ -281,11 +278,11 @@ export class ChattingMessagePresentationComponent implements OnInit {
     })
     this._chattingMessagePresenterService.directMessage$.subscribe((directMessage: Message) => {
       this.emitDirectMessage.emit(directMessage)
-      // console.log(directMessage)
+      console.log(directMessage)
     });
     this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
       this.emitDirectMessageEdit.next(editMessage)
-      // console.log(editMessage);
+      console.log(editMessage);
     });
     this._chattingMessagePresenterService.directMessageReply$.subscribe((replyMessage: MessageReply) => {
       this.emitDirectMessageReply.emit(replyMessage)
@@ -309,13 +306,13 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this.editedMessage.body = this.chatGroup.value.message;
       this.editedMessage.isEdited = true;
       this._chattingMessagePresenterService.editMessage(this.editedMessage);
-      this.scrollUpMessage()
+      this.resetInputBox()
     } else if (this.isReplyMode === true) {
       this._chattingMessagePresenterService.replyMessage(this.chatGroup.value.message, this.repliedMessage)
-      this.scrollUpMessage()
+      this.resetInputBox()
     } else {
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
-      this.scrollUpMessage()
+      this.resetInputBox()
     }
     this.isEditMode = false;
     this.isReplyMode = false;
@@ -329,13 +326,12 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public scrollUp(): void {
     const scrollHeight = this.messageContainer?.nativeElement.scrollHeight;
     this.messageContainer.nativeElement.scrollTop = scrollHeight;
-
-
   }
-  public scrollUpMessage() {
-    setTimeout(() => {
-      this.scrollUp();
-    }, 0);
+  /**
+   * @name resetInputBox
+   * @description This method reset input box
+   */
+  public resetInputBox() {
     this.chatGroup.get('message').reset();
   }
   /**
@@ -344,20 +340,23 @@ export class ChattingMessagePresentationComponent implements OnInit {
    * @description Down arrow icon show and hide as per scroll
    */
   public onMessageScroll(): void {
-     this.pageSize++
-    let pagination:any={
-      page:this.pageSize,
-      limit:this.limit
-    }
-   this.pagination.emit(pagination)
-    // const messageContainer = this.messageContainer.nativeElement;
-    // const scrollHeight = messageContainer.scrollHeight;
-    // let scrollTop = messageContainer.scrollTop;
-    // const clientHeight = messageContainer.clientHeight;
-    // const isScrolledToBottom = scrollHeight - (scrollTop + clientHeight);
-    // this.isScrolledToBottom = isScrolledToBottom > 50;
+  //    this.pageSize++
+  //   let pagination:any={
+  //     page:this.pageSize,
+  //     limit:this.limit
+  //   }
+  //  this.pagination.emit(pagination)
+   
   }
-
+  /**
+   * @name upMessageScroll
+   * @description This method click on down arrow to message all get up
+   */
+public upMessageScroll(){
+  const messageContainer = this.messageContainer.nativeElement;
+  const isScrolledToBottom = this.messageContainer.nativeElement.scrollHeight - (messageContainer.scrollTop + messageContainer.clientHeight);
+  this.isScrolledToBottom = isScrolledToBottom > 50;
+}
 
   /**
    * @name onMessageModel
@@ -376,6 +375,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
    * @description This method is used to edit the chat message
    */
   public onEditMessage(message: MessageResponse): void {
+    console.log(message);
+    
     this.setFocusInputBox()
     this.chatGroup.get('message').patchValue(message.body);
     this.isReplyMode = false;

@@ -39,7 +39,9 @@ body {
 .login-container {
     width: 500px;
 }
-
+.text-color{
+    color:  #D1E4E8;
+}
 .bg-theme {
     background-color: #D1E4E8;
 }
@@ -64,6 +66,9 @@ textarea {
     }
 }
 
+.icon-color{
+    color: $icon-color;
+}
 .overlay-container {
     width: 800px;
     padding: 30px 50px;
@@ -79,9 +84,6 @@ textarea {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
-
-
 
 
 

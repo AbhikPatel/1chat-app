@@ -134,14 +134,13 @@ export class MessageEdit {
     receiverId: string
     editedMessageId: string
     isEdited: boolean
-    editedBody: string[]
-
+    editedBody: string
     constructor(
         senderId: string,
         receiverId: string,
         editedMessageId: string,
         isEdited: boolean,
-        editedBody: string[],
+        editedBody: string,
     ) {
         this.senderId = senderId
         this.receiverId = receiverId

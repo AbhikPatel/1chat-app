@@ -47,7 +47,7 @@ export class EodListPresenterService implements OnInit {
    * @description This method find activityName base on id and return 
    */
   public getActivityName(activityID: number) {
-    const activity = this.getStateActivityTypes.data.docs[0].data.find((data: any) => data.activityId === activityID);
+    const activity = this.getStateActivityTypes.data.docs[1].data.find((data: any) => data.activityId === activityID);
     return activity ? activity.activity : 'Unknown';
   }
   /**
@@ -57,7 +57,7 @@ export class EodListPresenterService implements OnInit {
    * @description  This method find getStateName base on id and return 
    */
   public  getStateName(stateID: number) {
-    const state = this.getStateActivityTypes.data.docs[1].data.find((data:any) => data.stateId === stateID);
+    const state = this.getStateActivityTypes.data.docs[0].data.find((data:any) => data.stateId === stateID);
     return state ? state.state : 'Unknown';
   }
  

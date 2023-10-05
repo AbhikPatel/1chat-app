@@ -1,7 +1,7 @@
 <!-- Start: Chat Container  -->
 <div class="main-chat-container d-flex flex-column h-100 ">
     <!-- Start: Message Screen  -->
-    <div class="chat-container flex-grow-1 overflow-auto p-5" #scrollMe [scrollTop]="scrollMe.scrollHeight" #messageContainer appScrollPagination (scrolled)="onMessageScroll()"
+    <div class="chat-container flex-grow-1 overflow-auto p-5" #scrollMe [scrollTop]="scrollMe.scrollHeight" (scroll)="upMessageScroll()"  appScrollPagination (scrolled)="onMessageScroll()"
        >
         <div >
             <div class="container position-relative">
@@ -9,21 +9,21 @@
                     [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
                     <!-- {{ message | json}} -->
                     <div class="d-flex justify-content-center">
-                        <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
+                        <!-- <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
                             *ngIf="formatDate(message.timestamp,chatArray[i-1]?.timestamp)">
                             {{formatDate(message.timestamp,chatArray[i-1]?.timestamp)}}
-                        </span>
+                        </span> -->
                     </div>
                     <div class="chat">
                         <div class="d-flex"
                             [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
                             <input type="checkbox" name="toggle-user" class="isChecked d-none"
                                 id="editedBody{{message._id}}">
-                            <div class="editedBody-container">
-                                <div *ngFor=" let editMessage of message.editedBody">
-                                    <div class="chat-text py-1 px-2"
+                            <div class="editedBody-container ">
+                                <div *ngFor=" let editMessage of message.editedBody" >
+                                    <div class="edit-box-model py-1 p-4 mb-0"
                                         [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-info chat-lt-border'">
-                                        <span class="p-4"> {{editMessage}} </span>
+                                        <span> {{editMessage}} </span>
                                     </div>
                                 </div>
                             </div>
@@ -31,23 +31,23 @@
                         <div class="d-flex"
                             [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId  ? 'justify-content-end' : 'justify-content-start'">
                             <!-- Message Text  -->
-                            <div class="chat-text py-1 px-2  placeholder-glow dropstart"
+                            <div class="chat-text p-2  placeholder-glow dropstart"
                                 [ngClass]="(message.senderId._id || message.senderId) === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-info chat-lt-border'"
                                 (mouseenter)="onMessageModel(message._id)" (mouseleave)="onMessageModel(message._id)">
                                 <!-- Reply Message  -->
-                                <div class="reply-wrapper text-white bg-info rounded-1 p-1" *ngIf="message.isReplied ">
-                                    <div class="mx-3">
+                                <div class="reply-wrapper text-white bg-info rounded-1 p-1 " *ngIf="message.isReplied ">
+                                    <div class="mx-3 ">
                                         <div class="d-flex align-items-center justify-content-between mb-1 ">
-                                             <span class="fs-9 text-nowrap text-black" ng> {{message.senderId._id === UserObject.userId ? 'You' :''}} </span>
+                                             <span class="fs-9 text-nowrap text-primary fw-bold"> {{message?.repliedMessageId.senderId._id === UserObject.userId ? 'You' :message?.repliedMessageId.full_name
+                                            }} </span>
                                         </div>
-                                        <div class="fs-7 text-nowrap text-black"> {{message.repliedMessageId?.body}}
+                                        <div class="text-nowrap text-black "> {{message.repliedMessageId?.body}}
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Message Dropdown  -->
-
                                 <div class="dropdown p-1">
-                                    <span class="p-4"> {{message.body}} </span>
+                                    <span > {{message.body}} </span>
                                     <!-- ngDropdown -->
                                     <div ngbDropdown class="d-inline-block">
                                         <div
@@ -82,12 +82,15 @@
                             <span class="pe-1 text-black">
                                 {{message.displayTime}}
                             </span>
+                            <span  *ngIf="!message._id">
+                                <span class="icon-clock icon-color fs-7"></span>
+                              </span>
                             <ng-container *ngIf="message._id">
                                 <span *ngIf="!message.isRead">
-                                    <img src="https://img.icons8.com/ios-filled/16/b1b1b1/double-tick.png" />
+                                  <span class="icon-check-message icon-color fs-5"></span>
                                 </span>
                                 <span *ngIf="message.isRead">
-                                    <img src="https://img.icons8.com/ios-filled/16/00ffff/double-tick.png" />
+                                    <span class="icon-readMessage text-primary fs-5"></span>
                                 </span>
                             </ng-container>
                         </p>
@@ -107,7 +110,7 @@
     <!-- End: Message Screen  -->
     <!-- Start:  Container  -->
     <div class="typer-container d-flex flex-column  py-2 position-relative">
-        <div class="icon-circle-down fs-4 text-info down-arrow position-absolute " (click)="scrollUp()"
+        <div class="icon-circle-down fs-4 text-primary down-arrow position-absolute " (click)="scrollUp()"
             *ngIf="isScrolledToBottom">
         </div>
         <form class="container d-flex flex-column " (ngSubmit)="onSubmit()" [formGroup]="chatGroup">

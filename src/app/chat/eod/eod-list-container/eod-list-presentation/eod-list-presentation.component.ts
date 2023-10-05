@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { OverlayService } from 'src/app/core/services/overlay/overlay.service';
 import { TaskFormContainerComponent } from '../../task-form-container/task-form-container.component';
 import { EodListPresenterService } from '../Eod-list-presenter/eod-list-presenter.service';
@@ -8,7 +8,8 @@ import { LoaderService } from 'src/app/core/services/loader/loader.service';
 @Component({
   selector: 'app-eod-list-presentation',
   templateUrl: './eod-list-presentation.component.html',
-  providers: [EodListPresenterService]
+  providers: [EodListPresenterService],
+  // changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class EodListPresentationComponent implements OnInit {
   @Input() public set getEodResponse(eodResponse: EOD[]) {
