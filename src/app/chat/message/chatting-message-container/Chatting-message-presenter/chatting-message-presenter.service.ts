@@ -86,11 +86,11 @@ export class ChattingMessagePresenterService implements OnInit {
    * @param message 
    * @returns methods returns index of existed message
    */
-  public findIndexOfMessageBasedOnTime(chatArray: MessageResponse[], message: MessageResponse): number {
+  public  findIndexOfMessageBasedOnTime(chatArray: MessageResponse[], message: MessageResponse): number {
     return chatArray.findIndex((val) => {
       return val.body === message.body && new Date(val.timestamp).toString() === new Date(message.timestamp).toString()
     });
-  }
+  } 
 
 
   /**

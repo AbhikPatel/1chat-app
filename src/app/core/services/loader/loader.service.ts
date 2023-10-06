@@ -9,10 +9,12 @@ export class LoaderService {
   public  loaderSubject: BehaviorSubject<boolean>;
   public  loaderSubject1: BehaviorSubject<boolean>;
   public  loaderSubject2: BehaviorSubject<boolean>;
+  public  loaderMessageData: BehaviorSubject<boolean>;
   constructor() { 
     this.loaderSubject = new BehaviorSubject(false);
     this.loaderSubject1 = new BehaviorSubject(false);
     this.loaderSubject2 = new BehaviorSubject(false);
+    this.loaderMessageData = new BehaviorSubject(false);
 
   }
   showLoader() {
@@ -23,6 +25,9 @@ export class LoaderService {
   }
   showLoader2() {
     this.loaderSubject2.next(true);
+  }
+  loaderMessage() {
+    this.loaderMessageData.next(true);
   }
  
 
@@ -35,6 +40,9 @@ export class LoaderService {
   hideLoader2() {
     this.loaderSubject2.next(false);
   }
+  hideLoaderMessage() {
+    this.loaderMessageData.next(false);
+  }
 
   getLoaderState() {
     return this.loaderSubject.asObservable();
@@ -45,5 +53,8 @@ export class LoaderService {
   }
   getLoaderState2() {
     return this.loaderSubject2.asObservable();
+  }
+  geLoaderMessage() {
+    return this.loaderMessageData.asObservable();
   }
 }

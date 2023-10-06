@@ -19,16 +19,16 @@
                 <!-- End All users  selector -->
             </div>
             <!-- Conversations Search-->
-            <div class="p-3">
+            <!-- <div class="p-3">
                 <form class="position-relative">
                     <input type="text" class="form-control " name="search" autocomplete="off"
                         placeholder="Search a Conversation " #inputTypeFocus>
                     <span class="icon-search position-absolute fw-lighter "></span>
                 </form>
-            </div>
+            </div> -->
             <!--End Conversations Search-->
             <!--  Tabs Wrapper-->
-            <div class="row m-0 bg-white mx-2 rounded-2">
+            <div class="row m-0 bg-white mx-2 rounded-2 mt-2">
                 <!-- Chat tab -->
                 <div class="col-6 p-0 " role="button" (click)="onTabSwitch(true)">
                     <div class="tab-switch d-flex justify-content-center align-items-center py-3 gap-1 rounded-2"
@@ -71,10 +71,10 @@
                         <div class="py-3 flex-grow-1 flex-column d-flex pe-3">
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                    <span class="fw-semibold text-truncate"> {{user.displayName}} </span>
+                                    <span class="fw-semibold text-truncate fs-7 ms-2"> {{user.displayName}} </span>
                                     <span class="badge ms-2"></span>
                                 </div>
-                                <span class="text-chat fs-7"> {{user.standardTime}} </span>
+                                <span class="text-chat fs-8"> {{user.standardTime}} </span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <ng-container
@@ -82,7 +82,7 @@
                                     <span class="fs-7 text-success fw-semibold"> Typing... </span>
                                 </ng-container>
                                 <ng-template #message>
-                                    <span class="fs-7 last-chat text-chat text-truncate"
+                                    <span class="fs-7 last-chat text-chat text-truncate ms-2"
                                         [ngClass]="{'fw-bold' : user.notificationCount}"> {{loginUserObject.userId ===
                                         user.sender ? 'You: ' :
                                         ''}} {{user.lastMessage}} </span>

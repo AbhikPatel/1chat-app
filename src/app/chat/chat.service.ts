@@ -64,8 +64,6 @@ public listen(eventname: string): Observable<any> {
 
   return new Observable((subscriber) => {
     this.socket.on(eventname, (data: any, fn: any) => {
-      console.log(data);
-      
       if (importantEvents.includes(eventname) && this._utilityService.subscriber !== null) {
         this.sendPushNotification(this._utilityService.subscriber, data).subscribe();
       }
@@ -141,9 +139,9 @@ public listen(eventname: string): Observable<any> {
      * @description This will get the data of all the messages as per the chatId
      */
   // page:number,limit:number
-  public getChatMessages(chatId: string): Observable<MessageResponse[]> {
+  public getChatMessages(chatId: string,pageSiz:number,limit:number): Observable<MessageResponse[]> {
     // &page=${page}&limit=${limit}
-    const url = `${this.baseUrl}message?chatId=${chatId}&page=${1}&limit=${300}`;
+    const url = `${this.baseUrl}message?chatId=${chatId}&page=${pageSiz}&limit=${limit}`;
     // const url: string = this.baseUrl + `message?chatId=` + chatId;
     return this._http.httpGetRequest(url).pipe(
       map((res: any) => {

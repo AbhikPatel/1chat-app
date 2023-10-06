@@ -5,6 +5,7 @@ import { } from '../../models/chat.model';
 import { Observable, map } from 'rxjs';
 import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from '../../models/message.model';
 import { MessageAdapter } from '../../chat-adaptor/message.adaptor';
+import { LoaderService } from 'src/app/core/services/loader/loader.service';
 
 @Component({
   selector: 'app-chatting-message-container',
@@ -13,7 +14,7 @@ import { MessageAdapter } from '../../chat-adaptor/message.adaptor';
 export class ChattingMessageContainerComponent implements OnInit {
   public paramId: string;
   /** Observable for the chat messages */
-  public getMessages$: Observable<MessageResponse[]>;
+  public getMessages:MessageResponse[];
   // Observable for direct message and direst message response
   public listenDirectMessage$: Observable<MessageResponse>;
   public listenDirectMessageResponse$: Observable<MessageResponse>;
@@ -35,9 +36,11 @@ export class ChattingMessageContainerComponent implements OnInit {
   public pageSize: number
   public limit: number
   constructor(private router: ActivatedRoute,
-    private _ChatService: ChatService,private _messageAdaptor:MessageAdapter) {
-    this.pageSize = 20
-    this.limit = 10
+    private _ChatService: ChatService, private _messageAdaptor: MessageAdapter,
+    private _loaderService:LoaderService) {
+    this.pageSize = 1;
+    this.limit = 400;
+    this.getMessages=[]
   }
 
   ngOnInit(): void {
@@ -49,8 +52,7 @@ export class ChattingMessageContainerComponent implements OnInit {
   }
 
   private props() {
-    // this.pageSize, this.limit
-    this.getMessages$ = this._ChatService.getChatMessages(this.paramId);
+
     this.listenDirectMessage$ = this._ChatService.listen('directMessage').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
@@ -75,14 +77,32 @@ export class ChattingMessageContainerComponent implements OnInit {
     // this._ChatService.listen('alive').subscribe((val) => {
     //   console.log(val)
     // })
+    this.getAllMessage()
   }
+/**
+ * @name getAllMessage
+ * @description 
+ */
+  public getAllMessage(){
+    this._loaderService.loaderMessage();
+    this._ChatService.getChatMessages(this.paramId,this.pageSize,this.limit).subscribe((allMessage:MessageResponse[])=>{
+      if(allMessage && allMessage.length>0){
+        this._loaderService.hideLoaderMessage();
+        this.getMessages= this.getMessages.concat(allMessage);
+        console.log(this.pageSize);
+        
 
-
+    }
+  });
+  }
+  /**
+   * @name  paginationScroll
+   * @param paginationData 
+   * @description This method get data give pagination page 
+   */
   public paginationScroll(paginationData: any) {
-    console.log(paginationData);
-    // this.getMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.limit);
     this.pageSize = paginationData.page;
-    this.limit = paginationData.limit
+    this.getAllMessage();
   }
   /**
    * @name emitDirectMessage
@@ -107,7 +127,7 @@ export class ChattingMessageContainerComponent implements OnInit {
    */
   public emitDirectMessageEdit(message: MessageEdit) {
     console.log(message);
-    
+
     this._ChatService.emit('directMessageEdit', message);
   }
   /**

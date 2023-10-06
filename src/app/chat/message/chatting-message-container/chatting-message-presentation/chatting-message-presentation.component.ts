@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ChattingMessagePresenterService } from '../Chatting-message-presenter/chatting-message-presenter.service';
 import { FormGroup } from '@angular/forms';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 import { login } from 'src/app/chat/models/login.model';
+import { LoaderService } from 'src/app/core/services/loader/loader.service';
 
 @Component({
   selector: 'app-chatting-message-presentation',
@@ -21,8 +22,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set chatArray(messages: MessageResponse[]) {
     if (messages) 
     // this._chatArray = this._chatArray.concat(messages);
-    this._chatArray = messages;
-    this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray);
+  this._chatArray = messages;
+  this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray);
+
   }
   public get chatArray(): MessageResponse[] {
     return this._chatArray;
@@ -200,8 +202,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Output() public emitGroupMessageAcknowledge: EventEmitter<GroupMessageSeenBy>;
   /** To emit the chat data */
   @Output() public chatData: EventEmitter<string>;
-
-
   private _chatArray: MessageResponse[];
   private _listenDirectMessage: MessageResponse;
   private _listenDirectMessageResponse: MessageResponse;
@@ -243,10 +243,12 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public limit: number;
   public UserObject: login;
   public receiverId: string;
- public  isLoading :boolean;
+ public  isLoading :any;
   constructor(
     private _chattingMessagePresenterService: ChattingMessagePresenterService,
-    private _commonService: CommonService
+    private _commonService: CommonService,
+    private _loaderService:LoaderService,
+    private _changeDetector: ChangeDetectorRef
   ) {
     this.emitDirectMessage = new EventEmitter();
     this.pagination = new EventEmitter();
@@ -266,31 +268,33 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.closeIcon = ' ';
     this.message = '';
     this.pageSize = 1;
-    this.limit = 10;
     this.isLoading;
-    this._chatArray = []
+    this._chatArray = [];
   }
   ngOnInit(): void {
+    this.isLoading=this._loaderService.geLoaderMessage()
     this._chattingMessagePresenterService.chatArray$.subscribe((chartArray: MessageResponse[]) => {
-      this.newChatArray=chartArray
-      // this.newChatArray.concat(chartArray)
-      console.log('all-chats', chartArray);
+      if(chartArray){
+        this.newChatArray=chartArray;
+        this._changeDetector.detectChanges();
+        console.log('all-chats', chartArray);
+      }
     })
     this._chattingMessagePresenterService.directMessage$.subscribe((directMessage: Message) => {
-      this.emitDirectMessage.emit(directMessage)
+      this.emitDirectMessage.emit(directMessage);
       console.log(directMessage)
     });
     this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
-      this.emitDirectMessageEdit.next(editMessage)
+      this.emitDirectMessageEdit.next(editMessage);
       console.log(editMessage);
     });
     this._chattingMessagePresenterService.directMessageReply$.subscribe((replyMessage: MessageReply) => {
-      this.emitDirectMessageReply.emit(replyMessage)
+      this.emitDirectMessageReply.emit(replyMessage);
       console.log(replyMessage)
     });
 
     /**
-     * Get UserId
+     * Get login Details
      */
     this.UserObject = this._commonService.getLoginDetails()
 
@@ -332,6 +336,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
    * @description This method reset input box
    */
   public resetInputBox() {
+    this.upMessageScroll()
+    this._changeDetector.detectChanges();
     this.chatGroup.get('message').reset();
   }
   /**
@@ -340,12 +346,11 @@ export class ChattingMessagePresentationComponent implements OnInit {
    * @description Down arrow icon show and hide as per scroll
    */
   public onMessageScroll(): void {
-  //    this.pageSize++
-  //   let pagination:any={
-  //     page:this.pageSize,
-  //     limit:this.limit
-  //   }
-  //  this.pagination.emit(pagination)
+     this.pageSize++
+    let pagination:any={
+      page:this.pageSize,
+    }
+   this.pagination.emit(pagination)
    
   }
   /**

@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ScrollPaginationDirective } from './directive/scroll-pagination.directive';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { ScrollPaginationDirective } from './directive/scroll-pagination.directi
     PickerModule,
     FormsModule,
     NgbDropdownModule,
+    NgxSkeletonLoaderModule
   ]
 })
 export class MessageModule { }
