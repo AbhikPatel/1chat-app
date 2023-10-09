@@ -1,6 +1,8 @@
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
+// ================================================================================================================== //
 import { login } from 'src/app/chat/models/login.model';
 import { Message, MessageEdit, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
@@ -11,28 +13,30 @@ import { ConversationUsers } from 'src/app/chat/models/chat.model';
 @Injectable()
 export class ChattingMessagePresenterService implements OnInit {
   /** Observable for all chatArray  */
-  public chatArray$: Observable<MessageResponse[]>;
+  public chatArray$: Observable<Object>;
   /** Observable for new directMessage send container  */
-  public directMessage$: Observable<Message>;
+  public directMessage$: Observable<{arg1: Message, arg2: MessageResponse}>;
   /** Observable for  directMessageEdit send container  */
   public directMessageEdit$: Observable<MessageEdit>;
   /**  Observable for new directMessageReply array send container */
-  public directMessageReply$: Observable<MessageReply>;
+  public directMessageReply$: Observable<{arg1: Message, arg2: MessageResponse}>;
   /** Subject for directMessage */
-  private directMessage: Subject<Message>;
+  private directMessage: Subject<{arg1: Message, arg2: MessageResponse}>;
   /** Subject for directMessageEdit */
   private directMessageEdit: Subject<MessageEdit>;
   /** Subject for messageReply */
-  private directMessageReply: Subject<MessageReply>;
+  private directMessageReply: Subject<{arg1: Message, arg2: MessageResponse}>;
   /** Subject for  for all chatArray */
-  private chatArray: Subject<MessageResponse[]>;
+  private chatArray: Subject<Object>;
   /** variable for chat array */
   public chats: MessageResponse[];
   public loginObject: login;
   public receiverId: string;
   public chatId: string;
   public senderId: number;
-  public messageObj: MessageResponse
+  public messageObj: MessageResponse;
+  private messagesObject: Object;
+  private generatedUUID: string;
   constructor(
     private _fb: FormBuilder,
     private _commonService: CommonService,
@@ -116,8 +120,17 @@ export class ChattingMessagePresenterService implements OnInit {
    * @param chat 
    */
   public getChatMessagesArray(chat: MessageResponse[]) {
-    this.chats = [...chat];
-    this.chatArray.next(this.chats);
+    if(chat) {
+      let objectData = chat.reduce((accumulator, current) => {
+        accumulator[current._id] = current;
+        return accumulator
+      }, {})
+      const reversedObject = Object.fromEntries(
+        Object.entries(objectData).reverse()
+      );
+      this.messagesObject = { ...reversedObject, ...this.messagesObject}
+      this.chatArray.next(this.messagesObject);
+    }
   }
   /**
    * @name getChatData
@@ -126,6 +139,7 @@ export class ChattingMessagePresenterService implements OnInit {
    */
   public getChatData(chatData: string): void {
     const currentTime = new Date();
+    this.generatedUUID = uuidv4();
     this.messageObj = {
       body: chatData,
       editedBody: [''],
@@ -152,6 +166,7 @@ export class ChattingMessagePresenterService implements OnInit {
       displayTime: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
+      customeUUID: this.generatedUUID
     };
     const sendMessage: Message = {
       chatId: this.chatId,
@@ -161,8 +176,7 @@ export class ChattingMessagePresenterService implements OnInit {
       threadType: 'text',
       body: chatData
     }
-    this.directMessage.next(sendMessage);
-    this.chats.push(this.messageObj);
+    this.directMessage.next({ arg1: sendMessage, arg2: this.messageObj});
   }
   /**
    * @name editMessage
@@ -186,7 +200,8 @@ export class ChattingMessagePresenterService implements OnInit {
    * @description This method create replay message object and next  reply message  
    */
   public replyMessage(replyMessage: string, repliedMessage: MessageResponse) {
-    const currentTime = new Date()
+    const currentTime = new Date();
+    this.generatedUUID = uuidv4();
     let messageObj: MessageResponse = {
       body: replyMessage,
       editedBody: [''],
@@ -213,6 +228,7 @@ export class ChattingMessagePresenterService implements OnInit {
       displayTime: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
+      customeUUID: this.generatedUUID
     };
     const replyMessages: MessageReply = {
       isReplied: true,
@@ -224,8 +240,7 @@ export class ChattingMessagePresenterService implements OnInit {
       threadType: 'text',
       body: replyMessage
     }
-    this.directMessageReply.next(replyMessages);
-    this.chats.push(messageObj);
+    this.directMessageReply.next({ arg1: replyMessages, arg2: messageObj});
   }
 
   /**

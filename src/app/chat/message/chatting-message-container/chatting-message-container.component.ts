@@ -14,7 +14,10 @@ import { LoaderService } from 'src/app/core/services/loader/loader.service';
 export class ChattingMessageContainerComponent implements OnInit {
   public paramId: string;
   /** Observable for the chat messages */
-  public getMessages:MessageResponse[];
+  public getMessages: MessageResponse[];
+
+  public chatMessages$: Observable<MessageResponse[]>;
+
   // Observable for direct message and direst message response
   public listenDirectMessage$: Observable<MessageResponse>;
   public listenDirectMessageResponse$: Observable<MessageResponse>;
@@ -33,14 +36,16 @@ export class ChattingMessageContainerComponent implements OnInit {
   public listenGroupMessage$: Observable<MessageResponse>;
   public listenGroupMessageReply$: Observable<MessageResponse>;
   public listenGroupMessageAcknowledge$: Observable<MessageResponse[]>;
-  public pageSize: number
-  public limit: number
+  public pageSize: number;
+  public pageLimit: number;
+  public sortBy: string;
   constructor(private router: ActivatedRoute,
     private _ChatService: ChatService, private _messageAdaptor: MessageAdapter,
-    private _loaderService:LoaderService) {
+    private _loaderService: LoaderService) {
     this.pageSize = 1;
-    this.limit = 400;
-    this.getMessages=[]
+    this.pageLimit = 10;
+    this.sortBy = '-timestamp'
+    this.getMessages = []
   }
 
   ngOnInit(): void {
@@ -52,7 +57,6 @@ export class ChattingMessageContainerComponent implements OnInit {
   }
 
   private props() {
-
     this.listenDirectMessage$ = this._ChatService.listen('directMessage').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
@@ -79,21 +83,12 @@ export class ChattingMessageContainerComponent implements OnInit {
     // })
     this.getAllMessage()
   }
-/**
- * @name getAllMessage
- * @description 
- */
-  public getAllMessage(){
-    this._loaderService.loaderMessage();
-    this._ChatService.getChatMessages(this.paramId,this.pageSize,this.limit).subscribe((allMessage:MessageResponse[])=>{
-      if(allMessage && allMessage.length>0){
-        this._loaderService.hideLoaderMessage();
-        this.getMessages= this.getMessages.concat(allMessage);
-        console.log(this.pageSize);
-        
-
-    }
-  });
+  /**
+   * @name getAllMessage
+   * @description 
+   */
+  public getAllMessage() {
+    this.chatMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.pageLimit, this.sortBy)
   }
   /**
    * @name  paginationScroll
@@ -126,8 +121,6 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits direct message edits
    */
   public emitDirectMessageEdit(message: MessageEdit) {
-    console.log(message);
-
     this._ChatService.emit('directMessageEdit', message);
   }
   /**

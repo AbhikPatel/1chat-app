@@ -20,11 +20,12 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @ViewChild('inputTypeFocus') public inputTypeFocus: ElementRef;
   /** This property is used to get chat array */
   @Input() public set chatArray(messages: MessageResponse[]) {
-    if (messages) 
-    // this._chatArray = this._chatArray.concat(messages);
-  this._chatArray = messages;
-  this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray);
-
+    if (messages) {
+      console.log('messages', messages)
+      this._loaderService.hideLoaderMessage();
+      this._chatArray = messages;
+      this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray);
+    } 
   }
   public get chatArray(): MessageResponse[] {
     return this._chatArray;
@@ -108,10 +109,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set listenDirectMessageEditResponse(message: MessageResponse) {
     if (message) {
       console.log('direct message edit response', message)
-      
       this._listenDirectMessageEditResponse = message;
-      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnId(this.newChatArray, message);
-      if (messageIndex > -1) this.newChatArray[messageIndex] = message;
+      this.allMessagesObject[message._id] = message;
     }
   }
   public get listenDirectMessageEditResponse(): MessageResponse {
@@ -218,6 +217,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
   private _getParamId: string;
   /** This Variable store chartArray[] */
   public newChatArray: MessageResponse[];
+  public allMessagesObject: Object;
+  public allMessagesKeys: Array<string>;
   /** FormGroup for chat */
   public chatGroup: FormGroup;
   public isEditMode: boolean;
@@ -270,27 +271,33 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.pageSize = 1;
     this.isLoading;
     this._chatArray = [];
+    this.allMessagesObject = {};
+    this.allMessagesKeys = Object.keys(this.allMessagesObject);
   }
   ngOnInit(): void {
     this.isLoading=this._loaderService.geLoaderMessage()
-    this._chattingMessagePresenterService.chatArray$.subscribe((chartArray: MessageResponse[]) => {
-      if(chartArray){
-        this.newChatArray=chartArray;
+    this._chattingMessagePresenterService.chatArray$.subscribe((messagesObject: Object) => {
+      if(messagesObject){
+        this.allMessagesObject = messagesObject;
+        this.allMessagesKeys = Object.keys(this.allMessagesObject);
+        console.log(Object.keys(this.allMessagesObject).length)
         this._changeDetector.detectChanges();
-        console.log('all-chats', chartArray);
       }
     })
-    this._chattingMessagePresenterService.directMessage$.subscribe((directMessage: Message) => {
-      this.emitDirectMessage.emit(directMessage);
-      console.log(directMessage)
+    this._chattingMessagePresenterService.directMessage$.subscribe((val: {arg1: Message, arg2: MessageResponse}) => {
+      // this.emitDirectMessage.emit(val.arg1);
+      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.customeUUID]: val.arg2};
+      this.allMessagesKeys = Object.keys(this.allMessagesObject);
+      console.log(val.arg1, val.arg2)
     });
     this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
       this.emitDirectMessageEdit.next(editMessage);
-      console.log(editMessage);
     });
-    this._chattingMessagePresenterService.directMessageReply$.subscribe((replyMessage: MessageReply) => {
-      this.emitDirectMessageReply.emit(replyMessage);
-      console.log(replyMessage)
+    this._chattingMessagePresenterService.directMessageReply$.subscribe((val: {arg1: MessageReply, arg2: MessageResponse}) => {
+      // this.emitDirectMessageReply.emit(val.arg1);
+      console.log(val.arg1, val.arg2)
+      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.customeUUID]: val.arg2};
+      this.allMessagesKeys = Object.keys(this.allMessagesObject);
     });
 
     /**
@@ -350,6 +357,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
     let pagination:any={
       page:this.pageSize,
     }
+    this._loaderService.loaderMessage();
    this.pagination.emit(pagination)
    
   }

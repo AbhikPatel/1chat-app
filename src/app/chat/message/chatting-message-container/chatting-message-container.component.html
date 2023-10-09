@@ -1,6 +1,7 @@
+<!-- [chatArray]="getMessages" -->
 <app-chatting-message-presentation 
     [getParamId]="paramId"
-    [chatArray]="getMessages"
+    [chatArray]="chatMessages$ | async"
     [listenDirectMessage]="listenDirectMessage$ | async"
     [listenDirectMessageResponse]="listenDirectMessageResponse$ | async"
     [listenDirectMessageReply]="listenDirectMessageReply$ | async"

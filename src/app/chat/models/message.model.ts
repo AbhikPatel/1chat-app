@@ -78,7 +78,7 @@ export class MessageResponse {
     displayTime ?:string
     threadType: string
     _id: string
-
+    customeUUID?: string
 
     constructor(
         body: string,
@@ -94,7 +94,7 @@ export class MessageResponse {
         displayTime:string,
         threadType: string,
         _id: string,
-
+        customeUUID?: string
     ) {
         this._id = _id
         this.isRead = isRead
@@ -109,6 +109,7 @@ export class MessageResponse {
         this.threadType = threadType
         this.body = body
         this.editedBody = editedBody
+        this.customeUUID = customeUUID
     }
 }
 
