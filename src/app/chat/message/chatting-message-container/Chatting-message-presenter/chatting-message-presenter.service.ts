@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 // ================================================================================================================== //
 import { login } from 'src/app/chat/models/login.model';
-import { Message, MessageEdit, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
+import { Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { ConversationUsers } from 'src/app/chat/models/chat.model';
@@ -12,6 +12,7 @@ import { ConversationUsers } from 'src/app/chat/models/chat.model';
 
 @Injectable()
 export class ChattingMessagePresenterService implements OnInit {
+  public unReadMessageIds$: Observable<MessageRead>;
   /** Observable for all chatArray  */
   public chatArray$: Observable<Object>;
   /** Observable for new directMessage send container  */
@@ -28,6 +29,7 @@ export class ChattingMessagePresenterService implements OnInit {
   private directMessageReply: Subject<{arg1: Message, arg2: MessageResponse}>;
   /** Subject for  for all chatArray */
   private chatArray: Subject<Object>;
+  private unReadMessageIds: Subject<MessageRead>
   /** variable for chat array */
   public chats: MessageResponse[];
   public loginObject: login;
@@ -50,52 +52,21 @@ export class ChattingMessagePresenterService implements OnInit {
     this.directMessageEdit = new Subject();
     this.directMessageReply = new Subject();
     this.chatArray = new Subject();
+    this.unReadMessageIds = new Subject();
     this.chats = [];
     this.chatArray$ = this.chatArray.asObservable();
     this.directMessage$ = this.directMessage.asObservable();
     this.directMessageEdit$ = this.directMessageEdit.asObservable();
     this.directMessageReply$ = this.directMessageReply.asObservable();
+    this.unReadMessageIds$ = this.unReadMessageIds.asObservable();
     this.loginObject = this._commonService.getLoginDetails();
+    this.messagesObject = {}
   }
   ngOnInit(): void {
     this._commonService.receiverId$.subscribe((receiverId: string) => {
       console.log(receiverId);
     });
   }
-  /**
-   * @name findIndexOfMessage
-   * @param message 
-   * @returns methods returns index of existed message
-   */
-  public findIndexOfMessageBasedOnId(chatArray: MessageResponse[], message: MessageResponse): number {
-    return chatArray.findIndex((val) => {
-      return val._id === message._id
-    });
-  }
-  /**
-   * @name findIndexOfMessage
-   * @param message 
-   * @returns methods returns index of existed message
-   */
-  public findIndexOfMultipleMessageBasedOnId(chatArray: MessageResponse[], message: MessageResponse[]): Array<number> {
-    const indexArray = [];
-    message.forEach((val) => {
-      const index = this.findIndexOfMessageBasedOnId(chatArray, val);
-      indexArray.push(index);
-    })
-    return indexArray;
-  }
-  /**
-   * @name findIndexOfMessage
-   * @param message 
-   * @returns methods returns index of existed message
-   */
-  public  findIndexOfMessageBasedOnTime(chatArray: MessageResponse[], message: MessageResponse): number {
-    return chatArray.findIndex((val) => {
-      return val.body === message.body && new Date(val.timestamp).toString() === new Date(message.timestamp).toString()
-    });
-  } 
-
 
   /**
    * @name getGroup
@@ -121,6 +92,10 @@ export class ChattingMessagePresenterService implements OnInit {
    */
   public getChatMessagesArray(chat: MessageResponse[]) {
     if(chat) {
+      let unReadMessageIds
+      if(Object.keys(this.messagesObject).length === 0) {
+        unReadMessageIds = chat.filter((obj) => !obj.isRead).map(obj => obj._id)
+      }
       let objectData = chat.reduce((accumulator, current) => {
         accumulator[current._id] = current;
         return accumulator
@@ -130,6 +105,11 @@ export class ChattingMessagePresenterService implements OnInit {
       );
       this.messagesObject = { ...reversedObject, ...this.messagesObject}
       this.chatArray.next(this.messagesObject);
+      this.unReadMessageIds.next({
+        senderId: this.loginObject.userId,
+        receiverId: this.receiverId,
+        messageIds : unReadMessageIds
+      })
     }
   }
   /**
@@ -166,7 +146,7 @@ export class ChattingMessagePresenterService implements OnInit {
       displayTime: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
-      customeUUID: this.generatedUUID
+      temporaryId: this.generatedUUID
     };
     const sendMessage: Message = {
       chatId: this.chatId,
@@ -174,7 +154,8 @@ export class ChattingMessagePresenterService implements OnInit {
       receiverId: this.receiverId,
       timestamp: currentTime,
       threadType: 'text',
-      body: chatData
+      body: chatData,
+      temporaryId: this.generatedUUID
     }
     this.directMessage.next({ arg1: sendMessage, arg2: this.messageObj});
   }
@@ -228,7 +209,7 @@ export class ChattingMessagePresenterService implements OnInit {
       displayTime: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
-      customeUUID: this.generatedUUID
+      temporaryId: this.generatedUUID
     };
     const replyMessages: MessageReply = {
       isReplied: true,
@@ -238,7 +219,8 @@ export class ChattingMessagePresenterService implements OnInit {
       repliedMessageId: repliedMessage._id,
       timestamp: currentTime,
       threadType: 'text',
-      body: replyMessage
+      body: replyMessage,
+      temporaryId: this.generatedUUID
     }
     this.directMessageReply.next({ arg1: replyMessages, arg2: messageObj});
   }

@@ -21,7 +21,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
   /** This property is used to get chat array */
   @Input() public set chatArray(messages: MessageResponse[]) {
     if (messages) {
-      console.log('messages', messages)
       this._loaderService.hideLoaderMessage();
       this._chatArray = messages;
       this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray);
@@ -44,9 +43,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message
   @Input() public set listenDirectMessage(message: MessageResponse) {
     if (message) {
-      console.log('direct message ', message)
       this._listenDirectMessage = message;
-      this.newChatArray.push(this._listenDirectMessage);
+      this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message  }
+      this.allMessagesKeys = Object.keys(this.allMessagesObject);
     }
   }
   public get listenDirectMessage(): MessageResponse {
@@ -56,10 +55,14 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message response
   @Input() public set listenDirectMessageResponse(message: MessageResponse) {
     if (message) {
-      console.log('direct message response', message)
       this._listenDirectMessageResponse = message;
-      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnTime(this.newChatArray, message);
-      if (messageIndex > -1) this.newChatArray[messageIndex] = message;
+      this.allMessagesObject[message.temporaryId] = message;
+      this.allMessagesObject[message._id] = this.allMessagesObject[message.temporaryId]
+      delete this.allMessagesObject[message.temporaryId]
+      const tempIdIndex = this.allMessagesKeys.findIndex((key) => {
+        return key === message.temporaryId
+      })
+      this.allMessagesKeys[tempIdIndex] = message._id;
     }
   }
   public get listenDirectMessageResponse(): MessageResponse {
@@ -69,9 +72,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message reply
   @Input() public set listenDirectMessageReply(message: MessageResponse) {
     if (message) {
-      console.log('direct message reply ', message)
       this._listenDirectMessageReply = message;
-      this.newChatArray.push(this._listenDirectMessageReply)
+      this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message};
+      this.allMessagesKeys = Object.keys(this.allMessagesObject);
     }
   }
   public get listenDirectMessageReply(): MessageResponse {
@@ -81,11 +84,14 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message reply response
   @Input() public set listenDirectMessageReplyResponse(message: MessageResponse) {
     if (message) {
-      console.log('direct message reply response', message)
       this._listenDirectMessageReplyResponse = message;
-      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnTime(this.newChatArray, message);
-      console.log(messageIndex)
-      if (messageIndex > -1) this.newChatArray[messageIndex] = message;
+      this.allMessagesObject[message.temporaryId] = message;
+      this.allMessagesObject[message._id] = this.allMessagesObject[message.temporaryId]
+      delete this.allMessagesObject[message.temporaryId]
+      const tempIdIndex = this.allMessagesKeys.findIndex((key) => {
+        return key === message.temporaryId
+      })
+      this.allMessagesKeys[tempIdIndex] = message._id;
     }
   }
   public get listenDirectMessageReplyResponse(): MessageResponse {
@@ -95,10 +101,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message edit
   @Input() public set listenDirectMessageEdit(message: MessageResponse) {
     if (message) {
-      console.log('direct message edit response', message)
       this._listenDirectMessageEdit = message;
-      const messageIndex = this._chattingMessagePresenterService.findIndexOfMessageBasedOnId(this.newChatArray, message);
-      if (messageIndex > -1) this.newChatArray[messageIndex] = message;
+      this.allMessagesObject[message._id] = message;
     }
   }
   public get listenDirectMessageEdit(): MessageResponse {
@@ -108,7 +112,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message edit response
   @Input() public set listenDirectMessageEditResponse(message: MessageResponse) {
     if (message) {
-      console.log('direct message edit response', message)
       this._listenDirectMessageEditResponse = message;
       this.allMessagesObject[message._id] = message;
     }
@@ -120,10 +123,10 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message acknowledge
   @Input() public set listenDirectMessageAcknowledge(messages: MessageResponse[]) {
     if (messages) {
+      console.log("ackg ", messages)
       this._listenDirectMessageAcknowledgeResponse = messages;
-      const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.newChatArray, messages);
-      indexArray.forEach((val, index) => {
-        this.newChatArray[val] = messages[index]
+      messages.forEach((message) => {
+        this.allMessagesObject[message._id] = message;
       })
     }
   }
@@ -134,10 +137,10 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message acknowledge response
   @Input() public set listenDirectMessageAcknowledgeResponse(messages: MessageResponse[]) {
     if (messages) {
+      console.log("ackg res", messages)
       this._listenDirectMessageAcknowledgeResponse = messages;
-      const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.newChatArray, messages);
-      indexArray.forEach((val, index) => {
-        this.newChatArray[val] = messages[index]
+      messages.forEach((message) => {
+        this.allMessagesObject[message._id] = message;
       })
     }
   }
@@ -159,7 +162,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set listenGroupMessage(message: MessageResponse) {
     if (message) {
       this._listenGroupMessage = message;
-      this.newChatArray.push(this._listenDirectMessageReply)
+      // implementation on progress
     }
   }
   public get listenGroupMessage(): MessageResponse {
@@ -170,7 +173,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set listenGroupMessageReply(message: MessageResponse) {
     if (message) {
       this._listenGroupMessage = message;
-      this.newChatArray.push(this._listenDirectMessageReply)
+      // implementation on progress
     }
   }
   public get listenGroupMessageReply(): MessageResponse {
@@ -181,10 +184,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set listenGroupMessageAcknowledge(messages: MessageResponse[]) {
     if (messages) {
       this._listenDirectMessageAcknowledgeResponse = messages;
-      const indexArray = this._chattingMessagePresenterService.findIndexOfMultipleMessageBasedOnId(this.newChatArray, messages);
-      indexArray.forEach((val, index) => {
-        this.newChatArray[val] = messages[index]
-      })
+      // implementation on progress
     }
   }
   public get listenGroupMessageAcknowledge(): MessageResponse[] {
@@ -280,23 +280,20 @@ export class ChattingMessagePresentationComponent implements OnInit {
       if(messagesObject){
         this.allMessagesObject = messagesObject;
         this.allMessagesKeys = Object.keys(this.allMessagesObject);
-        console.log(Object.keys(this.allMessagesObject).length)
         this._changeDetector.detectChanges();
       }
     })
     this._chattingMessagePresenterService.directMessage$.subscribe((val: {arg1: Message, arg2: MessageResponse}) => {
-      // this.emitDirectMessage.emit(val.arg1);
-      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.customeUUID]: val.arg2};
+      this.emitDirectMessage.emit(val.arg1);
+      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2};
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
-      console.log(val.arg1, val.arg2)
     });
     this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
       this.emitDirectMessageEdit.next(editMessage);
     });
     this._chattingMessagePresenterService.directMessageReply$.subscribe((val: {arg1: MessageReply, arg2: MessageResponse}) => {
-      // this.emitDirectMessageReply.emit(val.arg1);
-      console.log(val.arg1, val.arg2)
-      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.customeUUID]: val.arg2};
+      this.emitDirectMessageReply.emit(val.arg1);
+      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2};
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
     });
 
@@ -304,7 +301,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
      * Get login Details
      */
     this.UserObject = this._commonService.getLoginDetails()
-
+    this._chattingMessagePresenterService.unReadMessageIds$.subscribe((val) => {
+      if(val.messageIds.length) this.emitDirectMessageAcknowledge.emit(val)
+    })
   }
  
   /**

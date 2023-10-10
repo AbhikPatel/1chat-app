@@ -31,6 +31,7 @@ export class MessageAdapter implements Adapter<MessageResponse> {
             this._formatter.Formatter(new Date( item.timestamp)),
             item.threadType,
             item._id,
+            item.temporaryId
         )
         return newMessage
     }

@@ -27,6 +27,7 @@ export class CommonService {
   public eodChatOpen: Subject<any>;
   public closeOverlaySubject: Subject<void>
   public closeOverlayS$: Observable<any>
+  public notificationCount: Subject<number>;
   /**
    * This Variable false replay message click on tab
    */
@@ -47,6 +48,7 @@ export class CommonService {
     this.closeOverlaySubject = new Subject();
     this.closeOverlayS$ = this.closeOverlaySubject.asObservable();
     this.receiverId$ = this.receiverId.asObservable();
+    this.notificationCount = new Subject();
   }
   /**
    * @name closeOverlay

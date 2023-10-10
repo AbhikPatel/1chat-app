@@ -6,6 +6,7 @@ import { Observable, map } from 'rxjs';
 import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from '../../models/message.model';
 import { MessageAdapter } from '../../chat-adaptor/message.adaptor';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-chatting-message-container',
@@ -39,7 +40,10 @@ export class ChattingMessageContainerComponent implements OnInit {
   public pageSize: number;
   public pageLimit: number;
   public sortBy: string;
-  constructor(private router: ActivatedRoute,
+  private initLimit: number;
+  constructor(
+    private _commonService: CommonService,
+    private router: ActivatedRoute,
     private _ChatService: ChatService, private _messageAdaptor: MessageAdapter,
     private _loaderService: LoaderService) {
     this.pageSize = 1;
@@ -47,7 +51,7 @@ export class ChattingMessageContainerComponent implements OnInit {
     this.sortBy = '-timestamp'
     this.getMessages = []
   }
-
+  
   ngOnInit(): void {
     // Access route parameters using ActivatedRoute
     this.router.parent.params.subscribe(parentParams => {
@@ -57,6 +61,11 @@ export class ChattingMessageContainerComponent implements OnInit {
   }
 
   private props() {
+    this._commonService.notificationCount.subscribe((count) => {
+      if(!count) this.initLimit = 10
+      else this.initLimit = count
+      this.getAllMessage();
+    });
     this.listenDirectMessage$ = this._ChatService.listen('directMessage').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
@@ -65,14 +74,28 @@ export class ChattingMessageContainerComponent implements OnInit {
     );
     this.listenDirectMessageReply$ = this._ChatService.listen('directMessageReply').pipe(
       map(message => this._messageAdaptor.toResponse(message))
-    );;
+    );
     this.listenDirectMessageReplyResponse$ = this._ChatService.listen('directMessageReplyResponse').pipe(
       map(message => this._messageAdaptor.toResponse(message))
-    );;
-    this.listenDirectMessageEdit$ = this._ChatService.listen('directMessageEdit');
-    this.listenDirectMessageEditResponse$ = this._ChatService.listen('directMessageEditResponse');
-    this.listenDirectMessageAcknowledge$ = this._ChatService.listen('directMessageAcknowledge');
-    this.listenDirectMessageAcknowledgeResponse$ = this._ChatService.listen('directMessageAcknowledgeResponse');
+    );
+    this.listenDirectMessageEdit$ = this._ChatService.listen('directMessageEdit').pipe(
+      map(message => this._messageAdaptor.toResponse(message))
+    );
+    this.listenDirectMessageEditResponse$ = this._ChatService.listen('directMessageEditResponse').pipe(
+      map(message => this._messageAdaptor.toResponse(message))
+    );
+    this.listenDirectMessageAcknowledge$ = this._ChatService.listen('directMessageAcknowledge').pipe(
+      map((messages) => {
+        messages = messages.map((msg: MessageResponse) => this._messageAdaptor.toResponse(msg))
+        return messages
+      })
+    );
+    this.listenDirectMessageAcknowledgeResponse$ = this._ChatService.listen('directMessageAcknowledgeResponse').pipe(
+      map((messages) => {
+        messages = messages.map((msg: MessageResponse) => this._messageAdaptor.toResponse(msg))
+        return messages
+      })
+    );
     this.listenDirectMessageError$ = this._ChatService.listen('directMessageError');
     this.listenGroupMessage$ = this._ChatService.listen('groupMessage');
     this.listenGroupMessageReply$ = this._ChatService.listen('groupMessageReply');
@@ -81,14 +104,19 @@ export class ChattingMessageContainerComponent implements OnInit {
     // this._ChatService.listen('alive').subscribe((val) => {
     //   console.log(val)
     // })
-    this.getAllMessage()
+    // console.log(this.initLimit)
+    // this.getAllMessage()
   }
   /**
    * @name getAllMessage
    * @description 
    */
   public getAllMessage() {
-    this.chatMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.pageLimit, this.sortBy)
+    if(this.pageSize > 1 ) 
+      this.chatMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.pageLimit, this.sortBy);
+    else
+      this.chatMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.initLimit, this.sortBy);
+
   }
   /**
    * @name  paginationScroll

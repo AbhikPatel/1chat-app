@@ -50,7 +50,7 @@ export class conversationUserAdapter implements Adapter<ConversationUsers>{
             item.lastMessage ? this._formatter.Formatter(new Date(item.lastMessage.timestamp)) : '',
             profile,
             item.chat_type === 'dm' ? newMembers[0].full_name : item.title,
-            item.lastMessage ? item.lastMessage.senderId === this.loginUserObject.userId ? 0 : item.notificationCount : 0,
+            item.notificationCount,
             false,
             false
         );

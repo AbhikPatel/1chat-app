@@ -78,7 +78,7 @@ export class MessageResponse {
     displayTime ?:string
     threadType: string
     _id: string
-    customeUUID?: string
+    temporaryId?: string
 
     constructor(
         body: string,
@@ -94,7 +94,7 @@ export class MessageResponse {
         displayTime:string,
         threadType: string,
         _id: string,
-        customeUUID?: string
+        temporaryId?: string
     ) {
         this._id = _id
         this.isRead = isRead
@@ -109,7 +109,7 @@ export class MessageResponse {
         this.threadType = threadType
         this.body = body
         this.editedBody = editedBody
-        this.customeUUID = customeUUID
+        this.temporaryId = temporaryId
     }
 }
 
@@ -160,6 +160,7 @@ export class MessageReply {
     timestamp: Date
     threadType: string
     body: string
+    temporaryId: string
 
     constructor(
         isReplied: boolean,
@@ -170,6 +171,7 @@ export class MessageReply {
         timestamp: Date,
         threadType: string,
         body: string,
+        temporaryId: string
     ) {
         this.isReplied = isReplied
         this.chatId = chatId
@@ -179,6 +181,7 @@ export class MessageReply {
         this.timestamp = timestamp
         this.threadType = threadType
         this.body = body
+        this.temporaryId = temporaryId
     }
 }
 
@@ -189,7 +192,7 @@ export class Message {
     timestamp: Date
     threadType: string
     body: string
-
+    temporaryId: string
     constructor(
         chatId: string,
         senderId: string,
@@ -197,6 +200,7 @@ export class Message {
         timestamp: Date,
         threadType: string,
         body: string,
+        temporaryId: string
     ) {
         this.chatId = chatId
         this.senderId = senderId
@@ -204,6 +208,7 @@ export class Message {
         this.timestamp = timestamp
         this.threadType = threadType
         this.body = body
+        this.temporaryId = temporaryId
     }
 }
 

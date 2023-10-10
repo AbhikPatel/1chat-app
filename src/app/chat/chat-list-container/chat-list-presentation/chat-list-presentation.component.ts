@@ -93,7 +93,8 @@ export class ChatListPresentationComponent implements OnInit {
   private _onlineUsers: OnlineUser[];
   private _typingInfo: Typing;
   private _getAllUsers: User[];
-  constructor(private _commonService: CommonService,
+  constructor(
+    private _commonService: CommonService,
     private _chatListPresenterService: ChatListPresenterService,
     private _router: Router,
     private _communicationService: CommunicationService,
@@ -205,6 +206,7 @@ export class ChatListPresentationComponent implements OnInit {
  * @description This method is used to display the chats of the selected user
  */
   public onUser(user: any) {
+    this._commonService.notificationCount.next(user.notificationCount);
     if (user && user.chatId) {
       localStorage.setItem('receiverId',user.receiver)
       const TabData = localStorage.getItem('TabData');
