@@ -46,6 +46,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this._listenDirectMessage = message;
       this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message  }
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
+      if(this._activeChatId === message.chatId) {
+        this._chattingMessagePresenterService.buildForAcknowledgement(message);
+      }
     }
   }
   public get listenDirectMessage(): MessageResponse {
@@ -75,6 +78,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this._listenDirectMessageReply = message;
       this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message};
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
+      if(this._activeChatId === message.chatId) {
+        this._chattingMessagePresenterService.buildForAcknowledgement(message);
+      }
     }
   }
   public get listenDirectMessageReply(): MessageResponse {
@@ -123,7 +129,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message acknowledge
   @Input() public set listenDirectMessageAcknowledge(messages: MessageResponse[]) {
     if (messages) {
-      console.log("ackg ", messages)
       this._listenDirectMessageAcknowledgeResponse = messages;
       messages.forEach((message) => {
         this.allMessagesObject[message._id] = message;
@@ -137,7 +142,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for direct message acknowledge response
   @Input() public set listenDirectMessageAcknowledgeResponse(messages: MessageResponse[]) {
     if (messages) {
-      console.log("ackg res", messages)
       this._listenDirectMessageAcknowledgeResponse = messages;
       messages.forEach((message) => {
         this.allMessagesObject[message._id] = message;
@@ -215,6 +219,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   private _listenDirectMessageReply: MessageResponse;
   private _listenDirectMessageAcknowledge: MessageResponse[];
   private _getParamId: string;
+  private _activeChatId: string;
   /** This Variable store chartArray[] */
   public newChatArray: MessageResponse[];
   public allMessagesObject: Object;
@@ -273,6 +278,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this._chatArray = [];
     this.allMessagesObject = {};
     this.allMessagesKeys = Object.keys(this.allMessagesObject);
+    this._activeChatId = localStorage.getItem("ConversationUsers").replace(/"/g, '');
   }
   ngOnInit(): void {
     this.isLoading=this._loaderService.geLoaderMessage()
@@ -356,7 +362,6 @@ export class ChattingMessagePresentationComponent implements OnInit {
     let pagination:any={
       page:this.pageSize,
     }
-    this._loaderService.loaderMessage();
    this.pagination.emit(pagination)
    
   }
@@ -387,8 +392,6 @@ public upMessageScroll(){
    * @description This method is used to edit the chat message
    */
   public onEditMessage(message: MessageResponse): void {
-    console.log(message);
-    
     this.setFocusInputBox()
     this.chatGroup.get('message').patchValue(message.body);
     this.isReplyMode = false;

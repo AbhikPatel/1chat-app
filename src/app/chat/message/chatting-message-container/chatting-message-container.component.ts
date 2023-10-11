@@ -47,7 +47,7 @@ export class ChattingMessageContainerComponent implements OnInit {
     private _ChatService: ChatService, private _messageAdaptor: MessageAdapter,
     private _loaderService: LoaderService) {
     this.pageSize = 1;
-    this.pageLimit = 10;
+    this.pageLimit = 15;
     this.sortBy = '-timestamp'
     this.getMessages = []
   }
@@ -62,7 +62,7 @@ export class ChattingMessageContainerComponent implements OnInit {
 
   private props() {
     this._commonService.notificationCount.subscribe((count) => {
-      if(!count) this.initLimit = 10
+      if(count <= 15) this.initLimit = 15
       else this.initLimit = count
       this.getAllMessage();
     });
@@ -104,14 +104,13 @@ export class ChattingMessageContainerComponent implements OnInit {
     // this._ChatService.listen('alive').subscribe((val) => {
     //   console.log(val)
     // })
-    // console.log(this.initLimit)
-    // this.getAllMessage()
   }
   /**
    * @name getAllMessage
    * @description 
    */
   public getAllMessage() {
+    this._loaderService.loaderMessage();
     if(this.pageSize > 1 ) 
       this.chatMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.pageLimit, this.sortBy);
     else
