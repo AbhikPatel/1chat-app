@@ -2,10 +2,10 @@
 <div class="main-chat-container d-flex flex-column h-100 ">
     <!-- Start: Message Screen  -->
     <!-- Skeleton Loading -->
-   <div class="chat-container flex-grow-1 overflow-auto p-5" #scrollMe [scrollTop]="scrollMe.scrollHeight"
+    <div class="chat-container flex-grow-1 overflow-auto p-5" #scrollMe [scrollTop]="scrollMe.scrollHeight"
         (scroll)="upMessageScroll()" appScrollPagination (scrolled)="onMessageScroll()">
         <div *ngIf="isLoading | async; else data">
-            
+
             <div class=" mt-2" *ngFor="let user of [1,2,3,4,5,6,7,8,9,10]">
                 <div class="fb-item d-flex  justify-content-between mx-3">
                     <div class="first-section-wrapper d-flex flex-column">
@@ -75,7 +75,8 @@
                         <div class="d-flex justify-content-center">
                             <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
                                 *ngIf="formatDate(allMessagesObject[message].timestamp, allMessagesObject[allMessagesKeys[i-1]]?.timestamp)">
-                                {{formatDate(allMessagesObject[message].timestamp, allMessagesObject[allMessagesKeys[i-1]]?.timestamp)}}
+                                {{formatDate(allMessagesObject[message].timestamp,
+                                allMessagesObject[allMessagesKeys[i-1]]?.timestamp)}}
                             </span>
                         </div>
                         <div class="chat">
@@ -100,24 +101,29 @@
                                     (mouseenter)="onMessageModel(allMessagesObject[message]._id)"
                                     (mouseleave)="onMessageModel(allMessagesObject[message]._id)">
                                     <!-- Reply Message  -->
-                                    <div class="reply-wrapper text-white bg-info rounded-1 p-1 "
+                                    <div class="reply-wrapper text-white bg-white rounded-1 p-1 "
                                         *ngIf="allMessagesObject[message].isReplied ">
                                         <div class="mx-3 ">
                                             <div class="d-flex align-items-center justify-content-between mb-1 ">
                                                 <span class="fs-9 text-nowrap text-primary fw-bold">
-                                                    {{allMessagesObject[message]?.repliedMessageId.senderId._id === UserObject.userId ?
-                                                    'You' :allMessagesObject[message]?.repliedMessageId.senderId.full_name
+                                                    {{allMessagesObject[message]?.repliedMessageId.senderId._id ===
+                                                    UserObject.userId ?
+                                                    'You'
+                                                    :allMessagesObject[message]?.repliedMessageId.senderId.full_name
                                                     }} </span>
                                             </div>
-                                            <div class="replay-Message text-black fs-7"> {{allMessagesObject[message].repliedMessageId?.body}}
+                                            <div class="replay-Message  p-1 text-black fs-7">
+                                                {{allMessagesObject[message].repliedMessageId?.body}}
                                             </div>
                                         </div>
                                     </div>
                                     <!-- Message Dropdown  -->
-                                    <div class="dropdown p-1">
-                                        <span> {{allMessagesObject[message].body}} </span>
+                                    <div class="dropdown">
+
                                         <!-- ngDropdown -->
-                                        <div ngbDropdown class="d-inline-block">
+                                        <div ngbDropdown
+                                            class="d-inline-block d-flex align-items-center  justify-content-center">
+                                            <div class="message-body"> {{allMessagesObject[message].body}} </div>
                                             <div
                                                 [ngClass]="showMessageIcon && currentMessageId === allMessagesObject[message]._id ? 'visible' : 'invisible'">
                                                 <span type="button" id="dropdownBasic1" ngbDropdownToggle
@@ -128,9 +134,12 @@
                                             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
                                                 <ul class=" justify-content-end"
                                                     [ngClass]="{'show' : messageModel && currentMessageId === allMessagesObject[message]._id}">
-                                                    <li class="dropdown-item" (click)="onEditMessage(allMessagesObject[message])"
-                                                        *ngIf="allMessagesObject[message].senderId._id === UserObject.userId"> Edit </li>
-                                                    <li class="dropdown-item" (click)="onReplyMessage(allMessagesObject[message])"> Reply
+                                                    <li class="dropdown-item"
+                                                        (click)="onEditMessage(allMessagesObject[message])"
+                                                        *ngIf="allMessagesObject[message].senderId._id === UserObject.userId">
+                                                        Edit </li>
+                                                    <li class="dropdown-item"
+                                                        (click)="onReplyMessage(allMessagesObject[message])"> Reply
                                                     </li>
                                                 </ul>
                                             </div>
@@ -142,7 +151,8 @@
                             <ng-container *ngIf="allMessagesObject[message].isEdited">
                                 <div class="fs-7 text-primary "
                                     [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId ? 'text-end': 'text-start'">
-                                    <label class="cursor-pointer" for="editedBody{{allMessagesObject[message]._id}}">edited</label>
+                                    <label class="cursor-pointer"
+                                        for="editedBody{{allMessagesObject[message]._id}}">edited</label>
                                 </div>
                             </ng-container>
                             <!-- Message Details  -->
@@ -169,15 +179,13 @@
                 </div>
                 <!-- Screen Message  -->
                 <ng-container *ngIf="allMessagesKeys?.length === 0">
-         <div class="d-flex h-100 justify-content-center align-items-center">
-             <span class="text-info"> No Conversation Started </span>
-         </div>
-     </ng-container>
+                    <div class="d-flex h-100 justify-content-center align-items-center">
+                        <span class="text-info"> No Conversation Started </span>
+                    </div>
+                </ng-container>
             </div>
         </ng-template>
     </div>
-
-
     <!-- End: Message Screen  -->
     <!-- Start:  Container  -->
     <div class="typer-container d-flex flex-column  py-2 position-relative">
