@@ -6,12 +6,13 @@ import { CommonService } from 'src/app/shared/services/common.service';
 import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 import { login } from 'src/app/chat/models/login.model';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
+import { CommunicationService } from 'src/app/chat/shared/communication/communication.service';
 
 @Component({
   selector: 'app-chatting-message-presentation',
   templateUrl: './chatting-message-presentation.component.html',
   providers: [ChattingMessagePresenterService],
-  changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChattingMessagePresentationComponent implements OnInit {
   /** Element DOM for message screen */
@@ -24,7 +25,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this._loaderService.hideLoaderMessage();
       this._chatArray = messages;
       this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray);
-    } 
+    }
   }
   public get chatArray(): MessageResponse[] {
     return this._chatArray;
@@ -44,7 +45,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set listenDirectMessage(message: MessageResponse) {
     if (message) {
       this._listenDirectMessage = message;
-      this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message  }
+      this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message }
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
       if(this._activeChatId === message.chatId) {
         this._chattingMessagePresenterService.buildForAcknowledgement(message);
@@ -76,7 +77,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   @Input() public set listenDirectMessageReply(message: MessageResponse) {
     if (message) {
       this._listenDirectMessageReply = message;
-      this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message};
+      this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message };
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
       if(this._activeChatId === message.chatId) {
         this._chattingMessagePresenterService.buildForAcknowledgement(message);
@@ -249,11 +250,12 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public limit: number;
   public UserObject: login;
   public receiverId: string;
- public  isLoading :any;
+  public isLoading: any;
   constructor(
     private _chattingMessagePresenterService: ChattingMessagePresenterService,
+    private _communicationService: CommunicationService,
     private _commonService: CommonService,
-    private _loaderService:LoaderService,
+    private _loaderService: LoaderService,
     private _changeDetector: ChangeDetectorRef
   ) {
     this.emitDirectMessage = new EventEmitter();
@@ -281,25 +283,28 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this._activeChatId = localStorage.getItem("ConversationUsers").replace(/"/g, '');
   }
   ngOnInit(): void {
-    this.isLoading=this._loaderService.geLoaderMessage()
+    this.isLoading = this._loaderService.geLoaderMessage();
     this._chattingMessagePresenterService.chatArray$.subscribe((messagesObject: Object) => {
-      if(messagesObject){
+      if (messagesObject) {
         this.allMessagesObject = messagesObject;
         this.allMessagesKeys = Object.keys(this.allMessagesObject);
+        console.log(this.allMessagesObject);
+        console.log(this.allMessagesKeys);
+
         this._changeDetector.detectChanges();
       }
     })
-    this._chattingMessagePresenterService.directMessage$.subscribe((val: {arg1: Message, arg2: MessageResponse}) => {
+    this._chattingMessagePresenterService.directMessage$.subscribe((val: { arg1: Message, arg2: MessageResponse }) => {
       this.emitDirectMessage.emit(val.arg1);
-      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2};
+      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2 };
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
     });
     this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
       this.emitDirectMessageEdit.next(editMessage);
     });
-    this._chattingMessagePresenterService.directMessageReply$.subscribe((val: {arg1: MessageReply, arg2: MessageResponse}) => {
+    this._chattingMessagePresenterService.directMessageReply$.subscribe((val: { arg1: MessageReply, arg2: MessageResponse }) => {
       this.emitDirectMessageReply.emit(val.arg1);
-      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2};
+      this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2 };
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
     });
 
@@ -308,10 +313,10 @@ export class ChattingMessagePresentationComponent implements OnInit {
      */
     this.UserObject = this._commonService.getLoginDetails()
     this._chattingMessagePresenterService.unReadMessageIds$.subscribe((val) => {
-      if(val.messageIds.length) this.emitDirectMessageAcknowledge.emit(val)
+      if (val.messageIds.length) this.emitDirectMessageAcknowledge.emit(val)
     })
   }
- 
+
   /**
    * @name onSubmit
    * @description This method will be called when the form is submitted
@@ -321,13 +326,16 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this.editedMessage.editedBody.push(this.chatGroup.value.message);
       this.editedMessage.body = this.chatGroup.value.message;
       this.editedMessage.isEdited = true;
+      this._communicationService.setlastMesageInConversationData(this.chatGroup.value.message)
       this._chattingMessagePresenterService.editMessage(this.editedMessage);
       this.resetInputBox()
     } else if (this.isReplyMode === true) {
       this._chattingMessagePresenterService.replyMessage(this.chatGroup.value.message, this.repliedMessage)
       this.resetInputBox()
+      this._communicationService.setlastMesageInConversationData(this.chatGroup.value.message)
     } else {
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
+      this._communicationService.setlastMesageInConversationData(this.chatGroup.value.message)
       this.resetInputBox()
     }
     this.isEditMode = false;
@@ -358,22 +366,21 @@ export class ChattingMessagePresentationComponent implements OnInit {
    * @description Down arrow icon show and hide as per scroll
    */
   public onMessageScroll(): void {
-     this.pageSize++
-    let pagination:any={
-      page:this.pageSize,
+    this.pageSize++
+    let pagination: any = {
+      page: this.pageSize,
     }
    this.pagination.emit(pagination)
-   
   }
   /**
    * @name upMessageScroll
    * @description This method click on down arrow to message all get up
    */
-public upMessageScroll(){
-  const messageContainer = this.messageContainer.nativeElement;
-  const isScrolledToBottom = this.messageContainer.nativeElement.scrollHeight - (messageContainer.scrollTop + messageContainer.clientHeight);
-  this.isScrolledToBottom = isScrolledToBottom > 50;
-}
+  public upMessageScroll() {
+    const messageContainer = this.messageContainer.nativeElement;
+    const isScrolledToBottom = this.messageContainer.nativeElement.scrollHeight - (messageContainer.scrollTop + messageContainer.clientHeight);
+    this.isScrolledToBottom = isScrolledToBottom > 50;
+  }
 
   /**
    * @name onMessageModel

@@ -15,6 +15,8 @@ export class CommunicationService {
   public editTaskResponse$: Observable<EditEodTasks>;
   /**  This variable Observable  senEodData store * */
   public senEodData$: Observable<EodSubmission>;
+  /**  This variable Observable setlastMesageInConversation store * */
+  public setlastMesageInConversation$: Observable<string>;
   /** This variable Subject New conversationDetails to set header * */
   private ConversationUser: Subject<ConversationUsers>;
   /** This variable Subject NewGroupConversation store  * */
@@ -34,6 +36,8 @@ export class CommunicationService {
   public deleteEodId: Subject<number>;
   /** This variable Subject  to store receiverId  * */
   public receiverId: Subject<string>;
+  /**  This variable Observable setlastMesageInConversation store * */
+  private setlastMesageInConversation: Subject<string>;
 
   constructor() {
     this.ConversationUser$ = new Observable();
@@ -43,6 +47,7 @@ export class CommunicationService {
 
     this.editTaskResponse$ = new Observable();
     this.senEodData$ = new Observable();
+    this.setlastMesageInConversation$ = new Observable();
     this.ConversationUser = new Subject();
     this.tabData = new Subject();
     this.selectedTabData = new Subject();
@@ -52,14 +57,16 @@ export class CommunicationService {
     this.tabDataApi = new Subject();
     this.deleteEodId = new Subject();
     this.senEodData = new Subject();
- 
+    this.setlastMesageInConversation = new Subject();
+
     this.ConversationUser$ = this.ConversationUser.asObservable();
     this.NewGroupConversation$ = this.NewGroupConversation.asObservable();
     this.taskResponse$ = this.taskResponse.asObservable();
     this.editTaskResponse$ = this.editTaskResponse.asObservable();
     this.senEodData$ = this.senEodData.asObservable();
     this.senEodData$ = this.senEodData.asObservable();
-   
+    this.setlastMesageInConversation$ = this.setlastMesageInConversation.asObservable();
+
   }
   /**
    *@name setHeaderDetails
@@ -98,7 +105,15 @@ export class CommunicationService {
    * @param taskResponse 
    * @description This method next postTaskReportsResponses  
    */
-  public sendEodData(sendEodData:EodSubmission ) {
+  public sendEodData(sendEodData: EodSubmission) {
     this.senEodData.next(sendEodData);
+  }
+  /**
+   *@name postTaskReportsResponses
+   * @param taskResponse 
+   * @description This method next postTaskReportsResponses  
+   */
+  public setlastMesageInConversationData(setlastMesageInConversation: string) {
+    this.setlastMesageInConversation.next(setlastMesageInConversation);
   }
 }

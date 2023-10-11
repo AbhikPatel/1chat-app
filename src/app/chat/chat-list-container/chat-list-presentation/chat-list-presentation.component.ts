@@ -23,7 +23,7 @@ export class ChatListPresentationComponent implements OnInit {
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
-    this._chatListPresenterService.getConversationUsers(users)
+      this._chatListPresenterService.getConversationUsers(users)
       this.copyOfConversationUsers = [...users];
       let selectedConversation = users
       let findConversation: ConversationUsers = selectedConversation.find((user: ConversationUsers) => user.chatId === this.currentChatId);
@@ -59,7 +59,7 @@ export class ChatListPresentationComponent implements OnInit {
   /** This property is used to get all the user details from container component */
   @Input() public set getAllUsers(users: User[]) {
     if (users) {
-     this._chatListPresenterService.getAllUsers(users)
+      this._chatListPresenterService.getAllUsers(users)
       this._getAllUsers = users;
     }
   }
@@ -107,7 +107,7 @@ export class ChatListPresentationComponent implements OnInit {
     // subject   
     this.showTypingText = new BehaviorSubject(false);
     this.loginUserObject = this._commonService.getLoginDetails();
-    
+
   }
   ngOnInit(): void {
     this.props();
@@ -129,7 +129,10 @@ export class ChatListPresentationComponent implements OnInit {
     if (storedConversation) {
       this.currentChatId = JSON.parse(storedConversation);
     }
+    this._communicationService.setlastMesageInConversation$.subscribe((lastmessage: string) => {
+      console.log(lastmessage);
 
+    })
   }
   /**
 * @name onSearchUser
@@ -208,7 +211,7 @@ export class ChatListPresentationComponent implements OnInit {
   public onUser(user: any) {
     this._commonService.notificationCount.next(user.notificationCount);
     if (user && user.chatId) {
-      localStorage.setItem('receiverId',user.receiver)
+      localStorage.setItem('receiverId', user.receiver)
       const TabData = localStorage.getItem('TabData');
       this._commonService.receiverId.next(user.sender);
       if (TabData) {
@@ -217,12 +220,12 @@ export class ChatListPresentationComponent implements OnInit {
       } else {
         this._router.navigate(['chat', user.chatId]);
       }
-    this._communicationService.setHeaderDetails(user);
-    this._communicationService.tabDataApi.next(true);
-    this.currentChatId = user.chatId;
-    localStorage.setItem('ConversationUsers', JSON.stringify(user.chatId));
+      this._communicationService.setHeaderDetails(user);
+      this._communicationService.tabDataApi.next(true);
+      this.currentChatId = user.chatId;
+      localStorage.setItem('ConversationUsers', JSON.stringify(user.chatId));
     }
-    
+
   }
   // this.checkNonConversationUsers();
   // this._ChatListPresenterService.getCurrentConversation(user, this.userId);

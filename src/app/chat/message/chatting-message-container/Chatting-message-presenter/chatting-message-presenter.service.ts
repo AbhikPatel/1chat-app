@@ -16,17 +16,17 @@ export class ChattingMessagePresenterService implements OnInit {
   /** Observable for all chatArray  */
   public chatArray$: Observable<Object>;
   /** Observable for new directMessage send container  */
-  public directMessage$: Observable<{arg1: Message, arg2: MessageResponse}>;
+  public directMessage$: Observable<{ arg1: Message, arg2: MessageResponse }>;
   /** Observable for  directMessageEdit send container  */
   public directMessageEdit$: Observable<MessageEdit>;
   /**  Observable for new directMessageReply array send container */
-  public directMessageReply$: Observable<{arg1: Message, arg2: MessageResponse}>;
+  public directMessageReply$: Observable<{ arg1: Message, arg2: MessageResponse }>;
   /** Subject for directMessage */
-  private directMessage: Subject<{arg1: Message, arg2: MessageResponse}>;
+  private directMessage: Subject<{ arg1: Message, arg2: MessageResponse }>;
   /** Subject for directMessageEdit */
   private directMessageEdit: Subject<MessageEdit>;
   /** Subject for messageReply */
-  private directMessageReply: Subject<{arg1: Message, arg2: MessageResponse}>;
+  private directMessageReply: Subject<{ arg1: Message, arg2: MessageResponse }>;
   /** Subject for  for all chatArray */
   private chatArray: Subject<Object>;
   private unReadMessageIds: Subject<MessageRead>
@@ -99,9 +99,9 @@ export class ChattingMessagePresenterService implements OnInit {
    * @param chat 
    */
   public getChatMessagesArray(chat: MessageResponse[]) {
-    if(chat) {
+    if (chat) {
       let unReadMessageIds
-      if(Object.keys(this.messagesObject).length === 0) {
+      if (Object.keys(this.messagesObject).length === 0) {
         unReadMessageIds = chat.filter((obj) => !obj.isRead).map(obj => obj._id)
       }
       let objectData = chat.reduce((accumulator, current) => {
@@ -111,12 +111,12 @@ export class ChattingMessagePresenterService implements OnInit {
       const reversedObject = Object.fromEntries(
         Object.entries(objectData).reverse()
       );
-      this.messagesObject = { ...reversedObject, ...this.messagesObject}
+      this.messagesObject = { ...reversedObject, ...this.messagesObject }
       this.chatArray.next(this.messagesObject);
       this.unReadMessageIds.next({
         senderId: this.loginObject.userId,
         receiverId: this.receiverId,
-        messageIds : unReadMessageIds
+        messageIds: unReadMessageIds
       })
     }
   }
@@ -165,7 +165,7 @@ export class ChattingMessagePresenterService implements OnInit {
       body: chatData,
       temporaryId: this.generatedUUID
     }
-    this.directMessage.next({ arg1: sendMessage, arg2: this.messageObj});
+    this.directMessage.next({ arg1: sendMessage, arg2: this.messageObj });
   }
   /**
    * @name editMessage
@@ -213,7 +213,7 @@ export class ChattingMessagePresenterService implements OnInit {
         full_name: '',
         _id: this.receiverId
       },
-      timestamp:currentTime,
+      timestamp: currentTime,
       displayTime: this._formatter.Formatter(currentTime),
       threadType: 'text',
       _id: '',
@@ -230,7 +230,7 @@ export class ChattingMessagePresenterService implements OnInit {
       body: replyMessage,
       temporaryId: this.generatedUUID
     }
-    this.directMessageReply.next({ arg1: replyMessages, arg2: messageObj});
+    this.directMessageReply.next({ arg1: replyMessages, arg2: messageObj });
   }
 
   /**
