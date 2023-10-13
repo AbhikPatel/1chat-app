@@ -84,6 +84,14 @@ export class ChattingMessagePresenterService implements OnInit {
     })
   }
 
+  public buildForAcknowledgement(message: MessageResponse) {
+    this.unReadMessageIds.next({
+      senderId: this.loginObject.userId,
+      receiverId: this.receiverId,
+      messageIds: [message._id]
+    })
+  }
+
   /**
    * @name getGroup
    * @returns formGroup
