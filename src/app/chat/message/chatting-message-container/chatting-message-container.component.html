@@ -22,6 +22,9 @@
     (emitGroupMessageReply)="emitGroupMessageReply($event)"
     (emitGroupMessageAcknowledge)="emitGroupMessageAcknowledge($event)"
     (pagination)="paginationScroll($event)"
+    (newConversationChat)="getNewConversation($event)"
+    [getNewChatId]="newChatId$  | async"
+    [getConversationUsers]="getConversationUsers$ | async"
   
 
 ></app-chatting-message-presentation>

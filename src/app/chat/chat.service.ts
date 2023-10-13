@@ -4,7 +4,7 @@ import { userAdaptor } from '../shared/adaptor/user.adaptor';
 import { environment } from 'src/environments/environment';
 import { Observable, Subject, map } from 'rxjs';
 import { User, UserResponse } from '../shared/models/user.model';
-import { ConversationUsers, GroupDetails, Message } from './models/chat.model';
+import { ConversationUsers, CreateChat, GroupDetails, Message } from './models/chat.model';
 import { EODAdapter, conversationUserAdapter } from './chat-adaptor/chat.adaptor';
 import { CommonService } from '../shared/services/common.service';
 import { login } from './models/login.model';
@@ -147,7 +147,17 @@ public listen(eventname: string): Observable<any> {
       })
     )
   }
-
+/**
+   * @name postNewChat
+   * @param newChat 
+   * @returns This method will post the data when the user will start the conversation with another new user
+   */
+public postNewChat(newChat: CreateChat): Observable<CreateChat> {
+  const url: string = this.baseUrl + `chat`
+  return this._http.httpPostRequest(url, newChat).pipe(
+    map((res: any) => res.data.doc)
+  )
+}
   /**
     * @name getEODReports
     * @param id 

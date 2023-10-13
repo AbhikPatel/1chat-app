@@ -9,6 +9,7 @@ import { User } from 'src/app/shared/models/user.model';
 import { CommunicationService } from '../../shared/communication/communication.service';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
 import { Login } from 'src/app/core/models/login.model';
+import { MessageResponse } from '../../models/message.model';
 
 
 @Component({
@@ -23,6 +24,8 @@ export class ChatListPresentationComponent implements OnInit {
   /** This property will get only one to one conversation users */
   @Input() public set conversationUsers(users: ConversationUsers[]) {
     if (users) {
+      console.log(users);
+      
       this._chatListPresenterService.getConversationUsers(users)
       this.copyOfConversationUsers = [...users];
       let selectedConversation = users
@@ -30,7 +33,6 @@ export class ChatListPresentationComponent implements OnInit {
       this.onUser(findConversation);
       this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
       this.onTabSwitch(true);
-
     }
   }
   public get conversationUsers(): ConversationUsers[] {
@@ -46,6 +48,30 @@ export class ChatListPresentationComponent implements OnInit {
     return this._onlineUsers;
   }
 
+    // Getter Setter for direct message
+    @Input() public set listenMessage(message: any) {
+      if (message) {
+        this._listenDirectMessage = message;
+        console.log(message);
+        const index= this._conversationUsers.findIndex((data:ConversationUsers)=> data.chatId === this._listenDirectMessage.chatId)
+        this._conversationUsers[index].lastMessage=this._listenDirectMessage.body
+      }
+    }
+    public get listenEditMessage(): MessageResponse {
+      return this._listenDirectMessage;
+    }
+    // Getter Setter for direct message
+    @Input() public set listenEditMessage(message: any) {
+      if (message) {
+        this.listenEditMessage = message;
+        console.log(message);
+        const index= this._conversationUsers.findIndex((data:ConversationUsers)=> data.chatId === this._listenDirectMessage.chatId)
+        this._conversationUsers[index].lastMessage=this._listenDirectMessage.body
+      }
+    }
+    public get listenDirectMessage(): MessageResponse {
+      return this._listenDirectMessage;
+    }
   /** This property is used to get typing info from container component */
   @Input() public set typingInfo(typing: Typing) {
     if (typing) {
@@ -66,6 +92,17 @@ export class ChatListPresentationComponent implements OnInit {
   public get getAllUsers(): User[] {
     return this._getAllUsers
   }
+  // Getter Setter for direct message
+  // @Input() public set listenDirectMessage(message: MessageResponse) {
+  //   if (message) {
+  //     this._listenDirectMessage = message;
+  //     this.allMessagesObject = { ...this.allMessagesObject, [message._id]: message }
+  //     this.allMessagesKeys = Object.keys(this.allMessagesObject);
+  //   }
+  // }
+  // public get listenDirectMessage(): MessageResponse {
+  //   return this._listenDirectMessage;
+  // }
   /** This variable will store the data of the current tab */
   public tabData: boolean;
   /** This variable will store all the chat Ids of conversation users */
@@ -84,7 +121,7 @@ export class ChatListPresentationComponent implements OnInit {
   public selectedConversation: any;
   //  This variable is use to show loader  
   public isLoading: any;
-  public iconHideShow: boolean
+  public allUsersApiCall: boolean
   // subject
   /** Flag for showing typing text */
   public showTypingText: BehaviorSubject<boolean>;
@@ -93,6 +130,8 @@ export class ChatListPresentationComponent implements OnInit {
   private _onlineUsers: OnlineUser[];
   private _typingInfo: Typing;
   private _getAllUsers: User[];
+  private _listenDirectMessage: MessageResponse;
+  // private _getAllUsers: User[];
   constructor(
     private _commonService: CommonService,
     private _chatListPresenterService: ChatListPresenterService,
@@ -111,27 +150,28 @@ export class ChatListPresentationComponent implements OnInit {
   }
   ngOnInit(): void {
     this.props();
-    this.onTabSwitch(true);
-    this.isLoading = this._loaderService.getLoaderState();
   }
-
+  
   /**
-  * @name props
-  * @description This method will be invoked on ngOnInit
+   * @name props
+   * @description This method will be invoked on ngOnInit
   */
-  private props(): void {
+ private props(): void {
+   this.isLoading = this._loaderService.getLoaderState();
+    this.onTabSwitch(true);
+
     this._chatListPresenterService.newConversation$.subscribe((user: ConversationUsers) => {
-      this.newConversationUsers = user
-      this._conversationUsers.unshift(user);
-      this.currentChatId = user.chatId;
+         this.newConversationUsers = user
+         this._conversationUsers.unshift(user);
+         this.currentChatId = user.chatId;
     });
     const storedConversation = localStorage.getItem('ConversationUsers');
     if (storedConversation) {
       this.currentChatId = JSON.parse(storedConversation);
     }
-    this._communicationService.setlastMesageInConversation$.subscribe((lastmessage: string) => {
-      console.log(lastmessage);
-
+    this._communicationService.setLastMessageInConversation$.subscribe((lastMessageObj: any) => {
+    const index= this._conversationUsers.findIndex((data:ConversationUsers)=> data.chatId ===lastMessageObj.chatId)
+       this._conversationUsers[index].lastMessage=lastMessageObj.lastMessage
     })
   }
   /**
@@ -140,8 +180,8 @@ export class ChatListPresentationComponent implements OnInit {
 */
   public openNewConversationModel() {
     this.toggle.nativeElement.checked ? this.toggle.nativeElement.checked = false : this.toggle.nativeElement.checked = true;
-    this.iconHideShow = this.toggle.nativeElement.checked;
-    this._commonService.userApiCall.next(this.iconHideShow)
+    this.allUsersApiCall = this.toggle.nativeElement.checked;
+    this._commonService.userApiCall.next(this.allUsersApiCall)
   }
 
   /**
@@ -151,6 +191,7 @@ export class ChatListPresentationComponent implements OnInit {
    */
   public closeAsideBar(boolean: boolean) {
     this.toggle.nativeElement.checked = boolean
+    this.allUsersApiCall = this.toggle.nativeElement.checked=false
   }
 
   /**
@@ -194,7 +235,7 @@ export class ChatListPresentationComponent implements OnInit {
       return acc
     }, []);
     if (resultArr.length === 0) {
-      this._router.navigate(['chat/', newConversation._id]);
+      this._router.navigate(['chat/', 'draft']);
       this._chatListPresenterService.createNewConversation(newConversation);
       this._communicationService.setHeaderDetails(this.newConversationUsers);
     }
@@ -209,19 +250,19 @@ export class ChatListPresentationComponent implements OnInit {
  * @description This method is used to display the chats of the selected user
  */
   public onUser(user: any) {
-    this._commonService.notificationCount.next(user.notificationCount);
+    this._commonService.notificationCount.next(user?.notificationCount);
     if (user && user.chatId) {
       localStorage.setItem('receiverId', user.receiver)
-      const TabData = localStorage.getItem('TabData');
       this._commonService.receiverId.next(user.sender);
+      const TabData = localStorage.getItem('TabData');
       if (TabData) {
         this._router.navigate(['chat', user.chatId, 'eod']);
         this._communicationService.tabData.next(false);
       } else {
         this._router.navigate(['chat', user.chatId]);
       }
-      this._communicationService.setHeaderDetails(user);
       this._communicationService.tabDataApi.next(true);
+      this._communicationService.setHeaderDetails(user);
       this.currentChatId = user.chatId;
       localStorage.setItem('ConversationUsers', JSON.stringify(user.chatId));
     }
@@ -229,7 +270,6 @@ export class ChatListPresentationComponent implements OnInit {
   }
   // this.checkNonConversationUsers();
   // this._ChatListPresenterService.getCurrentConversation(user, this.userId);
-
   /**
 * @name checkIfOnline
 * @param id 

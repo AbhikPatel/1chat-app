@@ -7,11 +7,9 @@
         .chat {
             .editedBody-container {
                 text-align: right;
-                visibility: hidden;
-                opacity: 0;
-                transition:
-                    visibility 0s,
-                    opacity 0.5s;
+                 max-height: 0;
+                 overflow: hidden;
+                 transition: max-height 0.8s ease-in-out;
 
                 .edit-box-model {
                     display: inline-block;
@@ -23,10 +21,9 @@
                     margin-bottom: 0 !important
                 }
             }
-
-            .isChecked:checked~.editedBody-container {
-                visibility: visible;
-                opacity: 1;
+            .isChecked:checked ~ .editedBody-container {
+                max-height: 1000px;
+                transition: max-height 0.8s ease-in-out
             }
 
             &-text {

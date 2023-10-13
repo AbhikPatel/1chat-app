@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatService } from '../chat.service';
-import { Observable, Subject, finalize, of, takeUntil } from 'rxjs';
-import { ConversationUsers, OnlineUser, Typing } from '../models/chat.model';
+import { Observable, Subject, finalize, map, of, takeUntil } from 'rxjs';
+import { ConversationUsers, MessageResponse, OnlineUser, Typing } from '../models/chat.model';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { User } from 'src/app/shared/models/user.model';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
+import { MessageAdapter } from '../chat-adaptor/chat.adaptor';
 
 @Component({
   selector: 'app-chat-list-container',
@@ -13,6 +14,10 @@ import { LoaderService } from 'src/app/core/services/loader/loader.service';
 export class ChatListContainerComponent implements OnInit, OnDestroy {
   /** stops the subscription on ngDestroy */
   private destroy: Subject<void>;
+    // Observable for direct message and direst message response
+    public listenDirectLastMessage$: Observable<MessageResponse>;
+    public listenReplyLastMessage$: Observable<MessageResponse>;
+    public listenEditLastMessage$: Observable<MessageResponse>;
   /** Observable for the details of all the conversation users */
   public getConversationUsers$: Observable<ConversationUsers[]>;
   /** Observable for the details of online users */
@@ -22,9 +27,14 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
   /** Observable for new Chat Id */
   public typingInfo$: Observable<Typing>;
   constructor(private _chatService: ChatService,
-    private _loaderService: LoaderService) {
+    private _loaderService: LoaderService,
+    ) {
     this.destroy = new Subject();
     this.getConversationUsers$ = new Observable();
+    this.listenDirectLastMessage$ = new Observable();
+    this.listenReplyLastMessage$ = new Observable();
+    this.listenEditLastMessage$ = new Observable();
+   
     this.allUsers = [];
     this.getOnlineUsersData$ = new Observable();
     this.typingInfo$ = new Observable();
@@ -39,6 +49,9 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
   * @description This method will be invoked on ngOnInit
   */
   private props(): void {
+    this.listenDirectLastMessage$ = this._chatService.listen('directMessage');
+    this.listenReplyLastMessage$ = this._chatService.listen('directMessageReply');
+    this.listenEditLastMessage$ = this._chatService.listen('directMessageEdit');
     this._chatService.setMap();
     this.getOnlineUsersData$ = this._chatService.listen('alive');
     this.typingInfo$ = this._chatService.listen('typing');
@@ -61,25 +74,6 @@ export class ChatListContainerComponent implements OnInit, OnDestroy {
        this.getConversationUsers$ = of(users);
     });
 
-    // this._chatService.getConversationUser() .subscribe(
-    //   (users: ConversationUsers[]) => {
-    //     // Process your data here
-    //     this.getConversationUsers$ = of(users);
-    //     // Hide the loader when the data is received
-    //     this._loaderService.hideLoader();
-    //   },
-    //   (error) => {
-    //     // Hide the loader in case of an error
-    //     this._loaderService.hideLoader();
-    //   }
-    //   );
-      // this._chatService.getConversationUser().pipe(takeUntil(this.destroy)).subscribe((users: ConversationUsers[]) => {
-      //   if (users) {
-      //     this.getConversationUsers$ = of(users);
-      //     this._loaderService.hideLoader();
-      //   }
-  
-      // })
     }
 
   /**

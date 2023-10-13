@@ -14,7 +14,7 @@ export class FormatTime {
         const todayDate = currentTime.getDate();
         const incomingDate = date.getDate();
         const day = date.getDay();
-        const convertToString = convertDay.find((data: Day) => data.digits === day).daysInString
+        const convertToString = convertDay.find((data: Day) => data.digits === day)?.daysInString
         let hours = date.getHours();
         let minutes: string | number = date.getMinutes();
         const amPm = hours >= 12 ? 'PM' : 'AM';

@@ -28,6 +28,10 @@ export class ChatHeaderComponent implements OnInit {
    */
   public onWindow(data: boolean): void {
     this.currentWindow = data;
+    if(data === true){
+      this._communicationService.chatTabGetMessages.next(data);
+
+    }
    
   }
   /**

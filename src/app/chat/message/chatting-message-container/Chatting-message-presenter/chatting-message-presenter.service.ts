@@ -7,7 +7,8 @@ import { login } from 'src/app/chat/models/login.model';
 import { Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from 'src/app/chat/models/message.model';
 import { FormatTime } from 'src/app/core/utilities/formatTime';
 import { CommonService } from 'src/app/shared/services/common.service';
-import { ConversationUsers } from 'src/app/chat/models/chat.model';
+import { ConversationUsers, CreateChat } from 'src/app/chat/models/chat.model';
+import { CommunicationService } from 'src/app/chat/shared/communication/communication.service';
 
 
 @Injectable()
@@ -15,6 +16,8 @@ export class ChattingMessagePresenterService implements OnInit {
   public unReadMessageIds$: Observable<MessageRead>;
   /** Observable for all chatArray  */
   public chatArray$: Observable<Object>;
+   /** Observable for create new conversation chat */
+   public createChat$: Observable<CreateChat>;
   /** Observable for new directMessage send container  */
   public directMessage$: Observable<{ arg1: Message, arg2: MessageResponse }>;
   /** Observable for  directMessageEdit send container  */
@@ -23,12 +26,17 @@ export class ChattingMessagePresenterService implements OnInit {
   public directMessageReply$: Observable<{ arg1: Message, arg2: MessageResponse }>;
   /** Subject for directMessage */
   private directMessage: Subject<{ arg1: Message, arg2: MessageResponse }>;
+  /** variable for all the chat Ids */
+  public allChatIds: string[];
+  public currentConversationUser: ConversationUsers;
   /** Subject for directMessageEdit */
   private directMessageEdit: Subject<MessageEdit>;
   /** Subject for messageReply */
   private directMessageReply: Subject<{ arg1: Message, arg2: MessageResponse }>;
   /** Subject for  for all chatArray */
   private chatArray: Subject<Object>;
+  /** Subject for new conversation chat */
+  private createChat: Subject<CreateChat>;
   private unReadMessageIds: Subject<MessageRead>
   /** variable for chat array */
   public chats: MessageResponse[];
@@ -42,17 +50,20 @@ export class ChattingMessagePresenterService implements OnInit {
   constructor(
     private _fb: FormBuilder,
     private _commonService: CommonService,
-    private _formatter: FormatTime
+    private _formatter: FormatTime,
+    private _communicationService: CommunicationService,
   ) {
     this.chatArray$ = new Observable();
     this.directMessage$ = new Observable();
     this.directMessageEdit$ = new Observable();
     this.directMessageReply$ = new Observable();
+    this.createChat$ = new Observable();
     this.directMessage = new Subject();
     this.directMessageEdit = new Subject();
     this.directMessageReply = new Subject();
     this.chatArray = new Subject();
     this.unReadMessageIds = new Subject();
+    this.createChat = new Subject();
     this.chats = [];
     this.chatArray$ = this.chatArray.asObservable();
     this.directMessage$ = this.directMessage.asObservable();
@@ -60,12 +71,17 @@ export class ChattingMessagePresenterService implements OnInit {
     this.directMessageReply$ = this.directMessageReply.asObservable();
     this.unReadMessageIds$ = this.unReadMessageIds.asObservable();
     this.loginObject = this._commonService.getLoginDetails();
-    this.messagesObject = {}
+    this.createChat$ = this.createChat.asObservable();
+    this.messagesObject = {};
+    this.allChatIds = [];
   }
   ngOnInit(): void {
     this._commonService.receiverId$.subscribe((receiverId: string) => {
       console.log(receiverId);
     });
+    this._communicationService.currentConversationUser.subscribe((currentConversationUser:ConversationUsers)=>{
+      this.currentConversationUser=currentConversationUser
+    })
   }
 
   /**
@@ -112,6 +128,17 @@ export class ChattingMessagePresenterService implements OnInit {
       })
     }
   }
+    /**
+   * @name getConversationUser
+   * @param users 
+   * @description This method will separate the one to one and group chat data
+   */
+    public getConversationUsers(users: ConversationUsers[]): void {
+      this.allChatIds = users.map((user: ConversationUsers) => user.chatId);
+      console.log(this.allChatIds);
+      
+    }
+  
   /**
    * @name getChatData
    * @param chatData 
@@ -120,6 +147,19 @@ export class ChattingMessagePresenterService implements OnInit {
   public getChatData(chatData: string): void {
     const currentTime = new Date();
     this.generatedUUID = uuidv4();
+   if(!this.allChatIds.includes(this.currentConversationUser.chatId)){
+    let newChat: CreateChat = {
+      owner: this.loginObject.userId,
+      chat_type: 'dm',
+      title: 'dm',
+      members: [
+         this.loginObject.userId,
+         this.receiverId
+      ],
+    };
+    this.createChat.next(newChat);
+
+   }else {
     this.messageObj = {
       body: chatData,
       editedBody: [''],
@@ -158,6 +198,14 @@ export class ChattingMessagePresenterService implements OnInit {
       temporaryId: this.generatedUUID
     }
     this.directMessage.next({ arg1: sendMessage, arg2: this.messageObj });
+    this._communicationService.setLastMessageInConversationData({chatId:this.chatId,lastMessage:chatData})
+  
+
+   }
+     
+    
+     
+   
   }
   /**
    * @name editMessage
@@ -173,6 +221,7 @@ export class ChattingMessagePresenterService implements OnInit {
       editMessageData.body
     )
     this.directMessageEdit.next(editMessage)
+    this._communicationService.setLastMessageInConversationData({chatId:this.chatId,lastMessage:editMessageData.body})
   }
   /**
    * @name replyMessages
@@ -223,6 +272,7 @@ export class ChattingMessagePresenterService implements OnInit {
       temporaryId: this.generatedUUID
     }
     this.directMessageReply.next({ arg1: replyMessages, arg2: messageObj });
+    this._communicationService.setLastMessageInConversationData({chatId:this.chatId,lastMessage:replyMessage})
   }
 
   /**

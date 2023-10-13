@@ -15,8 +15,10 @@ export class CommunicationService {
   public editTaskResponse$: Observable<EditEodTasks>;
   /**  This variable Observable  senEodData store * */
   public senEodData$: Observable<EodSubmission>;
-  /**  This variable Observable setlastMesageInConversation store * */
-  public setlastMesageInConversation$: Observable<string>;
+  /**  This variable Observable setLastMessageInConversation store * */
+  public setLastMessageInConversation$: Observable<any>;
+  /**  This variable Observable chatTabGetMessages store * */
+  public chatTabGetMessages$: Observable<boolean>;
   /** This variable Subject New conversationDetails to set header * */
   private ConversationUser: Subject<ConversationUsers>;
   /** This variable Subject NewGroupConversation store  * */
@@ -36,18 +38,23 @@ export class CommunicationService {
   public deleteEodId: Subject<number>;
   /** This variable Subject  to store receiverId  * */
   public receiverId: Subject<string>;
-  /**  This variable Observable setlastMesageInConversation store * */
-  private setlastMesageInConversation: Subject<string>;
+  /**  This variable Subject setLastMessageInConversation store * */
+  private setLastMessageInConversation: Subject<any>;
+  /**  This variable Subject setLastMessageInConversation store * */
+  public chatTabGetMessages: Subject<boolean>;
+  /**  This variable Subject currentConversationUser store * */
+  public currentConversationUser: Subject<ConversationUsers>;
 
   constructor() {
     this.ConversationUser$ = new Observable();
     this.NewGroupConversation$ = new Observable();
     this.taskResponse$ = new Observable();
     this.editTaskResponse$ = new Observable();
+    this.chatTabGetMessages$ = new Observable();
 
     this.editTaskResponse$ = new Observable();
     this.senEodData$ = new Observable();
-    this.setlastMesageInConversation$ = new Observable();
+    this.setLastMessageInConversation$ = new Observable();
     this.ConversationUser = new Subject();
     this.tabData = new Subject();
     this.selectedTabData = new Subject();
@@ -57,7 +64,9 @@ export class CommunicationService {
     this.tabDataApi = new Subject();
     this.deleteEodId = new Subject();
     this.senEodData = new Subject();
-    this.setlastMesageInConversation = new Subject();
+    this.chatTabGetMessages = new Subject();
+    this.setLastMessageInConversation = new Subject();
+    this.currentConversationUser = new Subject();
 
     this.ConversationUser$ = this.ConversationUser.asObservable();
     this.NewGroupConversation$ = this.NewGroupConversation.asObservable();
@@ -65,7 +74,8 @@ export class CommunicationService {
     this.editTaskResponse$ = this.editTaskResponse.asObservable();
     this.senEodData$ = this.senEodData.asObservable();
     this.senEodData$ = this.senEodData.asObservable();
-    this.setlastMesageInConversation$ = this.setlastMesageInConversation.asObservable();
+    this.setLastMessageInConversation$ = this.setLastMessageInConversation.asObservable();
+    // this.chatTabGetMessages$ = this.chatTabGetMessages.asObservable();
 
   }
   /**
@@ -111,9 +121,17 @@ export class CommunicationService {
   /**
    *@name postTaskReportsResponses
    * @param taskResponse 
-   * @description This method next postTaskReportsResponses  
+   * @description This method next setLastMessageInConversationData  
    */
-  public setlastMesageInConversationData(setlastMesageInConversation: string) {
-    this.setlastMesageInConversation.next(setlastMesageInConversation);
+  public chatTabGetMessagesData(chatTabGetMessages: boolean) {
+    this.chatTabGetMessages.next(chatTabGetMessages);
+  }
+  /**
+   *@name postTaskReportsResponses
+   * @param taskResponse 
+   * @description This method next setLastMessageInConversationData  
+   */
+  public setLastMessageInConversationData(setLastMessageInConversation: any) {
+    this.setLastMessageInConversation.next(setLastMessageInConversation);
   }
 }

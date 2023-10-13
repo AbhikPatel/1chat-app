@@ -7,6 +7,7 @@ import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, Me
 import { login } from 'src/app/chat/models/login.model';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
 import { CommunicationService } from 'src/app/chat/shared/communication/communication.service';
+import { ConversationUsers, CreateChat } from 'src/app/chat/models/chat.model';
 
 @Component({
   selector: 'app-chatting-message-presentation',
@@ -25,6 +26,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this._loaderService.hideLoaderMessage();
       this._chatArray = messages;
       this._chattingMessagePresenterService.getChatMessagesArray(this._chatArray);
+    
     }
   }
   public get chatArray(): MessageResponse[] {
@@ -36,7 +38,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this._getParamId = v;
     this.receiverId = localStorage.getItem('receiverId');
     this._chattingMessagePresenterService.getId(this._getParamId, this.receiverId);
-
+    this._changeDetector.detectChanges();
   }
   public get getParamId(): string {
     return this._getParamId;
@@ -52,7 +54,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenDirectMessage(): MessageResponse {
     return this._listenDirectMessage;
   }
-
+  
   // Getter Setter for direct message response
   @Input() public set listenDirectMessageResponse(message: MessageResponse) {
     if (message) {
@@ -69,7 +71,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenDirectMessageResponse(): MessageResponse {
     return this._listenDirectMessageResponse;
   }
-
+  
   // Getter Setter for direct message reply
   @Input() public set listenDirectMessageReply(message: MessageResponse) {
     if (message) {
@@ -98,7 +100,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenDirectMessageReplyResponse(): MessageResponse {
     return this._listenDirectMessageReplyResponse;
   }
-
+  
   // Getter Setter for direct message edit
   @Input() public set listenDirectMessageEdit(message: MessageResponse) {
     if (message) {
@@ -109,7 +111,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenDirectMessageEdit(): MessageResponse {
     return this._listenDirectMessageEdit;
   }
-
+  
   // Getter Setter for direct message edit response
   @Input() public set listenDirectMessageEditResponse(message: MessageResponse) {
     if (message) {
@@ -120,7 +122,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenDirectMessageEditResponse(): MessageResponse {
     return this._listenDirectMessageEditResponse;
   }
-
+  
   // Getter Setter for direct message acknowledge
   @Input() public set listenDirectMessageAcknowledge(messages: MessageResponse[]) {
     if (messages) {
@@ -158,7 +160,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenDirectMessageError(): any {
     return this._listenDirectMessageError;
   }
-
+  
   // Getter Setter for group message
   @Input() public set listenGroupMessage(message: MessageResponse) {
     if (message) {
@@ -169,7 +171,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenGroupMessage(): MessageResponse {
     return this._listenGroupMessage;
   }
-
+  
   // Getter Setter for group message reply
   @Input() public set listenGroupMessageReply(message: MessageResponse) {
     if (message) {
@@ -180,7 +182,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenGroupMessageReply(): MessageResponse {
     return this._listenGroupMessageReply;
   }
-
+  
   // Getter Setter for group message acknowledge
   @Input() public set listenGroupMessageAcknowledge(messages: MessageResponse[]) {
     if (messages) {
@@ -191,7 +193,28 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public get listenGroupMessageAcknowledge(): MessageResponse[] {
     return this._listenGroupMessageAcknowledge;
   }
-
+  // Getter Setter for group message acknowledge
+  @Input() public set getNewChatId(chatId:string) {
+    if (chatId) {
+      this._getNewChatId = chatId;
+      // implementation on progress
+    }
+  }
+  public get getNewChatId(): string {
+    return this._getNewChatId;
+  }
+  /** This property will get the conversation users from the container */
+  @Input() public set getConversationUsers(users: ConversationUsers[]) {
+    if (users) {
+      this._getConversationUsers = users;
+      this._chattingMessagePresenterService.getConversationUsers(users);
+    }
+  }
+  public get getConversationUsers(): ConversationUsers[] {
+    return this._getConversationUsers;
+  }
+ /** This property is used to emit the new conversation */
+ @Output() public newConversationChat: EventEmitter<CreateChat>;
   @Output() public emitDirectMessage: EventEmitter<Message>;
   @Output() public pagination: EventEmitter<any>;
   @Output() public emitDirectMessageReply: EventEmitter<MessageReply>;
@@ -216,6 +239,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
   private _listenDirectMessageReply: MessageResponse;
   private _listenDirectMessageAcknowledge: MessageResponse[];
   private _getParamId: string;
+  private _getNewChatId: string;
+  private _getConversationUsers: ConversationUsers[];
   /** This Variable store chartArray[] */
   public newChatArray: MessageResponse[];
   public allMessagesObject: Object;
@@ -253,6 +278,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
     private _loaderService: LoaderService,
     private _changeDetector: ChangeDetectorRef
   ) {
+    this.newConversationChat = new EventEmitter();
     this.emitDirectMessage = new EventEmitter();
     this.pagination = new EventEmitter();
     this.emitDirectMessageReply = new EventEmitter();
@@ -277,18 +303,17 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.allMessagesKeys = Object.keys(this.allMessagesObject);
   }
   ngOnInit(): void {
+       
     this.isLoading = this._loaderService.geLoaderMessage();
     this._chattingMessagePresenterService.chatArray$.subscribe((messagesObject: Object) => {
       if (messagesObject) {
         this.allMessagesObject = messagesObject;
         this.allMessagesKeys = Object.keys(this.allMessagesObject);
-        console.log(this.allMessagesObject);
-        console.log(this.allMessagesKeys);
-
-        this._changeDetector.detectChanges();
       }
     })
     this._chattingMessagePresenterService.directMessage$.subscribe((val: { arg1: Message, arg2: MessageResponse }) => {
+      console.log(val.arg1);
+      
       this.emitDirectMessage.emit(val.arg1);
       this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2 };
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
@@ -301,7 +326,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2 };
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
     });
-
+    this._chattingMessagePresenterService.createChat$.subscribe((chat: CreateChat) => this.newConversationChat.emit(chat));
     /**
      * Get login Details
      */
@@ -320,16 +345,13 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this.editedMessage.editedBody.push(this.chatGroup.value.message);
       this.editedMessage.body = this.chatGroup.value.message;
       this.editedMessage.isEdited = true;
-      this._communicationService.setlastMesageInConversationData(this.chatGroup.value.message)
       this._chattingMessagePresenterService.editMessage(this.editedMessage);
       this.resetInputBox()
     } else if (this.isReplyMode === true) {
       this._chattingMessagePresenterService.replyMessage(this.chatGroup.value.message, this.repliedMessage)
       this.resetInputBox()
-      this._communicationService.setlastMesageInConversationData(this.chatGroup.value.message)
     } else {
       this._chattingMessagePresenterService.getChatData(this.chatGroup.value.message);
-      this._communicationService.setlastMesageInConversationData(this.chatGroup.value.message)
       this.resetInputBox()
     }
     this.isEditMode = false;

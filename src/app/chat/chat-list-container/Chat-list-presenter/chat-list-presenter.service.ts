@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConversationUsers } from '../../models/chat.model';
 import { Observable, Subject } from 'rxjs';
 import { User } from 'src/app/shared/models/user.model';
+import { CommunicationService } from '../../shared/communication/communication.service';
 
 @Injectable()
 
@@ -24,7 +25,7 @@ export class ChatListPresenterService {
   private newConversation: Subject<ConversationUsers>;
   /** Subject for conversation users */
   private conversationUser: Subject<ConversationUsers[]>;
-  constructor() {
+  constructor(private _communicationService:CommunicationService) {
     this.conversationUser$ = new Observable();
     this.newConversation$ = new Observable();
     this.currentConversationUser$ = new Observable();
@@ -62,6 +63,8 @@ export class ChatListPresenterService {
      * @description This method will create a new Conversation user
      */
   public createNewConversation(user: User): void {
+    console.log(user);
+    
     let newConversationUser: ConversationUsers = {
       chatId: user._id,
       owner: user._id,
@@ -77,7 +80,7 @@ export class ChatListPresenterService {
       sender: '',
       receiver: '',
       time: '',
-      lastMessage: '-',
+      lastMessage: 'draft',
       lastMessageId: '',
       isRead: false,
       isEdit: false,
@@ -89,7 +92,6 @@ export class ChatListPresenterService {
       eodNotification: false
     };
     this.newConversation.next(newConversationUser);
-    this.currentConversationUser.next(newConversationUser);
-
+    this._communicationService.currentConversationUser.next(newConversationUser);
   }
 }

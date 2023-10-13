@@ -67,7 +67,7 @@
             </div>
         </div>
         <ng-template #data>
-            <div>
+            <div *ngIf="chatArray && chatArray.length>0">
                 <div class="container position-relative">
                     <div class="chat d-flex flex-column my-3" *ngFor="let message of allMessagesKeys let i = index"
                         [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
@@ -112,7 +112,7 @@
                                                     :allMessagesObject[message]?.repliedMessageId.senderId.full_name
                                                     }} </span>
                                             </div>
-                                            <div class="replay-Message  p-1 text-black fs-7">
+                                            <div class="replay-Message p-1 text-black fs-7">
                                                 {{allMessagesObject[message].repliedMessageId?.body}}
                                             </div>
                                         </div>

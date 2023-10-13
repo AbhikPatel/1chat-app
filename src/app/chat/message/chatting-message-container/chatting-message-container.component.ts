@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../../chat.service';
-import { } from '../../models/chat.model';
-import { Observable, map } from 'rxjs';
+import { ConversationUsers, CreateChat } from '../../models/chat.model';
+import { Observable, map, of } from 'rxjs';
 import { GroupMessageSeenBy, Message, MessageEdit, MessageRead, MessageReply, MessageResponse } from '../../models/message.model';
 import { MessageAdapter } from '../../chat-adaptor/message.adaptor';
 import { LoaderService } from 'src/app/core/services/loader/loader.service';
 import { CommonService } from 'src/app/shared/services/common.service';
+import { CommunicationService } from '../../shared/communication/communication.service';
 
 @Component({
   selector: 'app-chatting-message-container',
@@ -18,7 +19,9 @@ export class ChattingMessageContainerComponent implements OnInit {
   public getMessages: MessageResponse[];
 
   public chatMessages$: Observable<MessageResponse[]>;
-
+  public newChatId$: Observable<any>;
+ /** Observable for the details of all the conversation users */
+ public getConversationUsers$: Observable<ConversationUsers[]>;
   // Observable for direct message and direst message response
   public listenDirectMessage$: Observable<MessageResponse>;
   public listenDirectMessageResponse$: Observable<MessageResponse>;
@@ -44,18 +47,28 @@ export class ChattingMessageContainerComponent implements OnInit {
   constructor(
     private _commonService: CommonService,
     private router: ActivatedRoute,
-    private _ChatService: ChatService, private _messageAdaptor: MessageAdapter,
-    private _loaderService: LoaderService) {
+    private _chatService: ChatService, private _messageAdaptor: MessageAdapter,
+    private _loaderService: LoaderService  ,private _communicationService: CommunicationService) {
     this.pageSize = 1;
     this.pageLimit = 10;
     this.sortBy = '-timestamp'
-    this.getMessages = []
+    this.getMessages = [];
+    this.getConversationUsers$ = new Observable();
   }
   
   ngOnInit(): void {
     // Access route parameters using ActivatedRoute
     this.router.parent.params.subscribe(parentParams => {
       this.paramId = parentParams['id'];
+    if(this.paramId ==='draft'){
+
+    }
+    else{
+
+      this.getAllMessage()
+    }
+      console.log(this.paramId );
+      
     });
     this.props();
   }
@@ -64,58 +77,64 @@ export class ChattingMessageContainerComponent implements OnInit {
     this._commonService.notificationCount.subscribe((count) => {
       if(!count) this.initLimit = 10
       else this.initLimit = count
-      this.getAllMessage();
+        this.getAllMessage();
     });
-    this.listenDirectMessage$ = this._ChatService.listen('directMessage').pipe(
+    this.listenDirectMessage$ = this._chatService.listen('directMessage').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
-    this.listenDirectMessageResponse$ = this._ChatService.listen('directMessageResponse').pipe(
+    this.listenDirectMessageResponse$ = this._chatService.listen('directMessageResponse').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
-    this.listenDirectMessageReply$ = this._ChatService.listen('directMessageReply').pipe(
+    this.listenDirectMessageReply$ = this._chatService.listen('directMessageReply').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
-    this.listenDirectMessageReplyResponse$ = this._ChatService.listen('directMessageReplyResponse').pipe(
+    this.listenDirectMessageReplyResponse$ = this._chatService.listen('directMessageReplyResponse').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
-    this.listenDirectMessageEdit$ = this._ChatService.listen('directMessageEdit').pipe(
+    this.listenDirectMessageEdit$ = this._chatService.listen('directMessageEdit').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
-    this.listenDirectMessageEditResponse$ = this._ChatService.listen('directMessageEditResponse').pipe(
+    this.listenDirectMessageEditResponse$ = this._chatService.listen('directMessageEditResponse').pipe(
       map(message => this._messageAdaptor.toResponse(message))
     );
-    this.listenDirectMessageAcknowledge$ = this._ChatService.listen('directMessageAcknowledge').pipe(
+    this.listenDirectMessageAcknowledge$ = this._chatService.listen('directMessageAcknowledge').pipe(
       map((messages) => {
         messages = messages.map((msg: MessageResponse) => this._messageAdaptor.toResponse(msg))
         return messages
       })
     );
-    this.listenDirectMessageAcknowledgeResponse$ = this._ChatService.listen('directMessageAcknowledgeResponse').pipe(
+    this.listenDirectMessageAcknowledgeResponse$ = this._chatService.listen('directMessageAcknowledgeResponse').pipe(
       map((messages) => {
         messages = messages.map((msg: MessageResponse) => this._messageAdaptor.toResponse(msg))
         return messages
       })
     );
-    this.listenDirectMessageError$ = this._ChatService.listen('directMessageError');
-    this.listenGroupMessage$ = this._ChatService.listen('groupMessage');
-    this.listenGroupMessageReply$ = this._ChatService.listen('groupMessageReply');
-    this.listenGroupMessageAcknowledge$ = this._ChatService.listen('groupMessageAcknowledge');
-
-    // this._ChatService.listen('alive').subscribe((val) => {
-    //   console.log(val)
-    // })
-    // console.log(this.initLimit)
-    // this.getAllMessage()
+    this.listenDirectMessageError$ = this._chatService.listen('directMessageError');
+    this.listenGroupMessage$ = this._chatService.listen('groupMessage');
+    this.listenGroupMessageReply$ = this._chatService.listen('groupMessageReply');
+    this.listenGroupMessageAcknowledge$ = this._chatService.listen('groupMessageAcknowledge');
+    
+ this.getAllConversationUser()
   }
+   /**
+   * @name getAllConversationUser
+   * @description This Method Get getAllConversationUser
+   */
+   public getAllConversationUser() {
+       this._chatService.getConversationUser().subscribe((users: ConversationUsers[]) => {
+       this.getConversationUsers$ = of(users);
+    });
+
+    }
   /**
    * @name getAllMessage
    * @description 
    */
   public getAllMessage() {
     if(this.pageSize > 1 ) 
-      this.chatMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.pageLimit, this.sortBy);
+      this.chatMessages$ = this._chatService.getChatMessages(this.paramId, this.pageSize, this.pageLimit, this.sortBy);
     else
-      this.chatMessages$ = this._ChatService.getChatMessages(this.paramId, this.pageSize, this.initLimit, this.sortBy);
+      this.chatMessages$ = this._chatService.getChatMessages(this.paramId, this.pageSize, this.initLimit, this.sortBy);
 
   }
   /**
@@ -127,13 +146,21 @@ export class ChattingMessageContainerComponent implements OnInit {
     this.pageSize = paginationData.page;
     this.getAllMessage();
   }
+   /**
+   * @name getNewConversation
+   * @param chat 
+   * @description This methods will send a request for creation of new conversation
+  */
+   public getNewConversation(chat: CreateChat): void {
+    this._chatService.postNewChat(chat).subscribe((res: CreateChat) => this.newChatId$ = of(res._id));
+  }
   /**
    * @name emitDirectMessage
    * @param message message data
    * @description method emits direct messages
    */
   public emitDirectMessage(message: Message) {
-    this._ChatService.emit('directMessage', message);
+    this._chatService.emit('directMessage', message);
   }
   /**
    * @name emitDirectMessageReply
@@ -141,7 +168,7 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits direct message replies
    */
   public emitDirectMessageReply(message: MessageReply) {
-    this._ChatService.emit('directMessageReply', message);
+    this._chatService.emit('directMessageReply', message);
   }
   /**
    * @name emitDirectMessageEdit
@@ -149,7 +176,7 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits direct message edits
    */
   public emitDirectMessageEdit(message: MessageEdit) {
-    this._ChatService.emit('directMessageEdit', message);
+    this._chatService.emit('directMessageEdit', message);
   }
   /**
    * @name emitDirectMessageAcknowledge
@@ -157,7 +184,7 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits direct messages acknowledgements
    */
   public emitDirectMessageAcknowledge(message: MessageRead) {
-    this._ChatService.emit('directMessageAcknowledge', message);
+    this._chatService.emit('directMessageAcknowledge', message);
   }
   /**
    * @name emitGroupJoin
@@ -165,7 +192,7 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits group message chat ids
    */
   // public emitGroupJoin(message: any) {
-  //   this._ChatService.emit('groupJoin', message);
+  //   this._chatService.emit('groupJoin', message);
   // }
   /**
    * @name emitGroupMessage
@@ -173,7 +200,7 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits group messages
    */
   public emitGroupMessage(message: Message) {
-    this._ChatService.emit('groupMessage', message);
+    this._chatService.emit('groupMessage', message);
   }
   /**
    * @name emitGroupMessageReply
@@ -181,7 +208,7 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits group message replies
    */
   public emitGroupMessageReply(message: MessageReply) {
-    this._ChatService.emit('groupMessageReply', message);
+    this._chatService.emit('groupMessageReply', message);
   }
   /**
    * @name emitGroupMessageAcknowledge
@@ -189,6 +216,6 @@ export class ChattingMessageContainerComponent implements OnInit {
    * @description method emits group message acknowledgements
    */
   public emitGroupMessageAcknowledge(message: GroupMessageSeenBy) {
-    this._ChatService.emit('groupMessageAcknowledge', message)
+    this._chatService.emit('groupMessageAcknowledge', message)
   }
 }
