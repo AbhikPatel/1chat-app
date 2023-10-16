@@ -87,13 +87,13 @@
                                         user.sender ? 'You: ' :
                                         ''}} {{user.lastMessage}} </span>
                                 </ng-template>
-                                <ng-template [ngIf]="user.chat_type !== 'group'">
+                                <!-- <ng-template [ngIf]="user.chat_type !== 'group'">
                                     <ng-container *ngIf="user.notificationCount">
                                         <span
                                             class="badge rounded-circle bg-success text-white d-flex justify-content-center align-items-center">
                                             {{user.notificationCount}} </span>
                                     </ng-container>
-                                </ng-template>
+                                </ng-template> -->
                                 <!-- <ng-container *ngIf="user.eodNotification">
                             <span class="badge bg-danger" (click)="eodChatOpen($event.stopPropagation(),user)"> EOD
                             </span>

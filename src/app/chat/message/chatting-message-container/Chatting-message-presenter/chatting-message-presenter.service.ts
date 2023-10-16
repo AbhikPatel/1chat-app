@@ -155,19 +155,19 @@ export class ChattingMessagePresenterService implements OnInit {
   public getChatData(chatData: string): void {
     const currentTime = new Date();
     this.generatedUUID = uuidv4();
-   if(!this.allChatIds.includes(this.currentConversationUser.chatId)){
-    let newChat: CreateChat = {
-      owner: this.loginObject.userId,
-      chat_type: 'dm',
-      title: 'dm',
-      members: [
-         this.loginObject.userId,
-         this.receiverId
-      ],
-    };
-    this.createChat.next(newChat);
+  //  if(!this.allChatIds.includes(this.currentConversationUser.chatId)){
+  //   let newChat: CreateChat = {
+  //     owner: this.loginObject.userId,
+  //     chat_type: 'dm',
+  //     title: 'dm',
+  //     members: [
+  //        this.loginObject.userId,
+  //        this.receiverId
+  //     ],
+  //   };
+  //   this.createChat.next(newChat);
 
-   }else {
+  //  }else {
     this.messageObj = {
       body: chatData,
       editedBody: [''],
@@ -209,7 +209,7 @@ export class ChattingMessagePresenterService implements OnInit {
     this._communicationService.setLastMessageInConversationData({chatId:this.chatId,lastMessage:chatData})
   
 
-   }
+  //  }
      
     
      

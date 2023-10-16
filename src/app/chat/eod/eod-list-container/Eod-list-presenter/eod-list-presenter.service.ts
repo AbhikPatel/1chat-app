@@ -57,7 +57,7 @@ export class EodListPresenterService implements OnInit {
    * @description  This method find getStateName base on id and return 
    */
   public  getStateName(stateID: number) {
-    const state = this.getStateActivityTypes.data.docs[0].data.find((data:any) => data.stateId === stateID);
+    const state = this.getStateActivityTypes.data.docs[1].data.find((data:any) => data.stateId === stateID);
     return state ? state.state : 'Unknown';
   }
  

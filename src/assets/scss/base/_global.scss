@@ -53,7 +53,9 @@ body {
 .tick-color {
     background-color: $tick-color;
 }
-
+.edit-message-bg-color{
+background-color: lighten($color:$success, $amount: 8);
+}
 textarea {
     resize: none !important;
 }

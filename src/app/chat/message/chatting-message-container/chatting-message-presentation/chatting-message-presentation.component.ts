@@ -36,9 +36,9 @@ export class ChattingMessagePresentationComponent implements OnInit {
   // Getter Setter for _getParamId
   @Input() public set getParamId(v: string) {
     this._getParamId = v;
+    this._changeDetector.detectChanges();
     this.receiverId = localStorage.getItem('receiverId');
     this._chattingMessagePresenterService.getId(this._getParamId, this.receiverId);
-    this._changeDetector.detectChanges();
   }
   public get getParamId(): string {
     return this._getParamId;
@@ -276,6 +276,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
   public UserObject: login;
   public receiverId: string;
   public isLoading: any;
+  selectedMessageId: number | null = null;
   constructor(
     private _chattingMessagePresenterService: ChattingMessagePresenterService,
     private _communicationService: CommunicationService,
@@ -313,6 +314,8 @@ export class ChattingMessagePresentationComponent implements OnInit {
     this.isLoading = this._loaderService.geLoaderMessage();
     this._chattingMessagePresenterService.chatArray$.subscribe((messagesObject: Object) => {
       if (messagesObject) {
+        console.log(messagesObject);
+        this._changeDetector.detectChanges();
         this.allMessagesObject = messagesObject;
         this.allMessagesKeys = Object.keys(this.allMessagesObject);
       }
@@ -325,9 +328,12 @@ export class ChattingMessagePresentationComponent implements OnInit {
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
     });
     this._chattingMessagePresenterService.directMessageEdit$.subscribe((editMessage: MessageEdit) => {
+    
       this.emitDirectMessageEdit.next(editMessage);
     });
     this._chattingMessagePresenterService.directMessageReply$.subscribe((val: { arg1: MessageReply, arg2: MessageResponse }) => {
+      console.log(val.arg2);
+      
       this.emitDirectMessageReply.emit(val.arg1);
       this.allMessagesObject = { ...this.allMessagesObject, [val.arg2.temporaryId]: val.arg2 };
       this.allMessagesKeys = Object.keys(this.allMessagesObject);
@@ -338,7 +344,7 @@ export class ChattingMessagePresentationComponent implements OnInit {
      */
     this.UserObject = this._commonService.getLoginDetails()
     this._chattingMessagePresenterService.unReadMessageIds$.subscribe((val) => {
-      if (val.messageIds.length) this.emitDirectMessageAcknowledge.emit(val)
+      if (val.messageIds?.length) this.emitDirectMessageAcknowledge.emit(val)
     })
   }
 
@@ -403,7 +409,11 @@ export class ChattingMessagePresentationComponent implements OnInit {
     const isScrolledToBottom = this.messageContainer.nativeElement.scrollHeight - (messageContainer.scrollTop + messageContainer.clientHeight);
     this.isScrolledToBottom = isScrolledToBottom > 50;
   }
-
+  selectMessage(id: number) {
+    this.selectedMessageId = id; 
+    console.log(id);
+    
+  }
   /**
    * @name onMessageModel
    * @param id 

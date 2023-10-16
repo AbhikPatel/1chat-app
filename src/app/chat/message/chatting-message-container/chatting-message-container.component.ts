@@ -58,17 +58,13 @@ export class ChattingMessageContainerComponent implements OnInit {
   
   ngOnInit(): void {
     // Access route parameters using ActivatedRoute
-    this.router.parent.params.subscribe(parentParams => {
+    this.router?.parent?.params.subscribe(parentParams => {
       this.paramId = parentParams['id'];
     if(this.paramId ==='draft'){
-
     }
     else{
-
       this.getAllMessage()
     }
-      console.log(this.paramId );
-      
     });
     this.props();
   }

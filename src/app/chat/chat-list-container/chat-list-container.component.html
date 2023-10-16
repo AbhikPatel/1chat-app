@@ -1,7 +1,7 @@
 <app-chat-list-presentation-ui  [conversationUsers]="getConversationUsers$ | async "
  [listenMessage]="listenDirectLastMessage$ | async"
  [listenMessage]="listenReplyLastMessage$ | async"
- [listenEditMessage]="listenEditLastMessage$ | async"
+ [listenMessage]="listenEditLastMessage$ | async"
  [onlineUsers]="getOnlineUsersData$ | async"  
  [typingInfo]="typingInfo$ | async"
  [getAllUsers]="allUsers"

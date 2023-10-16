@@ -70,8 +70,9 @@
             <div *ngIf="chatArray && chatArray.length>0">
                 <div class="container position-relative">
                     <div class="chat d-flex flex-column my-3" *ngFor="let message of allMessagesKeys let i = index"
-                        [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
-                        <!-- {{ message | json}} -->
+                        [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId ? 'justify-content-end': 'justify-content-start'"  >
+                        {{ allMessagesObject[message]._id | json}}
+                        {{ selectedMessageId | json}}
                         <div class="d-flex justify-content-center">
                             <span class="tick-color shadow-sm text-success text-black py-1 px-2 rounded-2 fs-7"
                                 *ngIf="formatDate(allMessagesObject[message].timestamp, allMessagesObject[allMessagesKeys[i-1]]?.timestamp)">
@@ -79,21 +80,21 @@
                                 allMessagesObject[allMessagesKeys[i-1]]?.timestamp)}}
                             </span>
                         </div>
-                        <div class="chat">
+                        <div class="chat"  [class.selected]="allMessagesObject[message]._id === selectedMessageId" (click)="selectMessage(allMessagesObject[message].repliedMessageId?._id)">
                             <div class="d-flex"
                                 [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId ? 'justify-content-end': 'justify-content-start'">
                                 <input type="checkbox" name="toggle-user" class="isChecked d-none"
                                     id="editedBody{{allMessagesObject[message]._id}}">
                                 <div class="editedBody-container ">
                                     <div *ngFor=" let editMessage of allMessagesObject[message].editedBody">
-                                        <div class="edit-box-model py-1 p-4 mb-0"
-                                            [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId  ? 'bg-success chat-rt-border' : 'bg-info chat-lt-border'">
+                                        <div class="edit-box-model  mb-0"
+                                            [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId  ? 'edit-message-bg-color chat-rt-border' : 'bg-info chat-lt-border'">
                                             <span> {{editMessage}} </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-flex"
+                            <div  class="d-flex"
                                 [ngClass]="(allMessagesObject[message].senderId._id || allMessagesObject[message].senderId) === UserObject.userId  ? 'justify-content-end' : 'justify-content-start'">
                                 <!-- Message Text  -->
                                 <div class="chat-text p-2  placeholder-glow dropstart"
@@ -102,7 +103,7 @@
                                     (mouseleave)="onMessageModel(allMessagesObject[message]._id)">
                                     <!-- Reply Message  -->
                                     <div class="reply-wrapper text-white bg-white rounded-1 p-1 "
-                                        *ngIf="allMessagesObject[message].isReplied ">
+                                        *ngIf="allMessagesObject[message].isReplied " [class.selected]="allMessagesObject[message]._id === selectedMessageId" (click)="selectMessage(allMessagesObject[message].repliedMessageId?._id)">
                                         <div class="mx-3 ">
                                             <div class="d-flex align-items-center justify-content-between mb-1 ">
                                                 <span class="fs-9 text-nowrap text-primary fw-bold">
@@ -112,7 +113,7 @@
                                                     :allMessagesObject[message]?.repliedMessageId.senderId.full_name
                                                     }} </span>
                                             </div>
-                                            <div class="replay-Message p-1 text-black fs-7">
+                                            <div class="replay-Message  p-1 text-black fs-7">
                                                 {{allMessagesObject[message].repliedMessageId?.body}}
                                             </div>
                                         </div>
@@ -121,7 +122,7 @@
                                     <div class="dropdown">
 
                                         <!-- ngDropdown -->
-                                        <div ngbDropdown
+                                        <div ngbDropdown  [class.selected]="allMessagesObject[message].repliedMessageId?._id"
                                             class="d-inline-block d-flex align-items-center  justify-content-center">
                                             <div class="message-body"> {{allMessagesObject[message].body}} </div>
                                             <div
